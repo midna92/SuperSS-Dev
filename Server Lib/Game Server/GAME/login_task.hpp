@@ -1,6 +1,6 @@
-// Arquivo login_task.hpp
-// Criado em 01/05/2018 as 17:26 por Acrisio
-// Definição da classe LoginTask
+// File login_task.hpp
+// Created on 01/05/2018 at 17:26 by Acrisio
+// Definition of the LoginTask class
 
 #pragma once
 #ifndef _STDA_LOGIN_TASK_HPP

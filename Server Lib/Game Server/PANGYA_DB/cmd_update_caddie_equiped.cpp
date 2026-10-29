@@ -1,6 +1,6 @@
-// Arquivo cmd_update_caddie_equiped.cpp
-// Criado em 25/03/2018 as 10:39 por Acrisio
-// Implementa��o da classe CmdUpdateCaddieEquiped
+// File cmd_update_caddie_equiped.cpp
+// Created on 25/03/2018 at 10:39 by Acrisio
+// Implementation of class CmdUpdateCaddieEquiped
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCaddieEquiped::~CmdUpdateCaddieEquiped() {
 
 void CmdUpdateCaddieEquiped::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um update
+	// Not used because it is an update
 	return;
 }
 

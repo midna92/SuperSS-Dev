@@ -1,6 +1,6 @@
-// Arquivo cmd_daily_quest_info_user.hpp
-// Criado em 24/03/2018 as 19:51 por Acrisio
-// Defini��o da classe CmdDailyQuestInfoUser
+// File cmd_daily_quest_info_user.hpp
+// Created on 24/03/2018 at 19:51 by Acrisio
+// Definition of the class CmdDailyQuestInfoUser
 
 #pragma once
 #ifndef _STDA_CMD_DAILY_QUEST_INFO_USER_HPP

@@ -1,6 +1,6 @@
-// Arquivo ball3d.hpp
-// Criado em 03/10/2020 as 14:21 por Acrisio
-// Defini��o da classe Ball3D
+// File ball3d.hpp
+// Created on 03/10/2020 at 14:21 by Acrisio
+// Definition of the Ball3D class
 
 #pragma once
 #ifndef _STDA_BALL3D_HPP

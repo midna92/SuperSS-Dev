@@ -1,6 +1,6 @@
-// Arquivo util_time.h
-// Criado em 19/08/2017 por Acrisio
-// Definição de algumas funções uteis para manipulação de tempo e data
+// File util_time.h
+// Created on 19/08/2017 by Acrisio
+// Definition of some useful functions for time and date manipulation
 
 #pragma once
 #ifndef _STDA_UTIL_TIME_H
@@ -73,37 +73,37 @@ namespace stdA {
 	// String date time to Unix second format
 	time_t StrToUnix(std::string _date_time);
 
-	// Diff Time(Day, Hour, Min, Sec, Millsec) System date windows em milliseconds 
+	// Diff Time(Day, Hour, Min, Sec, Millsec) System date windows in milliseconds 
 	int64_t getHourDiff(SYSTEMTIME& _st1, SYSTEMTIME& _st2);
 
-	// Diff System date windows do micro-seconds
+	// Diff System date windows in micro-seconds
 	int64_t getTimeDiff(SYSTEMTIME& _st1, SYSTEMTIME& _st2);
 
-	// Diff Local Time ASC(ascendente)
+	// Diff Local Time ASC (ascending)
 	int64_t getLocalTimeDiff(SYSTEMTIME& _st);
 
-	// Diff Local Time DESC(descendente)
+	// Diff Local Time DESC (descending)
 	int64_t getLocalTimeDiffDESC(SYSTEMTIME& _st);
 
-	// Diff System(UTC) Time ASC(ascendente)
+	// Diff System(UTC) Time ASC (ascending)
 	int64_t getSystemTimeDiff(SYSTEMTIME& _st);
 	
-	// Diff System(UTC) Time DESC(descendente)
+	// Diff System(UTC) Time DESC (descending)
 	int64_t getSystemTimeDiffDESC(SYSTEMTIME& _st);
 
-	// Diff System date windows do micro-seconds, (Só a data)
+	// Diff System date windows in micro-seconds, (date only)
 	int64_t getDateDiff(SYSTEMTIME& _st1, SYSTEMTIME& _st2);
 
-	// Diff Local Date ASC(ascendente)
+	// Diff Local Date ASC (ascending)
 	int64_t getLocalDateDiff(SYSTEMTIME& _st);
 
-	// Diff Local Date DESC(descendente)
+	// Diff Local Date DESC (descending)
 	int64_t getLocalDateDiffDESC(SYSTEMTIME& _st);
 
-	// Diff System(UTC) Date ASC(ascendente)
+	// Diff System(UTC) Date ASC (ascending)
 	int64_t getSystemDateDiff(SYSTEMTIME& _st);
 
-	// Diff System(UTC) Date DESC(descendente)
+	// Diff System(UTC) Date DESC (descending)
 	int64_t getSystemDateDiffDESC(SYSTEMTIME& _st);
 
 	bool isSameDay(SYSTEMTIME& _st1, SYSTEMTIME& _st2);

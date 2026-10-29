@@ -1,6 +1,6 @@
-// Arquivo cmd_add_ball.hpp
-// Criado em 31/0/2018 as 08:53 por Acrisio
-// Defini��o da classe CmdAddBall
+// File cmd_add_ball.hpp
+// Created on 31/0/2018 at 08:53 by Acrisio
+// Definition of the class CmdAddBall
 
 #pragma once
 #ifndef _STDA_CMD_ADD_BALL_HPP

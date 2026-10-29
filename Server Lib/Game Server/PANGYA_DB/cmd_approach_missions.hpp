@@ -1,6 +1,6 @@
-// Arquivo cmd_approach_missions.hpp
-// Criado em 14/06/2020 as 17:00 por Acrisio
-// Defini��o da classe CmdApproachMission
+// File cmd_approach_missions.hpp
+// Created on 14/06/2020 at 17:00 by Acrisio
+// Definition of the class CmdApproachMission
 
 #pragma once
 #ifndef _STDA_CMD_APPROACH_MISSIONS_HPP

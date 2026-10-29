@@ -1,6 +1,6 @@
-// Arquivo bot_gm_event.cpp
-// Criado em 03/11/2020 as 20:06 por Acrisio
-// Implementa��o da classe BotGMEvent
+// File bot_gm_event.cpp
+// Created on 03/11/2020 at 20:06 by Acrisio
+// Implementation of class BotGMEvent
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -65,7 +65,7 @@ BotGMEvent::BotGMEvent() : m_rt(), m_rewards(), m_load(false), m_st{ 0u } {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initialize
 	initialize();
 }
 
@@ -163,13 +163,13 @@ void BotGMEvent::initialize() {
 		_smp::message_pool::getInstance().push(new message("[BotGMEvent::initialize][Log] Bot GM Event System carregado com sucesso!", CL_ONLY_FILE_LOG));
 #endif // _DEBUG*/
 
-		// Carregou com sucesso
+		// Loaded successfully
 		m_load = true;
 
 	LEAVE_CHECK;
 	CATCH_CHECK("initialize");
 
-		// Relan�a para o server tomar as provid�ncias
+		// Rethrow so the server takes action
 		throw;
 
 	END_CHECK;
@@ -244,7 +244,7 @@ void BotGMEvent::setSendedMessage() {
 
 		GetLocalTime(&m_st);
 
-		// Zera todas os intervalos que n�o est� na hora, e o intervalo que est� na hora seta ele
+		// Zeroes all the intervals that are not due, and sets the interval that is due
 		std::for_each(m_rt.begin(), m_rt.end(), [&](auto& _el) {
 			
 			if (_el.isBetweenTime(m_st))
@@ -296,7 +296,7 @@ std::vector< stReward > BotGMEvent::calculeReward() {
 
 	TRY_CHECK;
 
-	// No m�ximo 3 pr�mios
+	// At most 3 prizes
 	uint32_t num_r = (uint32_t)sRandomGen::getInstance().rIbeMt19937_64_rdeviceRange(1, MAX_REWARD_PER_ROUND);
 
 	Lottery lottery(std::clock());

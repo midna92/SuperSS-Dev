@@ -1,6 +1,6 @@
-// Arquivo job_pool.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe job_pool
+// File job_pool.h
+// Created on 21/05/2017 by Acrisio
+// Definition of class job_pool
 
 #pragma once
 #ifndef _STDA_JOB_POOL_H

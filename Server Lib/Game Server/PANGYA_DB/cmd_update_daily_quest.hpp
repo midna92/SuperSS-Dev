@@ -1,6 +1,6 @@
-// Arquivo cmd_update_daily_quest.hpp
-// Criado em 13/04/2018 as 18:36 por Acrisio
-// Defini��o da classe CmdUpdateDailyQuest
+// File cmd_update_daily_quest.hpp
+// Created on 13/04/2018 at 18:36 by Acrisio
+// Definition of class CmdUpdateDailyQuest
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_DAILY_QUEST_HPP
@@ -31,7 +31,7 @@ namespace stdA {
 
 		private:
 			DailyQuestInfo m_dqi;
-			bool m_updated;					// true atualizou no DB, false, outro j� atualizou pega o valor do DB
+			bool m_updated;					// true updated in the DB, false, someone else already updated, gets the value from the DB
 
 			const char* m_szConsulta = "pangya.ProcUpdateDailyQuest";
 	};

@@ -1,6 +1,6 @@
-// Arquivo cmd_keys_of_login.hpp
-// Criado em 18/03/2018 as 12:37 por Acrisio
-// Definição da classe CmdKeysOfLogin
+// File cmd_keys_of_login.hpp
+// Created on 18/03/2018 at 12:37 by Acrisio
+// Definition of class CmdKeysOfLogin
 
 #pragma once
 #ifndef _STDA_CMD_KEYS_OF_LOGIN_HPP

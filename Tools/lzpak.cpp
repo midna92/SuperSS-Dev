@@ -1,10 +1,10 @@
-// Arquivo lzpak.cpp
-// Criado em 12/04/2024 as 06:38 por Acrisio
-// Arquivo principal da ferramenta LZPak
+// File lzpak.cpp
+// Created on 12/04/2024 at 06:38 by Acrisio
+// Main file of the LZPak tool
 
-// Compilação g++:
+// g++ compilation:
 //	g++ lzpak.cpp -o lzpak.exe
-// Compilação MSVC
+// MSVC compilation
 //	cl /EHsc /std:c++17 lzpak.cpp /Fe:lzpak.exe
 
 #if defined(_MSC_VER)
@@ -586,7 +586,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
 	if (std::filesystem::path(directory_name).parent_path().empty())
 		base_dir = "";
 
-        // Primeiro
+        // First
         l_directory.push_back(std::make_pair(true, directory_name));
 
         try {
@@ -630,7 +630,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
     std::vector< uint8_t > source, destination;
     std::list< std::unique_ptr< sLZPakFileEntry > > l_file_entry;
 
-    // Número de arquivos e diretórios
+    // Number of files and directories
     header.num_file_entry = (uint32_t)l_directory.size();
 
     std::string out_file_name = std::filesystem::current_path().string().c_str();
@@ -724,7 +724,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
             input_compress_level = 5u;
     }
 
-    // Padrão Japonês
+    // Japanese default
     gLocationKeys = kKeys_JP;
 
     if (_version == LZPFEV_3) {
@@ -853,7 +853,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
 
         }
 
-        // Arquivo
+        // File
         in.open(directory.second.c_str(), std::ios_base::binary);
 
         if (!in.good() || !in.is_open()) {
@@ -893,7 +893,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
 
         const auto epos = directory.second.find_last_of('.');
 
-        // .wav, .mp3 é Raw
+        // .wav, .mp3 is Raw
         if (epos != std::string::npos && (strcmp(&directory.second[epos], ".wav") == 0
                     || strcmp(&directory.second[epos], ".mp3") == 0))
             pFileEntry->type = LZPFET_RAW;
@@ -909,7 +909,7 @@ void make_file(char* _name, eLZPakFileEntryVersion _version, eLZPakFileEntryType
             return;
         }
 
-        // fecha
+        // close
         in.close();
 
         if (_type == LZPFET_RAW)
@@ -1233,7 +1233,7 @@ int32_t main(int32_t _argc, char* _argv[]) {
                     }
 		        }
 
-		        // verifica a chave
+		        // check the key
 		        uint64_t src_tst = ((uint64_t)pFileEntry->size << 32u) | pFileEntry->offset;
 
 		        DecryptXTEA(keys, src_tst, src_tst);
@@ -1397,7 +1397,7 @@ int32_t main(int32_t _argc, char* _argv[]) {
                 return false;
             }
 
-            // Diretório já existe
+            // Directory already exists
             return true;
 		};
 

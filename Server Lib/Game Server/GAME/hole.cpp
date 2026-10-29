@@ -1,6 +1,6 @@
-// Arquivo hole.cpp
-// Criado em 12/08/2018 as 11:37 por Acrisio
-// Implementa��o da classe Hole
+// File hole.cpp
+// Created on 12/08/2018 at 11:37 by Acrisio
+// Implementation of class Hole
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -42,17 +42,17 @@ Hole::Hole(unsigned char _course, unsigned short _numero, unsigned char _pin, eM
 
 	init_from_IFF_STRUCT();
 
-	// n�mero aleat�rio, para o id do hole(ACHO)
+	// random number, for the hole id (I THINK)
 	float rand_f = (float)((((int)sRandomGen::getInstance().rIbeMt19937_64_chrono()) * 2.f) * sRandomGen::getInstance().rIbeMt19937_64_chrono());
 	
-	// Gerar n�meros grandes
+	// Generate large numbers
 #if defined(_WIN32)
 	memcpy_s(&m_id, 4, &rand_f, 4);
 #elif defined(__linux__)
 	memcpy(&m_id, &rand_f, 4);
 #endif
 
-	// Se estiver ativado, inicializa o Coin Cube do Hole
+	// If enabled, initializes the Hole's Coin Cube
 	if (m_cube_coin.stFlag.enable && (m_cube_coin.stFlag.enable_cube || m_cube_coin.stFlag.enable_coin))
 		init_cube_coin();
 
@@ -177,10 +177,10 @@ CubeEx* Hole::findCubeCoin(uint32_t _id) {
 
 void Hole::init_cube_coin() {
 
-	// Cube ativo ou n�o
+	// Cube active or not
 	bool cube = false;
 
-	// Modo hole repeat, tem que pegar o n�mero certo do hole
+	// Hole repeat mode, must get the right hole number
 	unsigned char numero = (unsigned char)m_numero;
 
 	if (m_modo == M_REPEAT)
@@ -195,11 +195,11 @@ void Hole::init_cube_coin() {
 	if (course == nullptr)
 		throw exception("[Hole::init_cube_coin][Error] course\"" + std::to_string((unsigned short)(m_course & 0x7F)) + "\" nao existe no Cube Coin System. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::HOLE, 20, 0));
 
-	// Isso s� desativa os cube, se o course e hole tiver coin � para colocar elas s� n�o o cube se ele estiver desativado
+	// This only disables the cubes, if the course and hole have coins they must be placed, just not the cube if it is disabled
 	if (course->isActived()) {
 
-		if (m_course == RoomInfo::eCOURSE::WIZ_CITY)	// Aqui s� tem cube nos holes 3 12 14 18
-			cube = (numero == 3 || numero == 12 || numero == 14 || numero == 18) && (m_modo != M_REPEAT || m_numero % 3 == 0); // Modo Hole Repeat s� de 3 em 3 holes que tem cube, mesmo em Wiz City
+		if (m_course == RoomInfo::eCOURSE::WIZ_CITY)	// Here there are cubes only on holes 3 12 14 18
+			cube = (numero == 3 || numero == 12 || numero == 14 || numero == 18) && (m_modo != M_REPEAT || m_numero % 3 == 0); // In Hole Repeat Mode only every 3 holes has a cube, even in Wiz City
 		else
 			cube = m_cube_coin.stFlag.enable_cube == 1u;
 	}
@@ -209,7 +209,7 @@ void Hole::init_cube_coin() {
 	if (hole == nullptr)
 		throw exception("[Hole::init_cube_coin][Error] numero do hole[NUMERO=" + std::to_string(m_numero) + "] is valid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::HOLE, 21, 0));
 
-	// Wiz City usa a fun��o dela e o resto usa outra fun��o generica
+	// Wiz City uses its own function and the rest use another generic function
 	auto all_coin_cube = (m_course == RoomInfo::eCOURSE::WIZ_CITY) ? hole->getAllCoinCubeWizCity(cube) : hole->getAllCoinCube(cube);
 		
 	m_cube.insert(m_cube.begin(), all_coin_cube.begin(), all_coin_cube.end());
@@ -231,10 +231,10 @@ void Hole::init_from_IFF_STRUCT() {
 		throw exception("[Hole::init_from_IFF_STRUCT][Error] numero do hole[" + std::to_string(m_numero) + "] nao esta em um intervalo permitido. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::HOLE, 3, 0));
 
 	// !!!!@@@@@@------------===
-	// Os Valores do Par dos Holes Mysthic Ruins est�o errados no IFF STRUCT, 
-	// eles colocaram os valores do Abbot Mine, tenho que trocar depois isso
+	// The Par values of the Mystic Ruins Holes are wrong in the IFF STRUCT, 
+	// they put the Abbot Mine values, I have to change this later
 	if ((course->_typeid & 0xFF) == RoomInfo::CHRONICLE_1_CHAOS) {
-		m_par.par = 4/*Depois eu colocou no iff dele e ajeitar o Mystic Ruins tbm*/;
+		m_par.par = 4/*Later I will put it in its iff and fix Mystic Ruins too*/;
 
 		m_par.range_score[0] = -2;
 		m_par.range_score[1] = 5;

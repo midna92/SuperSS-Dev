@@ -1,6 +1,6 @@
-// Arquivo GGAuth.hpp
-// Criado em 11/03/2020 as 19:11 por Acrisio
-// Defini��o da classe GGAuth
+// File GGAuth.hpp
+// Created on 11/03/2020 at 19:11 by Acrisio
+// Definition of class GGAuth
 
 #pragma once
 #ifndef _STDA_GGAUTH_HPP
@@ -55,7 +55,7 @@ namespace stdA {
 
 #endif
 
-// Disable GG, por enquanto, por que ele � x86
+// Disable GG for now, because it is x86
 #if INTPTR_MAX == INT64_MAX
 #define GGAUTHS_API
 #define	NPLOG_DEBUG	0x00000001 

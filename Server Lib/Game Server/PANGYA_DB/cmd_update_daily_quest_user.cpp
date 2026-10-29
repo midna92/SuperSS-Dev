@@ -1,6 +1,6 @@
-// Arquivo cmd_update_daily_quest_user.cpp
-// Criado em 11/11/2018 as 16:04 por Acrisio
-// Implementa��o da classe CmdUpdateDailyQuestUser
+// File cmd_update_daily_quest_user.cpp
+// Created on 11/11/2018 at 16:04 by Acrisio
+// Implementation of class CmdUpdateDailyQuestUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateDailyQuestUser::~CmdUpdateDailyQuestUser() {
 
 void CmdUpdateDailyQuestUser::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

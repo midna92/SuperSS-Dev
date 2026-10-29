@@ -1,6 +1,6 @@
-// Arquivo player_manager.hpp
-// Criado em 02/12/2018 as 13:04 por Acrisio
-// Defini��o da classe player_manager
+// File player_manager.hpp
+// Created on 02/12/2018 at 13:04 by Acrisio
+// Definition of class player_manager
 
 #pragma once
 #ifndef _STDA_PLAYER_MANAGER_HPP

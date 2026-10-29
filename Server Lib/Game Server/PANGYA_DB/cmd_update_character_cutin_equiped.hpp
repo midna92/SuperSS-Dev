@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_cutin_equiped.hpp
-// Criado em 25/03/2018 as 12:22 por Acrisio
-// Defini��o da classe CmdUpdateCharacterCutinEquiped
+// File cmd_update_character_cutin_equiped.hpp
+// Created on 25/03/2018 at 12:22 by Acrisio
+// Definition of class CmdUpdateCharacterCutinEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHARACTER_CUTIN_EQUIPED_HPP

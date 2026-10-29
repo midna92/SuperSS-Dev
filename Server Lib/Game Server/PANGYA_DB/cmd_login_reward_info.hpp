@@ -1,6 +1,6 @@
-// Arquivo cmd_login_reward_info.hpp
-// Criado em 27/10/2020 as 18:47 por Acrisio
-// Defini��o da classe CmdLoginRewardInfo
+// File cmd_login_reward_info.hpp
+// Created on 27/10/2020 at 18:47 by Acrisio
+// Definition of the class CmdLoginRewardInfo
 
 #pragma once
 #ifndef _STDA_CMD_LOGIN_REWARD_INFO_HPP

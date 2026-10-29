@@ -1,6 +1,6 @@
-// Arquivo cmd_notice_info.hpp
-// Criado em 03/12/2018 as 00:48 por Acrisio
-// Defini��o da classe CmdNoticeInfo
+// File cmd_notice_info.hpp
+// Created on 03/12/2018 at 00:48 by Acrisio
+// Definition of class CmdNoticeInfo
 
 #pragma once
 #ifndef _STDA_CMD_NOTICE_INFO_HPP

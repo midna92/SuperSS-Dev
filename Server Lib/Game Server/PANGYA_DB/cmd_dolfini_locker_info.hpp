@@ -1,6 +1,6 @@
-// Arquivo cmd_dolfini_locker_info.hpp
-// Criado em 22/03/2018 as 21:14 por Acrisio
-// Defini��o da classe CmdDolfiniLockerInfo
+// File cmd_dolfini_locker_info.hpp
+// Created on 22/03/2018 at 21:14 by Acrisio
+// Definition of the class CmdDolfiniLockerInfo
 
 #pragma once
 #ifndef _STDA_CMD_DOLFINI_LOCKER_INFO_HPP

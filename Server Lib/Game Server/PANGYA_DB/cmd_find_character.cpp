@@ -1,6 +1,6 @@
-// Arquivo cmd_find_character.cpp
-// Criado em 20/05/2018 as 23:22 por Acrisio
-// Implementa��o da classe CmdFindCharacter
+// File cmd_find_character.cpp
+// Created on 20/05/2018 at 23:22 by Acrisio
+// Implementation of the class CmdFindCharacter
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -45,7 +45,7 @@ void CmdFindCharacter::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 		for (i = 0; i < 5; i++)
 			m_ci.auxparts[i] = IFNULL(atoi, _result->data[59 + i]);				// 59 + 5
 		for (i = 0; i < 4; i++)
-			m_ci.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in deveria guarda no db os outros 3 se for msm os 4 que penso q seja, � sim no JP USA os 4
+			m_ci.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in, should store the other 3 in the db if it really is 4 as I think, yes, JP USES the 4
 		m_ci.mastery = IFNULL(atoi, _result->data[68]);
 		for (i = 0; i < 4; i++)
 			m_ci.card_character[i] = IFNULL(atoi, _result->data[69 + i]);		// 69 + 4

@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_registry_character_info.cpp
-// Criado em 16/06/2020 as 18:16 por Acrisio
-// Implementa��o da classe CmdRankRegistryCharacterInfo
+// File cmd_rank_registry_character_info.cpp
+// Created on 16/06/2020 at 18:16 by Acrisio
+// Implementation of the class CmdRankRegistryCharacterInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -60,7 +60,7 @@ void CmdRankRegistryCharacterInfo::lineResult(result_set::ctx_res* _result, uint
 	for (i = 0; i < 5; i++)
 		ce.auxparts[i] = IFNULL(atoi, _result->data[63 + i]);				// 63 + 5
 	for (i = 0; i < 4; i++)
-		ce.cut_in[i] = IFNULL(atoi, _result->data[68 + i]);					// 68 + 4 Cut-in deveria guarda no db os outros 3 se for msm os 4 que penso q seja, � sim no JP USA os 4
+		ce.cut_in[i] = IFNULL(atoi, _result->data[68 + i]);					// 68 + 4 Cut-in, should store the other 3 in the db if it is really 4 as I think it is, yes, in JP it uses the 4
 	ce.mastery = IFNULL(atoi, _result->data[72]);
 	for (i = 0; i < 4; i++)
 		ce.card_character[i] = IFNULL(atoi, _result->data[73 + i]);		// 73 + 4
@@ -76,7 +76,7 @@ void CmdRankRegistryCharacterInfo::lineResult(result_set::ctx_res* _result, uint
 
 	if (it_map != m_entry.end()) {
 
-		// J� tem um character, troca pelo ultimo
+		// Already has a character, replace it with the last one
 		_smp::message_pool::getInstance().push(new message("[CmdReankRegistryCharacterInfo::lineResult][WARNING] Player[UID=" + std::to_string(rc.getUID()) 
 				+ "] CHARACTER_ANT[TYPEID=" + std::to_string(it_map->second.getCharacterInfo()._typeid) 
 				+ ", ID=" + std::to_string(it_map->second.getCharacterInfo().id) + "] CHARACTER_REPLACE[TYPEID=" + std::to_string(ce._typeid) + ", ID=" 
@@ -86,24 +86,24 @@ void CmdRankRegistryCharacterInfo::lineResult(result_set::ctx_res* _result, uint
 	
 	}else {
 
-		// N�o tem no map cria um novo
+		// Not in the map, create a new one
 		auto ret = m_entry.insert(std::make_pair(rc.getUID(), rc));
 
-		// Verifica se inseriu o valor direito no  map
+		// Check whether the value was inserted correctly in the map
 		if (!ret.second) {
 
 			if (ret.first != m_entry.end() && ret.first->first == rc.getUID()) {
 
 				if (ret.first->second.getCharacterInfo()._typeid != ce._typeid) {
 
-					// Troca o character info antigo pelo o novo
+					// Replace the old character info with the new one
 
 					try {
 
-						// Pega o antigo character registro para usar no Log
+						// Get the old character record to use in the Log
 						auto rc_ant = m_entry.at(rc.getUID());
 
-						// Novo Character Info registro
+						// New Character Info record
 						m_entry.at(rc.getUID()) = rc;
 
 						// Log

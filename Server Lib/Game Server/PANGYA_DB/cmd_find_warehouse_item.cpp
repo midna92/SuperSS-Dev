@@ -1,6 +1,6 @@
-// Arquivo cmd_find_warehouse_item.cpp
-// Criado em 22/05/2018 as 22:39 por Acrisio
-// Implementa��o da classe CmdFindWarehouseItem
+// File cmd_find_warehouse_item.cpp
+// Created on 22/05/2018 at 22:39 by Acrisio
+// Implementation of the class CmdFindWarehouseItem
 
 #if defined(_WIN32)
 #pragma pack(1)

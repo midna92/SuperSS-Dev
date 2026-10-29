@@ -1,6 +1,6 @@
-// Arquivo cmd_logon_check.hpp
-// Criado em 30/03/2018 as 18:25 por Acrisio
-// Deini��o da classe CmdLogonCheck
+// File cmd_logon_check.hpp
+// Created on 30/03/2018 at 18:25 by Acrisio
+// Definition of class CmdLogonCheck
 
 #pragma once
 #ifndef _STDA_CMD_LOGON_CHECK_HPP

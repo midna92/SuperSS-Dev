@@ -1,6 +1,6 @@
-// Arquivo player.cpp
-// Criado em 02/02/2021 as 17:17 por Acrisio
-// Implementação da classe player
+// File player.cpp
+// Created on 02/02/2021 at 17:17 by Acrisio
+// Implementation of class player
 
 #pragma pack(1)
 #include <WinSock2.h>
@@ -23,7 +23,7 @@ bool player::clear() {
 		
 		m_pi.clear();
 
-		// Limpa todos os game guard ctx de todos os player desse server
+		// Clears all game guard ctx of all players of this server
 		if (!m_gg.empty()) {
 
 			for (auto& el : m_gg) {
@@ -74,7 +74,7 @@ void player::addPlayerToGameGuard(unsigned long _uid) {
 		return;
 	}
 
-	// Replace, se existir
+	// Replace, if it exists
 	auto old = m_gg.find(_uid);
 
 	if (old != m_gg.end() && old->second != nullptr) {

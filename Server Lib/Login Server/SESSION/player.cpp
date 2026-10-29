@@ -1,6 +1,6 @@
-// Arquivo player.cpp
-// Criado em 11/03/2018 as 14:15 por Acrisio
-// Implementação da classe player
+// File player.cpp
+// Created on 11/03/2018 at 14:15 by Acrisio
+// Implementation of the player class
 
 #if defined(_WIN32)
 #pragma pack(1)

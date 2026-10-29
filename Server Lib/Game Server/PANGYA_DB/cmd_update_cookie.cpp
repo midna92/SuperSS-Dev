@@ -1,6 +1,6 @@
-// Arquivo cmd_update_cookie.cpp
-// Criado em 13/05/2018 as 11:23 por Acrisio
-// Implementa��o da classe CmdUpdateCookie
+// File cmd_update_cookie.cpp
+// Created on 13/05/2018 at 11:23 by Acrisio
+// Implementation of class CmdUpdateCookie
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCookie::~CmdUpdateCookie() {
 
 void CmdUpdateCookie::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

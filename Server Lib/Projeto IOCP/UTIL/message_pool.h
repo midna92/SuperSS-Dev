@@ -1,6 +1,6 @@
-// Arquivo message_pool.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe message_pool
+// File message_pool.h
+// Created on 21/05/2017 by Acrisio
+// Definition of the class message_pool
 
 #pragma once
 #ifndef _STDA_MESSAGE_POOL_H

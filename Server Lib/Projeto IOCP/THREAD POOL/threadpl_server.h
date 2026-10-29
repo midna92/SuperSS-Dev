@@ -1,6 +1,6 @@
-// Arquivo threadpl_server.h
-// Criado em 03/12/2017 por Acrisio
-// Definição da classe threadpl_server
+// File threadpl_server.h
+// Created on 03/12/2017 by Acrisio
+// Definition of class threadpl_server
 
 #pragma once
 #ifndef _STDA_THREADPL_SERVER_H

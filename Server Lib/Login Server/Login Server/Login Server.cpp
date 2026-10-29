@@ -1,4 +1,4 @@
-// Login Server.cpp : define o ponto de entrada para o aplicativo do console.
+// Login Server.cpp : defines the entry point for the console application.
 //
 
 #if defined(_WIN32)
@@ -50,21 +50,21 @@ int main(int argc, char* argv[]) {
 #endif
 	) {
 
-		// Set o Prefixo do Auth Server no nome dos arquivos de log
+		// Sets the Auth Server Prefix in the log file names
 		_smp::message_pool::getInstance().setPrefixo("LS");
 		
-		// Inicializa log Files
+		// Initializes log Files
 		_smp::message_pool::getInstance().reload_log_files();
 
 		_smp::message_pool::getInstance().push(new message("[main][Log] change current directory to " + std::string(argv[2]), CL_FILE_LOG_AND_CONSOLE));
 	
-	}else // Inicializa Log files
+	}else // Initializes Log files
 		_smp::message_pool::getInstance().reload_log_files();
 
 #if defined(_WIN32)
 	STDA_SET_SE_EXCEPTION;
 #elif defined(__linux__)
-	// Linux Gera sozinho o miniDump(Core em Unix/Linux)
+	// Linux generates the miniDump by itself (Core in Unix/Linux)
 	rlimit core_limit;
 	
 	core_limit.rlim_cur = RLIM_INFINITY; //0x400000; // 4Mib
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 
 	SetProcessPriorityBoost(hProcess, 1);
 #elif defined(__linux__)
-	// set priority class e process priority no linux
+	// set priority class and process priority on linux
 	errno = 0;
 
 	int priority = getpriority(PRIO_PROCESS, 0);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
 
 	if (priority > PRIO_MIN) {
 
-		// -2 se não -1 (menos é mais no Linux)
+		// -2 otherwise -1 (less is more on Linux)
 		priority -= 2;
 
 		if (priority > PRIO_MIN || ++priority > PRIO_MIN) {

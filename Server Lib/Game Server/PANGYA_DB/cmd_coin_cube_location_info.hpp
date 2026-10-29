@@ -1,6 +1,6 @@
-// Arquivo cmd_coin_cube_location_info.hpp
-// Criado em 16/10/2020 as 03:09 por Acrisio
-// Defini��o da classe CmdCoinCubeLocationInfo
+// File cmd_coin_cube_location_info.hpp
+// Created on 16/10/2020 at 03:09 by Acrisio
+// Definition of the class CmdCoinCubeLocationInfo
 
 #pragma once
 #ifndef _STDA_CMD_COIN_CUBE_LOCATION_INFO_HPP

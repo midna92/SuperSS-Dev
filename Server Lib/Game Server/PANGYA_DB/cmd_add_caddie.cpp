@@ -1,6 +1,6 @@
-// Arquivo cmd_add_caddie.cpp
-// Criado em 25/03/2018 as 18:58 por Acrisio
-// Implementa��o da classe CmdAddCaddie
+// File cmd_add_caddie.cpp
+// Created on 25/03/2018 at 18:58 by Acrisio
+// Implementation of the class CmdAddCaddie
 
 #if defined(_WIN32)
 #pragma pack(1)

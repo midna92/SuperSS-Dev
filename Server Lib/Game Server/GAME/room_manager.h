@@ -1,6 +1,6 @@
-// Arquivo room_manager.h
-// Criado em 14/02/2018 as 21:48 por Acrisio
-// Definição da classe RoomManager
+// File room_manager.h
+// Created on 14/02/2018 at 21:48 by Acrisio
+// Definition of the RoomManager class
 
 #pragma once
 #ifndef _STDA_ROOM_MANAGER_H
@@ -46,7 +46,7 @@ namespace stdA {
 
 			RoomGrandPrix* findRoomGrandPrix(uint32_t _typeid);
 
-			// Opt sem sala practice, se não todas as salas
+			// Opt without practice room, otherwise all rooms
 			std::vector< RoomInfo > getRoomsInfo(bool _without_practice_room = true);
 
 			std::vector < RoomGrandPrix* > getAllRoomsGrandPrix();
@@ -68,7 +68,7 @@ namespace stdA {
 			// Member
 			unsigned char m_map_index[USHRT_MAX];
 
-			// Dodo do Objeto RoomManager Channel ID
+			// Pointer of the RoomManager Object Channel ID
 			unsigned char m_channel_id;
         
         protected:

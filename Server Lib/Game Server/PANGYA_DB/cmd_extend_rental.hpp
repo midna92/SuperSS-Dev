@@ -1,6 +1,6 @@
-// Arquivo cmd_extend_rental.hpp
-// Criado em 10/06/2018 as 16:50 por Acrisio
-// Defini��o da classe CmdExtendRental
+// File cmd_extend_rental.hpp
+// Created on 10/06/2018 at 16:50 by Acrisio
+// Definition of the class CmdExtendRental
 
 #pragma once
 #ifndef _STDA_CMD_EXTEND_RENTAL_HPP

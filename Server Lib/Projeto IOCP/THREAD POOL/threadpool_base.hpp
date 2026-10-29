@@ -1,6 +1,6 @@
-// Arquivo threadpool_base.hpp
-// Criado em 02/12/2018 as 15:47 por Acrisio
-// Definição da classe base threadpool_base
+// File threadpool_base.hpp
+// Created on 02/12/2018 at 15:47 by Acrisio
+// Definition of base class threadpool_base
 
 #pragma once
 #ifndef _STDA_THREADPOOL_BASE_HPP

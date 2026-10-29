@@ -1,6 +1,6 @@
-// Arquivo util_time.cpp
-// Criado em 19/08/2017 por Acrisio
-// Implementação das funções de auxilo para tempo e data
+// File util_time.cpp
+// Created on 19/08/2017 by Acrisio
+// Implementation of the helper functions for time and date
 
 #include "util_time.h"
 #include "exception.h"
@@ -15,7 +15,7 @@ int stdA::_translateDate(std::string date_src, SYSTEMTIME* date_dst) {
 		throw exception("Erro date_dst e nullptr. translateDate()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 2, 0));
 	
 	if (date_src.empty() || date_src[0] == '\0')
-		*date_dst = { 0 };	// Zera o SYSTEMTIME
+		*date_dst = { 0 };	// Zero the SYSTEMTIME
 		//throw exception("Erro date_src esta vazio. translateDate()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 1, 0));
 
 #if defined(_WIN32)
@@ -35,7 +35,7 @@ int stdA::_translateTime(std::string _date_src, SYSTEMTIME* _date_dst) {
 		throw exception("Erro _date_dst e nullptr. _translateTime()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 2, 0));
 
 	if (_date_src.empty() || _date_src[0] == '\0')
-		*_date_dst = { 0 };	// Zera o SYSTEMTIME
+		*_date_dst = { 0 };	// Zero the SYSTEMTIME
 		//throw exception("Erro date_src esta vazio. translateDate()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 1, 0));
 
 #if defined(_WIN32)
@@ -53,7 +53,7 @@ int stdA::translateDateSystem(time_t time_unix, SYSTEMTIME* date_dst) {
 	if (date_dst == nullptr)
 		throw exception("[stdA::translateDateSystem][Error] date_dst is nullptr.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 2, 0));
 
-	if (time_unix == 0) {	// Data atual do sistema no UTC
+	if (time_unix == 0) {	// Current system date in UTC
 		
 		GetSystemTime(date_dst);
 	
@@ -71,7 +71,7 @@ int stdA::translateDateLocal(time_t time_unix, SYSTEMTIME* date_dst) {
 	if (date_dst == nullptr)
 		throw exception("[stdA::translateDateLocal][Error] date_dst is nullptr.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::UTIL_TIME, 2, 0));
 
-	if (time_unix == 0) {	// Data atual do sistema no local da máquina
+	if (time_unix == 0) {	// Current system date in the machine's local time
 		
 		GetLocalTime(date_dst);
 	
@@ -168,7 +168,7 @@ inline SYSTEMTIME stdA::TzLocalUnixToSystemTime(time_t _time_unix) {
 	SYSTEMTIME tzUTC{ 0 };
 
 	if (TzSpecificLocalTimeToSystemTime(NULL/*Current Time Zone(Local)*/, &st, &tzUTC) == 0)
-		error = true;	// Por hora só para ter, não utiliza essa variável para nada ainda
+		error = true;	// For now just to have it, this variable is not used for anything yet
 
 	return tzUTC;
 };
@@ -184,7 +184,7 @@ inline SYSTEMTIME stdA::TzLocalTimeToSystemTime(SYSTEMTIME& _st) {
 	SYSTEMTIME tzUTC{ 0 };
 
 	if (TzSpecificLocalTimeToSystemTime(NULL/*Current Time Zone(Local)*/, &_st, &tzUTC) == 0)
-		error = true;	// Por hora só para ter, não utiliza essa variável para nada ainda
+		error = true;	// For now just to have it, this variable is not used for anything yet
 
 	return tzUTC;
 };
@@ -202,7 +202,7 @@ SYSTEMTIME stdA::UnixUTCToTzLocalTime(time_t _time_unix) {
 	SYSTEMTIME tzLocal{ 0 };
 
 	if (SystemTimeToTzSpecificLocalTime(NULL/*Current Time Zone(Local)*/, &utc, &tzLocal) == 0)
-		error = true;	// Por hora só para ter, não utiliza essa variável para nada ainda
+		error = true;	// For now just to have it, this variable is not used for anything yet
 
 	return tzLocal;
 };
@@ -218,7 +218,7 @@ inline SYSTEMTIME stdA::SystemTimeToTzLocalTime(SYSTEMTIME& _st) {
 	SYSTEMTIME tzLocal{ 0 };
 
 	if (SystemTimeToTzSpecificLocalTime(NULL/*Current Time Zone(Local)*/, &_st, &tzLocal) == 0)
-		error = true;	// Por hora só para ter, não utiliza essa variável para nada ainda
+		error = true;	// For now just to have it, this variable is not used for anything yet
 
 	return tzLocal;
 };
@@ -228,11 +228,11 @@ time_t stdA::FileTimeToUnix(FILETIME ft) {
 };
 
 FILETIME stdA::UnixToFileTime(time_t time) {
-	// Agora o meu está certo, era o valor 1644473600ll que faltava 1 é 11644473600ll a constante de conversão de segundos microsoft para unix
+	// Now mine is correct, the value 1644473600ll was missing a 1, it is 11644473600ll, the constant for converting Microsoft seconds to Unix
 	//int64_t ll = (time * 10000000) + 11644473600ll;
 	//return {(DWORD)ll, (DWORD)(ll >> 32)};
 
-	// EXEMPLE MICROSOFT
+	// MICROSOFT EXAMPLE
 	// Note that LONGLONG is a 64-bit value
 	LONGLONG ll;
 	FILETIME ft{ 0 };
@@ -346,7 +346,7 @@ int64_t stdA::getSystemTimeDiffDESC(SYSTEMTIME& _st) {
 
 int64_t stdA::getDateDiff(SYSTEMTIME& _st1, SYSTEMTIME& _st2) {
 
-	// Apenas data a diferença
+	// Only the date difference
 	_st1.wHour = _st1.wMinute = _st1.wSecond = _st1.wMilliseconds = 0u;
 	_st2.wHour = _st2.wMinute = _st2.wSecond = _st2.wMilliseconds = 0u;
 
@@ -415,7 +415,7 @@ bool stdA::isWeekend(SYSTEMTIME* _st) {
 	else
 		GetLocalTime(&st);
 	
-	// Domingo ou Sábado
+	// Sunday or Saturday
 	return st.wDayOfWeek == 0u || st.wDayOfWeek == 6u;
 }
 

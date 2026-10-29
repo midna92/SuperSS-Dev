@@ -1,6 +1,6 @@
-// Arquivo cmd_add_mascot.cpp
-// Criado em 19/05/2018 as 16:33 por Acrisio
-// Implementa��o da classe CmdAddMascot
+// File cmd_add_mascot.cpp
+// Created on 19/05/2018 at 16:33 by Acrisio
+// Implementation of the class CmdAddMascot
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -32,7 +32,7 @@ response* CmdAddMascot::prepareConsulta(database& _db) {
 	if (m_mi._typeid == 0)
 		throw exception("[CmdAddMascot::prepareConsulta][Error] Mascot info is invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));
 	
-	// Ignora as flag gift e purchase para usar minha nova proc de add mascot
+	// Ignores the gift and purchase flags to use my new add mascot proc
 	auto r = procedure(_db, m_szConsulta, std::to_string(m_uid) + ", " + std::to_string(m_mi._typeid)
 			+ ", " + std::to_string(m_mi.tipo) + ", " + std::to_string((unsigned short)m_mi.is_cash)
 			+ ", " + std::to_string(m_time) + ", " + _db.makeText(m_mi.message) + ", " + std::to_string(m_mi.price)

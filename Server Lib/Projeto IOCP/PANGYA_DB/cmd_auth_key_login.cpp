@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_key_login.cpp
-// Criado em 18/03/2018 as 10:52 por Acrisio
-// Implementação da classe CmdAuthKeyLogin
+// File cmd_auth_key_login.cpp
+// Created on 18/03/2018 at 10:52 by Acrisio
+// Implementation of class CmdAuthKeyLogin
 
 #if defined(_WIN32)
 #pragma pack(1)

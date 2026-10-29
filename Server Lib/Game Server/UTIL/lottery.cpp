@@ -1,6 +1,6 @@
-// Arquivo lottery.cpp
-// Criado em 24/06/2018 as 12:02 por Acrisio
-// Implementa��o da classe Lottery
+// File lottery.cpp
+// Created on 24/06/2018 at 12:02 by Acrisio
+// Implementation of the Lottery class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -55,7 +55,7 @@ void Lottery::fill_roleta() {
 	if (m_ctx.empty())
 		throw exception("[Lottery::fill_roleta][Error] nao tem lottery ctx, por favor popule o lottery primeiro.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOTTERY, 1, 0));
 	
-	// Limpa Roleta
+	// Clears the Wheel
 	clear_roleta();
 
 	// Shuffle Ctx
@@ -64,7 +64,7 @@ void Lottery::fill_roleta() {
 
 	m_prob_limit = 0ull;
 
-	// Preenche Roleta
+	// Fills the Wheel
 	for (auto& el : m_ctx) {
 		if (el.active) {
 			el.offset[0] = (m_prob_limit == 0 ? m_prob_limit : m_prob_limit + 1);
@@ -139,7 +139,7 @@ void Lottery::push(uint32_t _prob, size_t _value) {
 
 uint64_t Lottery::getLimitProbilidade() {
 
-	// Preenche roleta, para poder pegar o limite da probabilidade
+	// Fills the wheel, to be able to get the probability limit
 	fill_roleta();
 
 	return m_prob_limit;
@@ -155,7 +155,7 @@ Lottery::LotteryCtx* Lottery::spinRoleta(bool _remove_item_draw) {
 
 		LotteryCtx *lc = nullptr;
 
-		// Preencha a Roleta
+		// Fill the Wheel
 		fill_roleta();
 
 		uint64_t lucky = 0ull;
@@ -168,7 +168,7 @@ Lottery::LotteryCtx* Lottery::spinRoleta(bool _remove_item_draw) {
 
 		lc = (bound.first != m_roleta.end() ? bound.first->second : (bound.second != m_roleta.end() ? bound.second->second : nullptr));
 
-		// Deleta o Item Sorteado, para n�o sair ele de novo, se for passado true
+		// Deletes the Drawn Item, so that it does not come out again, if true is passed
 		if (_remove_item_draw)
 			remove_draw_item(lc);
 

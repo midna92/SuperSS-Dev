@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_card.hpp
-// Criado em 31/05/2018 as 21:29 por Acrisio
-// Defini��o da classe CmdDeleteCard
+// File cmd_delete_card.hpp
+// Created on 31/05/2018 at 21:29 by Acrisio
+// Definition of the class CmdDeleteCard
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_CARD_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_papel_shop_config.hpp
-// Criado em 09/07/2018 as 19:50 por Acrisio
-// Defini��o da classe CmdPapelShopConfig
+// File cmd_papel_shop_config.hpp
+// Created on 09/07/2018 at 19:50 by Acrisio
+// Definition of the class CmdPapelShopConfig
 
 #pragma once
 #ifndef _STDA_CMD_PAPEL_SHOP_CONFIG_HPP

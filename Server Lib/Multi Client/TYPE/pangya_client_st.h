@@ -1,6 +1,6 @@
-// Arquivo pangya_client_st.h
-// Criado em 01/04/2018 as 22:34 por Acrisio
-// Definição das estruturas usadas no cliente
+// File pangya_client_st.h
+// Created on 01/04/2018 at 22:34 by Acrisio
+// Definition of the structures used in the client
 
 #pragma once
 #ifndef _STDA_PANGYA_CLIENT_ST_H
@@ -13,16 +13,16 @@ namespace stdA {
     struct client_info  {
         void clear() { memset(this, 0, sizeof(client_info)); };
 
-		char m_client_version[20];		// Cliente versão "855.00"
+		char m_client_version[20];		// Client version "855.00"
 		unsigned long m_packet_version;	// Packet Version 2016121900
 
-		unsigned long m_uid;		// Player Unico ID
+		unsigned long m_uid;		// Player Unique ID
 		unsigned long m_oid;		// Player Online ID
-		unsigned long m_guid;		// Game Server Unico ID
-		unsigned long m_luid;		// Login Server Unico ID
-		unsigned long m_muid;		// Message Server Unico ID
-		unsigned long m_ruid;		// Rank Server Unico ID
-		unsigned long m_cuid;		// Canal Unico ID
+		unsigned long m_guid;		// Game Server Unique ID
+		unsigned long m_luid;		// Login Server Unique ID
+		unsigned long m_muid;		// Message Server Unique ID
+		unsigned long m_ruid;		// Rank Server Unique ID
+		unsigned long m_cuid;		// Channel Unique ID
 		unsigned long m_cap;		// Player Capability
 		unsigned long m_TTL;		// Time To Live[TTL]
 		char m_nickname[22];		// Player Nickname
@@ -33,14 +33,14 @@ namespace stdA {
 		char m_web_key[8];			// Web Key
 		unsigned char m_TRWK;		// Type Request Web Key
 
-		char link_gacha[1024];		// Link do Gacha
-		char link_guild[1024];		// Link da Guild
-		char link_point[1024];		// Link do payment
+		char link_gacha[1024];		// Gacha Link
+		char link_guild[1024];		// Guild Link
+		char link_point[1024];		// Payment Link
 		char link_entrance[1024];	// Link Entrance
-		char link_weblink[3][1024];	// 3 Link do Weblink
+		char link_weblink[3][1024];	// 3 Weblink Links
 
-		long volatile m_RCLOP;		// Recebe Canais Ler Outros Pacotes
-		long volatile m_RC;			// Recebe Canais
+		long volatile m_RCLOP;		// Receive Channels, Read Other Packets
+		long volatile m_RC;			// Receive Channels
     };
 
 	struct server_list {
@@ -81,7 +81,7 @@ namespace stdA {
 
 	/*struct ctx_client {
 		void clear() { memset(this, 0, sizeof(ctx_client)); };
-		char m_client_version[20];		// Cliente versão "855.00"
+		char m_client_version[20];		// Client version "855.00"
 		unsigned long m_packet_version;	// Packet Version 2016121900
 		char m_id[22];				// Player ID
 		char m_pass[32];			// Player Password

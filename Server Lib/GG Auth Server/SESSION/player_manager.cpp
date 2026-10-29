@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 02/02/2021 as 17:26 por Acrisio
-// Implemenetação da classe player_manager
+// File player_manager.cpp
+// Created on 02/02/2021 at 17:26 by Acrisio
+// Implementation of class player_manager
 
 #pragma pack(1)
 #include <WinSock2.h>

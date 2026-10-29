@@ -1,6 +1,6 @@
-// Arquivo cmd_pay_caddie_holy_day.cpp
-// Criado em 15/07/2018 as 18:32 por Acrisio
-// Implementa��o da classe CmdPayCaddieHolyDay
+// File cmd_pay_caddie_holy_day.cpp
+// Created on 15/07/2018 at 18:32 by Acrisio
+// Implementation of the class CmdPayCaddieHolyDay
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdPayCaddieHolyDay::~CmdPayCaddieHolyDay() {
 
 void CmdPayCaddieHolyDay::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

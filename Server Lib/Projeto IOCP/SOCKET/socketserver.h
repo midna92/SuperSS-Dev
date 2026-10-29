@@ -1,6 +1,6 @@
-// Arquivo socketserver.h
-// Criado em 01/05/2017 por Acrisio
-// Definição da classe socketserver
+// File socketserver.h
+// Created on 01/05/2017 by Acrisio
+// Definition of class socketserver
 
 #pragma once
 #ifndef _STDA_SOCKETSERVER_H_

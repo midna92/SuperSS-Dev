@@ -1,6 +1,6 @@
-// Arquivo cmd_update_normal_trofel.hpp
-// Criado em 23/09/2018 as 12:21 por Acrisio
-// Defini��o da classe CmdInsertNormalTrofel
+// File cmd_update_normal_trofel.hpp
+// Created on 23/09/2018 at 12:21 by Acrisio
+// Definition of class CmdInsertNormalTrofel
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_NORMAL_TROFEL_HPP

@@ -1,6 +1,6 @@
-// Arquivo crypt.h
-// Criado em 23/09/2017 por Acrisio
-// Definição da classe crypt
+// File crypt.h
+// Created on 23/09/2017 by Acrisio
+// Definition of class crypt
 
 #pragma once
 #ifndef _STDA_CRYPT_H

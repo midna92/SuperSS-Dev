@@ -1,6 +1,6 @@
-// Arquivo memorial_system.hpp
-// Criado em 21/07/2018 as 18:48 por Acrisio
-// Defini��o da classe MemorialSystem
+// File memorial_system.hpp
+// Created on 21/07/2018 at 18:48 by Acrisio
+// Definition of the MemorialSystem class
 
 #pragma once
 #ifndef _STDA_MEMORIAL_SYSTEM_HPP
@@ -44,9 +44,9 @@ namespace stdA {
 			/*static*/ uint32_t calculeMemorialLevel(uint32_t _achievement_pontos);
 
 		private:
-			/*static*/ std::map< uint32_t, ctx_coin > m_coin;						// Todas as Coin do Jogo
-			/*static*/ std::map< uint32_t, ctx_memorial_level > m_level;			// Levels Tabela
-			/*static*/ std::map< uint32_t, ctx_coin_set_item > m_consolo_premio;	// Pr�mio de consolo quando n�o ganha o raro
+			/*static*/ std::map< uint32_t, ctx_coin > m_coin;						// All the Coins of the Game
+			/*static*/ std::map< uint32_t, ctx_memorial_level > m_level;			// Levels Table
+			/*static*/ std::map< uint32_t, ctx_coin_set_item > m_consolo_premio;	// Consolation prize when the rare one is not won
 
 			/*static*/ bool m_load;
 

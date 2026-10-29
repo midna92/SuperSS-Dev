@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_ticket_report_data.cpp
-// Criado em 22/09/2018 as 17:24 por Acrisio
-// Implementa��o da classe CmdInsertTicketReportData
+// File cmd_insert_ticket_report_data.cpp
+// Created on 22/09/2018 at 17:24 by Acrisio
+// Implementation of the class CmdInsertTicketReportData
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ CmdInsertTicketReportData::~CmdInsertTicketReportData() {
 
 void CmdInsertTicketReportData::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

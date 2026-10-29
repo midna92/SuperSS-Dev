@@ -1,6 +1,6 @@
-// Arquivo unit_connect.cpp
-// Criado em 02/12/2018 as 14:36 por Acrisio
-// Implementação da classe unit_connect
+// File unit_connect.cpp
+// Created on 02/12/2018 at 14:36 by Acrisio
+// Implementation of the class unit_connect
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -83,13 +83,13 @@
 \
 														_session->_set_func(nullptr); \
 \
-														/* trata */ \
+														/* handle */ \
 														postIoOperationL(_session, (Buffer*)_packet, (STDA_OT)); \
 \
 														_packet = nullptr; \
 													} \
 												}else { \
-													if (dwIOsize >= (_sz_ph)) {	/* >= o certo, vou colocar so ">" para testar os exceptions */ \
+													if (dwIOsize >= (_sz_ph)) {	/* >= is the correct one, I will put only ">" to test the exceptions */ \
 														lpBuffer->peek(&(_ph), (_sz_ph)); \
 \
 														if (((_ph).size + (_sz_ph)) <= dwIOsize) { \
@@ -101,7 +101,7 @@
 
 #define END_LOOP_TRANSLATE_BUFFER_TO_PACKET(_ph, _sz_ph, STDA_OT, _get_func, _set_func) _packet->init_maked(); \
 \
-															/* trata */ \
+															/* handle */ \
 															postIoOperationL(_session, (Buffer*)_packet, (STDA_OT)); \
 \
 															_packet = nullptr; \
@@ -231,11 +231,11 @@ unit_connect_base::unit_connect_base(ServerInfoEx& _si)
 		m_threads.push_back(new thread(TT_WORKER_IO, unit_connect_base::_worker_io, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL));
 
 		// Workers Logical Threads
-		for (auto i = 0u; i < 2u; ++i)	// 2 Work Logical para ficar mais fácil
+		for (auto i = 0u; i < 2u; ++i)	// 2 Logical Workers to make it easier
 			m_threads.push_back(new thread(TT_WORKER_LOGICAL, unit_connect_base::_worker_logical, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL));
 
 		// Workers Send Threads
-		m_threads.push_back(new thread(TT_WORKER_SEND, unit_connect_base::_worker_send, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL));	// Estava ABOVE
+		m_threads.push_back(new thread(TT_WORKER_SEND, unit_connect_base::_worker_send, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL));	// Was ABOVE
 
 #if defined(_WIN32)
 		if ((hEventContinueMonitor = CreateEvent(NULL, true, false, NULL)) == INVALID_HANDLE_VALUE)
@@ -448,9 +448,9 @@ void unit_connect_base::postIoOperation(session* _session, Buffer* lpBuffer, DWO
 
 #if defined(_WIN32)
 	UNREFERENCED_PARAMETER(dwIOsize);
-	m_iocp_send.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);		// Esse tinha Index[session->m_key], era um array de 16 iocp
+	m_iocp_send.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);		// This one had Index[session->m_key], it was an array of 16 iocp
 #elif defined(__linux__)
-	m_iocp_send.push(new stThreadpoolMessage(_session, (Buffer*)tmp, dwIOsize));	// Esse tinha Index[session->m_key], era um array de 16 iocp
+	m_iocp_send.push(new stThreadpoolMessage(_session, (Buffer*)tmp, dwIOsize));	// This one had Index[session->m_key], it was an array of 16 iocp
 #endif
 }
 
@@ -530,20 +530,20 @@ void* unit_connect_base::worker_io() {
 							throw exception("[unit_connect_base::worker_io][Error] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 									+ std::to_string(flags_over) + " que retornou da operacao no iocp. session[IP=" + _session->getIP() + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 255, last_err));
 
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Mark in the session that the socket got disconnected (DC), it reached the TCP retransmission limit for transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets here I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[unit_connect_base::worker_io][WARNING] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 								+ std::to_string(flags_over) + " que retornou da operacao no iocp[WSAError=" + std::to_string(last_err) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Se for STDA_OT_SEND_COMPLETED reseta o send
+						// If it is STDA_OT_SEND_COMPLETED, reset the send
 						if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 							_session->releaseSend();
 
-						// Zera para desconectar a session
-						// e post no recv para ele desconnectar a session
+						// Zero it to disconnect the session
+						// and post to the recv so it disconnects the session
 						dwIOsize = 0u;
 						
 						if (lpBuffer != nullptr)
@@ -590,7 +590,7 @@ void* unit_connect_base::worker_io() {
 
 				}catch (exception& e) {
 
-					// check erro de interrupição do epoll_wait com sinal
+					// check for epoll_wait interruption error by signal
 					if (STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) != EINTR)
 						throw;
 					else
@@ -611,37 +611,37 @@ void* unit_connect_base::worker_io() {
 
 				_session = reinterpret_cast< session* >(ep_ev.data.ptr);
 
-				// Pega esse só para excluir a session se tiver erro
+				// Take this one only to delete the session if there is an error
 				lpBuffer = &_session->m_buff_r.buff;
 
 				// error
 				if ((ep_ev.events & EPOLLERR) == EPOLLERR) {
 
-					int err_socket = 1234; // Padrão error
+					int err_socket = 1234; // Default error
 					socklen_t len_err_sock = sizeof(int);
 
-					// Ignora retorno
+					// Ignore return value
 					int rt_err = ::getsockopt(_session->m_sock.fd, SOL_SOCKET, SO_ERROR, &err_socket, &len_err_sock);
 
 					// KeepAlive DC(disconnect)
 					if (err_socket == ETIMEDOUT) {
 						
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Mark in the session that the socket got disconnected (DC), it reached the TCP retransmission limit for transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets here I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[unit_connect_base::worker_io][WARNING] exception ERROR_SEM_TIMEOUT no iocp[socket_error=" 
 								+ std::to_string(err_socket) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Zera para desconectar a session
-						// e post no recv para ele desconnectar a session
+						// Zero it to disconnect the session
+						// and post to the recv so it disconnects the session
 						translate_operation(_session, 0/*disconnect*/, lpBuffer, STDA_OT_RECV_COMPLETED);
 
-						// volta para o começo do while
+						// go back to the start of the while
 						continue;
 					
-					}else	// Relança qualquer outro error
+					}else	// Rethrow any other error
 						throw exception("[unit_connect_base::worker_io][Error] ep_ev events[EVENTS=" + std::to_string(ep_ev.events) 
 							+ ", SESSION=" + std::to_string((uintptr_t)_session) + ", IP=" + _session->getIP() + "] err_socket: " + std::to_string(err_socket) 
 							+ ", ret_epoll_wait: " + std::to_string(ret_epoll_wait), STDA_MAKE_ERROR(STDA_ERROR_TYPE::UNIT_CONNECT, 5000, err_socket));
@@ -653,11 +653,11 @@ void* unit_connect_base::worker_io() {
 					// disconnect session
 					translate_operation(_session, 0/*disconnect*/, lpBuffer, STDA_OT_RECV_COMPLETED);
 
-					// volta para o começo do while
+					// go back to the start of the while
 					continue;
 				}
 
-				// Disponível para read
+				// Available for read
 				if ((ep_ev.events & EPOLLIN) == EPOLLIN) {
 					
 					lpBuffer = &_session->m_buff_r.buff;
@@ -665,13 +665,13 @@ void* unit_connect_base::worker_io() {
 					_session->requestRecvBuffer();
 				}
 
-				// Disponível para escrever no socket
+				// Available to write to the socket
 				if ((ep_ev.events & EPOLLOUT) == EPOLLOUT) {
 
 					lpBuffer = &_session->m_buff_s.buff;
 
-					// se usar o postIoOperation pode dá dead lock, por que vai ficar esperando enviar, 
-					// mas não tem thread para enviar, por que todas estão esperando ser enviado para poder enviar de novo
+					// if postIoOperation is used it can cause a deadlock, because it will wait to send, 
+					// but there is no thread to send, because all of them are waiting for the send to complete in order to send again
 					send_new(_session, &_session->m_buff_s.buff, STDA_OT_SEND_REQUEST);
 				}
 #endif
@@ -684,7 +684,7 @@ void* unit_connect_base::worker_io() {
 		//			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#endif
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED, reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
@@ -694,7 +694,7 @@ void* unit_connect_base::worker_io() {
 				
 				_smp::message_pool::getInstance().push(new message(std::string("[unit_connect_base::worker_io][ErrorSystem][STD] ") + e.what(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED, reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
@@ -704,7 +704,7 @@ void* unit_connect_base::worker_io() {
 
 				std::cout << "worker_io() ->while Exception (...) c++ nao tratada ou uma excessao de C(nullptr e etc)\n";
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED, reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
@@ -756,7 +756,7 @@ void* unit_connect_base::worker_logical() {
 #if defined(_WIN32)
 				operation = ~0;
 
-				m_iocp_logical.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// Esse tinha Index, era um array de 16 iocp
+				m_iocp_logical.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// This one had Index, it was an array of 16 iocp
 
 				if (_session == nullptr)
 					break;
@@ -776,7 +776,7 @@ void* unit_connect_base::worker_logical() {
 #elif defined(__linux__)
 				operation = ~0;
 
-				tpMessage = m_iocp_logical.get(INFINITE);		// Esse tinha Index, era um array de 16 iocp
+				tpMessage = m_iocp_logical.get(INFINITE);		// This one had Index, it was an array of 16 iocp
 
 				if (tpMessage == nullptr)
 					break;
@@ -859,7 +859,7 @@ void* unit_connect_base::worker_send() {
 #if defined(_WIN32)
 				operation = ~0;
 
-				m_iocp_send.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// Esse tinha Index, era um array de 16 iocp
+				m_iocp_send.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// This one had Index, it was an array of 16 iocp
 
 				if (_session == nullptr)
 					break;
@@ -879,7 +879,7 @@ void* unit_connect_base::worker_send() {
 #elif defined(__linux__)
 				operation = ~0;
 
-				tpMessage = m_iocp_send.get(INFINITE);		// Esse tinha Index, era um array de 16 iocp
+				tpMessage = m_iocp_send.get(INFINITE);		// This one had Index, it was an array of 16 iocp
 
 				if (tpMessage == nullptr)
 					break;
@@ -966,11 +966,11 @@ void* unit_connect_base::monitor() {
 			}
 
 #if defined(_WIN32)
-		} while (WaitForSingleObject(hEventContinueMonitor, 5000/*5 Segundos*/) == WAIT_TIMEOUT);
+		} while (WaitForSingleObject(hEventContinueMonitor, 5000/*5 Seconds*/) == WAIT_TIMEOUT);
 
 		auto last_error = GetLastError();
 #elif defined(__linux__)
-		} while (hEventContinueMonitor != nullptr && hEventContinueMonitor->wait(5000/*5 Segundos*/) == WAIT_TIMEOUT);
+		} while (hEventContinueMonitor != nullptr && hEventContinueMonitor->wait(5000/*5 Seconds*/) == WAIT_TIMEOUT);
 
 		auto last_error = errno;
 #endif
@@ -1003,7 +1003,7 @@ inline void unit_connect_base::dispach_packet_same_thread(session& _session, pac
 	try {
 		func = funcs.getPacketCall(_packet->getTipo());
 	}catch (exception& e) {
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc.*/) {
 			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#ifdef _DEBUG
 			_smp::message_pool::getInstance().push(new message("size packet: " + std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
@@ -1017,8 +1017,8 @@ inline void unit_connect_base::dispach_packet_same_thread(session& _session, pac
 
 		_session.usa();
 
-		// só pode contar o tick se for um pacote conhecido pelo, server, se contar por dados recebido, nunca vai derrubar o cliente mau intensionado
-		_session.m_tick = std::clock();	// Tick time client para o TTL(time to live)
+		// can only count the tick if it is a packet known by the server; if counting by received data, it will never drop a malicious client
+		_session.m_tick = std::clock();	// Client tick time for the TTL (time to live)
 
 		ParamDispatchAS pd = { *(UnitPlayer*)&_session, _packet };
 
@@ -1033,7 +1033,7 @@ inline void unit_connect_base::dispach_packet_same_thread(session& _session, pac
 		_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -1065,7 +1065,7 @@ inline void unit_connect_base::dispach_packet_sv_same_thread(session& _session, 
 	try {
 		func = funcs_sv.getPacketCall(_packet->getTipo());
 	}catch (exception& e) {
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc.*/) {
 			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 #ifdef _DEBUG
 			//_smp::message_pool::getInstance().push(new message("size packet: " + std::to_string(_pd._packet->getSize()) + "\n" + hex_util::BufferToHexString(_pd._packet->getBuffer(), _pd._packet->getSize()), CL_ONLY_FILE_LOG));
@@ -1091,7 +1091,7 @@ inline void unit_connect_base::dispach_packet_sv_same_thread(session& _session, 
 		_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -1155,7 +1155,7 @@ void unit_connect_base::send_new(session* _session, Buffer* lpBuffer, DWORD oper
 
 		_session->setSend();
 
-		// Seta operação
+		// Set operation
 		lpBuffer->setOperation(operation);
 
 		if (_session->devolve()) {
@@ -1171,7 +1171,7 @@ void unit_connect_base::send_new(session* _session, Buffer* lpBuffer, DWORD oper
 
 	}catch (exception& e) {
 		
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error ao usar session*/)) {
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error when using session*/)) {
 			
 			if (_session->devolve()) {
 
@@ -1218,7 +1218,7 @@ void unit_connect_base::send_new(session* _session, Buffer* lpBuffer, DWORD oper
 		}
 	}
 #elif defined(__linux__)
-	// Verifica se tem algo para enviar
+	// Check whether there is anything to send
 	try {
 
 		if ((int)lpBuffer->getWSABufToSend()->len <= 0) {
@@ -1240,7 +1240,7 @@ void unit_connect_base::send_new(session* _session, Buffer* lpBuffer, DWORD oper
 		
 	} catch(exception& e) {
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error ao usar session*/)) {
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error when using session*/)) {
 			
 			if (_session->devolve()) {
 
@@ -1389,20 +1389,20 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 			if (dwIOsize > 0 && lpBuffer != nullptr) {
 		        lpBuffer->consume(dwIOsize);
 
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 			}else {
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 
 				try {
 					
-					// getConnectTime pode lançar exception
+					// getConnectTime can throw an exception
 					if (_session->getConnectTime() <= 0 && _session->getState()) {
 
 						_smp::message_pool::getInstance().push(new message("[unit_connect_base::translate_packet][Error] [STDA_OT_SEND_RAW_COMPLETED] _session[OID=" + std::to_string(_session->m_oid) + "] is not connected.", CL_FILE_LOG_AND_CONSOLE));
 
-						// Ainda não habilitar o disconnect session, vms aguardar as mensagens para ver se vai ter
+						// Do not enable disconnect session yet, let's wait for the messages to see if there are any
 						//DisconnectSession(_session);
 					}
 				
@@ -1439,7 +1439,7 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 
 							CLEAR_BUFFER_LOOP_SERVER;
 
-							// Libera o send
+							// Release the send
 							_session->releaseSend();
 
 							break;
@@ -1451,7 +1451,7 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 
 							CLEAR_BUFFER_LOOP_SERVER;
 
-							// Libera o send
+							// Release the send
 							_session->releaseSend();
 
 							break;
@@ -1465,7 +1465,7 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 
 						CLEAR_BUFFER_LOOP_SERVER;
 
-						// Libera o send
+						// Release the send
 						_session->releaseSend();
 
 						break;
@@ -1478,28 +1478,28 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 
 						CLEAR_BUFFER_LOOP_SERVER;
 
-						// Libera o send
+						// Release the send
 						_session->releaseSend();
 
 						break;
 					}
 				} while (dwIOsize > 0);
 
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 			}else {
 
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 
 				try {
 					
-					// getConnectTime pode lançar exception
+					// getConnectTime can throw an exception
 					if (_session->getConnectTime() <= 0 && _session->getState()) {
 
 						_smp::message_pool::getInstance().push(new message("[unit_connect_base::translate_packet][Error] [STDA_OT_SEND_COMPLETED] _session[OID=" + std::to_string(_session->m_oid) + "] is not connected.", CL_FILE_LOG_AND_CONSOLE));
 
-						// Ainda não habilitar o disconnect session, vms aguardar as mensagens para ver se vai ter
+						// Do not enable disconnect session yet, let's wait for the messages to see if there are any
 						//DisconnectSession(_session);
 					}
 				
@@ -1517,7 +1517,7 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 				packet *_packet = nullptr;
 				int32_t left = 0;
 				
-				lpBuffer->addSize(dwIOsize);	// Add o size que recebeu no socket
+				lpBuffer->addSize(dwIOsize);	// Add the size received on the socket
 
 				do {
 					try {
@@ -1575,7 +1575,7 @@ void unit_connect_base::translate_packet(session* _session, Buffer* lpBuffer, DW
 
 #if defined(_WIN32)
 				// Post new IO Operation - RECV REQUEST
-				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zera o over pra receber mais
+				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zero the over to receive more
 #endif
 
 				//_session->requestRecvBuffer();
@@ -1697,7 +1697,7 @@ void unit_connect_base::ConnectAndAssoc() {
 			_socket = nullptr;
 		}
 
-		// Relançaa
+		// Rethrow
 		throw;
 	}
 

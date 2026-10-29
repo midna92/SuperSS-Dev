@@ -1,6 +1,6 @@
-// Arquivo cmd_gera_ucc_web_key.hpp
-// Criado em 14/07/2018 as 18:41 por Acrisio
-// Defini��o da classe CmdGeraUCCWebKey
+// File cmd_gera_ucc_web_key.hpp
+// Created on 14/07/2018 at 18:41 by Acrisio
+// Definition of the class CmdGeraUCCWebKey
 
 #pragma once
 #ifndef _STDA_CMD_GERA_UCC_WEB_KEY_HPP

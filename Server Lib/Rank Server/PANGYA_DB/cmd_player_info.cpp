@@ -1,6 +1,6 @@
-// Arquivo cmd_player_info.cpp
-// Criado em 15/06/2020 as 16:41 por Acrisio
-// Implementa��o da classe CmdPlayerInfo
+// File cmd_player_info.cpp
+// Created on 15/06/2020 at 16:41 by Acrisio
+// Implementation of the class CmdPlayerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

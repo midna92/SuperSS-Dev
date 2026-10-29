@@ -1,6 +1,6 @@
-// Arquivo login_manager.cpp
-// Criado em 01/05/2018 as 17:44 por Acrisio
-// Implementação da classe LoginManager
+// File login_manager.cpp
+// Created on 01/05/2018 at 17:44 by Acrisio
+// Implementation of class LoginManager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -143,7 +143,7 @@ void* LoginManager::checkTaskFinish() {
 
 				delete v_task[i];
 
-				v_task.erase(v_task.begin() + i--/*tira 1 do 'i' que esta sendo excluido 1 elemento do vector*/);
+				v_task.erase(v_task.begin() + i--/*subtracts 1 from 'i' because 1 element is being removed from the vector*/);
 				v_task.shrink_to_fit();
 			}
 		}
@@ -154,7 +154,7 @@ void* LoginManager::checkTaskFinish() {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Veririfca de 1 em 1 segundo
+		// Checks every 1 second
 #if defined(_WIN32)
 		Sleep(1000);
 #elif defined(__linux__)
@@ -253,7 +253,7 @@ void LoginManager::clear() {
 
 		for (auto& el : v_task) {
 			if (el != nullptr)
-				delete el;	// Aqui pode da erro por que está desalocando uma instancia que pode esta sendo utilizar no momento ou depois, ver como vou fazer o delete aqui
+				delete el;	// This may cause an error because it deallocates an instance that may be in use now or later, figure out how to do the delete here
 		}
 
 		v_task.clear();
@@ -329,7 +329,7 @@ void LoginManager::deleteTask(LoginTask* _task) {
 		delete *it;
 
 		v_task.erase(it);
-		v_task.shrink_to_fit();		// isso em concorrencia pode da erro se não usar proteção de thread(ex: CRITICAL_SECTION)
+		v_task.shrink_to_fit();		// in concurrency this may cause an error if thread protection is not used (e.g. CRITICAL_SECTION)
 	}
 
 #if defined(_WIN32)
@@ -350,14 +350,14 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 	try {
 
-		// usa session, para ela não poder ser excluída(disconnectada) antes de ser tratada aqui
+		// uses session, so it cannot be deleted (disconnected) before being handled here
 		task->getSession().usa();
 
-		// Verifica se a session ainda é valida, essas funções já é thread-safe
+		// Checks whether the session is still valid, these functions are already thread-safe
 		if (!task->getSession().isConnected() || !task->getSession().isCreated() || !task->getSession().getState())
 			throw exception("[LoginManager::SQLDBResponse][Error] session is invalid, para tratar o pangya_db", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_MANAGER, 25, 0));
 
-		// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+		// For now it just leaves, I will do another kind of handling later if needed
 		if (_pangya_db.getException().getCodeError() != 0)
 			throw exception("[LoginManager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_MANAGER, 26, 0));
 
@@ -378,7 +378,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 				return;
 			}
 
-			// UID de outro player ou enviou o ID errado mesmo (essa parte é anti-hack ou bot)
+			// UID of another player or really sent the wrong ID (this part is anti-hack or bot)
 			if (strcmp(pi->id, task->getInfo().id) != 0) {
 				_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][Error] Player ID nao bate : client send ID : " + std::string(task->getInfo().id) + "\t player DB ID : " + std::string(pi->id), CL_FILE_LOG_AND_CONSOLE));
 
@@ -408,7 +408,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 				return;
 			}
 
-			// ### Isso aqui é uma falha de segurança faltal, muito grande nunca posso deixar isso ligado depois que colocar ele online
+			// ### This is a huge fatal security flaw, I must never leave this enabled once it goes online
 			if (!canSameIDLogin() && _stricmp(task->getKeysOfLofin().keys[0], akli.key) != 0) {
 				_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][Error] Player[UID = " + std::to_string(pi->uid) + "].\tAuthKey no bate(no match).", CL_FILE_LOG_AND_CONSOLE));
 
@@ -438,7 +438,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 				pi->block_flag.m_flag.stBit.all_game = 1u;// |= BLOCK_PLAY_ALL;
 			}
 
-			// Verifica se a veriável estática do server é válida
+			// Checks whether the static server variable is valid
 			if (sgs::gs == nullptr) {
 				_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][Error] Player[UID = " + std::to_string(pi->uid) + "], Tentou logar no server, mas o sgs::gs is nullptr. Bug", CL_FILE_LOG_AND_CONSOLE));
 
@@ -447,16 +447,16 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 				return;
 			}
 
-			// Junta Flag de block do server, ao do player
+			// Merges the server block Flag into the player one
 			pi->block_flag.m_flag.ullFlag |= sgs::gs->getInfo().flag.ullFlag;
 
-			// Authorized a ficar online no server por tempo indeterminado
+			// Authorized to stay online on the server indefinitely
 			task->getSession().m_is_authorized = 1u;
 
-			// Registra no Banco de dados que o player está logado no Game Server
-			snmdb::NormalManagerDB::getInstance().add(40, new CmdRegisterLogon(pi->uid, 0/*Logou*//*), LoginManager::SQLDBResponse, task);
+			// Registers in the Database that the player is logged in to the Game Server
+			snmdb::NormalManagerDB::getInstance().add(40, new CmdRegisterLogon(pi->uid, 0/*Logged in*//*), LoginManager::SQLDBResponse, task);
 
-			// Resgistra o Login do Player no server
+			// Registers the Player login on the server
 			if (sgs::gs != nullptr)
 				snmdb::NormalManagerDB::getInstance().add(41, new CmdRegisterLogonServer(pi->uid, std::to_string(sgs::gs->getInfo().uid)), LoginManager::SQLDBResponse, task);
 
@@ -466,10 +466,11 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 #if _DEBUG
 					_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][Log] Enviando os pacotes principais do jogo para o player: " + std::to_string(pi->uid), CL_FILE_LOG_AND_CONSOLE));
 #endif
+			
 			*/
 			//snmdb::NormalManagerDB::getInstance().add(2, new CmdMemberInfo(pi->uid), LoginManager::SQLDBResponse, task);
 
-			// Troquei para o 2 por que lá tem uma parte critica que pode enviar login fail
+			// Changed to 2 because there is a critical part there that may send login fail
 
 			break;
 		}
@@ -479,7 +480,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			auto pi = &task->getSession().m_pi;
 
-			// Passa o Online ID para a estrutura MemberInfo, para não da erro depois
+			// Passes the Online ID to the MemberInfo structure, to avoid errors later
 			pi->mi.oid = task->getSession().m_oid;
 			pi->mi.state_flag.stStatus.visible = 1;
 			pi->mi.state_flag.stStatus.whisper = pi->whisper;
@@ -487,7 +488,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			if (pi->m_cap.stBit.game_master/* & 4*//*) {
 
-				task->getSession().m_gi.setGMUID(pi->uid);	// Set o UID do GM dados
+				task->getSession().m_gi.setGMUID(pi->uid);	// Set the GM data UID
 
 				pi->mi.state_flag.stStatus.visible = task->getSession().m_gi.visible;
 				pi->mi.state_flag.stStatus.whisper = task->getSession().m_gi.whisper;
@@ -497,7 +498,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			}
 
 			try {
-				// Verifica se o papel tem limite por dia, se não anula o papel shop do player
+				// Checks whether the papel has a daily limit, if not voids the player papel shop
 				PapelShopSystem::init_player_papel_shop_info(task->getSession());
 			}catch (exception& e) {
 
@@ -516,7 +517,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			task->getSession().m_pi.ue = reinterpret_cast<CmdUserEquip*>(&_pangya_db)->getEquip();
 			//pi->ue = pangya_db::getUserEquip(pi->uid);
 
-			// São os itens equipáveis que carrega depois de carregar o UserEquip, chame eles primeiro que o restante
+			// These are the equippable items loaded after loading UserEquip, call them before the rest
 			/*snmdb::NormalManagerDB::getInstance().add(12, new CmdCharacterInfo(task->getSession().m_pi.uid, CmdCharacterInfo::ALL), LoginManager::SQLDBResponse, task);
 
 			snmdb::NormalManagerDB::getInstance().add(13, new CmdCaddieInfo(task->getSession().m_pi.uid, CmdCaddieInfo::ALL), LoginManager::SQLDBResponse, task);
@@ -524,15 +525,15 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			snmdb::NormalManagerDB::getInstance().add(14, new CmdMascotInfo(task->getSession().m_pi.uid, CmdMascotInfo::ALL), LoginManager::SQLDBResponse, task);
 
 			snmdb::NormalManagerDB::getInstance().add(15, new CmdWarehouseItem(task->getSession().m_pi.uid, CmdWarehouseItem::ALL), LoginManager::SQLDBResponse, task);*/
-			// fim de chamar os itens equipáveis
+			// end of calling the equippable items
 
 			packet p;
 
-			// Verifica se tem o Pacote de verificação de bots ativado
+			// Checks whether the bot verification Packet is enabled
 			uint32_t ttl = sgs::gs::getInstance().getBotTTL();
 
 			packet_func::pacote1A9(p, &task->getSession(), ttl/*milliseconds*/);
-			packet_func::session_send(p, &task->getSession(), 0); // Tempo para enviar um pacote, ant Bot
+			packet_func::session_send(p, &task->getSession(), 0); // Time to send a packet, anti Bot
 
 			snmdb::NormalManagerDB::getInstance().add(5, new CmdTutorialInfo(pi->uid), LoginManager::SQLDBResponse, task);
 
@@ -548,7 +549,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			snmdb::NormalManagerDB::getInstance().add(11, new CmdTrofelInfo(pi->uid, CmdTrofelInfo::CURRENT), LoginManager::SQLDBResponse, task);
 
-			// Esses que estavam aqui coloquei no resposta do CmdUserEquip, por que eles precisam da resposta do User Equip
+			// The ones that were here I moved to the CmdUserEquip response, because they need the User Equip response
 
 			snmdb::NormalManagerDB::getInstance().add(16, new CmdMyRoomConfig(pi->uid), LoginManager::SQLDBResponse, task);
 
@@ -571,7 +572,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			//task->getSession().m_pi.ue = reinterpret_cast< CmdUserEquip* >(&_pangya_db)->getEquip();
 			//pi->ue = pangya_db::getUserEquip(pi->uid);
 
-			// Colocar no Member Info - User Info esses aqui para chamar no case 2:
+			// Put these in Member Info - User Info to be called in case 2:
 			/*snmdb::NormalManagerDB::getInstance().add(12, new CmdCharacterInfo(task->getSession().m_pi.uid, CmdCharacterInfo::ALL), LoginManager::SQLDBResponse, task);
 
 			snmdb::NormalManagerDB::getInstance().add(13, new CmdCaddieInfo(task->getSession().m_pi.uid, CmdCaddieInfo::ALL), LoginManager::SQLDBResponse, task);
@@ -589,8 +590,8 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			pi->pt = reinterpret_cast<CmdPremiumTicketInfo*>(&_pangya_db)->getInfo();
 			//pi->pt = pangya_db::getPremiumTicket(pi->uid);
 
-			// Att Capability do player
-			// Verifica se tem premium ticket para mandar o pacote do premium user e a comet
+			// Update the player's Capability
+			// Checks whether there is a premium ticket to send the premium user packet and the comet
 			if (sPremiumSystem::getInstance().isPremiumTicket(pi->pt._typeid) && pi->pt.id != 0 && pi->pt.unix_sec_date > 0) {
 				
 				sPremiumSystem::getInstance().updatePremiumUser(task->getSession());
@@ -606,9 +607,9 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			task->getSession().m_pi.TutoInfo = reinterpret_cast<CmdTutorialInfo*>(&_pangya_db)->getInfo();	// cmd_tti.getInfo();
 			//pi->TutoInfo = pangya_db::getTutorialInfo(pi->uid);
 
-			// Manda pacote do tutorial aqui
+			// Send the tutorial packet here
 			packet p;
-			packet_func::pacote11F(p, &task->getSession(), &task->getSession().m_pi, 3/*tutorial info, 3 add do zero init*/);
+			packet_func::pacote11F(p, &task->getSession(), &task->getSession().m_pi, 3/*tutorial info, 3 add from zero init*/);
 			packet_func::session_send(p, &task->getSession(), 0);
 
 			break;
@@ -618,11 +619,11 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			task->getSession().m_pi.cg = reinterpret_cast<CmdCouponGacha*>(&_pangya_db)->getCouponGacha();	// cmd_cg.getCouponGacha();
 			//pi->cg = pangya_db::getCouponGacha(pi->uid);
 
-			// Não sei se o que é esse pacote, então não sei o que ele busca no banco de dados, mas depois descubro
-			// Deixar ele enviando aqui por enquanto
+			// I do not know what this packet is, so I do not know what it fetches from the database, but I will find out later
+			// Leave it sending here for now
 			packet p;
 			packet_func::pacote101(p, &task->getSession());
-			packet_func::session_send(p, &task->getSession(), 0);	// pacote novo do JP
+			packet_func::session_send(p, &task->getSession(), 0);	// new JP packet
 
 			break;
 		}
@@ -709,24 +710,24 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			pi->ei.char_info = nullptr;
 
-			// Add Structure de estado do lounge para cada character do player
+			// Add lounge state Structure for each of the player's characters
 			for (auto& el : pi->mp_ce)
 				pi->mp_scl.insert(std::make_pair(el.second.id, StateCharacterLounge()));
 
-			// Att Character Equipado que não tem nenhum character o player
+			// Update Equipped Character when the player has no character
 			if (pi->ue.character_id == 0 || pi->mp_ce.size() <= 0)
 				pi->ue.character_id = 0;
 			else { // Character Info(CharEquip)
 
-				// É um Map, então depois usa o find com a Key, que é mais rápido que rodar ele em um loop
+				// It is a Map, so use find with the Key afterwards, which is faster than looping over it
 				auto it = pi->mp_ce.find(pi->ue.character_id);
 
 				if (it != pi->mp_ce.end())
 					pi->ei.char_info = &it->second;
 			}
 
-			// teste Calcula a condição do player e o sexo
-			// Só faz calculo de Quita rate depois que o player
+			// test Calculates the player's condition and gender
+			// Only calculates Quit rate after the player
 			// estiver no level Beginner E e jogado 50 games
 			if (pi->level >= 6 && pi->ui.jogado >= 50) {
 				float rate = pi->ui.getQuitRate();
@@ -760,12 +761,12 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			pi->ei.cad_info = nullptr;
 
-			// Att Caddie Equipado que não tem nenhum caddie o player
+			// Update Equipped Caddie when the player has no caddie
 			if (pi->ue.caddie_id == 0 || pi->mp_ci.size() <= 0)
 				pi->ue.caddie_id = 0;
 			else { // Caddie Info
 
-				// É um Map, então depois usa o find com a Key, qui é mais rápido que rodar ele em um loop
+				// It is a Map, so use find with the Key afterwards, which is faster than looping over it
 				auto it = pi->mp_ci.find(pi->ue.caddie_id);
 
 				if (it != pi->mp_ci.end())
@@ -785,12 +786,12 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			pi->ei.mascot_info = nullptr;
 
-			// Att Mascot Equipado que não tem nenhum mascot o player
+			// Update Equipped Mascot when the player has no mascot
 			if (pi->ue.mascot_id == 0 || pi->mp_mi.size() <= 0)
 				pi->ue.mascot_id = 0;
 			else { // Mascot Info
 
-				// É um Map, então depois usa o find com a Key, qui é mais rápido que rodar ele em um loop
+				// It is a Map, so use find with the Key afterwards, which is faster than looping over it
 				auto it = pi->mp_mi.find(pi->ue.mascot_id);
 
 				if (it != pi->mp_mi.end())
@@ -811,7 +812,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			// Iterator
 			std::multimap< PlayerInfo::stIdentifyKey, UpdateItem >::iterator ui_ticket_report_scroll;
 
-			// Verifica se tem Ticket Report Scroll no update item para abrir ele e excluir. Todos que estiver, não só 1
+			// Checks whether there is a Ticket Report Scroll in the update item to open and delete it. All of them, not just 1
 			while ((ui_ticket_report_scroll = pi->findUpdateItemByTypeidAndType(TICKET_REPORT_SCROLL_TYPEID, UpdateItem::WAREHOUSE)) != pi->mp_ui.end()) {
 				
 				try {
@@ -825,11 +826,11 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 					_smp::message_pool::getInstance().push(new message("[LoginManager::checkWarehouse][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Session inválida
+					// Invalid session
 					if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::_ITEM_MANAGER, 2550))
 						throw exception("[LoginManager::SQLDBResponse][Error] " + e.getFullMessageError(), STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_MANAGER, 2550, 0));
 					else
-						throw;	// Relança
+						throw;	// Rethrow
 				}
 			}
 
@@ -837,14 +838,14 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			std::multimap< int32_t/*ID*/, WarehouseItemEx >::iterator it;
 
-			// Att ClubSet Equipado que não tem nenhum clubset o player
+			// Update Equipped ClubSet when the player has no clubset
 			if (pi->ue.clubset_id != 0 && (it = pi->mp_wi.find(pi->ue.clubset_id)) != pi->mp_wi.end()) { // ClubSet Info
 
 				pi->ei.clubset = &it->second;
 
-				// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-				// que no original fica no warehouse msm, eu só confundi quando fiz
-				// [AJEITEI JA] (tem que ajeitar na hora que coloca no DB e no DB isso)
+				// This C of the WarehouseItem, taken from the DB, is not the already updated initial one of the club bag, it is the one in the enchant table, 
+				// which in the original is in the warehouse itself, I just got confused when I made it
+				// [ALREADY FIXED] (must be fixed when putting it in the DB and in the DB itself)
 				pi->ei.csi = { it->second.id, it->second._typeid, it->second.c };
 
 				IFF::ClubSet *cs = sIff::getInstance().findClubSet(it->second._typeid);
@@ -868,9 +869,9 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 					pi->ue.clubset_id = it->second.id;
 					pi->ei.clubset = &it->second;
 
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
-					// [AJEITEI JA] (tem que ajeitar na hora que coloca no DB e no DB isso)
+					// This C of the WarehouseItem, taken from the DB, is not the already updated initial one of the club bag, it is the one in the enchant table, 
+					// which in the original is in the warehouse itself, I just got confused when I made it
+					// [ALREADY FIXED] (must be fixed when putting it in the DB and in the DB itself)
 					pi->ei.csi = { it->second.id, it->second._typeid, it->second.c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(it->second._typeid);
@@ -885,7 +886,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 								+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] equipado, mas ClubSet Not exists on IFF_STRUCT do Server. Bug",
 								STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_MANAGER, 23, 0));
 
-				}else {	// Não tem add o ClubSet padrão para ele(CV1)
+				}else {	// Does not have it, add the default ClubSet for him (CV1)
 
 					_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][WARNING] Player[UID=" + std::to_string(pi->uid)
 							+ "] nao tem o ClubSet[TYPEID=" + std::to_string(AIR_KNIGHT_SET) + "] padrao.", CL_FILE_LOG_AND_CONSOLE));
@@ -897,17 +898,17 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 					bi._typeid = AIR_KNIGHT_SET;
 					bi.qntd = 1;
 
-					item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
-					if (item._typeid != 0 && (item.id = item_manager::addItem(item, task->getSession(), 2/*Padrão item*/, 0)) != item_manager::RetAddItem::T_ERROR
+					if (item._typeid != 0 && (item.id = item_manager::addItem(item, task->getSession(), 2/*Default item*/, 0)) != item_manager::RetAddItem::T_ERROR
 						&& (it = pi->findWarehouseItemItById(item.id)) != pi->mp_wi.end()) {
 
 						pi->ue.clubset_id = it->second.id;
 						pi->ei.clubset = &it->second;
 
-						// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-						// que no original fica no warehouse msm, eu só confundi quando fiz
-						// [AJEITEI JA] (tem que ajeitar na hora que coloca no DB e no DB isso)
+						// This C of the WarehouseItem, taken from the DB, is not the already updated initial one of the club bag, it is the one in the enchant table, 
+						// which in the original is in the warehouse itself, I just got confused when I made it
+						// [ALREADY FIXED] (must be fixed when putting it in the DB and in the DB itself)
 						pi->ei.csi = { it->second.id, it->second._typeid, it->second.c };
 
 						IFF::ClubSet *cs = sIff::getInstance().findClubSet(it->second._typeid);
@@ -943,7 +944,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 				if (it != pi->mp_wi.end())
 					pi->ei.comet = &it->second;
-				else {	// não tem add a bola padrão para ele
+				else {	// does not have it, add the default ball for him
 
 					_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][WARNING] Player[UID=" + std::to_string(pi->uid)
 							+ "] nao tem a Comet(Ball)[TYPEID=" + std::to_string(DEFAULT_COMET_TYPEID) + "] padrao.", CL_FILE_LOG_AND_CONSOLE));
@@ -955,9 +956,9 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 					bi._typeid = DEFAULT_COMET_TYPEID;
 					bi.qntd = 1;
 
-					item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
-					if (item._typeid != 0 && (item.id = item_manager::addItem(item, task->getSession(), 2/*Padrão item*/, 0)) != item_manager::RetAddItem::T_ERROR
+					if (item._typeid != 0 && (item.id = item_manager::addItem(item, task->getSession(), 2/*Default item*/, 0)) != item_manager::RetAddItem::T_ERROR
 						&& (it = pi->findWarehouseItemItById(item.id)) != pi->mp_wi.end()) {
 
 						pi->ei.comet = &it->second;
@@ -970,7 +971,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 				}
 			}
 
-			// Premium Ticket Tem que ser chamado depois que o Warehouse Item ja foi carregado
+			// Premium Ticket must be called after the Warehouse Item has already been loaded
 			snmdb::NormalManagerDB::getInstance().add(4, new CmdPremiumTicketInfo(task->getSession().m_pi.uid), LoginManager::SQLDBResponse, task);
 
 			break;
@@ -992,18 +993,18 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		case 18:	// Check if have Achievement
 		{
 			// --------------------- AVISO ----------------------
-			// esse aqui os outros tem que depender dele para, não ir sem ele
+			// the others must depend on this one, so they do not go without it
 			auto cmd_cAchieve = reinterpret_cast<CmdCheckAchievement*>(&_pangya_db);
 
-			// Cria Achievements do player
+			// Creates the player's Achievements
 			if (!cmd_cAchieve->getLastState()) {
 
-				// Aqui pode lançar uma excession esse block dentro do if
+				// An exception may be thrown here, this block inside the if
 				auto pi = &task->getSession().m_pi;
 
-				pi->mgr_achievement.initAchievement(pi->uid, true/*Create sem verifica se o player tem achievement, por que aqui ele já verificou*/);
+				pi->mgr_achievement.initAchievement(pi->uid, true/*Create without checking whether the player has achievements, because it was already checked here*/);
 
-				// Add o Task + 1 por que não pede o achievement do db, porque criou ele aqui e salvo no DB
+				// Add the Task + 1 because it does not request the achievement from the DB, since it was created here and saved in the DB
 				task->incremenetCount();
 
 			}else {
@@ -1017,7 +1018,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			auto cmd_ai = reinterpret_cast<CmdAchievementInfo*>(&_pangya_db);
 			auto pi = &task->getSession().m_pi;
 
-			// Inicializa o Achievement do player
+			// Initializes the player's Achievement
 			pi->mgr_achievement.initAchievement(pi->uid, cmd_ai->getInfo());
 
 			break;
@@ -1028,7 +1029,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			auto pi = &task->getSession().m_pi;
 
 			pi->dqiu = reinterpret_cast<CmdDailyQuestInfoUser*>(&_pangya_db)->getInfo();	// cmd_dqiu.getInfo();
-			// fim daily quest info player
+			// end of player daily quest info
 
 			break;
 		}
@@ -1047,19 +1048,19 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 23:	// Trofel especial normal atual
+		case 23:	// Current normal special trophy
 		{
 			task->getSession().m_pi.v_tsi_current_season = reinterpret_cast<CmdTrophySpecial*>(&_pangya_db)->getInfo();	// cmd_tei.getInfo();
 
 			break;
 		}
-		case 24:	// Trofel especial grand prix atual
+		case 24:	// Current grand prix special trophy
 		{
 			task->getSession().m_pi.v_tgp_current_season = reinterpret_cast<CmdTrophySpecial*>(&_pangya_db)->getInfo();	// cmd_tei.getInfo();
 
 			break;
 		}
-		case 26:	// MapStatistics normal, atual
+		case 26:	// MapStatistics normal, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1068,7 +1069,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 27:	// MapStatistics Normal, assist, atual
+		case 27:	// MapStatistics Normal, assist, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1077,7 +1078,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 28:	// MapStatistics Natural, atual
+		case 28:	// MapStatistics Natural, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1087,7 +1088,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 29:	// MapStatistics Natural, assist, atual
+		case 29:	// MapStatistics Natural, assist, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1096,7 +1097,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 30:	// MapStatistics GrandPrix, atual
+		case 30:	// MapStatistics GrandPrix, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1105,7 +1106,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 31:	// MapStatistics GrandPrix, Assist, atual
+		case 31:	// MapStatistics GrandPrix, Assist, current
 		{
 			auto& v_ms = reinterpret_cast<CmdMapStatistics*>(&_pangya_db)->getMapStatistics();	// cmd_ms.getMapStatistics();
 
@@ -1114,7 +1115,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 32:	// [MailBox] New Email(s), Agora é a inicialização do Cache do Mail Box
+		case 32:	// [MailBox] New Email(s), now it is the initialization of the Mail Box cache
 		{
 			//auto& v_mb = reinterpret_cast<CmdMailBoxInfo*>(&_pangya_db)->getInfo();	// cmd_mbi.getInfo();
 			auto cmd_mbi2 = reinterpret_cast< CmdMailBoxInfo2* >(&_pangya_db);
@@ -1129,7 +1130,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 33:	// Aviso Caddie Ferias
+		case 33:	// Caddie Vacation Notice
 		{
 			auto& v_cif = reinterpret_cast<CmdCaddieInfo*>(&_pangya_db)->getInfo();	// cmd_cadi.getInfo();
 
@@ -1157,7 +1158,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 35:	// YamEquipedInfo ItemBuff(item que da um efeito, por tempo)
+		case 35:	// YamEquipedInfo ItemBuff(item that gives an effect, for a limited time)
 		{
 			task->getSession().m_pi.v_ib = reinterpret_cast<CmdItemBuffInfo*>(&_pangya_db)->getInfo();	// cmd_yei.getInfo();
 
@@ -1188,12 +1189,12 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		}
 		case 40:	// Register Player Logon ON DB
 		{
-			// Não usa por que é um UPDATE
+			// Not used because it is an UPDATE
 			break;
 		}
 		case 41:	// Register Logon of player on Server in DB
 		{
-			// Não usa por que é um UPDATE
+			// Not used because it is an UPDATE
 			break;
 		}
 		case 42:	// Grand Prix Clear
@@ -1202,7 +1203,7 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 
 			break;
 		}
-		case 43: // Grand Zodiac Pontos
+		case 43: // Grand Zodiac Points
 		{
 			task->getSession().m_pi.grand_zodiac_pontos = reinterpret_cast< CmdGrandZodiacPontos* >(&_pangya_db)->getPontos();
 
@@ -1218,19 +1219,19 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 			break;
 		}
 
-		// Incrementa o contador
+		// Increments the counter
 		task->incremenetCount();
 
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][Log] resposta de login task[id=" + std::to_string(_msg_id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		if (task->getCount() == 39)	// 44 - 5 (38 deixei o 1, 2, 3, 40 e 41 para o game server)
+		if (task->getCount() == 39)	// 44 - 5 (38 I left 1, 2, 3, 40 and 41 for the game server)
 			task->sendCompleteData();
 		else if (task->getCount() > 0)
 			task->sendReply(_msg_id + 1);
 
-		// Devolve (deixa a session livre) ou desconnecta ela se foi requisitado
+		// Returns (frees the session) or disconnects it if requested
 		if (task->getSession().devolve())
 			sgs::gs::getInstance().DisconnectSession(&task->getSession());
 	
@@ -1239,13 +1240,13 @@ void LoginManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		_smp::message_pool::getInstance().push(new message("[LoginManager::SQLDBResponse][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::LOGIN_MANAGER, 25/*Session invalid*/))
-			// Finaliza a tarefa, sem enviar nada para o player por que não pode mais a session é inválida
+			// Finishes the task, without sending anything to the player because the session is no longer valid
 			task->finishSessionInvalid();
 		else
 			task->sendFailLogin();
 
-		// Devolve (deixa a session livre) ou desconnecta ela se foi requisitado
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		// Returns (frees the session) or disconnects it if requested
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (task->getSession().devolve())
 				sgs::gs::getInstance().DisconnectSession(&task->getSession());
 	}
@@ -1272,7 +1273,7 @@ void LoginManager::loadIni() {
 	try {
 		LoginManager::m_same_id_login = ini.readInt("OPTION", "SAME_ID_LOGIN");
 	}catch (exception& e) {
-		// Não precisa exibir mensagem se não encontrar essa opção no arquivo .ini
+		// No need to show a message if this option is not found in the .ini file
 		UNREFERENCED_PARAMETER(e);
 	}
 

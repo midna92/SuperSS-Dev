@@ -1,6 +1,6 @@
-// Arquivo box_system.hpp
-// Criado em 15/07/2018 as 21:25 por Acrisio
-// Defini��o da classe BoxSystem
+// File box_system.hpp
+// Created on 15/07/2018 at 21:25 by Acrisio
+// Definition of class BoxSystem
 
 #pragma once
 #ifndef _STDA_BOX_SYSTEM_HPP
@@ -53,7 +53,7 @@ namespace stdA {
 			/*static*/ void clear();
 
 		private:
-			/*static*/ std::map< uint32_t, ctx_box > m_box;	// Todas as box do server que tem no DB
+			/*static*/ std::map< uint32_t, ctx_box > m_box;	// All the server boxes that exist in the DB
 
 			/*static*/ bool m_load;
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_character_info.cpp
-// Criado em 18/03/2018 as 20:58 por Acrisio
-// Implementa��o da classe CmdCharacterInfo
+// File cmd_character_info.cpp
+// Created on 18/03/2018 at 20:58 by Acrisio
+// Implementation of the class CmdCharacterInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -48,7 +48,7 @@ void CmdCharacterInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 	for (i = 0; i < 5; i++)
 		ce.auxparts[i] = IFNULL(atoi, _result->data[59 + i]);				// 59 + 5
 	for (i = 0; i < 4; i++)
-		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in deveria guarda no db os outros 3 se for msm os 4 que penso q seja, � sim no JP USA os 4
+		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in, should store the other 3 in the db if it really is 4 as I think, yes, JP USES the 4
 	ce.mastery = IFNULL(atoi, _result->data[68]);
 	for (i = 0; i < 4; i++)
 		ce.card_character[i] = IFNULL(atoi, _result->data[69 + i]);		// 69 + 4
@@ -69,7 +69,7 @@ void CmdCharacterInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 			return _el.second._typeid == ce._typeid;
 		});
 
-		// N�o tem um igual add um novo
+		// There is no identical one, add a new one
 		if (it == er.second/*End*/) {
 
 			v_ci.insert(std::make_pair(ce.id, ce));
@@ -77,11 +77,11 @@ void CmdCharacterInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 			_smp::message_pool::getInstance().push(new message("[CmdCharacterInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] adicionou Character[TYPEID=" 
 					+ std::to_string(ce._typeid) + ", ID=" + std::to_string(ce.id) + "], com mesmo id e typeid diferente de outro Character que tem no multimap", CL_FILE_LOG_AND_CONSOLE));
 		}else
-			// Tem um Character com o mesmo ID e TYPEID (DUPLICATA)
+			// There is a Character with the same ID and TYPEID (DUPLICATE)
 			_smp::message_pool::getInstance().push(new message("[CmdCharacterInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Character[TYPEID=" 
 					+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 
-	}else // Tem um Character com o mesmo ID e TYPEID (DUPLICATA)
+	}else // There is a Character with the same ID and TYPEID (DUPLICATE)
 		_smp::message_pool::getInstance().push(new message("[CmdCharacterInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Character[TYPEID="
 				+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 }

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_attendance_reward.cpp
-// Criado em 14/11/2018 as 22:51 Acrisio
-// Implementa��o da classe CmdUpdateAttendanceReward
+// File cmd_update_attendance_reward.cpp
+// Created on 14/11/2018 at 22:51 by Acrisio
+// Implementation of class CmdUpdateAttendanceReward
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateAttendanceReward::~CmdUpdateAttendanceReward() {
 
 void CmdUpdateAttendanceReward::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

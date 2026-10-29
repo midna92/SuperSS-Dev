@@ -1,6 +1,6 @@
-// Arquivo result_set.h
-// Criado em 28/01/2018 as 15:09 por Acrisio
-// Definição da classe result_set
+// File result_set.h
+// Created on 28/01/2018 at 15:09 by Acrisio
+// Definition of class result_set
 
 #pragma once
 #ifndef _STDA_RESULT_SET_H

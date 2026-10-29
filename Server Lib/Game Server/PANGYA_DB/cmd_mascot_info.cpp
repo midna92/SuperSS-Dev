@@ -1,6 +1,6 @@
-// Arquivo cmd_mascot_info.cpp
-// Criado em 18/03/2018 as 21:49 por Acrisio
-// Implementa��o da classe CmdMascotInfo
+// File cmd_mascot_info.cpp
+// Created on 18/03/2018 at 21:49 by Acrisio
+// Implementation of the class CmdMascotInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -54,7 +54,7 @@ void CmdMascotInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 			return _el.second._typeid == mi._typeid;
 		});
 
-		// N�o tem um igual add um novo
+		// There is no identical one, add a new one
 		if (it == er.second/*End*/) {
 
 			v_mi.insert(std::make_pair(mi.id, mi));
@@ -62,11 +62,11 @@ void CmdMascotInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 			_smp::message_pool::getInstance().push(new message("[CmdMascotInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] adicionou Mascot[TYPEID=" 
 					+ std::to_string(mi._typeid) + ", ID=" + std::to_string(mi.id) + "], com mesmo id e typeid diferente de outro Mascot que tem no multimap", CL_FILE_LOG_AND_CONSOLE));
 		}else
-			// Tem um Mascot com o mesmo ID e TYPEID (DUPLICATA)
+			// There is a Mascot with the same ID and TYPEID (DUPLICATE)
 			_smp::message_pool::getInstance().push(new message("[CmdMascotInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Mascot[TYPEID=" 
 					+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 
-	}else // Tem um Mascot com o mesmo ID e TYPEID (DUPLICATA)
+	}else // There is a Mascot with the same ID and TYPEID (DUPLICATE)
 		_smp::message_pool::getInstance().push(new message("[CmdMascotInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Mascot[TYPEID="
 				+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 }

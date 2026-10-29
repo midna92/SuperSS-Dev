@@ -1,6 +1,6 @@
-// Arquivo cliente_manager.cpp
-// Criado em 01/04/208 as 23:43 por Acrisio
-// Implementação da classe ClienteManager
+// File cliente_manager.cpp
+// Created on 01/04/208 at 23:43 by Acrisio
+// Implementation of class ClienteManager
 
 #pragma pack(1)
 

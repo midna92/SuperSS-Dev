@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_mode.cpp
-// Criado em 02/06/2018 as 18:09 por Acrisio
-// Implementa��o da classe CmdUpdateDolfiniLockerMode
+// File cmd_update_dolfini_locker_mode.cpp
+// Created on 02/06/2018 at 18:09 by Acrisio
+// Implementation of class CmdUpdateDolfiniLockerMode
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateDolfiniLockerMode::~CmdUpdateDolfiniLockerMode() {
 
 void CmdUpdateDolfiniLockerMode::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

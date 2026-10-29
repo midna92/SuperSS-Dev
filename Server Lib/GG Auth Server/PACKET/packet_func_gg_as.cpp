@@ -1,6 +1,6 @@
-// Arquivo packet_func_gg_as.cpp
-// Criado em 02/02/2021 as 17:54 por Acrisio
-// Implementação da classe packet_func
+// File packet_func_gg_as.cpp
+// Created on 02/02/2021 at 17:54 by Acrisio
+// Implementation of class packet_func
 
 #pragma pack(1)
 #include <WinSock2.h>
@@ -30,7 +30,7 @@ using namespace stdA;
 												\
 											}catch (exception& e) { \
 												\
-												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/)) \
+												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 													if ((_session)->devolve()) \
 														sgg_as::getInstance().DisconnectSession((_session)); \
 												\

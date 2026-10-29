@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_round.cpp
-// Criado em 24/10/2020 as 02:37 por Acrisio
-// Implementa��o da classe CmdGoldenTimeRound
+// File cmd_golden_time_round.cpp
+// Created on 24/10/2020 at 02:37 by Acrisio
+// Implementation of the class CmdGoldenTimeRound
 
 #if defined(_WIN32)
 #pragma pack(1)

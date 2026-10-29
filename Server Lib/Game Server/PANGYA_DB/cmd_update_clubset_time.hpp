@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_time.hpp
-// Criado em 01/11/2020 as 02:56 por Acrisio
-// Defini��o da classe CmdUpdateClubSetTime
+// File cmd_update_clubset_time.hpp
+// Created on 01/11/2020 at 02:56 by Acrisio
+// Definition of class CmdUpdateClubSetTime
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CLUBSET_TIME_HPP

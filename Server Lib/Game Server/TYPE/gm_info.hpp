@@ -1,6 +1,6 @@
-// Arquivo gm_info.hpp
-// Criado em 28/07/2018 as 16:36 por Acrisio
-// Defini��o da GMInfo
+// File gm_info.hpp
+// Created on 28/07/2018 at 16:36 by Acrisio
+// Definition of GMInfo
 
 #pragma once
 #ifndef _STDA_GM_INFO_HPP
@@ -32,14 +32,14 @@ namespace stdA {
 			void setGMUID(uint32_t _uid);
 
 		public:
-			unsigned char visible : 1, : 0;	// 0 ou 1, Visible
-			unsigned char whisper : 1, : 0;	// 0 ou 1, Whisper Geral
-			unsigned char channel : 1, : 0; // 0 ou 1, Whisper do Canal
+			unsigned char visible : 1, : 0;	// 0 or 1, Visible
+			unsigned char whisper : 1, : 0;	// 0 or 1, General Whisper
+			unsigned char channel : 1, : 0; // 0 or 1, Channel Whisper
 
 		private:
 			uint32_t m_uid;
 
-			std::map< uint32_t, bool > map_open;	// UID dos player que o GM deixou o whisper aberto para ver os chat deles
+			std::map< uint32_t, bool > map_open;	// UID of the players whose chat the GM left the whisper open to see
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;

@@ -1,6 +1,6 @@
-// Arquivo cmd_guild_ranking_update_time.cpp
-// Criado em 29/12/2019 as 16:03 por Acrisio
-// Implementa��o da classe CmdGuildRankingUpdateTime
+// File cmd_guild_ranking_update_time.cpp
+// Created on 29/12/2019 at 16:03 by Acrisio
+// Implementation of class CmdGuildRankingUpdateTime
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_gift_part.cpp
-// Criado em 31/05/2018 as 22:29 por Acrisio
-// Implementa��o da classe CmdGiftPart
+// File cmd_gift_part.cpp
+// Created on 31/05/2018 at 22:29 by Acrisio
+// Implementation of the class CmdGiftPart
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdGiftPart::~CmdGiftPart() {
 
 void CmdGiftPart::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

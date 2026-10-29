@@ -1,6 +1,6 @@
-// Arquivo cmd_update_card_special_time.hpp
-// Criado em 07/07/2018 as 22:30 por Acrisio
-// Defini��o da classe CmdUpdateCardSpecialTime
+// File cmd_update_card_special_time.hpp
+// Created on 07/07/2018 at 22:30 by Acrisio
+// Definition of class CmdUpdateCardSpecialTime
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CARD_SPECIAL_TIME_HPP

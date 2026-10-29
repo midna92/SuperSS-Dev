@@ -1,6 +1,6 @@
-// Arquivo room_type.hpp
-// Criado em 29/08/2023 as 07:39 por Acrisio
-// Definição dos tipos usados na classe room e seus derivados
+// File room_type.hpp
+// Created on 29/08/2023 at 07:39 by Acrisio
+// Definition of the types used in the room class and its derivatives
 
 #pragma once
 #ifndef _STDA_ROOM_TYPE_HPP

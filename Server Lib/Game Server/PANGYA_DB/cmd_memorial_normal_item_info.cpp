@@ -1,6 +1,6 @@
-// Arquivo cmd_memorial_normal_item_info.cpp
-// Criado em 22/07/2018 as 11:09 por Acrisio
-// Implementa��o da classe CmdMemorialNormalItemInfo
+// File cmd_memorial_normal_item_info.cpp
+// Created on 22/07/2018 at 11:09 by Acrisio
+// Implementation of the class CmdMemorialNormalItemInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ void CmdMemorialNormalItemInfo::lineResult(result_set::ctx_res* _result, uint32_
 	ctx_coin_set_item csi{ 0 };
 	ctx_coin_item_ex ci{ 0 };
 	
-	csi.flag = -100;	// SetItem Flag, SEMPRE TEM QUE SER -100
+	csi.flag = -100;	// SetItem Flag, MUST ALWAYS BE -100
 	csi._typeid = (uint32_t)IFNULL(atoi, _result->data[0]);
 
 	ci.tipo = -1;	// Normal Item
@@ -35,9 +35,9 @@ void CmdMemorialNormalItemInfo::lineResult(result_set::ctx_res* _result, uint32_
 
 	auto it = m_item.find(csi._typeid);
 
-	if (it != m_item.end())	// add um item novo ao vector do map
+	if (it != m_item.end())	// add a new item to the map's vector
 		it->second.item.push_back(ci);
-	else {	// Add um novo ao map
+	else {	// Add a new one to the map
 		csi.tipo = (unsigned char)IFNULL(atoi, _result->data[1]);
 
 		csi.item.push_back(ci);

@@ -1,6 +1,6 @@
-// Arquivo cmd_map_statistics.cpp
-// Criado em 18/03/2018 as 18:32 por Acrisio
-// Implementa��o da classe CmdMapStatistics
+// File cmd_map_statistics.cpp
+// Created on 18/03/2018 at 18:32 by Acrisio
+// Implementation of the class CmdMapStatistics
 
 #if defined(_WIN32)
 #pragma pack(1)

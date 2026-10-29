@@ -1,6 +1,6 @@
-// Arquivo cmd_memorial_normal_item_info.hpp
-// Criado em 22/07/2018 as 11:05 por Acrisio
-// Defini��o da classe CmdMemorialNormalItemInfo
+// File cmd_memorial_normal_item_info.hpp
+// Created on 22/07/2018 at 11:05 by Acrisio
+// Definition of the class CmdMemorialNormalItemInfo
 
 #pragma once
 #ifndef _STDA_CMD_MEMORIAL_NORMAL_ITEM_INFO_HPP

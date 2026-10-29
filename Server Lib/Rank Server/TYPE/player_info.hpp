@@ -1,6 +1,6 @@
-// Arquivo player_info.hpp
-// Criado em 15/06/2020 as 15:07 por Acrisio
-// Definição da classe PlayerInfo
+// File player_info.hpp
+// Created on 15/06/2020 at 15:07 by Acrisio
+// Definition of the class PlayerInfo
 
 #pragma once
 #ifndef _STDA_PLAYER_INFO_HPP
@@ -19,8 +19,8 @@ namespace stdA {
 		public:
 			unsigned char m_state;
 
-			// Dados que usa para consultar o rank
-			search_dados_ex m_sd;			// Search dados
+			// Data used to query the rank
+			search_dados_ex m_sd;			// Search data
 	};
 }
 

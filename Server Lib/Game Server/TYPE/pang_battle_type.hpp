@@ -1,6 +1,6 @@
-// Arquivo pang_battle_type.hpp
-// Criado em 10/01/2020 por Acrisio
-// Definição dos tipos usados no PangBattle
+// File pang_battle_type.hpp
+// Created on 10/01/2020 by Acrisio
+// Definition of the types used in PangBattle
 
 #pragma once
 #ifndef _STDA_PANG_BATTLE_TYPE_HPP
@@ -14,7 +14,7 @@ namespace stdA {
 #pragma pack(1)
 #endif
 
-	// Mensagem (Quantidade de moeda que vai dropar do hole) dependendo se ele ganhou, empatou ou perdeu
+	// Message (Amount of coin that will drop from the hole) depending on whether he won, tied or lost
 	enum eMSG_MAKE_HOLE : unsigned short {
 		MMH_PERDEU,
 		MMH_GANHOU = 2,
@@ -27,7 +27,7 @@ namespace stdA {
 		void clear() {
 			pang = 0u;
 			pang_extra = 0u;
-			player_win = -3;	// Padrão -3
+			player_win = -3;	// Default -3
 			vezes = 1u;
 		};
 		int32_t player_win;
@@ -55,11 +55,11 @@ namespace stdA {
 			}
 		};
 		short m_hole;
-		bool m_hole_extra_flag;								// Hole Extra, flag true está no hole extra, false não
-		short m_hole_extra;									// Sequência do hole extra, para pegar no course, para fazer os calculos no Approach
-		uint32_t m_count_finish_hole;					// Número(Soma) de holes que foram terminados
-		uint32_t m_player_win_pb;						// Player que ganhou o Pang Battle
-		std::vector< PangBattleHolePang > v_player_win;		// OID do player que ganhou o hole ou -1 se empatou
+		bool m_hole_extra_flag;								// Extra Hole, flag true is on the extra hole, false is not
+		short m_hole_extra;									// Extra hole sequence, to get in the course, to do the calculations in Approach
+		uint32_t m_count_finish_hole;					// Number (Sum) of holes that were finished
+		uint32_t m_player_win_pb;						// Player who won the Pang Battle
+		std::vector< PangBattleHolePang > v_player_win;		// OID of the player who won the hole or -1 if tied
 	};
 
 #if defined(__linux__)

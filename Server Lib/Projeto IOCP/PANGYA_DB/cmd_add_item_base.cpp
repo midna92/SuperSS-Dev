@@ -1,6 +1,6 @@
-// Arquivo cmd_add_item_base.cpp
-// Criado em 25/03/2018 as 18:46 por Acrisio
-// Implementa��o da classe CmdAddItemBase
+// File cmd_add_item_base.cpp
+// Created on 25/03/2018 at 18:46 by Acrisio
+// Implementation of class CmdAddItemBase
 
 #if defined(_WIN32)
 #pragma pack(1)

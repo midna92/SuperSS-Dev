@@ -1,6 +1,6 @@
-// Arquivo logger.cpp
-// Criado em 21/11/2020 as 16:00 por Acrisio
-// Implementa��o da classe Logger
+// File logger.cpp
+// Created on 21/11/2020 at 16:00 by Acrisio
+// Implementation of the class Logger
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -31,7 +31,7 @@ void Logger::loadVirtualFunctions(FNPROCSCLOG _scLog, FNPROCRESPONSECALLBACK _re
 		m_pLog = (FNPROCSCLOG)GetProcAddress(hHandle_exe, "scLog");
 
 		if (m_pLog == NULL)
-			m_pLog = _scLog; // Padr�o Log
+			m_pLog = _scLog; // Default Log
 	}
 
 	if (m_pResponse == nullptr || m_pResponse == _responseCallBack) {
@@ -39,7 +39,7 @@ void Logger::loadVirtualFunctions(FNPROCSCLOG _scLog, FNPROCRESPONSECALLBACK _re
 		m_pResponse = (FNPROCRESPONSECALLBACK)GetProcAddress(hHandle_exe, "responseCallBack");
 
 		if (m_pResponse == NULL)
-			m_pResponse = _responseCallBack; // Padr�o Response Call Back
+			m_pResponse = _responseCallBack; // Default Response Call Back
 	}
 #elif defined(__linux__)
 	auto hHandle_exe = dlopen(nullptr, 0);
@@ -49,7 +49,7 @@ void Logger::loadVirtualFunctions(FNPROCSCLOG _scLog, FNPROCRESPONSECALLBACK _re
 		m_pLog = (FNPROCSCLOG)dlsym(hHandle_exe, "scLog");
 
 		if (m_pLog == NULL)
-			m_pLog = _scLog; // Padr�o Log
+			m_pLog = _scLog; // Default Log
 	}
 
 	if (m_pResponse == nullptr || m_pResponse == _responseCallBack) {
@@ -57,7 +57,7 @@ void Logger::loadVirtualFunctions(FNPROCSCLOG _scLog, FNPROCRESPONSECALLBACK _re
 		m_pResponse = (FNPROCRESPONSECALLBACK)dlsym(hHandle_exe, "responseCallBack");
 
 		if (m_pResponse == NULL)
-			m_pResponse = _responseCallBack; // Padr�o Response Call Back
+			m_pResponse = _responseCallBack; // Default Response Call Back
 	}
 #endif
 }

@@ -1,8 +1,8 @@
-// Arquivo client.cpp
-// Criado em 19/12/2017 por Acrisio
-// Implementação da classe client
+// File client.cpp
+// Created on 19/12/2017 by Acrisio
+// Implementation of class client
 
-// Tem que ter o pack aqui se não da erro na hora da allocação do HEAP
+// The pack must be here, otherwise it causes an error at HEAP allocation time
 #if defined(_WIN32)
 #pragma pack(1)
 #endif
@@ -87,7 +87,7 @@ DWORD client::monitor() {
 
 				checkClienteOnline();
 
-				Sleep(1000); // 1 second para próxima verificação
+				Sleep(1000); // 1 second until the next check
 			}catch (exception& e) {
 				if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::THREAD)
 					throw;
@@ -117,10 +117,10 @@ inline void client::dispach_packet_same_thread(session& _session, packet *_packe
 			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 			_smp::message_pool::getInstance().push(new message("size packet: " + std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
+			// Handle the error here
+			// and log out the session that sent the wrong packet
 			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// if it is very serious, rethrow it to terminate the thread
 		}else
 			throw;
 	}
@@ -146,10 +146,10 @@ inline void client::dispach_packet_sv_same_thread(session& _session, packet *_pa
 			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 			//_smp::message_pool.push(new message("size packet: " + std::to_string(_pd._packet->getSize()) + "\n" + hex_util::BufferToHexString(_pd._packet->getBuffer(), _pd._packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
+			// Handle the error here
+			// and log out the session that sent the wrong packet
 			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// if it is very serious, rethrow it to terminate the thread
 		}else
 			throw;
 	}
@@ -187,17 +187,17 @@ void client::waitAllThreadFinish(DWORD dwMilleseconds) {
 			break;
 		case TT_WORKER_LOGICAL:
 			//for (auto io = 0u; io < (sizeof(m_iocp_logical) / sizeof(iocp)); ++io)
-				m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// Esse tinha Index[io], era um array de 16 iocp
+				m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// This one had Index[io], it was an array of 16 iocp
 			break;
 		case TT_WORKER_SEND:
 			//for (auto io = 0u; io < (sizeof(m_iocp_send) / sizeof(iocp)); ++io)
-				m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// Esse tinha Index[io], era um array de 16 iocp
+				m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// This one had Index[io], it was an array of 16 iocp
 			break;
 		case TT_JOB:
-			m_job_pool.push(nullptr);			// Sai do job
+			m_job_pool.push(nullptr);			// Exit the job
 			break;
 		case TT_CONSOLE:
-			_smp::message_pool::getInstance().push(nullptr);	// Sai do console
+			_smp::message_pool::getInstance().push(nullptr);	// Exit the console
 			break;
 		case TT_MONITOR:
 			InterlockedDecrement(&m_continue_monitor);
@@ -209,7 +209,7 @@ void client::waitAllThreadFinish(DWORD dwMilleseconds) {
 		if (m_threads[i] != nullptr)
 			m_threads[i]->waitThreadFinish(dwMilleseconds);
 
-	_smp::message_pool::getInstance().push(nullptr);		// Sai console;
+	_smp::message_pool::getInstance().push(nullptr);		// Exit console;
 
 	if (m_thread_console != nullptr)
 		m_thread_console->waitThreadFinish(dwMilleseconds);

@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_info.hpp
-// Criado em 24/10/2020 as 02:00 por Acrisio
-// Defini��o da classe CmdGoldenTimeInfo
+// File cmd_golden_time_info.hpp
+// Created on 24/10/2020 at 02:00 by Acrisio
+// Definition of the class CmdGoldenTimeInfo
 
 #pragma once
 #ifndef _STDA_GOLDEN_TIME_INFO_HPP

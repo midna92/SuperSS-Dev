@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_rental.cpp
-// Criado em 10/06/2018 as 17:47 por Acrisio
-// Implementa��o da classe CmdDeleteRental
+// File cmd_delete_rental.cpp
+// Created on 10/06/2018 at 17:47 by Acrisio
+// Implementation of the class CmdDeleteRental
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteRental::~CmdDeleteRental() {
 
 void CmdDeleteRental::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 }
 
 response* CmdDeleteRental::prepareConsulta(database& _db) {

@@ -1,6 +1,6 @@
-// Arquivo quad_tree.cpp
-// Criado em 03/10/2020 as 17:10 por Acrisio
-// Implementa��o da classe QuadTree3D
+// File quad_tree.cpp
+// Created on 03/10/2020 at 17:10 by Acrisio
+// Implementation of the QuadTree3D class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -65,8 +65,8 @@ void QuadTree3D::init_shot(Ball3D* _ball, Club3D* _club, Vector3D* _wind, option
 
 	pwr *= (m_shot.stSpecialShot.tomahawk || m_shot.stSpecialShot.spike) ? 1.3f : 1.f;
 
-	// !@ Error de pangya e ch�o(ground)
-	pwr *= std::sqrt(1.f); // 100% por enquanto
+	// !@ Pangya error and ground
+	pwr *= std::sqrt(1.f); // 100% for now
 
 	m_power_factor_shot = pwr;
 	m_percent_shot_sqrt = std::sqrt(_options.m_percent_shot);
@@ -131,8 +131,8 @@ void QuadTree3D::init_shot(Ball3D* _ball, Club3D* _club, Vector3D* _wind, ShotEn
 
 	pwr *= (m_shot.stSpecialShot.tomahawk || m_shot.stSpecialShot.spike) ? 1.3f : 1.f;
 
-	// !@ Error de pangya e ch�o(ground)
-	pwr *= std::sqrt(1.f); // 100% por enquanto
+	// !@ Pangya error and ground
+	pwr *= std::sqrt(1.f); // 100% for now
 
 	m_power_factor_shot = pwr;
 	m_percent_shot_sqrt = std::sqrt(_shot_cube.porcentagem/*_options.m_percent_shot*/);

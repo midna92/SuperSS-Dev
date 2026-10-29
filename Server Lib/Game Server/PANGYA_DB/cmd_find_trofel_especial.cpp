@@ -1,6 +1,6 @@
-// Arquivo cmd_find_trofel_especial.cpp
-// Criado em 21/06/2019 as 19:43 por Acrisio
-// Implementa��o da classe CmdFindTrofelEspecial
+// File cmd_find_trofel_especial.cpp
+// Created on 21/06/2019 at 19:43 by Acrisio
+// Implementation of the class CmdFindTrofelEspecial
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_create_quest.hpp
-// Criado em 31/03/2018 as 22:51 por Acrisio
-// Defini��o da classe CmdCreateQuest
+// File cmd_create_quest.hpp
+// Created on 31/03/2018 at 22:51 by Acrisio
+// Definition of the class CmdCreateQuest
 
 #pragma once
 #ifndef _STDA_CMD_CREATE_QUEST_HPP

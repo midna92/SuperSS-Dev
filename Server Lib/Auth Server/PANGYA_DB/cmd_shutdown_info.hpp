@@ -1,6 +1,6 @@
-// Arquivo cmd_shutdown_info.hpp
-// Criado em 02/12/2018 as 23:14 por Acrisio
-// Defini��o da classe CmdShutdownInfo
+// File cmd_shutdown_info.hpp
+// Created on 02/12/2018 at 23:14 by Acrisio
+// Definition of class CmdShutdownInfo
 
 #pragma once
 #ifndef _STDA_CMD_SHUTDOWN_INFO_HPP

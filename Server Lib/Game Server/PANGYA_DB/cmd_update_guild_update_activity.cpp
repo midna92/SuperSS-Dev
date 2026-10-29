@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_update_activity.cpp
-// Criado em 30/11/2019 as 17:34 por Acrisio
-// Implementa��o da classe CmdUpdateGuildUpdateActivity
+// File cmd_update_guild_update_activity.cpp
+// Created on 30/11/2019 at 17:34 by Acrisio
+// Implementation of class CmdUpdateGuildUpdateActivity
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateGuildUpdateActiviy::~CmdUpdateGuildUpdateActiviy() {
 
 void CmdUpdateGuildUpdateActiviy::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_gift_clubset.hpp
-// Criado em 31/05/2018 as 22:10 por Acrisio
-// Defini��o da classe CmdGiftClubSet
+// File cmd_gift_clubset.hpp
+// Created on 31/05/2018 at 22:10 by Acrisio
+// Definition of the class CmdGiftClubSet
 
 #pragma once
 #ifndef _STDA_CMD_GIFT_CLUBSET_HPP

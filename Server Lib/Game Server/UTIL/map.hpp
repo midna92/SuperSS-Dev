@@ -1,6 +1,6 @@
-// Arquivo map.hpp
-// Criado em 21/09/2018 as 20:47 por Acrisio
-// Definição da classe Map
+// File map.hpp
+// Created on 21/09/2018 at 20:47 by Acrisio
+// Definition of the Map class
 
 #pragma once
 #ifndef _STDA_MAP_HPP
@@ -69,7 +69,7 @@ namespace stdA {
 			/*static*/ void clear();
 
 		private:
-			/*static*/ std::map< unsigned char, stCtx > m_map;		// Mapas (Course)
+			/*static*/ std::map< unsigned char, stCtx > m_map;		// Maps (Course)
 
 			/*static*/ bool m_load;
 

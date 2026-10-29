@@ -1,6 +1,6 @@
 // server.h
-// Criado em 17/12/2017 por Acrisio
-// Dfinição da classe server
+// Created on 17/12/2017 by Acrisio
+// Definition of class server
 
 #pragma once
 #ifndef _STDA_SERVER_H
@@ -148,13 +148,13 @@ namespace stdA {
 			std::vector< IPBan > v_ip_ban_list;
 			std::vector< std::string > v_mac_ban_list;
 
-		// Auth Server Membros protegidos
+		// Auth Server protected members
 		protected:
-			unit_auth_server_connect *m_unit_connect;		// Ponteiro Connecta com o Auth Server
+			unit_auth_server_connect *m_unit_connect;		// Pointer that connects to the Auth Server
 
 			void destroy_unit();
 
-		// Auth Server Comandos
+		// Auth Server Commands
 		public:
 			virtual void authCmdShutdown(int32_t _time_sec) = 0;
 			virtual void authCmdBroadcastNotice(std::string _notice) = 0;
@@ -168,15 +168,15 @@ namespace stdA {
 			virtual void authCmdInfoPlayerOnline(uint32_t _req_server_uid, uint32_t _player_uid) override;
 			virtual void authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi) = 0;
 
-			// requests Comandos e respostas dinâmicas
+			// dynamic command requests and responses
 			virtual void authCmdSendCommandToOtherServer(packet& _packet) override;
 			virtual void authCmdSendReplyToOtherServer(packet& _packet) override;
 
-			// Server envia comandos e resposta para outros server com o Auth Server
+			// Server sends commands and responses to other servers through the Auth Server
 			virtual void sendCommandToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type) override;
 			virtual void sendReplyToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type) override;
 
-		// Smart Calcualtor And Discord Chat History, Quem usa é só o Game Server(Smart Calculator e Chat History) e Message Server(Chat History)
+		// Smart Calculator And Discord Chat History, only the Game Server (Smart Calculator and Chat History) and Message Server (Chat History) use it
 		public:
 			// get and set - Flag chat discord
 			bool getChatDiscord();
@@ -188,7 +188,7 @@ namespace stdA {
 			virtual void sendMessageToDiscordChatHistory(std::string _nickname, std::string _msg);
 
 		protected:
-			bool m_chat_discord;	// Flag que habilita ou desabilita o chat ser enviado para o discord pelo Smart Calculator pelo Bot do Discord
+			bool m_chat_discord;	// Flag that enables or disables sending the chat to discord via the Smart Calculator through the Discord Bot
 
 		protected:
 			thread *m_thread_monitor;
@@ -226,7 +226,7 @@ namespace stdA {
 			Event *EventMoreAccept;
 #endif
 
-		// Shutdown Membros
+		// Shutdown Members
 		protected:
 #if defined(_WIN32)
 			HANDLE EventShutdownServer;
@@ -244,14 +244,14 @@ namespace stdA {
 			// Shutdown timer
 			timer *m_shutdown;
 	
-		protected:	// ponteiro para o socket que foi criado no accept
-			socket* m_accept_sock;		// socket que controla os checks das conexão se pode ou não logar
+		protected:	// pointer to the socket created in accept
+			socket* m_accept_sock;		// socket that controls the connection checks on whether it can log in or not
 
 		private:
 			volatile uint32_t m_acceptsPendents;
 
 #if defined(_WIN32)
-		private:	// Valores para inicializar sockaddr do AcceptEx
+		private:	// Values to initialize the AcceptEx sockaddr
 			GUID m_GuidAcceptEx;
 			GUID m_GuidGetAcceptExSockaddrs;
 			LPFN_ACCEPTEX m_lpfnAcceptEx;

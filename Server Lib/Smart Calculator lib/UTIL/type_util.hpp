@@ -1,6 +1,6 @@
-// Arquivo type_util.hpp
-// Criado em 21/11/2020 as 19:51 por Acrisio
-// Defini��o de type util tools
+// File type_util.hpp
+// Created on 21/11/2020 at 19:51 by Acrisio
+// Definition of type util tools
 
 #pragma once
 #ifndef _STDA_TYPE_UTIL_HPP

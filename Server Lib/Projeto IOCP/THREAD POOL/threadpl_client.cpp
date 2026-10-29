@@ -1,8 +1,8 @@
-// Arquivo threadpl_client.cpp
-// Criado em 03/12/2017 por Acrisio
-// Implementação da classe threadpl_client
+// File threadpl_client.cpp
+// Created on 03/12/2017 by Acrisio
+// Implementation of class threadpl_client
 
-// Tem que ter o pack aqui se não da erro na hora da allocação do HEAP
+// The pack must be here, otherwise it errors at HEAP allocation time
 #if defined(_WIN32)
 #pragma pack(1)
 #endif
@@ -97,7 +97,7 @@ void threadpl_client::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 				packet *_packet = nullptr;
 				int32_t left = 0;
 
-				lpBuffer->addSize(dwIOsize);	// Add o size que recebeu no socket
+				lpBuffer->addSize(dwIOsize);	// Add the size received on the socket
 
 				do {
 					try {
@@ -144,7 +144,7 @@ void threadpl_client::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 				} while (dwIOsize > 0);
 
 				// Post new IO Operation - RECV REQUEST
-				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zera o over pra receber mais
+				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Reset the over to receive more
 
 				postIoOperation(_session, lpBuffer, operation - 1);
 				

@@ -1,6 +1,6 @@
-// Arquivo message.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe message
+// File message.h
+// Created on 21/05/2017 by Acrisio
+// Definition of the class message
 
 #pragma once
 #ifndef _STDA_MESSAGE_H

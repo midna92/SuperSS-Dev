@@ -1,6 +1,6 @@
-// Arquivo cmd_trofel_info.cpp
-// Criado em 18/03/2018 as 17:07 por Acrisio
-// Implementação da classe CmdTrofelInfo
+// File cmd_trofel_info.cpp
+// Created on 18/03/2018 at 17:07 by Acrisio
+// Implementation of the class CmdTrofelInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

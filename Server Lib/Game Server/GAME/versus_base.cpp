@@ -1,6 +1,6 @@
-// Arquivo versus_base.cpp
-// Criado em 20/10/2018 as 15:31 por Acrisio
-// Implementação da classe VersusBase
+// File versus_base.cpp
+// Created on 20/10/2018 at 15:31 by Acrisio
+// Implementation of the VersusBase class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -44,7 +44,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[VersusBase::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[VersusBase::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 1, 4)); \
@@ -69,7 +69,7 @@ VersusBase::VersusBase(std::vector< player* >& _players, RoomInfoEx& _ri, RateVa
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	m_seed_mascot_effect = (uint32_t)(sRandomGen::getInstance().rIbeMt19937_64_chrono()) & 0xFFFF;/*Teste pode ser que seja __int16*/
+	m_seed_mascot_effect = (uint32_t)(sRandomGen::getInstance().rIbeMt19937_64_chrono()) & 0xFFFF;/*Test, it may be __int16*/
 
 #if defined(_WIN32)
 	if ((m_hEvent_chk_turn = CreateEvent(NULL, true, false, NULL)) == INVALID_HANDLE_VALUE)
@@ -214,7 +214,7 @@ void VersusBase::sendRatesOfVersusBase() {
 
 void VersusBase::sendReplyFinishCharIntro() {
 
-	// Resposta para Finish Char Intro
+	// Response for Finish Char Intro
 	packet p((unsigned short)0x90);
 
 	packet_func::game_broadcast(*this, p, 1);
@@ -233,17 +233,17 @@ void VersusBase::sendPlayerTurn() {
 
 	auto wind_flag = initCardWindPlayer(m_player_turn, hole->getWind().wind);
 
-	// Resposta do vento do hole
+	// Hole wind response
 	packet p((unsigned short)0x5B);
 
 	p.addUint8(hole->getWind().wind + wind_flag);
-	p.addUint8((wind_flag < 0) ? 1u : 0u);	// Flag de card de vento, aqui é a qnd diminui o vento, 1 Vento azul
+	p.addUint8((wind_flag < 0) ? 1u : 0u);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 	p.addUint16(m_player_turn->degree);
-	p.addUint8(1u/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original, , Também é flag para trocar o vento no Pang Battle se mandar o valor 0
+	p.addUint8(1u/*Reset*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind, , Also a flag to change the wind in Pang Battle if the value 0 is sent
 
 	packet_func::game_broadcast(*this, p, 1);
 
-	// Resposta passa o oid do player que vai começa o Hole
+	// Response passes the oid of the player who will start the Hole
 	p.init_plain((unsigned short)0x63);
 
 	if (m_player_turn == nullptr) {
@@ -253,8 +253,8 @@ void VersusBase::sendPlayerTurn() {
 	}else
 		p.addUint32(m_player_turn->oid);
 
-	// Aqui tem 2 bytes a+, int16 de um valor, que acho que acontece de ver em quando, ou só no pang battle isso estava escrito no meu outro
-	// acho que possa ser do pang battle, certaza, aqui acabei de ver na classe pang battle do antigo
+	// Here there are 2 more bytes, int16 of a value, which I think is seen from time to time, or only in pang battle, this was written in my other one
+	// I think it may be from pang battle, not sure, I just saw it here in the pang battle class of the old one
 
 	packet_func::game_broadcast(*this, p, 1);
 }
@@ -264,21 +264,21 @@ void VersusBase::changeTurn() {
 	if (m_player_turn == nullptr)
 		throw exception("[VersusBase::changeTurn][Error] PlayerGameInfo *m_player_turn is invalid(nullptr). Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 100, 0));
 
-	// Para o tempo do player do turno
+	// Stops the turn player's time
 	stopTime();
 
 	// Check Player Turn finish last hole
 	if (m_player_turn->shot_sync.state_shot.display.stDisplay.acerto_hole || m_player_turn->data.giveup) {
 
-		// Verifica se o player terminou jogo, fez o ultimo hole
+		// Checks if the player finished the game, did the last hole
 		if (m_course->findHoleSeq(m_player_turn->hole) == m_ri.qntd_hole) {
 
-			// Resposta para o player que terminou o ultimo hole do Game
+			// Response to the player who finished the last hole of the Game
 			packet p((unsigned short)0x199);
 
 			packet_func::game_broadcast(*this, p, 1);
 
-			// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+			// Did the Last Hole, Calculates Clear Bonus for the player
 			if (m_player_turn->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 				if (!sMap::getInstance().isLoad())
@@ -295,10 +295,10 @@ void VersusBase::changeTurn() {
 		}
 	}
 
-	// Limpa dados que usa para cada tacada
+	// Clears data used for each shot
 	clearDataEndShot(m_player_turn);
 
-	// Verifica se todos fizeram o hole
+	// Checks if everyone did the hole
 	//if (checkAllClearHoleAndClear()) {
 	if (checkAllClearHole()) {
 
@@ -306,12 +306,12 @@ void VersusBase::changeTurn() {
 		
 		finishHole();
 
-		// Utilizo ele antes no finish hole, limpo ele aqui depois
+		// I use it before in finish hole, clear it here after
 		clearAllClearHole();
 
 		changeHole();
 	
-	}else if (m_players.size() == 1 && m_course->findHoleSeq(m_player_turn->hole) < 4) {	// Finaliza o game
+	}else if (m_players.size() == 1 && m_course->findHoleSeq(m_player_turn->hole) < 4) {	// Finishes the game
 
 		clear_all_flag_sync();
 
@@ -319,14 +319,14 @@ void VersusBase::changeTurn() {
 
 		changeHole();
 
-	}else {	// Troca o Turno
+	}else {	// Changes the Turn
 
 		clear_all_flag_sync();
 
-		// Recalcula Turno
+		// Recalculates Turn
 		requestCalculePlayerTurn();
 
-		// Cnvia para todos o vento e oid do player turn, o player que vai tacar nesse momento
+		// Sends to everyone the wind and oid of the turn player, the player who will hit at this moment
 		sendPlayerTurn();
 	}
 }
@@ -367,7 +367,7 @@ void VersusBase::CCGChangeWind(player& _gm, unsigned char _wind, unsigned short 
 		p.addUint8(hole->getWind().wind + wind_flag);	// Wind
 		p.addUint8((wind_flag < 0) ? 1 : 0);			// Card Wind Flag, minus wind flag
 		p.addUint16(m_player_turn->degree);				// Degree
-		p.addUint8(1);									// Flag 1 = Reset Degree, 0 = Plus Degree, , Também é flag para trocar o vento no Pang Battle se mandar o valor 0
+		p.addUint8(1);									// Flag 1 = Reset Degree, 0 = Plus Degree, , Also the flag to change the wind in Pang Battle if the value 0 is sent
 
 		packet_func::game_broadcast(*this, p, 1);
 
@@ -381,13 +381,13 @@ void VersusBase::CCGChangeWind(player& _gm, unsigned char _wind, unsigned short 
 
 int VersusBase::checkEndShotOfHole(player& _session) {
 
-	// Agora verifica o se ele acabou o hole e essas coisas
+	// Now check whether the hole has finished and such
 	INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 	
 	//pgi->finish_shot = 1u;
 
 	if (pgi->data.bad_condute >= 3)
-		return 2;	// Tira da sala
+		return 2;	// Remove from the room
 	else
 		setFinishShot(pgi);
 
@@ -407,16 +407,16 @@ int VersusBase::checkEndShotOfHole(player& _session) {
 
 	//		}else if (m_flag_next_step_game == 2) {
 
-	//			// Finaliza o Game
+	//			// End the Game
 	//			return 1;
 	//		}
 
-	//	}else if (m_player_turn->data.bad_condute >= 3) {	// Kika player deu 3 give up
+	//	}else if (m_player_turn->data.bad_condute >= 3) {	// Kick player who gave up 3 times
 
-	//		// Tira o player da sala
+	//		// Remove the player from the room
 	//		return 2;
 
-	//	}else // Troca o Turno ou troca de hole ou termina o game
+	//	}else // Change the Turn or change the hole or end the game
 	//		changeTurn();
 	//}
 
@@ -442,7 +442,7 @@ void VersusBase::drawDropItem(player& _session) {
 				for (auto& el : drop.v_drop)
 					p.addBuffer(&el, sizeof(el));
 
-				// Aqui o server passa 128 itens de drop, os que dropou e o resto vazio
+				// Here the server passes 128 drop items, the ones that dropped and the rest empty
 				if (drop.v_drop.size() < 128)
 					p.addZeroByte((128 - drop.v_drop.size()) * 16);
 			}
@@ -583,7 +583,7 @@ int VersusBase::end_time(void* _arg1, void* _arg2) {
 
 	try {
 		
-		// Tempo Acabou
+		// Time Over
 		game->timeIsOver(_arg2);
 
 	}catch (exception& e) {
@@ -642,11 +642,11 @@ void* VersusBase::checkVersusTurn() {
 #if defined(_WIN32)
 		HANDLE wait_events[2] = { m_hEvent_chk_turn, m_hEvent_chk_turn_pulse };
 		
-		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #elif defined(__linux__)
 		std::vector< Event* > wait_events = { m_hEvent_chk_turn, m_hEvent_chk_turn_pulse };
 		
-		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #endif
 			
 			try {
@@ -669,7 +669,7 @@ void* VersusBase::checkVersusTurn() {
 
 							}else if (m_flag_next_step_game == 2) {
 
-								// Finaliza o Game
+								// End the Game
 								//return 1;
 								_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Finaliza game.", CL_FILE_LOG_AND_CONSOLE));
 							
@@ -699,13 +699,13 @@ void* VersusBase::checkVersusTurn() {
 								_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersus][Error] PlayerGameInfo *m_player_turn[UID=" + std::to_string(m_player_turn->uid) +
 										"], nao conseguiu encontrar o player dele no map de player_info. Bug", CL_FILE_LOG_AND_CONSOLE));
 
-							// Resposta Sync Shot
+							// Sync Shot response
 							sendSyncShot();
 
-							// Limpa a flag de init sync shot aqui, para evitar excessões lá em cima e não conseguir manda a resposta de sync shot
+							// Clear the init sync shot flag here, to avoid exceptions above and failing to send the sync shot response
 							clearSyncShot();
 
-							// Espera o final da tacada
+							// Wait for the end of the shot
 							m_state_vs.setState(STATE_VERSUS::END_SHOT);
 
 						}else if (m_flag_next_step_game != 0) {
@@ -721,7 +721,7 @@ void* VersusBase::checkVersusTurn() {
 
 							}else if (m_flag_next_step_game == 2) {
 
-								// Finaliza o Game
+								// End the Game
 								//return 1;
 								_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Finaliza game.", CL_FILE_LOG_AND_CONSOLE));
 							
@@ -731,7 +731,7 @@ void* VersusBase::checkVersusTurn() {
 							if (m_flag_next_step_game != 1)
 								m_flag_next_step_game = 0u;
 
-						}else {	// Verifica o tempo dos players para ver se precisa pedir para o cliente enviar o pacote novamente
+						}else {	// Check the players' time to see whether the client needs to be asked to send the packet again
 
 #if defined(_WIN32)
 							LARGE_INTEGER current;
@@ -753,7 +753,7 @@ void* VersusBase::checkVersusTurn() {
 									pthread_mutex_lock(&m_cs_sync_shot);
 #endif
 
-									// Só entra se o cliente recebeu o pacote55 e ainda não respondeu com o pacote1B
+									// Only enters if the client received packet55 and has not yet replied with packet1B
 									if (pgi->sync_shot_flag2 == 0u && pgi->tick_sync_shot.active) {
 
 #if defined(_WIN32)
@@ -772,7 +772,7 @@ void* VersusBase::checkVersusTurn() {
 										diff_time = DIFF_TICK_MICRO(current, pgi->tick_sync_shot.tick, frequency);
 #endif
 
-										if (diff_time > five_second_in_microsecond/*5 segundos*/) {
+										if (diff_time > five_second_in_microsecond/*5 seconds*/) {
 #ifdef _DEBUG
 											_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Player[UID=" + std::to_string(s->m_pi.uid)
 													+ "] nao enviou o pacote1B sync shot em 5 segundos. tempo decorrido " + std::to_string(diff_time) + " microsegundos.", CL_FILE_LOG_AND_CONSOLE));
@@ -781,20 +781,20 @@ void* VersusBase::checkVersusTurn() {
 													+ "] nao enviou o pacote1B sync shot em 5 segundos. tempo decorrido " + std::to_string(diff_time) + " microsegundos.", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-											// Terceira vez desconectar o player, 15 segundos e nenhum resposta dele
+											// Third time disconnecting the player, 15 seconds and no response from them
 											if (++pgi->tick_sync_shot.count >= 3) {
 
-												// Limpa o tick timer do player para não entrar mais aqui que ele foi derrubado
+												// Clear the player's tick timer so it does not enter here again since they were dropped
 												pgi->tick_sync_shot.clear();
 
-												// Derruba o socket do player com o shutdown
+												// Drop the player's socket with shutdown
 #if defined(_WIN32)
 												shutdown(s->m_sock, SD_BOTH);
 #elif defined(__linux__)
 												shutdown(s->m_sock.fd, SD_BOTH);
 #endif
 
-												// Envia esse pacote para desconectar o player imadiatemente, por que o server demorar alguns segundos para reconhecer o shutdown
+												// Send this packet to disconnect the player immediately, because the server takes a few seconds to recognize the shutdown
 												packet p((unsigned short)0x8A);
 												packet_func::session_send(p, s, 1);
 
@@ -803,7 +803,7 @@ void* VersusBase::checkVersusTurn() {
 											
 											}else {
 
-												// Limpa o time dele para contar mais 5 segundos para reinviar o pacote8A novamente
+												// Clear their time to count another 5 seconds before resending packet8A
 												pgi->tick_sync_shot.active = 0u;
 #if defined(_WIN32)
 												pgi->tick_sync_shot.tick.QuadPart = 0ll;
@@ -811,7 +811,7 @@ void* VersusBase::checkVersusTurn() {
 												pgi->tick_sync_shot.tick = { 0u, 0u };
 #endif
 
-												// Pedindo para ele enviar o pacote1B sync shot novamente
+												// Asking it to send packet1B sync shot again
 												packet p((unsigned short)0x8A);
 
 												packet_func::session_send(p, s, 1);
@@ -840,7 +840,7 @@ void* VersusBase::checkVersusTurn() {
 
 									_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-									// relança
+									// rethrow
 									throw;
 								}
 							}
@@ -868,7 +868,7 @@ void* VersusBase::checkVersusTurn() {
 
 								}else if (m_flag_next_step_game == 2) {
 
-									// Finaliza o Game
+									// End the Game
 									//return 1;
 									_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Finaliza game.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -879,7 +879,7 @@ void* VersusBase::checkVersusTurn() {
 
 								m_flag_next_step_game = 0u;
 
-							}else // Troca o Turno ou troca de hole ou termina o game
+							}else // Change the Turn or change the hole or end the game
 								changeTurn();
 
 						}else if (m_flag_next_step_game != 0) {
@@ -895,7 +895,7 @@ void* VersusBase::checkVersusTurn() {
 
 							}else if (m_flag_next_step_game == 2) {
 
-								// Finaliza o Game
+								// End the Game
 								//return 1;
 								_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Finaliza game.", CL_FILE_LOG_AND_CONSOLE));
 							
@@ -905,7 +905,7 @@ void* VersusBase::checkVersusTurn() {
 							if (m_flag_next_step_game != 1)
 								m_flag_next_step_game = 0u;
 
-						}else {	// Verifica o tempo dos players para ver se precisa pedir desconectar para não derrubar os outros jogadores
+						}else {	// Check the players' time to see whether a disconnect needs to be requested so as not to drop the other players
 
 #if defined(_WIN32)
 							LARGE_INTEGER current;
@@ -927,7 +927,7 @@ void* VersusBase::checkVersusTurn() {
 									pthread_mutex_lock(&m_cs_sync_shot);
 #endif
 
-									// Só entra se o server recebeu o pacote1C de qualquer jogador do jogo
+									// Only enters if the server received packet1C from any player in the game
 									if (pgi->finish_shot2 == 0u && pgi->tick_sync_end_shot.active) {
 
 #if defined(_WIN32)
@@ -946,7 +946,7 @@ void* VersusBase::checkVersusTurn() {
 										diff_time = DIFF_TICK_MICRO(current, pgi->tick_sync_end_shot.tick, frequency);
 #endif
 
-										if (diff_time > ten_second_in_microsecond/*10 segundos*/) {
+										if (diff_time > ten_second_in_microsecond/*10 seconds*/) {
 #ifdef _DEBUG
 											_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][Log] Player[UID=" + std::to_string(s->m_pi.uid)
 													+ "] nao enviou o pacote1C sync Finish shot em 10 segundos. tempo decorrido " + std::to_string(diff_time) + " microsegundos.", CL_FILE_LOG_AND_CONSOLE));
@@ -955,17 +955,17 @@ void* VersusBase::checkVersusTurn() {
 													+ "] nao enviou o pacote1C sync Finish shot em 10 segundos. tempo decorrido " + std::to_string(diff_time) + " microsegundos.", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-											// Limpa para não entra mais nesse jogador que foi desconectado
+											// Clear so it does not enter for this disconnected player again
 											pgi->tick_sync_end_shot.clear();
 
-											// Derruba o socket do player com o shutdown
+											// Drop the player's socket with shutdown
 #if defined(_WIN32)
 											shutdown(s->m_sock, SD_BOTH);
 #elif defined(__linux__)
 											shutdown(s->m_sock.fd, SD_BOTH);
 #endif
 
-											// Envia esse pacote para desconectar o player imadiatemente, por que o server demorar alguns segundos para reconhecer o shutdown
+											// Send this packet to disconnect the player immediately, because the server takes a few seconds to recognize the shutdown
 											packet p((unsigned short)0x8A);
 											packet_func::session_send(p, s, 1);
 
@@ -996,7 +996,7 @@ void* VersusBase::checkVersusTurn() {
 
 									_smp::message_pool::getInstance().push(new message("[VersusBase::checkVersusTurn][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-									// relança
+									// rethrow
 									throw;
 								}
 							}
@@ -1011,10 +1011,10 @@ void* VersusBase::checkVersusTurn() {
 
 							clearLoadHole();
 
-							// Resposta para o Finish Load Hole
+							// Response to the Finish Load Hole
 							sendReplyFinishLoadHole();
 
-							// Send Rates of VersusBase, Mascot, voice Club e etc
+							// Send Rates of VersusBase, Mascot, voice Club and etc
 							sendRatesOfVersusBase();
 
 							m_state_vs.setState(STATE_VERSUS::WAIT_HIT_SHOT);
@@ -1025,7 +1025,7 @@ void* VersusBase::checkVersusTurn() {
 					case STATE_VERSUS::WAIT_END_GAME:
 					{
 
-						// Faz nada só espera o versus terminar
+						// Does nothing, just waits for the versus to finish
 
 						break;
 					}
@@ -1069,14 +1069,14 @@ void VersusBase::sendInitialData(player& _session) {
 
 	try {
 
-		// No Versus tem o Update Last 5 players play
+		// In Versus there is the Update Last 5 players play
 #if defined(_WIN32)
 		if (InterlockedIncrement(&m_sync_send_init_data) == m_players.size()) {
 #elif defined(__linux__)
 		if (__atomic_add_fetch(&m_sync_send_init_data, 1u, __ATOMIC_RELAXED) == m_players.size()) {
 #endif
 
-			// Zera Variavel Volatile(atomic)
+			// Zero the Volatile (atomic) variable
 #if defined(_WIN32)
 			InterlockedExchange(&m_sync_send_init_data, 0u);
 #elif defined(__linux__)
@@ -1104,7 +1104,7 @@ void VersusBase::sendInitialData(player& _session) {
 				p.addUint32(el->m_pi.uid);
 				p.addBuffer(&el->m_pi.ui, sizeof(UserInfo));
 
-				// Trofel Info Current Season
+				// Trophy Info Current Season
 				p.addBuffer(&el->m_pi.ti_current_season, sizeof(TrofelInfo));
 
 				// User Equipped Item
@@ -1138,7 +1138,7 @@ void VersusBase::sendInitialData(player& _session) {
 
 						value = el->m_pi.getCharacterMaxSlot(CharacterInfo::Stats(stats));
 
-						// Não deixa passar do Slot em jogo
+						// Does not let it go past the in-game Slot
 						if (value != -1 && tmp_char_info.pcl[stats] > value)
 							tmp_char_info.pcl[stats] = (unsigned char)value;
 					}
@@ -1165,7 +1165,7 @@ void VersusBase::sendInitialData(player& _session) {
 
 						value = el->m_pi.getClubSetMaxSlot(CharacterInfo::Stats(stats));
 
-						// Não deixa passar do Slot em jogo
+						// Does not let it go past the in-game Slot
 						if (value != -1 && tmp_csi.slot_c[stats] > value)
 							tmp_csi.slot_c[stats] = (short)value;
 					}
@@ -1184,7 +1184,7 @@ void VersusBase::sendInitialData(player& _session) {
 				// Time Start
 				p.addBuffer(&m_start_time, sizeof(m_start_time));
 
-				// Card(s) Equipped, acho que aqui não vai os itens buff, por que ele só da buff de exp e pang, o outro player nao precisa saber
+				// Card(s) Equipped, I think the buff items do not go here, because it only gives exp and pang buffs, the other player does not need to know
 				v_card_equip_char_and_special.clear();
 
 				for (auto& el2 : el->m_pi.v_cei)
@@ -1215,7 +1215,7 @@ void VersusBase::sendInitialData(player& _session) {
 
 				packet_func::session_send(p, el, 1);
 
-				// No meu tem que atualizar o info do player na sala, sendUpdatePlayerRoomInfo
+				// In mine it needs to update the player info in the room, sendUpdatePlayerRoomInfo
 				//p.init_plain((unsigned short)0x48)
 				//p.addUint8(3);	// Update 0x103
 			}
@@ -1267,14 +1267,14 @@ void VersusBase::requestInitHole(player& _session, packet *_packet) {
 		pgi->location.x = ctx_hole.tee.x;
 		pgi->location.z = ctx_hole.tee.z;
 		
-		// Número do hole atual, que o player está jogando
+		// Current hole number the player is playing
 		pgi->hole = ctx_hole.numero;
 
-		// Flag que marca se o player já inicializou o primeiro hole do jogo
+		// Flag that marks whether the player has already initialized the first hole of the game
 		if (!pgi->init_first_hole)
 			pgi->init_first_hole = 1u;
 
-		// Gera degree para o player ou pega o degree sem gerar que é do modo do hole repeat
+		// Generates degree for the player or gets the degree without generating, which is for hole repeat mode
 		pgi->degree = (m_ri.modo == Hole::M_REPEAT) ? hole->getWind().degree.getDegree() : hole->getWind().degree.getShuffleDegree();
 
 #ifdef _DEBUG
@@ -1293,8 +1293,8 @@ bool VersusBase::requestFinishLoadHole(player& _session, packet *_packet) {
 
 	packet p;
 
-	// Esse aqui é para Trocar Info da Sala
-	// para colocar a sala no modo que pode entrar depois de ter começado
+	// This one is to Change Room Info
+	// to put the room in the mode where it can be joined after it has started
 	bool ret = false;
 
 	try {
@@ -1310,10 +1310,10 @@ bool VersusBase::requestFinishLoadHole(player& _session, packet *_packet) {
 		//if (setLoadHoleAndCheckAllLoadHoleAndClear(pgi)) {
 		//	//clear_all_load_hole();
 
-		//	// Resposta para o Finish Load Hole
+		//	// Response to the Finish Load Hole
 		//	sendReplyFinishLoadHole();
 
-		//	// Send Rates of VersusBase, Mascot, voice Club e etc
+		//	// Send Rates of VersusBase, Mascot, voice Club and etc
 		//	sendRatesOfVersusBase();
 		//}
 
@@ -1334,7 +1334,7 @@ void VersusBase::requestFinishCharIntro(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestFinishCharIntro", "tentou finalizar intro do char no jogo", &_session);
 
-		// Zera todas as tacada num dos players
+		// Zero all the shots of one of the players
 		pgi->data.tacada_num = 0u;
 		
 		// Giveup Flag
@@ -1367,7 +1367,7 @@ void VersusBase::requestFinishHoleData(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestFinishHoleData][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] UserInfo[" + ui.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// aqui o cliente passa mad_conduta com o hole_in, trocados, mad_conduto <-> hole_in
+		// here the client passes mad_conduta with hole_in, swapped, mad_conduto <-> hole_in
 
 		requestTranslateFinishHoleData(_session, ui);
 
@@ -1400,7 +1400,7 @@ void VersusBase::requestInitShotSended(player& _session, packet *_packet) {
 					+ "] nao conseguiu pegar o QueryPerformanceCounter para ele. Bug", CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Player recebeu o pacote55, agora o checkVersusTurn pode verifica se ele enviou o pacote no tempo
+		// Player received packet55, now checkVersusTurn can check whether they sent the packet in time
 		pgi->tick_sync_shot.active = 1u;
 
 #if defined(_WIN32)
@@ -1453,12 +1453,12 @@ void VersusBase::requestInitShot(player& _session, packet *_packet) {
 #endif
 
 		// Stop time turn
-		pgi->bar_space.setState(0);	// Volta para 1 depois que taca, era esse meu comentário no antigo
+		pgi->bar_space.setState(0);	// Goes back to 1 after the shot, this was my comment in the old one
 
-		// para o tempo da tacada ele acabou de tacar
+		// stop the shot time, the player just hit
 		stopTime();
 
-		pgi->tempo = 0;	// Reseta o tempo
+		pgi->tempo = 0;	// Reset the time
 		// end
 
 		ShotDataEx sd{ 0 };
@@ -1480,7 +1480,7 @@ void VersusBase::requestInitShot(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("Log Shot Data Ex:\n\r" + sd.toString(), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Aqui não manda resposta no TourneyBase ou Practice, mas outro modos(VS, MATCH) manda e outros também não(TOURNEY)
+		// Here it does not send a response in TourneyBase or Practice, but other modes (VS, MATCH) do and others do not (TOURNEY)
 		p.init_plain((unsigned short)0x55);
 
 		p.addUint32(_session.m_oid);
@@ -1562,7 +1562,7 @@ void VersusBase::requestInitShotArrowSeq(player& _session, packet *_packet) {
 			unsigned char baixo : 1;
 			unsigned char esquerda : 1;
 			unsigned char direita : 1;
-			unsigned char azul_claro : 1;		// Seta Ativada, o Power Spin ou Power Curve
+			unsigned char azul_claro : 1;		// Set Activated, the Power Spin or Power Curve
 			unsigned char _bit6_a_13 : 8;
 			unsigned char _bit14_a_21 : 8;
 			unsigned char _bit22_a_29 : 8, : 0;
@@ -1600,8 +1600,8 @@ void VersusBase::requestShotEndData(player& _session, packet *_packet) {
 
 	try {
 
-		// ----------------- LEMBRETE --------------
-		// Aqui vou usar para as tacadas do spinning cube que gera no course
+		// ----------------- REMINDER --------------
+		// Here I will use it for the spinning cube shots that are generated on the course
 
 		ShotEndLocationData seld{ 0 };
 
@@ -1614,14 +1614,14 @@ void VersusBase::requestShotEndData(player& _session, packet *_packet) {
 		if (m_player_turn == nullptr)
 			throw exception("[VersusBase::requestShotEndData][Error] m_player_turn is invalid(nullptr)", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 1500, 0));
 
-		// Tava esse aqui antes
+		// This was here before
 		//INIT_PLAYER_INFO("requestShotEndData", "tentou finalizar local da tacada no jogo", &_session);
 
 		//pgi->shot_data_for_cube = seld;
 		if (m_player_turn->uid == _session.m_pi.uid)
 			m_player_turn->shot_data_for_cube = seld;
 
-		// Resposta para Shot End Data
+		// Response to Shot End Data
 		p.init_plain((unsigned short)0x1F7);
 
 		/*p.addUint32(pgi->oid);
@@ -1650,7 +1650,7 @@ RetFinishShot VersusBase::requestFinishShot(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestFinishShot", "tentou sincronizar o termino da tacada no jogo", &_session);
 
-		// Essa parte tem que vir antes, mas estou fazendo teste de dc
+		// This part has to come before, but I am testing dc
 #if defined(_WIN32)
 		EnterCriticalSection(&m_cs_sync_shot);
 #elif defined(__linux__)
@@ -1673,8 +1673,8 @@ RetFinishShot VersusBase::requestFinishShot(player& _session, packet *_packet) {
 		}else
 			pgi->finish_shot2 = 1u;
 
-		// Recebeu o primeiro finish shot libera a contagem, para verifica se o cliente recebeu a resposta em menos de 10 segundos
-		// só entra se o timer do player no tick_sync_end_shot não estiver ativado, por que quando ativa 1 ativa todos
+		// Received the first finish shot, releases the count, to check whether the client received the response in under 10 seconds
+		// only enters if the player's timer in tick_sync_end_shot is not enabled, because when 1 is enabled all are
 		if (!pgi->tick_sync_end_shot.active) {
 
 			std::for_each(m_players.begin(), m_players.end(), [&](auto& _el) {
@@ -1683,7 +1683,7 @@ RetFinishShot VersusBase::requestFinishShot(player& _session, packet *_packet) {
 
 					INIT_PLAYER_INFO("requestFinishShot", " tentou ativar all tick sync end shot do jogo", _el);
 
-					// Limpa o tick_sync_shot para a próxima tacada(shot)
+					// Clear tick_sync_shot for the next shot
 #if defined(_WIN32)
 					QueryPerformanceCounter(&pgi->tick_sync_end_shot.tick);
 #elif defined(__linux__)
@@ -1723,7 +1723,7 @@ RetFinishShot VersusBase::requestFinishShot(player& _session, packet *_packet) {
 		// Request Init Cube Coin
 		auto cube = requestInitCubeCoin(_session, _packet);
 
-		// Resposta para Finish Shot
+		// Response to Finish Shot
 		sendEndShot(_session, cube);
 
 		ret.ret = checkEndShotOfHole(_session);
@@ -1774,7 +1774,7 @@ void VersusBase::requestChangeMira(player& _session, packet *_packet) {
 
 		pgi->location.r = mira;
 
-		// Resposta para o Change mira
+		// Response to the Change aim
 		p.init_plain((unsigned short)0x56);
 
 		p.addUint32(pgi->oid);
@@ -1823,7 +1823,7 @@ void VersusBase::requestChangeStateBarSpace(player& _session, packet *_packet) {
 
 					pgi->data.tacada_num = hole->getPar().total_shot;
 
-					// Derruba player, tem que fazer isso no channel ou na sala, com o retorno dessa função
+					// Drop player, this has to be done in the channel or in the room, with the return of this function
 					pgi->data.bad_condute = 3;
 				}
 			
@@ -1840,15 +1840,15 @@ void VersusBase::requestChangeStateBarSpace(player& _session, packet *_packet) {
 			packet_func::game_broadcast(*this, p, 1);
 
 		}
-		// Agora esse está no requestInitShot
-		/*else if (state == 3 && pgi->bar_space.getPoint()[3] <= 250.f/*só pode da bad entre 100 a 250 (ACHO, não sei o valor certo ainda)*//*) {
+		// Now this one is in requestInitShot
+		/*else if (state == 3 && pgi->bar_space.getPoint()[3] <= 250.f/*can only be bad between 100 and 250 (I THINK, I do not know the exact value yet)*//*) {
 
-			pgi->bar_space.setState(0);	// Volta para 1 depois que taca, era esse meu comentário no antigo
+			pgi->bar_space.setState(0);	// Goes back to 1 after the shot, this was my comment in the old one
 
-			// para o tempo da tacada ele acabou de tacar
+			// stop the shot time, the player just hit
 			stopTime();
 
-			pgi->tempo = 0;	// Reseta o tempo
+			pgi->tempo = 0;	// Reset the time
 		}*/
 
 	}catch (exception& e) {
@@ -1870,7 +1870,7 @@ void VersusBase::requestActivePowerShot(player& _session, packet *_packet) {
 
 		pgi->power_shot = ps;
 
-		// Resposta para Active Power Shot
+		// Response to Active Power Shot
 		p.init_plain((unsigned short)0x58);
 
 		p.addUint32(_session.m_oid);
@@ -1897,7 +1897,7 @@ void VersusBase::requestChangeClub(player& _session, packet *_packet) {
 
 		pgi->club = club;
 
-		// Resposta para Change Club
+		// Response to Change Club
 		p.init_plain((unsigned short)0x59);
 
 		p.addUint32(_session.m_oid);
@@ -1956,13 +1956,13 @@ void VersusBase::requestUseActiveItem(player& _session, packet *_packet) {
 			throw exception("[VersusBase::requestActiveItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar active item[TYPEID="
 					+ std::to_string(item_typeid) + "] no jogo, mas ele ja usou todos os item desse que ele equipou. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 10, 0));
 
-		// Add +1 ou countador
+		// Add +1 or counter
 		it->second.count++;
 
-		// item que foi usado na tacada
+		// item that was used in the shot
 		pgi->item_active_used_shot = pWi->_typeid;
 
-		// Resposta para o Use Active Item
+		// Response to the Use Active Item
 		p.init_plain((unsigned short)0x5A);
 
 		p.addUint32(pWi->_typeid);
@@ -1990,7 +1990,7 @@ void VersusBase::requestChangeStateTypeing(player& _session, packet *_packet) {
 
 		pgi->typeing = typeing;
 
-		// Resposta para Change State Typeing /*Escrevendo*/
+		// Response to Change State Typing /*Writing*/
 		p.init_plain((unsigned short)0x5D);
 
 		p.addUint32(_session.m_oid);
@@ -2021,10 +2021,10 @@ void VersusBase::requestMoveBall(player& _session, packet *_packet) {
 		pgi->location.y = y;
 		pgi->location.z = z;
 
-		// para o tempo do da tacada do player, que ele vai recolocar e come�a um novo tempo depois
+		// for the time of the player's shot, which they will reset and start a new time afterwards
 		stopTime();
 
-		// Resposta para Move Ball
+		// Response to Move Ball
 		p.init_plain((unsigned short)0x60);
 
 		p.addFloat(pgi->location.x);
@@ -2052,7 +2052,7 @@ void VersusBase::requestChangeStateChatBlock(player& _session, packet *_packet) 
 
 		pgi->chat_block = chat_block;
 
-		// Resposta para Chat Block
+		// Response to Chat Block
 		p.init_plain((unsigned short)0xAC);
 
 		p.addUint32(_session.m_oid);
@@ -2077,7 +2077,7 @@ void VersusBase::requestActiveBooster(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestActiveBooster", "tentou ativar Time Booster no jogo", &_session);
 
-		if ((_session.m_pi.m_cap.stBit.premium_user/* & (1 << 14)/*0x00004000/*PREMIUM USER*/) == 0) { // (não é)!PREMIUM USER
+		if ((_session.m_pi.m_cap.stBit.premium_user/* & (1 << 14)/*0x00004000/*PREMIUM USER*/) == 0) { // (is not)!PREMIUM USER
 
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(TIME_BOOSTER_TYPEID);
 
@@ -2099,17 +2099,17 @@ void VersusBase::requestActiveBooster(player& _session, packet *_packet) {
 				throw exception("[VersusBase::requestActiveBooster][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar time booster, mas ele ja usou todos os time booster. Hacker ou Bug", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 14, 0));
 
-			// Add +1 ao item passive usado
+			// Add +1 to the passive item used
 			it->second.count++;
 
-		}else { // Soma +1 no contador de counter item do booster do player e passive item
+		}else { // Add +1 to the player's booster item counter and passive item counter
 
 			pgi->sys_achieve.incrementCounter(0x6C400075u/*Passive Item*/);
 
 			pgi->sys_achieve.incrementCounter(0x6C400050u);
 		}
 
-		// Resposta para Active Booster
+		// Response to Active Booster
 		p.init_plain((unsigned short)0xC7);
 
 		p.addFloat(velocidade);
@@ -2167,7 +2167,7 @@ void VersusBase::requestActiveReplay(player& _session, packet *_packet) {
 #endif // _DEBUG
 
 		// UPDATE ON GAME
-		// Resposta para o Active Replay
+		// Response to the Active Replay
 		p.init_plain((unsigned short)0xA4);
 
 		p.addUint16((unsigned short)item.stat.qntd_dep);
@@ -2194,8 +2194,8 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 		uint32_t uid;
 		uint32_t tipo;
 		unsigned short opt;
-		uint32_t char_typeid;	// Aqui pode ter o typeid do cutin também
-		unsigned char active;		// Active acho, sempre com valor 1 que peguei, 1 quando é id do character, 0 quando é o typeid do Cutin
+		uint32_t char_typeid;	// Here it can also have the cutin typeid
+		unsigned char active;		// Active I think, always with value 1 in what I captured, 1 when it is the character id, 0 when it is the Cutin typeid
 	};
 
 #if defined(__linux__)
@@ -2222,7 +2222,7 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 
 		IFF::CutinInfomation *pCutin = nullptr;
 
-		// Cutin Padrão que o player equipa, quando o cliente envia o cutin type é que é efeito por roupas equipadas
+		// Default Cutin that the player equips, when the client sends the cutin type it is the effect from equipped clothes
 		if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::CHARACTER && ac.active) {
 
 			if (s->m_pi.ei.char_info->_typeid != ac.char_typeid)
@@ -2257,9 +2257,9 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 				}
 			}
 
-		}else if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::SKIN/*Cutin é uma Skin*/ && ac.active == 0) {
+		}else if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::SKIN/*Cutin is a Skin*/ && ac.active == 0) {
 
-			// Verificar se ele tem os itens para ativar esse Cutin
+			// Check whether they have the items to activate this Cutin
 
 			if ((pCutin = sIff::getInstance().findCutinInfomation(ac.char_typeid)) == nullptr)
 				throw exception("[VersusBase::requestActiveCutin][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou activar cutin[CHAR_TYPEID="
@@ -2267,7 +2267,7 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 						+ std::to_string(ac.uid) + "], mas o jogador nao tem esse cutin[TYPEID="
 						+ std::to_string(ac.char_typeid) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 3, 0x5200103));
 
-			// Esses que passa o cutin typeid, pode ativar com tipo 1 e 2, 1 PS e 2 PS
+			// Those that pass the cutin typeid can be activated with type 1 and 2, 1 PS and 2 PS
 			/*if (pCutin->tipo != ac.tipo)
 				throw exception("[VersusBase::requestActiveCutin][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou activar cutin[CHAR_TYPEID="
 						+ std::to_string(ac.char_typeid) + ", TIPO=" + std::to_string(ac.tipo) + ", OPT=" + std::to_string(ac.opt) + ",  ACTIVE=" + std::to_string(ac.active) + "] de um player[UID="
@@ -2281,7 +2281,7 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 					+ std::to_string(ac.uid) + "], mas o cution nao foi encontrado[TYPEID="
 					+ std::to_string(ac.char_typeid) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 4, 0x5200104));
 
-		// Resposta para Active Cutin
+		// Response to Active Cutin
 		p.init_plain((unsigned short)0x18D);
 
 		p.addUint8(1u);	// OK
@@ -2304,7 +2304,7 @@ void VersusBase::requestActiveCutin(player& _session, packet *_packet) {
 
 		packet_func::game_broadcast(*this, p, 1);
 
-		// No Modo GrandZodic, não envia Cutin, então envia o pacote18D com option 0(Uint8), e valor 3(Uint16)
+		// In GrandZodic mode, it does not send Cutin, so it sends packet18D with option 0(Uint8), and value 3(Uint16)
 
 	}catch (exception& e) {
 
@@ -2332,7 +2332,7 @@ void VersusBase::requestActiveRing(player& _session, packet *_packet) {
 	struct stRing {
 		void clear() { memset(this, 0, sizeof(stRing)); };
 		uint32_t _typeid;
-		uint32_t effect_value;		// valor do efeito
+		uint32_t effect_value;		// effect value
 		unsigned char efeito;
 	};
 
@@ -2364,10 +2364,10 @@ void VersusBase::requestActiveRing(player& _session, packet *_packet) {
 			throw exception("[VersusBase::requestActiveRing][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Anel[TYPEID="
 					+ std::to_string(r._typeid) + "], mas ele nao esta equipado com o anel. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 33, 0x330004));
 
-		// Adiciona o efeito que foi ativado
+		// Add the effect that was activated
 		checkEffectItemAndSet(_session, r._typeid);
 
-		// Resposta para o cliente
+		// Response to the client
 		p.init_plain((unsigned short)0x237);
 
 		p.addUint32(0);	// OK
@@ -2383,7 +2383,7 @@ void VersusBase::requestActiveRing(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveRing][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x237);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::VERSUS_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x330000);
@@ -2407,7 +2407,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 			return (ring[0] != 0 && ring[1] != 0);
 		};
 		uint32_t efeito;
-		uint32_t ring[2];	// 2 Anel, "Set"(Conjunto)
+		uint32_t ring[2];	// 2 Rings, "Set"
 		uint32_t option;
 	};
 
@@ -2421,7 +2421,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&rg, sizeof(rg));
 
-		// Log para saber qual é o efeito 31(0x1F)
+		// Log to know which effect is 31(0x1F)
 		if (IFF::Ability::eEFFECT_TYPE(rg.efeito) == IFF::Ability::eEFFECT_TYPE::UNKNOWN_31)
 			_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveRingGround][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] ativou o efeito 0x1F(31) com os itens[TYPEID_1=" + std::to_string(rg.ring[0])
@@ -2437,7 +2437,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 					+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 					+ std::to_string(rg.option) + "], mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 51, 0x340002));
 
-		if (sIff::getInstance().getItemGroupIdentify(rg.ring[0]) == iff::AUX_PART) {	// Anel
+		if (sIff::getInstance().getItemGroupIdentify(rg.ring[0]) == iff::AUX_PART) {	// Ring
 
 			auto pRing = _session.m_pi.findWarehouseItemByTypeid(rg.ring[0]);
 
@@ -2451,7 +2451,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao esta com o Anel[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 53, 0x340003));
 
-			if (rg.ring[0] != rg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) {	// Activated combined Ability of 2 rings
 
 				auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -2480,7 +2480,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao esta com o Part[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 53, 0x340003));
 
-			if (rg.ring[0] != rg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) {	// Activated combined Ability of 2 rings
 
 				auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -2504,7 +2504,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao tem o Mascot[0]. hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 52, 0x340002));
 
-			if (rg.ring[0] != rg.ring[1]) { // Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) { // Activated combined Ability of 2 rings
 
 				auto pPart2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -2520,11 +2520,11 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 			}
 		}
 
-		// Adiciona o efeito que foi ativado
+		// Add the effect that was activated
 		//checkEffectItemAndSet(_session, rg.ring[0]);
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE(rg.efeito)));
 
-		// Resposta para o Active Ring Terreno
+		// Response to the Active Ring Terrain
 		p.init_plain((unsigned short)0x266);
 
 		p.addUint32(0);	// OK
@@ -2539,7 +2539,7 @@ void VersusBase::requestActiveRingGround(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveRingGround][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x266);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::VERSUS_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x340000);
@@ -2555,10 +2555,10 @@ void VersusBase::requestActiveRingPawsRainbowJP(player& _session, packet *_packe
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou
+		// The paws effect does not pass the TYPEID of the item that activated it
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_ACCUMULATE));
 
-		// Resposta para o Active Ring Paws Rainbow JP
+		// Response to the Active Ring Paws Rainbow JP
 		p.init_plain((unsigned short)0x27E);
 
 		p.addUint32(_session.m_pi.uid);
@@ -2578,10 +2578,10 @@ void VersusBase::requestActiveRingPawsRingSetJP(player& _session, packet *_packe
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou
+		// The paws effect does not pass the TYPEID of the item that activated it
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_NOT_ACCUMULATE));
 
-		// Resposta para o Active Ring Paws Ring Set JP
+		// Response to the Active Ring Paws Ring Set JP
  		p.init_plain((unsigned short)0x281);
 
 		p.addUint32(_session.m_pi.uid);
@@ -2609,7 +2609,7 @@ void VersusBase::requestActiveRingPowerGagueJP(player& _session, packet *_packet
 			return (ring[0] != 0 && ring[1] != 0);
 		};
 		uint32_t efeito;
-		uint32_t ring[2];	// 2 Ring é Conjuntos de Aneis
+		uint32_t ring[2];	// 2 Ring is Ring Sets
 		uint32_t option;
 	};
 
@@ -2645,7 +2645,7 @@ void VersusBase::requestActiveRingPowerGagueJP(player& _session, packet *_packet
 					+ std::to_string(rpg.efeito) + ", RING[0]=" + std::to_string(rpg.ring[0]) + ", RING[1]=" + std::to_string(rpg.ring[1]) + ", OPTION="
 					+ std::to_string(rpg.option) + "], mas ele nao esta com o Anel[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 153, 0x390003));
 
-		if (rpg.ring[0] != rpg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+		if (rpg.ring[0] != rpg.ring[1]) {	// Activated combined Ability of 2 rings
 
 			auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rpg.ring[1]);
 
@@ -2663,7 +2663,7 @@ void VersusBase::requestActiveRingPowerGagueJP(player& _session, packet *_packet
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::POWER_GAUGE_FREE));
 
-		// Resposta para o Active Ring Power Gague JP
+		// Response to the Active Ring Power Gauge JP
 		p.init_plain((unsigned short)0x27F);
 
 		p.addUint32(_session.m_pi.uid);
@@ -2699,7 +2699,7 @@ void VersusBase::requestActiveRingMiracleSignJP(player& _session, packet *_packe
 			throw exception("[VersusBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
 					+ std::to_string(_typeid) + "] Olho Magico JP, mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 72, 0x350003));
 
-		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Anel
+		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Ring
 			
 			if (std::find(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts))
 				throw exception("[VersusBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
@@ -2711,12 +2711,12 @@ void VersusBase::requestActiveRingMiracleSignJP(player& _session, packet *_packe
 				throw exception("[VersusBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
 						+ std::to_string(_typeid) + "] Olho Magico JP, mas ele nao esta com a Part equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 74, 0x350005));
 
-		}	// else Item Passive, o item do assist, mas acho que ele n�o chame esse, ele chama o proprio pacote dele
+		}	// else Passive Item, the assist item, but I think it does not call this, it calls its own packet
 
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::MIRACLE_SIGN_RANDOM));
 
-		// Resposta para o Active Ring Miracle Sign JP
+		// Response to the Active Ring Miracle Sign JP
 		p.init_plain((unsigned short)0x280);
 
 		p.addUint32(0);	// OK;
@@ -2730,7 +2730,7 @@ void VersusBase::requestActiveRingMiracleSignJP(player& _session, packet *_packe
 
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveRingMiracleSign][ErroSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x280);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::VERSUS_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x350000);
@@ -2766,10 +2766,10 @@ void VersusBase::requestActiveWing(player& _session, packet *_packet) {
 			throw exception("[VersusBase::ActiveWing][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Asa[TYPEID="
 					+ std::to_string(_typeid) + "], mas ele nao esta com o item 'Asa' equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 93, 0x360004));
 
-		// Adiciona o efeito que foi ativado
+		// Add the effect that was activated
 		checkEffectItemAndSet(_session, _typeid);
 
-		// Resposta para o Active Wing
+		// Response to the Active Wing
 		p.init_plain((unsigned short)0x203);
 
 		p.addUint32(_session.m_pi.uid);
@@ -2791,10 +2791,10 @@ void VersusBase::requestActivePaws(player& _session, packet *_packet) {
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou, Animal Ring(Anel) ou Patinha
+		// The paws effect does not pass the TYPEID of the item that activated it, Animal Ring(Ring) or Paws
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_NOT_ACCUMULATE));
 
-		// Resposta para o Active Paws
+		// Response to the Active Paws
 		p.init_plain((unsigned short)0x236);
 
 		p.addUint32(_session.m_pi.uid);
@@ -2830,23 +2830,23 @@ void VersusBase::requestActiveGlove(player& _session, packet *_packet) {
 			throw exception("[VersusBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 					+ std::to_string(_typeid) + "], mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 112, 0x370003));
 
-		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::PART) {	// Luva
+		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::PART) {	// Glove
 
 			if (std::find(_session.m_pi.ei.char_info->parts_typeid, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->parts_typeid), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->parts_typeid))
 				throw exception("[VersusBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 						+ std::to_string(_typeid) + "], mas ele nao tem a Luva equipada. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 113, 0x370004));
 
-		}else if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Anel
+		}else if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Ring
 
 			if (std::find(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts))
 				throw exception("[VersusBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 						+ std::to_string(_typeid) + "], mas ele nao tem o Anel equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 114, 0x370005));
 		}
 
-		// Adiciona o efeito que foi ativado
+		// Add the effect that was activated
 		checkEffectItemAndSet(_session, _typeid);
 
-		// Resposta para o Active Glove
+		// Response to the Active Glove
 		p.init_plain((unsigned short)0x265);
 
 		p.addUint32(0);	// OK
@@ -2861,7 +2861,7 @@ void VersusBase::requestActiveGlove(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveGlove][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x265);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::VERSUS_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x370000);
@@ -2882,7 +2882,7 @@ void VersusBase::requestActiveEarcuff(player& _session, packet *_packet) {
 	struct stEarcuff {
 		void clear() { memset(this, 0, sizeof(stEarcuff)); };
 		uint32_t _typeid;
-		unsigned char angle;	// Sentido do angulo, back(Angel) ou front(Devil)
+		unsigned char angle;	// Direction of the angle, back(Angel) or front(Devil)
 		float x_point_angle;
 	};
 
@@ -2940,7 +2940,7 @@ void VersusBase::requestActiveEarcuff(player& _session, packet *_packet) {
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::EARCUFF_DIRECTION_WIND));
 
-		// Radianos do angulo que foi trocado a direção
+		// Radians of the angle whose direction was changed
 		pgi->earcuff_wind_angle_shot = (float)(ec.x_point_angle < 0.f
 			? (2 *
 #if defined(_WIN32) 
@@ -2952,7 +2952,7 @@ void VersusBase::requestActiveEarcuff(player& _session, packet *_packet) {
 			: ec.x_point_angle
 		);
 
-		// Resposta para o Active Earcuff
+		// Response to the Active Earcuff
 		p.init_plain((unsigned short)0x24C);
 
 		p.addUint32(0);	// OK
@@ -2971,7 +2971,7 @@ void VersusBase::requestActiveEarcuff(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestActiveEarcuff][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x24C);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::VERSUS_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x380000);
@@ -3006,7 +3006,7 @@ void VersusBase::requestMarkerOnCourse(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&moc, sizeof(stMarkerOnCourse));
 
-		// Resposta para MarkerOnCourse
+		// Response to MarkerOnCourse
 		p.init_plain((unsigned short)0x1F8);
 
 		p.addUint32(_session.m_oid);
@@ -3030,7 +3030,7 @@ void VersusBase::requestLoadGamePercent(player& _session, packet *_packet) {
 
 		unsigned char percent = _packet->readUint8();
 
-		// Resposta para o Load Game Percent
+		// Response to the Load Game Percent
 		p.init_plain((unsigned short)0xA3);
 
 		p.addUint32(_session.m_oid);
@@ -3050,7 +3050,7 @@ void VersusBase::requestStartTurnTime(player& _session, packet *_packet) {
 
 	try {
 
-		// Começa a contar o tempo do turno do player no Jogo
+		// Starts counting the player's turn time in the Game
 		startTime(&_session);
 
 		m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_HIT_SHOT);
@@ -3074,7 +3074,7 @@ void VersusBase::requestUnOrPause(player& _session, packet *_packet) {
 			throw exception("[VersusBase::requestUnOrPause][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou pausar ou despausar[OPT=" 
 					+ std::to_string((unsigned short)opt) + "] um VersusBase, que nao tem timer inicializado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 300, 0));
 
-		if (opt == 0) {	// Despausa
+		if (opt == 0) {	// Unpause
 
 			if (m_timer->getState() != timer::TIMER_STATE::PAUSED)
 				throw exception("[VersusBase::requestUnOrPause][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou pausar ou despausar[OPT="
@@ -3086,7 +3086,7 @@ void VersusBase::requestUnOrPause(player& _session, packet *_packet) {
 
 			p.addUint32(_session.m_oid);
 
-			p.addUint8(0/*Despausa*/);
+			p.addUint8(0/*Unpause*/);
 
 			packet_func::game_broadcast(*this, p, 1);
 
@@ -3096,7 +3096,7 @@ void VersusBase::requestUnOrPause(player& _session, packet *_packet) {
 					+ std::to_string(m_ri.numero) + "] com sucesso!", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		}else if (opt == 1) {	// Pausa
+		}else if (opt == 1) {	// Pause
 
 			if (m_timer->getState() != timer::TIMER_STATE::RUNNING)
 				throw exception("[VersusBase::requestUnOrPause][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou pausar ou despausar[OPT="
@@ -3112,7 +3112,7 @@ void VersusBase::requestUnOrPause(player& _session, packet *_packet) {
 
 			p.addUint32(_session.m_oid);
 
-			p.addUint8(1/*Pausa*/);
+			p.addUint8(1/*Pause*/);
 
 			packet_func::game_broadcast(*this, p, 1);
 
@@ -3135,7 +3135,7 @@ void VersusBase::requestReplyContinue() {
 
 	try {
 
-		// Troca o Turno
+		// Change the Turn
 		changeTurn();
 
 	}catch (exception& e) {
@@ -3190,7 +3190,7 @@ void VersusBase::requestExecCCGChangeWeather(player& _session, packet *_packet) 
 		packet p((unsigned short)0x9E);
 
 		p.addUint16(hole->getWeather());
-		p.addUint8(1);						// Acho que seja flag, não sei, vou deixar 1 por ser o GM que mudou
+		p.addUint8(1);						// I think it is a flag, I do not know, I will leave 1 since it was the GM who changed it
 
 		packet_func::game_broadcast(*this, p, 1);
 
@@ -3219,7 +3219,7 @@ bool VersusBase::requestFinishGame(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestFinishGame][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] UserInfo[" + ui.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// aqui o cliente passa mad_conduta com o hole_in, trocados, mad_conduto <-> hole_in
+		// here the client passes mad_conduta with hole_in, swapped, mad_conduto <-> hole_in
 
 		INIT_PLAYER_INFO("requestFinishGame", "tentou terminar o jogo", &_session);
 
@@ -3239,20 +3239,20 @@ bool VersusBase::requestFinishGame(player& _session, packet *_packet) {
 void VersusBase::startTime(void* _quem) {
 
 	try {
-		// Aqui tem tem ser come�a o tempo do player do turno e soma +1 ao n�mero de tacadas dele
+		// Here the player's turn time has to start and +1 is added to their number of shots
 		INIT_PLAYER_INFO("startTime", "tentou comecar o tempo do player turno no jogo", (player*)_quem);
 
-		// Soma +1 na tacada do player
+		// Add +1 to the player's shot
 		pgi->data.tacada_num++;
 
-		// Para Tempo se j� estiver 1 timer
+		// Stop the time if there is already 1 timer
 		if (m_timer != nullptr)
 			stopTime();
 
 		job j(VersusBase::end_time, this, _quem);
 
 		//if (sgs::gs != nullptr)
-			m_timer = sgs::gs::getInstance().makeTime(m_ri.time_vs/*milliseconds*/, j);	// j� est� em minutos milliseconds
+			m_timer = sgs::gs::getInstance().makeTime(m_ri.time_vs/*milliseconds*/, j);	// already in minutes milliseconds
 		/*else
 			_smp::message_pool::getInstance().push(new message("[VersusBase::startTime][Error] tentou inicializar um timer, mas a variavel global estatica do Server eh invalida.", CL_FILE_LOG_AND_CONSOLE));*/
 
@@ -3271,13 +3271,13 @@ void VersusBase::timeIsOver(void* _quem) {
 	if (_quem == nullptr)
 		_smp::message_pool::getInstance().push(new message("[VersusBase::timeIsOver][WARNING] time is over executed without _quem, _quem is invalid(nullptr). Bug", CL_FILE_LOG_AND_CONSOLE));
 
-	// Tempo do player do turno acabou, troca para end_shot
+	// The turn player's time ran out, switch to end_shot
 	m_state_vs.setStateWithLock(STATE_VERSUS::END_SHOT);
 }
 
 bool VersusBase::init_game() {
 
-	// Inicializar Treasure Hunter Info do Versus Base
+	// Initialize Treasure Hunter Info of the Versus Base
 	init_treasure_hunter_info();
 
 	return true;
@@ -3312,7 +3312,7 @@ void VersusBase::requestTranslateSyncShotData(player& _session, ShotSyncData& _s
 			pgi->data.pang = _ssd.pang;
 			pgi->data.bonus_pang = _ssd.bonus_pang;
 
-			// J� s� na fun��o que come�a o tempo do player do turno
+			// Already only in the function that starts the turn player's time
 			//pgi->data.tacada_num++;
 
 			if (_ssd.state == ShotSyncData::OUT_OF_BOUNDS || _ssd.state == ShotSyncData::UNPLAYABLE_AREA)
@@ -3324,20 +3324,20 @@ void VersusBase::requestTranslateSyncShotData(player& _session, ShotSyncData& _s
 				throw exception("[VersusBase::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada no hole[NUMERO="
 						+ std::to_string((unsigned short)pgi->hole) + "], mas o numero do hole is invalid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 12, 0));
 
-			// Conta j� a pr�xima tacada, no give up
+			// Counts the next shot already, on give up
 			if (!_ssd.state_shot.display.stDisplay.acerto_hole && hole->getPar().total_shot <= (pgi->data.tacada_num + 1)) {
 
-				// +1 que � giveup, s� add se n�o passou o n�mero de tacadas
+				// +1 which is the giveup, only add if the number of shots was not exceeded
 				if (pgi->data.tacada_num < hole->getPar().total_shot)
 					pgi->data.tacada_num++;
 
 				pgi->data.giveup = 1;
 
-				// Soma +1 no Bad Condute
+				// Add +1 to Bad Conduct
 				pgi->data.bad_condute++;
 			}
 
-			// aqui os achievement de power shot int32_t putt beam impact e etc
+			// here the achievements for power shot int32_t putt beam impact and etc
 			update_sync_shot_achievement(_session, last_location);
 		}
 
@@ -3372,7 +3372,7 @@ void VersusBase::requestReplySyncShotData(player& _session) {
 		//		_smp::message_pool::getInstance().push(new message("[VersusBase::requestReplySyncShotData][Error] PlayerGameInfo *m_player_turn[UID=" + std::to_string(m_player_turn->uid) +
 		//				"], nao conseguiu encontrar o player dele no map de player_info. Bug", CL_FILE_LOG_AND_CONSOLE));
 
-		//	// Resposta Sync Shot
+		//	// Sync Shot response
 		//	sendSyncShot();
 		//}
 
@@ -3391,7 +3391,7 @@ void VersusBase::requestTranslateFinishHoleData(player& _session, UserInfoEx& _u
 
 		pgi->ui = _ui;
 
-		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole) {	// Terminou o Hole sem acerta ele, Give Up
+		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole) {	// Finished the Hole without hitting it, Give Up
 
 			auto hole = m_course->findHole(pgi->hole);
 
@@ -3399,21 +3399,21 @@ void VersusBase::requestTranslateFinishHoleData(player& _session, UserInfoEx& _u
 				throw exception("[VersusBase::requestFinishHoleData][Error] player[UID=" + std::to_string(pgi->uid) + "] tentou finalizar os dados do hole no jogo, mas o hole[NUMERO="
 						+ std::to_string(pgi->hole) + "] nao existe no course. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS, 400, 0));
 
-			// +1 que é giveup, só add se não passou o número de tacadas
+			// +1 which is the giveup, only add if the number of shots was not exceeded
 			if (pgi->data.tacada_num < hole->getPar().total_shot)
 				pgi->data.tacada_num++;
 
-			// Ainda não colocara o give up, o outro pacote, coloca nesse(muito difícil, não colocar só se estiver com bug)
+			// Has not put the give up yet, the other packet, put it in this one (very difficult, do not put unless there is a bug)
 			if (!pgi->data.giveup) {
 				pgi->data.giveup = 1;
 
-				// Incrementa o Bad Condute
+				// Increment the Bad Conduct
 				pgi->data.bad_condute++;
 			}
 		}
 
-		// Aqui Salva os dados do Pgi, os best Chipin, Long putt e best drive(max distância)
-		// Não sei se precisa de salvar aqui, já que estou salvando no pgi User Info
+		// Here it saves the Pgi data, the best Chipin, Long putt and best drive (max distance)
+		// I do not know if it needs to be saved here, since I am saving it in the pgi User Info
 		pgi->progress.best_chipin = _ui.best_chip_in;
 		pgi->progress.best_long_puttin = _ui.best_long_putt;
 		pgi->progress.best_drive = _ui.best_drive;
@@ -3440,18 +3440,18 @@ bool VersusBase::checkNextStepGame(player& _session) {
 
 		if (m_players.size() == 2 && seq >= 4) {
 
-			if (m_ri.qntd_hole == 18) {	// 18 Envia a pergunta se o player quer continuar o VS Sozinho
+			if (m_ri.qntd_hole == 18) {	// 18 Sends the question of whether the player wants to continue the VS alone
 
 				if (m_player_turn == nullptr) {
 
-					// Player Turn ainda não foi decidido, termina o jogo
+					// Player Turn has not been decided yet, ends the game
 					m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-					ret = true;	// Termina o Game
+					ret = true;	// Ends the Game
 
 				}else if (m_player_turn == pgi) {
 
-					// só tem 2 na sala, então só retorna uma session
+					// there are only 2 in the room, so it only returns one session
 					auto sessions = getSessions(&_session);
 
 					packet p((unsigned short)0x92);
@@ -3463,96 +3463,96 @@ bool VersusBase::checkNextStepGame(player& _session) {
 
 				}else if (!checkPlayerTurnExistOnGame()) {
 
-					// Player Turn não está mais no jogo, termina o jogo
+					// Player Turn is no longer in the game, ends the game
 					m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-					ret = true;	// Termina o Game
+					ret = true;	// Ends the Game
 
 				}else
-					m_flag_next_step_game = 1;	// Pergunta se quer continuar
+					m_flag_next_step_game = 1;	// Asks whether they want to continue
 
 			}else if (m_player_turn == nullptr) {
 
-				// Player Turn ainda não foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 				
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn não está mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
-				m_flag_next_step_game = 2;	// Termina o game
+				m_flag_next_step_game = 2;	// Ends the game
 
 		}else if (m_players.size() == 2) {
 
 			if (m_player_turn == nullptr) {
 
-				// Player Turn ainda não foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 				
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn não está mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
-				m_flag_next_step_game = 2;	// Termina o game
+				m_flag_next_step_game = 2;	// Ends the game
 		
-		}else if (m_players.size() == 1) {	// Player quitou mesmo sendo o ultimo no jogo
+		}else if (m_players.size() == 1) {	// Player quit even though they were the last one in the game
 
 			if (m_player_turn == nullptr) {
 
-				// Player Turn ainda não foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 				
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn não está mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
 				m_flag_next_step_game = 2;
 		
 		}else if(m_player_turn == nullptr) {
 
-			// Player Turn ainda não foi decidido, termina o jogo
+			// Player Turn has not been decided yet, ends the game
 			m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-			ret = true;	// Termina o Game
+			ret = true;	// Ends the Game
 
 		}else
-			m_flag_next_step_game = 3;	// Player quitou
+			m_flag_next_step_game = 3;	// Player quit
 
 	}catch (exception& e) {
 
@@ -3575,12 +3575,12 @@ bool VersusBase::checkPlayerTurnExistOnGame() {
 
 		INIT_PLAYER_INFO("checkPlayerTurnExistOnGame", "verifica se o player turno existe no jogo", el);
 
-		// Existe
+		// Exists
 		if (m_player_turn == pgi)
 			return true;
 	}
 
-	// Não existe
+	// Does not exist
 	return false;
 }
 
@@ -4588,7 +4588,7 @@ void VersusBase::clear_all_finish_shot() {
 
 			pgi->finish_shot = 0u;
 
-			// Limpa o tick_sync_end_shot para a próxima tacada(shot)
+			// Clear tick_sync_end_shot for the next shot
 			pgi->tick_sync_end_shot.clear();
 
 		}catch (exception& e) {
@@ -4625,7 +4625,7 @@ void VersusBase::clear_all_sync_shot() {
 
 			pgi->sync_shot_flag = 0u;
 
-			// Limpa o tick_sync_shot para a próxima tacada(shot)
+			// Clear tick_sync_shot for the next shot
 			pgi->tick_sync_shot.clear();
 
 		}catch (exception& e) {
@@ -4707,7 +4707,7 @@ void VersusBase::updateFinishHole() {
 	packet p((unsigned short)0x65);
 
 	// !!@@@
-	// No Pang Battle tem o oid do player aqui ele passa
+	// In Pang Battle the player's oid is passed here
 	//p.addUint32(oid);
 
 	packet_func::game_broadcast(*this, p, 1);
@@ -4720,7 +4720,7 @@ void VersusBase::updateTreasureHunterPoint() {
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
-	// Calcule Treasure Pontos
+	// Calculate Treasure Points
 	for (auto& el : m_players) {
 
 		INIT_PLAYER_INFO("updateTreasureHunterPoint", "tentou atualizar os pontos do Treasure Hunter no jogo", el);
@@ -4735,25 +4735,25 @@ void VersusBase::updateTreasureHunterPoint() {
 		m_thi.treasure_point += sTreasureHunterSystem::getInstance().calcPointNormal(pgi->data.tacada_num, hole->getPar().par) + m_thi.getPoint(pgi->data.tacada_num, hole->getPar().par);
 	}
 
-	// Mostra score board
+	// Show score board
 	packet p((unsigned short)0x132);
 
 	p.addUint32(m_thi.treasure_point);
 
-	// No Modo Match passa outro valor tbm
+	// In Match Mode it also passes another value
 
 	packet_func::game_broadcast(*this, p, 1);
 }
 
 void VersusBase::requestDrawTreasureHunterItem() {
 
-	// Sorteia os itens ganho do Treasure ponto do player
+	// Draws the items won from the player's Treasure points
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
-	// Treasure Hunter Info do Versus
+	// Treasure Hunter Info of the Versus
 	/*auto v_item = TreasureHunterSystem::drawItem(m_thi.treasure_point, m_ri.course & 0x7F);*/
 	auto v_item = sTreasureHunterSystem::getInstance().drawItem(m_thi.treasure_point, m_ri.course & 0x7F);
 
@@ -4761,7 +4761,7 @@ void VersusBase::requestDrawTreasureHunterItem() {
 		_smp::message_pool::getInstance().push(new message("[VersusBase::requestDrawTreasureHunterItem][WARNING] tentou sortear os item(ns) do Treasure Hunter do jogo," +
 				std::string("mas o Treasure Hunter Item nao conseguiu sortear nenhum item"), CL_FILE_LOG_AND_CONSOLE));
 
-	// tem que distribuir pelos jogadores do versus
+	// has to distribute among the versus players
 #if defined(_WIN32)
 	EnterCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -4813,7 +4813,7 @@ void VersusBase::sendEndShot(player& _session, DropItemRet& _cube) {
 		for (auto& el : _cube.v_drop)
 			p.addBuffer(&el, sizeof(el));
 
-		// Aqui o server passa 128 itens de drop, os que dropou e o resto vazio
+		// Here the server passes 128 drop items, the ones that dropped and the rest empty
 		if (_cube.v_drop.size() < 128)
 			p.addZeroByte((128 - _cube.v_drop.size()) * 16);
 	}
@@ -4863,8 +4863,8 @@ void VersusBase::sendPlacar(player& _session) {
 		p.addUint64(pgi->data.pang);
 		p.addUint64(pgi->data.bonus_pang);
 
-		// Valor que usa no Pang Battle, valor de pang que ganhou ou perdeu
-		// Como aqui é vs Base deixa o valor 0
+		// Value used in Pang Battle, amount of pang that was won or lost
+		// Since this is vs Base, leave the value 0
 		p.addUint64(0ull);
 	}
 
@@ -4879,12 +4879,12 @@ void VersusBase::sendTreasureHunterItemDrawGUI(player& _session) {
 
 	p.addUint8((unsigned char)m_thi.v_item.size());
 
-	// No VS aqui os itens são dividido entres os players do versus
+	// In VS here the items are divided among the versus players
 	for (auto& el : m_thi.v_item) {
-		p.addUint32(el.uid);	// UID do player que ganhou o item
+		p.addUint32(el.uid);	// UID of the player who won the item
 		p.addUint32(el.thi._typeid);
 		p.addUint16((unsigned short)el.thi.qntd);
-		p.addUint8(0);	// Acho que sejá opção ou dizendo que acabou o struct de Treasure Hunter Item Draw
+		p.addUint8(0);	// I think it is an option or saying that the Treasure Hunter Item Draw struct has ended
 	}
 
 	packet_func::session_send(p, &_session, 1);
@@ -4904,27 +4904,27 @@ void VersusBase::sendReplyFinishLoadHole() {
 			throw exception("[VersusBase::requestFinishLoadHole][Error] player[UID=" + std::to_string(pgi->uid) + "] tentou finalizar carregamento do hole[NUMERO="
 					+ std::to_string(pgi->hole) + "], mas nao conseguiu encontrar o hole no course. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 201, 0));
 
-		// Resposta de tempo do hole
+		// Hole time response
 		packet p((unsigned short)0x9E);
 
 		p.addUint16(hole->getWeather());
-		p.addUint8(0);	// Option do tempo, sempre peguei zero aqui dos pacotes que vi
+		p.addUint8(0);	// Time option, in the packets I saw it was always zero here
 
 		packet_func::game_broadcast(*this, p, 1);
 
 		auto wind_flag = initCardWindPlayer(m_player_turn, hole->getWind().wind);
 
-		// Resposta do vento do hole
+		// Hole wind response
 		p.init_plain((unsigned short)0x5B);
 
 		p.addUint8(hole->getWind().wind + wind_flag);
-		p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui é a qnd diminui o vento, 1 Vento azul
+		p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, here it is when the wind decreases, 1 Blue wind
 		p.addUint16(m_player_turn->degree);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original, Também é flag para trocar o vento no Pang Battle se mandar o valor 0
+		p.addUint8(1/*Reset*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the gm command \wind of the original pangya, Also the flag to change the wind in Pang Battle if the value 0 is sent
 
 		packet_func::game_broadcast(*this, p, 1);
 
-		// Resposta passa o oid do player que vai começa o Hole
+		// Response passes the oid of the player who will start the Hole
 		p.init_plain((unsigned short)0x53);
 
 		if (m_player_turn == nullptr) {

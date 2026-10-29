@@ -1,6 +1,6 @@
-// Arquivo matrix3d.hpp
-// Criado em 03/10/2020 as 17:04 por Acrisio
-// Definição da clase Matrix3D
+// File matrix3d.hpp
+// Created on 03/10/2020 at 17:04 by Acrisio
+// Definition of the Matrix3D class
 
 #pragma once
 #ifndef _STDA_MATRIX3D_HPP

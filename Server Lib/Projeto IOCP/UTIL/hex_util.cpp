@@ -1,6 +1,6 @@
-// Arquivo hex_util.cpp
-// Criado em 10/06/2017 por Acrisio
-// Implementação da classe hex_util
+// File hex_util.cpp
+// Created on 10/06/2017 by Acrisio
+// Implementation of the class hex_util
 
 #include "hex_util.h"
 #include <iomanip>
@@ -41,7 +41,7 @@ void hex_util::ShowHex(unsigned char* buffer, size_t size) {
 		}
 	}
 
-	// Resto
+	// Remainder
 	if((size % 16) != 0) {
 		for(i = 0; i < (16 - (size % 16)); i++) {
 			std::cout << std::uppercase << std::hex << std::setw(2) << std::setfill('-');
@@ -98,7 +98,7 @@ std::string hex_util::BufferToHexString(unsigned char* buffer, size_t size) {
 		}
 	}
 
-	// Resto
+	// Remainder
 	if((size % 16) != 0) {
 		for(i = 0; i < (16 - (size % 16)); i++) {
 			ss << std::uppercase << std::hex << std::setw(2) << std::setfill('-');
@@ -172,7 +172,7 @@ std::string hex_util::StringToHexString(std::string s) {
 		}
 	}
 
-	// Resto
+	// Remainder
 	if((size % 16) != 0) {
 		for(i = 0; i < (16 - (size % 16)); i++) {
 			ss << std::uppercase << std::hex << std::setw(2) << std::setfill('-');

@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_registry_info.hpp
-// Criado em 16/06/2020 as 15:32 por Acrisio
-// Defini��o da classe CmdRankRegistryInfo
+// File cmd_rank_registry_info.hpp
+// Created on 16/06/2020 at 15:32 by Acrisio
+// Definition of the class CmdRankRegistryInfo
 
 #pragma once
 #ifndef _STDA_CMD_RANK_REGISTRY_INFO_HPP

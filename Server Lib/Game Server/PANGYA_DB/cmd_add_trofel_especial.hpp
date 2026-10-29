@@ -1,6 +1,6 @@
-// Arquivo cmd_add_trofel_especial.hpp
-// Criado em 21/06/2019 as 18:17 por Acrisio
-// Defini��o da classe CmdAddTrofelEspecial
+// File cmd_add_trofel_especial.hpp
+// Created on 21/06/2019 at 18:17 by Acrisio
+// Definition of the class CmdAddTrofelEspecial
 
 #pragma once
 #ifndef _STDA_CMD_ADD_TROFEL_ESPECIAL_HPP

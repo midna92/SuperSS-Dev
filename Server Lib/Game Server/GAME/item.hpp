@@ -1,6 +1,6 @@
-// Arquivo item.hpp
-// Criado em 24/02/2018 as 19:11 por Acrisio
-// Definição da classe item
+// File item.hpp
+// Created on 24/02/2018 at 19:11 by Acrisio
+// Definition of class item
 
 #pragma once
 #ifndef _STDA_ITEM_HPP

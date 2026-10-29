@@ -1,6 +1,6 @@
-// Arquivo tourney_base_type.hpp
-// Criado em 18/08/2018 as 15:19 por Acrisio
-// Definição dos tipos usados na classe TourneyBase
+// File tourney_base_type.hpp
+// Created on 18/08/2018 at 15:19 by Acrisio
+// Definition of the types used in the TourneyBase class
 
 #pragma once
 #ifndef _STDA_TOURNEY_BASE_TYPE_HPP

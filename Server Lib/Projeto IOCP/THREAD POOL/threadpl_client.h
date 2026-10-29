@@ -1,6 +1,6 @@
-// Arquivo threadpl_client.h
-// Criado em 03/12/2017 por Acrisio
-// Definição da classe threadpl_client
+// File threadpl_client.h
+// Created on 03/12/2017 by Acrisio
+// Definition of class threadpl_client
 
 #pragma once
 #ifndef _STDA_THREADPL_CLIENT_H

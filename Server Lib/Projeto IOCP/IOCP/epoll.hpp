@@ -1,6 +1,6 @@
-// Arquivo epoll.hpp
-// Criado em 05/03/2021 por Acrisio
-// Defini��o da classe IOCP no Linux
+// File epoll.hpp
+// Created on 05/03/2021 by Acrisio
+// Definition of class IOCP no Linux
 
 #pragma once
 #ifndef _STDA_IOCP_HPP

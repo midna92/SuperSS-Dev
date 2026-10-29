@@ -1,6 +1,6 @@
-// Aquivo cmd_rate_config_info.cpp
-// Criado em 09/05/2019 as 19:00 por Acrisio
-// Implementão da classe CmdRateConfigInfo
+// File cmd_rate_config_info.cpp
+// Created on 09/05/2019 at 19:00 by Acrisio
+// Implementation of class CmdRateConfigInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,11 +22,11 @@ CmdRateConfigInfo::~CmdRateConfigInfo() {
 
 void CmdRateConfigInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_result*/) {
 
-	// Verifica se recebeu o valores certo da consulta
+	// Check whether the right values were received from the query
 	checkColumnNumber(16, (uint32_t)_result->cols);
 
 	if (IFNULL(atoi, _result->data[0]) == -1)
-		m_error = true;	// Error pode ser uma um server novo que tem que criar ou passou argumentos errados para a procedure
+		m_error = true;	// Error: it may be a new server that has to be created, or wrong arguments were passed to the procedure
 	else {
 
 		m_rate_info.grand_zodiac_event_time = (unsigned short)IFNULL(atoi, _result->data[0]);

@@ -1,6 +1,6 @@
-// Arquivo Protocol70.hpp
-// Criado em 11/10/2021 as 14:52 por Acrisio
-// Definição da classe Protocol70
+// File Protocol70.hpp
+// Created on 11/10/2021 at 14:52 by Acrisio
+// Definition of the class Protocol70
 
 #pragma once
 #ifndef _PROTOCOL70_HPP

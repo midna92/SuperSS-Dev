@@ -1,6 +1,6 @@
-// Arquivo cmd_map_statistics.hpp
-// Criado em 18/03/2018 as 18:22 por Acrisio
-// Defini��o da classe CmdMapStatistics
+// File cmd_map_statistics.hpp
+// Created on 18/03/2018 at 18:22 by Acrisio
+// Definition of the class CmdMapStatistics
 
 #pragma once
 #ifndef _STDA_CMD_MAP_STATISTICS_HPP
@@ -25,12 +25,12 @@ namespace stdA {
 			};
 
 			enum TYPE_SEASON : unsigned char {
-				ALL,			// Todas Seasons
+				ALL,			// All Seasons
 				ONE,			// 1
 				TWO,			// 2
 				THREE,			// 3
 				FOUR,			// 4
-				CURRENT,		// Atual
+				CURRENT,		// Current
 			};
 
 		public:

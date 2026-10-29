@@ -1,6 +1,6 @@
-// Arquivo room_manager.cpp
-// Criado em 14/02/2018 as 21:51 por Acrisio
-// Implementação da classe RoomManager
+// File room_manager.cpp
+// Created on 14/02/2018 at 21:51 by Acrisio
+// Implementation of the RoomManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -15,7 +15,7 @@
 #include "../../Projeto IOCP/TYPE/stda_error.h"
 #include "../../Projeto IOCP/UTIL/message_pool.h"
 
-// Verifica se é um room válida e bloquea ela
+// Checks if it is a valid room and locks it
 #if defined(_WIN32)
 #define WAIT_ROOM_UNLOCK(_method) DWORD lastError = 0u; \
 \
@@ -30,7 +30,7 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = *it; \
 	}
@@ -50,13 +50,13 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = *it; \
 	}
 #endif
 
-// Verifica se é um room grand prix válida e bloquea ela
+// Checks if it is a valid grand prix room and locks it
 #if defined(_WIN32)
 #define WAIT_ROOM_GP_UNLOCK(_method) DWORD lastError = 0u; \
 \
@@ -71,7 +71,7 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomGrandPrix*)*it; \
 	}
@@ -91,13 +91,13 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomGrandPrix*)*it; \
 	}
 #endif
 
-// Verifica se é um room grand zodiac event válida e bloquea ela
+// Checks if it is a valid grand zodiac event room and locks it
 #if defined(_WIN32)
 #define WAIT_ROOM_GZE_UNLOCK(_method) DWORD lastError = 0u; \
 \
@@ -112,7 +112,7 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomGrandZodiacEvent*)*it; \
 	}
@@ -132,13 +132,13 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomGrandZodiacEvent*)*it; \
 	}
 #endif
 
-// Verifica se é um room bot gm event válida e bloquea ela
+// Checks if it is a valid bot gm event room and locks it
 #if defined(_WIN32)
 #define WAIT_ROOM_BGE_UNLOCK(_method) DWORD lastError = 0u; \
 \
@@ -153,7 +153,7 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomBotGMEvent*)*it; \
 	}
@@ -173,7 +173,7 @@
 			return _el == r; \
 		}); \
 \
-		/* Sala ainda é válida */ \
+		/* Room is still valid */ \
 		if (it != v_rooms.end()) \
 			r = (RoomBotGMEvent*)*it; \
 	}
@@ -219,16 +219,16 @@ void RoomManager::destroy() {
 
 		if (el != nullptr) {
 			
-			// Sala está destruindo
+			// Room is being destroyed
 			el->setDestroying();
 
-			// Libera a sala se ela estiver bloqueada
+			// Releases the room if it is locked
 			el->unlock();
 
-			// Deleta o Objeto
+			// Deletes the Object
 			delete el;
 
-			// Limpa o ponteiro
+			// Clears the pointer
 			el = nullptr;
 		}
 	}
@@ -265,9 +265,9 @@ room* RoomManager::makeRoom(unsigned char _channel_owner, RoomInfoEx _ri, player
 
 		if (_option == 0 && _session != nullptr)
 			_ri.master = _session->m_pi.uid;
-		else if (_option == 1)	// Room Sem Master Grand Prix ou Grand Zodiac Event Time
+		else if (_option == 1)	// Room Without Master Grand Prix or Grand Zodiac Event Time
 			_ri.master = -2;
-		else // Room sem master
+		else // Room without master
 			_ri.master = -1;
 
 		r = new room(_channel_owner, _ri);
@@ -277,10 +277,10 @@ room* RoomManager::makeRoom(unsigned char _channel_owner, RoomInfoEx _ri, player
 					+ "] tentou criar a sala[TIPO=" + std::to_string((unsigned short)_ri.tipo) + "], mas nao conseguiu criar o objeto da classe room. Bug.", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_MANAGER, 130, 0));
 
-		// Verifica se é um room válida e bloquea ela
+		// Checks if it is a valid room and locks it
 		WAIT_ROOM_UNLOCK("makeRoom");
 
-		// Adiciona a sala no Vector
+		// Adds the room to the Vector
 		v_rooms.push_back(r);
 
 		if (_session != nullptr)
@@ -301,7 +301,7 @@ room* RoomManager::makeRoom(unsigned char _channel_owner, RoomInfoEx _ri, player
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -310,17 +310,17 @@ room* RoomManager::makeRoom(unsigned char _channel_owner, RoomInfoEx _ri, player
 
 		if (r != nullptr) {
 			
-			// Destruindo a sala, não conseguiu 
+			// Destroying the room, could not 
 			r->setDestroying();
 
-			// Desbloqueia para
+			// Unlock to
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150))
 				r->unlock();
 
-			// Deletando o Objeto
+			// Deleting the Object
 			delete r;
 
-			// Limpa o ponteiro
+			// Clears the pointer
 			r = nullptr;
 		}
 
@@ -359,18 +359,18 @@ void RoomManager::destroyRoom(room* _room) {
 				+ "] Room[TIPO=" + std::to_string((unsigned short)_room->getInfo()->tipo) + ", NUMERO="
 				+ std::to_string(_room->getNumero()) + ", MASTER=" + std::to_string((int)_room->getMaster()) + "] destroyed.";
 
-		// Sala vai ser deletada
+		// Room will be deleted
 		_room->setDestroying();
 
-		// Vai destruir(excluir) a sala, libera a sala
+		// Will destroy (delete) the room, release the room
 		_room->unlock();
 
-		delete _room;		// Libera memória alocada para a sala
+		delete _room;		// Frees memory allocated for the room
 
-		// Deletou a sala;
+		// Deleted the room;
 		_room = nullptr;
 
-		// Show Log, se destruiu a sala com sucesso
+		// Show Log, if the room was destroyed successfully
 		_smp::message_pool::getInstance().push(new message(log, CL_FILE_LOG_AND_CONSOLE));
 
 #if defined(_WIN32)
@@ -381,7 +381,7 @@ void RoomManager::destroyRoom(room* _room) {
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -424,9 +424,9 @@ RoomGrandPrix* RoomManager::makeRoomGrandPrix(unsigned char _channel_owner, Room
 
 		if (_option == 0 && _session != nullptr)
 			_ri.master = _session->m_pi.uid;
-		else if (_option == 1)	// Room Sem Master Grand Prix ou Grand Zodiac Event Time
+		else if (_option == 1)	// Room Without Master Grand Prix or Grand Zodiac Event Time
 			_ri.master = -2;
-		else // Room sem master
+		else // Room without master
 			_ri.master = -1;
 
 		r = new RoomGrandPrix(_channel_owner, _ri, _gp);
@@ -436,10 +436,10 @@ RoomGrandPrix* RoomManager::makeRoomGrandPrix(unsigned char _channel_owner, Room
 					+ "] tentou criar a sala[TIPO=" + std::to_string((unsigned short)_ri.tipo) + "], mas nao conseguiu criar o objeto da classe RoomGrandPrix. Bug.", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_MANAGER, 130, 0));
 
-		// Verifica se é um room grand prix válida e bloquea ela
+		// Checks if it is a valid grand prix room and locks it
 		WAIT_ROOM_GP_UNLOCK("makeRoomGrandPrix");
 
-		// Adiciona a sala ao vector
+		// Adds the room to the vector
 		v_rooms.push_back(r);
 
 		if (_session != nullptr)
@@ -461,7 +461,7 @@ RoomGrandPrix* RoomManager::makeRoomGrandPrix(unsigned char _channel_owner, Room
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -470,17 +470,17 @@ RoomGrandPrix* RoomManager::makeRoomGrandPrix(unsigned char _channel_owner, Room
 
 		if (r != nullptr) {
 
-			// Destruindo a sala, não conseguiu 
+			// Destroying the room, could not 
 			r->setDestroying();
 
-			// Desbloqueia para
+			// Unlock to
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150))
 				r->unlock();
 
-			// Deletando o Objeto
+			// Deleting the Object
 			delete r;
 
-			// Limpa o ponteiro
+			// Clears the pointer
 			r = nullptr;
 		}
 
@@ -504,7 +504,7 @@ RoomGrandZodiacEvent* RoomManager::makeRoomGrandZodiacEvent(unsigned char _chann
 
 		_ri.numero = getNewIndex();
 
-		// Room Sem Master Grand Prix ou Grand Zodiac Event Time
+		// Room Without Master Grand Prix or Grand Zodiac Event Time
 		_ri.master = -2;
 
 		r = new RoomGrandZodiacEvent(_channel_owner, _ri);
@@ -513,10 +513,10 @@ RoomGrandZodiacEvent* RoomManager::makeRoomGrandZodiacEvent(unsigned char _chann
 			throw exception("[RoomManager::makeRoomGrandZodiacEvent][Error] tentou criar a sala[TIPO=" + std::to_string((unsigned short)_ri.tipo) + "] Grand Zodiac Event, mas nao conseguiu criar o objeto da classe room. Bug.", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_MANAGER, 130, 0));
 
-		// Verifica se é um room válida e bloquea ela
+		// Checks if it is a valid room and locks it
 		WAIT_ROOM_GZE_UNLOCK("makeRoomGrandZodiacEvent");
 
-		// Adiciona a sala no Vector
+		// Adds the room to the Vector
 		v_rooms.push_back(r);
 
 		// Log
@@ -534,7 +534,7 @@ RoomGrandZodiacEvent* RoomManager::makeRoomGrandZodiacEvent(unsigned char _chann
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -543,17 +543,17 @@ RoomGrandZodiacEvent* RoomManager::makeRoomGrandZodiacEvent(unsigned char _chann
 
 		if (r != nullptr) {
 			
-			// Destruindo a sala, não conseguiu 
+			// Destroying the room, could not 
 			r->setDestroying();
 
-			// Desbloqueia para
+			// Unlock to
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150))
 				r->unlock();
 
-			// Deletando o Objeto
+			// Deleting the Object
 			delete r;
 
-			// Limpa o ponteiro
+			// Clears the pointer
 			r = nullptr;
 		}
 
@@ -577,7 +577,7 @@ RoomBotGMEvent* RoomManager::makeRoomBotGMEvent(unsigned char _channel_owner, Ro
 
 		_ri.numero = getNewIndex();
 
-		// Room Sem Master Grand Prix ou Grand Zodiac Event Time ou Bot GM Event
+		// Room Without Master Grand Prix or Grand Zodiac Event Time or Bot GM Event
 		_ri.master = -2;
 
 		r = new RoomBotGMEvent(_channel_owner, _ri, _rewards);
@@ -586,10 +586,10 @@ RoomBotGMEvent* RoomManager::makeRoomBotGMEvent(unsigned char _channel_owner, Ro
 			throw exception("[RoomManager::makeRoomBotGMEvent][Error] tentou criar a sala[TIPO=" + std::to_string((unsigned short)_ri.tipo) 
 					+ "] Bot GM Event, mas nao conseguiu criar o objeto da classe room. Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_MANAGER, 130, 0));
 
-		// Verifica se é um room válida e bloquea ela
+		// Checks if it is a valid room and locks it
 		WAIT_ROOM_BGE_UNLOCK("makeRoomBotGMEvent");
 
-		// Adiciona a sala no Vector
+		// Adds the room to the Vector
 		v_rooms.push_back(r);
 
 		// Log
@@ -607,7 +607,7 @@ RoomBotGMEvent* RoomManager::makeRoomBotGMEvent(unsigned char _channel_owner, Ro
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -616,17 +616,17 @@ RoomBotGMEvent* RoomManager::makeRoomBotGMEvent(unsigned char _channel_owner, Ro
 
 		if (r != nullptr) {
 			
-			// Destruindo a sala, não conseguiu 
+			// Destroying the room, could not 
 			r->setDestroying();
 
-			// Desbloqueia para
+			// Unlock to
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150))
 				r->unlock();
 
-			// Deletando o Objeto
+			// Deleting the Object
 			delete r;
 
-			// Limpa o ponteiro
+			// Clears the pointer
 			r = nullptr;
 		}
 
@@ -658,7 +658,7 @@ room* RoomManager::findRoom(short _numero) {
 			}
 		}
 
-		// Verifica se é um room válida e bloquea ela
+		// Checks if it is a valid room and locks it
 		WAIT_ROOM_UNLOCK("makeRoom");
 
 #if defined(_WIN32)
@@ -669,7 +669,7 @@ room* RoomManager::findRoom(short _numero) {
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -716,7 +716,7 @@ RoomGrandPrix* RoomManager::findRoomGrandPrix(uint32_t _typeid) {
 			}
 		}
 
-		// Verifica se é um room grand prix válida e bloquea ela
+		// Checks if it is a valid grand prix room and locks it
 		WAIT_ROOM_GP_UNLOCK("findRoomGrandPrix");
 
 #if defined(_WIN32)
@@ -727,7 +727,7 @@ RoomGrandPrix* RoomManager::findRoomGrandPrix(uint32_t _typeid) {
 
 	}catch (exception& e) {
 
-		// Libera Crictical Session do Room Manager
+		// Releases the Critical Section of the Room Manager
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -858,18 +858,18 @@ void RoomManager::unlockRoom(room *_r) {
 			
 			if (el != nullptr && el == _r) {
 				
-				// Libera a sala
+				// Releases the room
 				el->unlock();
 
-				// Acorda as outras threads que estão esperando
+				// Wakes up the other threads that are waiting
 #if defined(_WIN32)
 				WakeAllConditionVariable(&m_cv);
 #elif defined(__linux__)
 				pthread_cond_broadcast(&m_cv);
 #endif
 
-				// Sai do Loop para não consumir mais processos, 
-				// que já encontrou o que estava procurando
+				// Exits the Loop to avoid consuming more processing, 
+				// since it already found what it was looking for
 				break;
 			}
 		}
@@ -934,7 +934,7 @@ unsigned short RoomManager::getNewIndex() {
 	for (auto i = 0u; i < USHRT_MAX; ++i) {
 		if (!m_map_index[i]) {
 			index = i;
-			m_map_index[i] = 1;	// Ocupado
+			m_map_index[i] = 1;	// Busy
 			break;
 		}
 	}
@@ -959,7 +959,7 @@ void RoomManager::clearIndex(unsigned short _index) {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	m_map_index[_index] = 0;	// Livre
+	m_map_index[_index] = 0;	// Free
 
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs);

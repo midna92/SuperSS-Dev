@@ -1,6 +1,6 @@
-// Arquivo pangya_message_st.hpp
-// Criado em 29/07/2018 as 13:24 por Acrisio
-// Defini��o dos tipos usados no pangya message
+// File pangya_message_st.hpp
+// Created on 29/07/2018 at 13:24 by Acrisio
+// Definition of the types used in pangya message
 
 #pragma once
 #ifndef _STDA_PANGYA_MESSAGE_ST_HPP
@@ -73,7 +73,7 @@ namespace stdA {
 		int lUnknown4;
 		int lUnknown5;
 		int lUnknown6;
-		int lUnknown7;	// Esse aqui s� tem no JP, esse valor a+, peguei ele sempre zero, das vezes que vi no pacote
+		int lUnknown7;	// This one only exists in JP, this extra value, I always saw it as zero in the packets I looked at
 	};
 
 	// Friend Info Ex
@@ -109,12 +109,12 @@ namespace stdA {
 			unsigned char ucFlag;
 			struct {
 				unsigned char _friend		: 1;		// Bit 0
-				unsigned char guild_member	: 1, : 0;	// Bit 1 and rest of Bits from 1 Byte
+				unsigned char guild_member	: 1, : 0;	// Bit 1 and rest of the Bits from 1 Byte
 			}stFlag;
 		};
 		char cUnknown_flag;
-		uFlag flag;						// Flag se o player � amigo ou � membro guild
-		uState state;					// Sex, online, friend, request, block e etc
+		uFlag flag;						// Flag for whether the player is a friend or a guild member
+		uState state;					// Sex, online, friend, request, block, etc
 		unsigned char level;
 	};
 
@@ -131,7 +131,7 @@ namespace stdA {
 			memset(this, 0, sizeof(ManyPacket));
 		};
 		void init() {
-			// Calcula Initial data
+			// Calculate initial data
 
 			paginas = (const_total / const_limit);
 
@@ -142,7 +142,7 @@ namespace stdA {
 			pag.total = const_total;
 			pag.current = (const_total <= const_limit) ? const_total : const_limit;
 
-			// Calcule Index
+			// Calculate Index
 			calcIndex();
 		};
 		void operator++ (int _i) {
@@ -163,7 +163,7 @@ namespace stdA {
 					pag.current = (pag.total <= const_limit) ? pag.total : const_limit;
 				}
 
-				// Cacule Index
+				// Calculate Index
 				calcIndex();
 			}
 		};
@@ -181,7 +181,7 @@ namespace stdA {
 	protected:
 		void calcIndex() {
 
-			// Calcule Index
+			// Calculate Index
 			index.start = (pag.pagina - 1) * const_limit;
 			index.end = index.start + ((pag.total <= const_limit) ? pag.total : const_limit);
 		};

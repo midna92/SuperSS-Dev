@@ -1,6 +1,6 @@
-// Arquivo packet_func_rs.cpp
-// Criado em 15/06/2020 as 15:02 por Acrisio
-// Implementa��o da classe packet_func para o Rank Server
+// File packet_func_rs.cpp
+// Created on 15/06/2020 at 15:02 by Acrisio
+// Implementation of the class packet_func for the Rank Server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -36,7 +36,7 @@
 												\
 											}catch (exception& e) { \
 												\
-												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*n�o pode usa session*/)) \
+												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 													if ((_session)->devolve()) \
 														srs::rs::getInstance().DisconnectSession((_session)); \
 												\
@@ -44,15 +44,15 @@
 													throw; \
 											} \
 
-// Verifica se session est� autorizada para executar esse a��o, 
-// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�aa o login
+// Check whether the session is authorized to perform this action, 
+// if it has not logged in to the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!pd._session.m_is_authorized) \
 												throw exception("[packet_func::" + std::string((method)) + "][Error] Player[UID=" + std::to_string(pd._session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_RS, 1, 0x5000501)); \
 
 using namespace stdA;
 
-// Cliente
+// Client
 int packet_func::packet000(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
@@ -192,8 +192,8 @@ int packet_func::packet005(void* _arg1, void* _arg2) {
 int packet_func::packet_svFazNada(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
-	// Esse pacote � para os pacotes que o server envia para o cliente
-	// e n�o precisa de tratamento depois que foi enviado para o cliente
+	// This packet is for the packets that the server sends to the client
+	// and needs no handling after it has been sent to the client
 
 	return 0;
 }
@@ -204,7 +204,7 @@ int packet_func::packet_as001(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Exemplo se precisar
+		// Example if needed
 		//srs::rs::getInstance().DisconnectSession;
 
 	}catch (exception& e) {

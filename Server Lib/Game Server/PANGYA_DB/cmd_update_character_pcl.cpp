@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_pcl.cpp
-// Criado em 16/06/2018 as 19:27 por Acrisio
-// Implementa��o da classe CmdUpdateCharacterPCL
+// File cmd_update_character_pcl.cpp
+// Created on 16/06/2018 at 19:27 by Acrisio
+// Implementation of class CmdUpdateCharacterPCL
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCharacterPCL::~CmdUpdateCharacterPCL() {
 
 void CmdUpdateCharacterPCL::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

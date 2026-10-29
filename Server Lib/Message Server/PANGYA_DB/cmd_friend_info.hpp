@@ -1,6 +1,6 @@
-// Arquivo cmd_friend_info.hpp
-// Criado em 30/07/2018 as 00:19 por Acrisio
-// Defini��o da classe CmdFriendInfo
+// File cmd_friend_info.hpp
+// Created on 30/07/2018 at 00:19 by Acrisio
+// Definition of class CmdFriendInfo
 
 #pragma once
 #ifndef _STDA_CMD_FRIEND_INFO_HPP

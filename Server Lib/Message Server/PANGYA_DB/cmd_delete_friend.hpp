@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_friend.hpp
-// Criado em 05/08/2018 as 20:39 por Acrisio
-// Defini��o da classe CmdDeleteFriend
+// File cmd_delete_friend.hpp
+// Created on 05/08/2018 at 20:39 by Acrisio
+// Definition of class CmdDeleteFriend
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_FRIEND_HPP

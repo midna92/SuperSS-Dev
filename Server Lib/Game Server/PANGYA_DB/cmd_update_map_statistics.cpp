@@ -1,6 +1,6 @@
-// Arquivo cmd_update_map_statistics.cpp
-// Criado em 08/09/2018 as 22:02 por Acrisio
-// Implementa��o da classe CmdUpdateMapStatistics
+// File cmd_update_map_statistics.cpp
+// Created on 08/09/2018 at 22:02 by Acrisio
+// Implementation of class CmdUpdateMapStatistics
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateMapStatistics::~CmdUpdateMapStatistics() {
 
 void CmdUpdateMapStatistics::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

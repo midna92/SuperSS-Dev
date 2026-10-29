@@ -1,6 +1,6 @@
-// Arquivo cmd_update_achievement_user.hpp
-// Criado em 14/04/2018 as 17:08 por Acrisio
-// Defni��o da classe CmdUpdateAchievementUser
+// File cmd_update_achievement_user.hpp
+// Created on 14/04/2018 at 17:08 by Acrisio
+// Definition of the class CmdUpdateAchievementUser
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_ACHIEVEMENT_USER_HPP

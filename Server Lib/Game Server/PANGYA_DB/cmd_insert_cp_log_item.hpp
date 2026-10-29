@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_cp_log_item.hpp
-// Criado em 24/05/2019 as 04:22 por Acrisio
-// Definição da classe CmdInsertCPLogItem
+// File cmd_insert_cp_log_item.hpp
+// Created on 24/05/2019 at 04:22 by Acrisio
+// Definition of the class CmdInsertCPLogItem
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_CP_LOG_ITEM_HPP
@@ -35,7 +35,7 @@ namespace stdA {
             virtual std::wstring _wgetName() override { return L"CmdInsertCPLogItem"; };
 
         private:
-            uint32_t m_uid;	// Para fins de log, ele não utiliza na proc do DB
+            uint32_t m_uid;	// For logging purposes only, it is not used in the DB proc
             int64_t m_log_id;
             int64_t m_item_id;
             CPLog::stItem m_item;

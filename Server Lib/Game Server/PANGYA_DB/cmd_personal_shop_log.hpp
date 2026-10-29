@@ -1,6 +1,6 @@
-// Arquivo cmd_personal_shop_log.hpp
-// Criado em 10/06/2018 as 09:10 por Acrisio
-// Defini��o da classe CmdPersonalShopLog
+// File cmd_personal_shop_log.hpp
+// Created on 10/06/2018 at 09:10 by Acrisio
+// Definition of the class CmdPersonalShopLog
 
 #pragma once
 #ifndef _STDA_CMD_PERSONAL_SHOP_LOG_HPP

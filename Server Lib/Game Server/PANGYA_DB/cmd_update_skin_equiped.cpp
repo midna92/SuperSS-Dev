@@ -1,6 +1,6 @@
-// Arquivo cmd_update_skin_equiped.cpp
-// Criado em 25/03/2018 as 12:45 por Acrisio
-// Implementa��o da classe CmdUpdateSkinEquiped
+// File cmd_update_skin_equiped.cpp
+// Created on 25/03/2018 at 12:45 by Acrisio
+// Implementation of class CmdUpdateSkinEquiped
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateSkinEquiped::~CmdUpdateSkinEquiped() {
 
 void CmdUpdateSkinEquiped::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usar aqui por que � UPDATE
+	// Not used here because it is UPDATE
 	return;
 }
 

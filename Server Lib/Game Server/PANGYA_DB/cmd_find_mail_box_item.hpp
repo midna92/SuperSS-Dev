@@ -1,6 +1,6 @@
-// Arquivo cmd_find_mail_box_item.hpp
-// Criado em 29/10/2019 ass 21:10 por Acrisio
-// Defini��o da classe CmdFindMailBoxItem
+// File cmd_find_mail_box_item.hpp
+// Created on 29/10/2019 at 21:10 by Acrisio
+// Definition of the class CmdFindMailBoxItem
 
 #pragma once
 #ifndef _STDA_CMD_FIND_MAIL_BOX_ITEM_HPP
@@ -34,7 +34,7 @@ namespace stdA {
 			uint32_t m_uid;
 			uint32_t m_typeid;
 			
-			bool m_has_found;		// Encontrou o item
+			bool m_has_found;		// Found the item
 			
 			const char* m_consulta = "pangya.ProcFindMailBoxItem";
 	};

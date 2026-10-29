@@ -1,6 +1,6 @@
-// Arquivo broadcast_list.hpp
-// Criado em 03/12/2018 as 22:44 por Acrisio
-// Definição da classe BroadcastList
+// File broadcast_list.hpp
+// Created on 03/12/2018 at 22:44 by Acrisio
+// Definition of the BroadcastList class
 
 #pragma once
 #ifndef _STDA_BROADCAST_LIST_HPP
@@ -21,7 +21,7 @@ namespace stdA {
 	class BroadcastList {
 		public:
 			enum RET_TYPE : unsigned char {
-				NO_NOTICE,		// Não tem notice na lista
+				NO_NOTICE,		// There is no notice in the list
 				OK,
 				WAIT,
 			};

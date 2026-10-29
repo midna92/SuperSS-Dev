@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_server_key.hpp
-// Criado em 155/12/2018 as 15:18 por Acrisio
-// Definição da classe CmdAuthServerKey
+// File cmd_auth_server_key.hpp
+// Created on 155/12/2018 at 15:18 by Acrisio
+// Definition of class CmdAuthServerKey
 
 #pragma once
 #ifndef _STDA_CMD_AUTH_SERVER_KEY_HPP

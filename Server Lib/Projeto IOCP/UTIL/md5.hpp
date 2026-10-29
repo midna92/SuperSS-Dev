@@ -1,6 +1,6 @@
-// Arquivo md5.hpp
-// Criado em 18/03/2019 as 23:35 por Acrisio
-// Definição da classe de suporte do hash de MD5 usando API do WinCrypt
+// File md5.hpp
+// Created on 18/03/2019 at 23:35 by Acrisio
+// Definition of the MD5 hash support class using the WinCrypt API
 
 #pragma once
 #ifndef _STDA_MD5_HPP
@@ -10,7 +10,7 @@
 #include <Windows.h>
 #include <wincrypt.h>
 #elif defined(__linux__)
-// evp_digestinit(3) - Linux man page, para mais de um algoritimo
+// evp_digestinit(3) - Linux man page, for more than one algorithm
 //#include <openssl/evp.h>
 
 /***

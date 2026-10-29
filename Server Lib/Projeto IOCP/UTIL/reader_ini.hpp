@@ -1,6 +1,6 @@
-// Arquivo reader_ini.hpp
-// Criado em 26/03/2018 as 22:23 por Acrisio
-// Definição da classe ReaderIni
+// File reader_ini.hpp
+// Created on 26/03/2018 at 22:23 by Acrisio
+// Definition of the class ReaderIni
 
 #pragma once
 #ifndef _STDA_READER_INI_HPP

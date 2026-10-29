@@ -1,6 +1,6 @@
-// Arquivo packet_func_ls.cpp
-// Criado em 04/06/2017 por Acrisio
-// Implementação da classe packet_func
+// File packet_func_ls.cpp
+// Created on 04/06/2017 by Acrisio
+// Implementation of the packet_func class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -74,7 +74,7 @@
 												\
 											}catch (exception& e) { \
 												\
-												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/)) \
+												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 													if ((_session)->devolve()) \
 														sls::ls::getInstance().DisconnectSession((_session)); \
 												\
@@ -90,8 +90,8 @@
 		succes_login((__arg1), (_session)); \
 	}
 
-// Verifica se session está autorizada para executar esse ação, 
-// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+// Checks if the session is authorized to perform this action, 
+// if it did not log in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!pd._session.m_is_authorized) \
 												throw exception("[packet_func::" + std::string((method)) + "][Error] Player[UID=" + std::to_string(pd._session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_LS, 1, 0x5000501)); \
@@ -127,11 +127,11 @@ int packet_func::packet003(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet003][Log] Server UID: " + std::to_string(server_uid)));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks if the session is authorized to perform this action, 
+		// if it did not log in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet003");
 
-		// Registra o logon no server_uid do player_uid
+		// Registers the logon in the server_uid of the player_uid
 		CmdRegisterLogonServer cmd_rls(pd._session.m_pi.uid, server_uid, true/*Waiter*/);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_rls, nullptr, nullptr);
@@ -201,8 +201,8 @@ int packet_func::packet006(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message(L"[packet_func::packet006][Log] Save Nickname: " + wnick, CL_FILE_LOG_AND_CONSOLE));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks if the session is authorized to perform this action, 
+		// if it did not log in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet006");
 
 		CmdSaveNick cmd_sn(pd._session.m_pi.uid, wnick, true/*Waiter*/);
@@ -226,7 +226,7 @@ int packet_func::packet006(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message(L"[packet_func::packet006][Log] salvou o nick: " + wnick + L", do player: "
 				+ std::to_wstring(pd._session.m_pi.uid) + L" com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Aqui colocar para verificar se ele já fez o first set, se não envia o pacote do first set, se não success_login
+		// Here add a check whether it already did the first set, if not send the first set packet, otherwise success_login
 		CmdFirstSetCheck cmd_fsc(pd._session.m_pi.uid, true/*Waiter*/);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_fsc, nullptr, nullptr);
@@ -236,7 +236,7 @@ int packet_func::packet006(void* _arg1, void* _arg2) {
 		if (cmd_fsc.getException().getCodeError() != 0)
 			throw cmd_fsc.getException();
 
-		if (!cmd_fsc.getLastCheck()) {	// Verifica se fez o primeiro set do character
+		if (!cmd_fsc.getLastCheck()) {	// Checks if the first character set was done
 
 			// FIRST_SET
 			pacote001(p, &pd._session, 0xD9);
@@ -263,18 +263,18 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
 	enum NICK_CHECK : unsigned char {
-		SUCCESS,				// Sucesso por trocar o nick por que ele está disponível
-		UNKNOWN_ERROR,			// Erro desconhecido, Error ao verificar NICK
-		NICK_IN_USE,			// NICKNAME já em uso
-		INCORRECT_NICK,			// INCORRET nick, tamanho < 4 ou tem caracteres que não pode
-		NOT_ENOUGH_COOKIE,		// Não tem points suficiente
-		HAVE_BAD_WORD,			// Tem palavras que não pode no NICK
-		ERROR_DB,				// Erro DB
-		EMPETY_ERROR,			// Erro Vazio
-		EMPETY_ERROR_2,			// ERRO VAZIO 2
-		SAME_NICK_USED,			// O Mesmo nick vai ser usado, estou usando para o mesmo que o ID
-		EMPETY_ERROR_3,			// ERRO VAZIO 3
-		CODE_ERROR_INFO = 12	// CODE  ERROR INFO arquivo iff, o código do erro para mostra no cliente
+		SUCCESS,				// Success changing the nick because it is available
+		UNKNOWN_ERROR,			// Unknown error, Error when checking NICK
+		NICK_IN_USE,			// NICKNAME already in use
+		INCORRECT_NICK,			// INCORRECT nick, length < 4 or has characters that are not allowed
+		NOT_ENOUGH_COOKIE,		// Not enough points
+		HAVE_BAD_WORD,			// Has words that are not allowed in the NICK
+		ERROR_DB,				// DB Error
+		EMPETY_ERROR,			// Empty Error
+		EMPETY_ERROR_2,			// EMPTY ERROR 2
+		SAME_NICK_USED,			// The Same nick will be used, I am using the same as the ID
+		EMPETY_ERROR_3,			// EMPTY ERROR 3
+		CODE_ERROR_INFO = 12	// CODE ERROR INFO iff file, the error code to show on the client
 	};
 
 	NICK_CHECK nc(SUCCESS);
@@ -288,8 +288,8 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message(L"[packet_func::packet007][Log] Check Nickname: " + wnick, CL_FILE_LOG_AND_CONSOLE));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks if the session is authorized to perform this action, 
+		// if it did not log in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet007");
 
 		if (
@@ -301,13 +301,13 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 				std::wstring(pd._session.m_pi.id, pd._session.m_pi.id + sizeof(pd._session.m_pi.id)).c_str(), wnick.c_str()
 			) == 0
 		) {
-			nc = SAME_NICK_USED;		// NICK igual ao ID, nao pode
+			nc = SAME_NICK_USED;		// NICK equal to the ID, not allowed
 
 			_smp::message_pool::getInstance().push(new message(L"[packet_func::packet007][Error] O nick igual ao ID nao pode. nick: "
 					+ wnick + L" Player: " + std::to_wstring(pd._session.m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 		}
 
-		// Pavras que não pode usar
+		// Words that cannot be used
 		if (nc == SUCCESS && !(pd._session.m_pi.m_cap & 4) && std::regex_match(wnick.begin(), wnick.end(), std::wregex(L"(.*GM.*)|(.*ADM.*)", std::regex_constants::icase))) {
 			nc = HAVE_BAD_WORD;
 
@@ -391,8 +391,8 @@ int packet_func::packet008(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet008][Log] Default shirts: " + std::to_string(default_shirts), CL_ONLY_FILE_LOG));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks if the session is authorized to perform this action, 
+		// if it did not log in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet008");
 
 		if (sIff::getInstance().findCharacter(_typeid) == nullptr)
@@ -425,7 +425,7 @@ int packet_func::packet008(void* _arg1, void* _arg2) {
 		if (cmd_ac.getException().getCodeError() != 0)
 			throw cmd_ac.getException();
 
-		// Info Character Add com o Id gerado no banco de dados
+		// Character Info Add with the Id generated in the database
 		ci = cmd_ac.getInfo();
 
 		cmd_afs.waitEvent();
@@ -433,7 +433,7 @@ int packet_func::packet008(void* _arg1, void* _arg2) {
 		if (cmd_afs.getException().getCodeError() != 0)
 			throw cmd_afs.getException();
 
-		// Update Character Equipado no banco de dados
+		// Update Equipped Character in the database
 		CmdUpdateCharacterEquiped cmd_uce(pd._session.m_pi.uid, ci.id, true/*Waiter*/);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_uce, nullptr, nullptr);
@@ -453,7 +453,7 @@ int packet_func::packet008(void* _arg1, void* _arg2) {
 		SUCCESS_LOGIN("packet008", _arg1, &pd._session);
 
 	}catch (exception& e) {
-		// Erro na hora de salvar o character
+		// Error when saving the character
 		pacote011(p, &pd._session, 1);
 		session_send(p, &pd._session, 1);
 		pacote00E(p, &pd._session, L"", 12, 500051);
@@ -486,9 +486,9 @@ int packet_func::packet00B(void* _arg1, void* _arg2) {
 int packet_func::packet_sv003(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
-	// Delete player "Desconnecta player"
+	// Delete player "Disconnects player"
 	//pp.m_pw->_session_pool.deleteSession(pp.m_session);
-	// Parece que ele desconectar sozinho já
+	// It seems it already disconnects by itself
 	//::shutdown(pp.m_session->m_sock, SD_RECEIVE);
 
 	return 0;
@@ -507,7 +507,7 @@ int packet_func::packet_sv006(void * _arg1, void * _arg2) {
 int packet_func::packet_svFazNada(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
-	// Faz Nada
+	// Does Nothing
 
 	return 0;
 };
@@ -517,7 +517,7 @@ int packet_func::packet_svDisconectPlayerBroadcast(void* _arg1, void* _arg2) {
 
 	/*if (pp.m_pw != nullptr)
 		delete pp.m_pw;*/
-	// faz nada aqui
+	// does nothing here
 
 	return 0;
 };
@@ -527,7 +527,7 @@ int packet_func::packet_as001(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Log Teste
+		// Test Log
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet_as001][Log] Teste, so para deixar aqui, quando for usar um dia.", CL_FILE_LOG_AND_CONSOLE));
 
 	}catch (exception& e) {
@@ -542,23 +542,23 @@ int packet_func::pacote001(packet& p, player *_session, int option) {
 	
 	p.init_plain((unsigned short)0x001);
 
-	p.addInt8(option);	// OPTION 1 SENHA OU ID ERRADO
+	p.addInt8(option);	// OPTION 1 WRONG PASSWORD OR ID
 
 	if (option == 0) {
 		p.addString(_session->m_pi.id);
 		p.addInt32(_session->m_pi.uid);
 		p.addInt32(_session->m_pi.m_cap);
-		p.addInt16(_session->m_pi.level);			// 1 level, 1 pc bang(ACHO), com base no S4
-		p.addInt32(0);								// valor 0 Unknown
-		p.addInt32(5);								// valor 5 Unknown
-		p.addFixedString(formatDateLocal(0), 19);	// Time Build Login Server (ACHO)							- JP S9 ler mais ignora ele
-		p.addString("302540");						// Alguma AuthKey aleatória para minha conta que eu não sei - JP S9 ler mais ignora ele
-		p.addUint32(0);								// Unknown valor - JP S9 ler mais ignora ele
-		p.addUint32(0);								// Unknown valor - JP S9 ler mais ignora ele
+		p.addInt16(_session->m_pi.level);			// 1 level, 1 pc bang (I THINK), based on S4
+		p.addInt32(0);								// value 0 Unknown
+		p.addInt32(5);								// value 5 Unknown
+		p.addFixedString(formatDateLocal(0), 19);	// Time Build Login Server (I THINK)							- JP S9 reads it but ignores it
+		p.addString("302540");						// Some random AuthKey for my account that I don't know - JP S9 reads it but ignores it
+		p.addUint32(0);								// Unknown value - JP S9 reads it but ignores it
+		p.addUint32(0);								// Unknown value - JP S9 reads it but ignores it
 		p.addString(_session->m_pi.nickname);
 		p.addInt16(0);
 	}else if (option == 1)
-		p.addInt32(0);	// add 4 bytes vazios
+		p.addInt32(0);	// add 4 empty bytes
 	else if (option == 0xD8) {		// First Login
 		p.addInt32(-1);
 		p.addInt16(0);
@@ -604,7 +604,7 @@ int packet_func::pacote009(packet& p, player *_session, std::vector< ServerInfo 
 
 	p.init_plain((unsigned short)0x009);
 	
-	p.addInt8(v_element.size() & 0xFF);	// nenhum Msn Server on
+	p.addInt8(v_element.size() & 0xFF);	// no Msn Server on
 
 	for (size_t i = 0; i < v_element.size(); i++)
 		p.addBuffer(&v_element[i], sizeof(ServerInfo));
@@ -630,7 +630,7 @@ int packet_func::pacote00E(packet& p, player *_session, std::wstring nick, int o
 	return 0;
 };
 
-// Mensagem do Tutorial
+// Tutorial Message
 int packet_func::pacote00F(packet& p, player *_session, int option) {
 
 	p.init_plain((unsigned short)0x0F);
@@ -639,10 +639,10 @@ int packet_func::pacote00F(packet& p, player *_session, int option) {
 	
 	p.addString(_session->m_pi.id);
 
-	p.addUint32(0);								// valor 0 Unknown
-	p.addUint32(5);								// valor 5 Unknown
-	p.addFixedString(formatDateLocal(0), 19);	// Time Build Login Server (ACHO)								- JP S9 ler mais ignora ele
-	p.addString("302540");						// Alguma AuthKey aleatória para minha conta que eu não sei		- JP S9 ler mais ignora ele
+	p.addUint32(0);								// value 0 Unknown
+	p.addUint32(5);								// value 5 Unknown
+	p.addFixedString(formatDateLocal(0), 19);	// Time Build Login Server (I THINK)								- JP S9 reads it but ignores it
+	p.addString("302540");						// Some random AuthKey for my account that I don't know		- JP S9 reads it but ignores it
 
 	return 0;
 };
@@ -674,8 +674,8 @@ inline void packet_func::succes_login(void* _arg, player *_session, int option) 
 	std::string auth_key_login = "";
 
 	/* OPTION
-	*  0 PRIMEIRO LOGIN
-	*  1 RELOGA DEPOIS QUE CAIU DO GAME SERVER, COM A AUTH KEY
+	*  0 FIRST LOGIN
+	*  1 RELOGIN AFTER DROPPING FROM THE GAME SERVER, WITH THE AUTH KEY
 	*/
 
 	try {
@@ -730,7 +730,7 @@ inline void packet_func::succes_login(void* _arg, player *_session, int option) 
 
 		auto ip = std::string(_session->m_ip);
 
-		// RegisterLogin do Player
+		// Player RegisterLogin
 		CmdRegisterPlayerLogin cmd_rpl(_session->m_pi.uid, ip, ls->getUID(), true/*Waiter*/);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_rpl, nullptr, nullptr);

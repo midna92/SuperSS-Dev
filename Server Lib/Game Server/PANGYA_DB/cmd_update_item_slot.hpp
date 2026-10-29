@@ -1,6 +1,6 @@
-// Arquivo cmd_update_item_slot.hpp
-// Criado em 25/03/2018 as 09:56 por Acrisio
-// Defini��o da classe CmdUpdateItemSlot
+// File cmd_update_item_slot.hpp
+// Created on 25/03/2018 at 09:56 by Acrisio
+// Definition of class CmdUpdateItemSlot
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_ITEM_SLOT_HPP

@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 15/06/2020 as 14:58 por Acrisio
-// Implementa��o da classe player_manager
+// File player_manager.cpp
+// Created on 15/06/2020 at 14:58 by Acrisio
+// Implementation of the class player_manager
 
 #if defined(_WIN32)
 #include <WinSock2.h>

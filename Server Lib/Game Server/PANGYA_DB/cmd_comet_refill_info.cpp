@@ -1,6 +1,6 @@
-// Arquivo cmd_comet_refill_info.cpp
-// Criado em 08/07/2018 as 22:49 por Acrisio
-// Implementa��o da clase CmdCometRefillInfo
+// File cmd_comet_refill_info.cpp
+// Created on 08/07/2018 at 22:49 by Acrisio
+// Implementation of the class CmdCometRefillInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -31,9 +31,9 @@ void CmdCometRefillInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_in
 
 	auto it = m_ctx_cr.find(ctx_cr._typeid);
 
-	if (it == m_ctx_cr.end())	// N�o tem no map, add ao map
+	if (it == m_ctx_cr.end())	// Not in the map, add it to the map
 		m_ctx_cr[ctx_cr._typeid] = ctx_cr;
-	else // j� tem no map, mas nao att ele por que est� duplicado no  DB
+	else // already in the map, but do not update it because it is duplicated in the  DB
 		_smp::message_pool::getInstance().push(new message("[CmdCometRefillInfo::lineResult][WARNING] tem comet refill[TYPEID=" + std::to_string(ctx_cr._typeid) + "] duplicado no banco de dados.", CL_FILE_LOG_AND_CONSOLE));
 }
 

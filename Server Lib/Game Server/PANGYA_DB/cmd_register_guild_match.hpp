@@ -1,6 +1,6 @@
-// Arquivo cmd_register_guild_match.hpp
-// Criado em 29/12/2019 as 12:04 por Acrisio
-// Defini��o da classe CmdRegisterGuildMatch
+// File cmd_register_guild_match.hpp
+// Created on 29/12/2019 at 12:04 by Acrisio
+// Definition of the class CmdRegisterGuildMatch
 
 #pragma once
 #ifndef _STDA_CMD_REGISTER_GUILD_MATCH_HPP

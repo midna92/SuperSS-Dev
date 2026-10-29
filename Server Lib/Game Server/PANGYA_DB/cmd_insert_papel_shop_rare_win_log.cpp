@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_papel_shop_rare_win_log.cpp
-// Criado em 09/07/2018 as 22:13 por Acrisio
-// Implementa��o da classe CmdInsertPapelShopRareWinLog
+// File cmd_insert_papel_shop_rare_win_log.cpp
+// Created on 09/07/2018 at 22:13 by Acrisio
+// Implementation of the class CmdInsertPapelShopRareWinLog
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdInsertPapelShopRareWinLog::~CmdInsertPapelShopRareWinLog() {
 
 void CmdInsertPapelShopRareWinLog::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

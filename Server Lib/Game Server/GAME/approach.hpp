@@ -1,6 +1,6 @@
-// Arquivo approach.hpp
-// Criado em 12/06/2020 as 11:53 por Acrisio
-// Defini��o da classe Approach
+// File approach.hpp
+// Created on 12/06/2020 at 11:53 by Acrisio
+// Definition of class Approach
 
 #pragma once
 #ifndef _STDA_APPROACH_HPP
@@ -103,7 +103,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) override;
 
@@ -117,7 +117,7 @@ namespace stdA {
 			// Game
 			virtual bool requestFinishGame(player& _session, packet *_packet) override;
 
-			// Tempo
+			// Time
 			/*virtual void startTime() override;
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -125,7 +125,7 @@ namespace stdA {
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finalize Game
 			virtual bool init_game() override;
 
 			virtual uint32_t getCountPlayersGame() override;
@@ -140,7 +140,7 @@ namespace stdA {
 
 			virtual void requestReplySyncShotData(player& _session) override;
 
-			virtual void sendRemainTime(player& _session) override {}; // no Approach n�o envia nada
+			virtual void sendRemainTime(player& _session) override {}; // the Approach does not send anything
 
 			virtual int checkEndShotOfHole(player& _session) override;
 
@@ -241,14 +241,14 @@ namespace stdA {
 			virtual bool finish_game(player& _session, int option = 0) override;
 
 		protected:
-			thread *m_thread_sync_hole;			// Thread que sincroniza os player no hole
+			thread *m_thread_sync_hole;			// Thread that synchronizes the players on the hole
 
 #if defined(_WIN32)
-			HANDLE m_hEvent_sync_hole;			// Evento para terminar a thread sync hole
-			HANDLE m_hEvent_sync_hole_pulse;	// Evento para pulsar a thread sync_hole para ir mais r�pido quando um player terminar a sua tacada
+			HANDLE m_hEvent_sync_hole;			// Event to end the sync hole thread
+			HANDLE m_hEvent_sync_hole_pulse;	// Event to pulse the sync_hole thread to go faster when a player finishes their shot
 #elif defined(__linux__)
-			Event *m_hEvent_sync_hole;			// Evento para terminar a thread sync hole
-			Event *m_hEvent_sync_hole_pulse;	// Evento para pulsar a thread sync_hole para ir mais r�pido quando um player terminar a sua tacada
+			Event *m_hEvent_sync_hole;			// Event to end the sync hole thread
+			Event *m_hEvent_sync_hole_pulse;	// Event to pulse the sync_hole thread to go faster when a player finishes their shot
 #endif
 
 			// Approach State Sync
@@ -259,7 +259,7 @@ namespace stdA {
 
 			bool m_approach_state;
 
-			uint32_t volatile m_timeout;	// Tempo do hole acabou
+			uint32_t volatile m_timeout;	// Hole time ran out
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs_sync_shot;

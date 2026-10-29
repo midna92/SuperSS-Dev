@@ -1,6 +1,6 @@
-// Arquivo player_info.cpp
-// Criado em 04/03/2018 as 12:33 por Acrisio
-// Implementação da PlayerInfo
+// File player_info.cpp
+// Created on 04/03/2018 at 12:33 by Acrisio
+// PlayerInfo implementation
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -65,7 +65,7 @@ int PlayerInfo::better_hit_pangya_bronze(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_hit_pangya_bronze);
 
 	if (pi->ui.getPangyaShotRate() >= 70.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_hit_pangya_bronze);
 };
@@ -74,7 +74,7 @@ int PlayerInfo::better_fairway_bronze(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_fairway_bronze);
 
 	if (pi->ui.getFairwayRate() >= 70.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_fairway_bronze);
 };
@@ -83,7 +83,7 @@ int PlayerInfo::better_putt_bronze(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_putt_bronze);
 
 	if (pi->ui.getPuttRate() >= 80.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_putt_bronze);
 };
@@ -92,7 +92,7 @@ int PlayerInfo::better_quit_rate_bronze(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_quit_rate_bronze);
 
 	if (pi->ui.getQuitRate() <= 3.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_quit_rate_bronze);
 };
@@ -101,7 +101,7 @@ int PlayerInfo::better_hit_pangya_silver(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_hit_pangya_silver);
 
 	if (pi->ui.getPangyaShotRate() >= 77.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_hit_pangya_silver);
 };
@@ -110,7 +110,7 @@ int PlayerInfo::better_fairway_silver(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_fairway_silver);
 
 	if (pi->ui.getFairwayRate() >= 72.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_fairway_silver);
 };
@@ -119,7 +119,7 @@ int PlayerInfo::better_putt_silver(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_putt_silver);
 
 	if (pi->ui.getPuttRate() >= 90.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_putt_silver);
 };
@@ -128,7 +128,7 @@ int PlayerInfo::better_quit_rate_silver(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_quit_rate_silver);
 
 	if (pi->ui.getQuitRate() <= 2.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_quit_rate_silver);
 };
@@ -137,7 +137,7 @@ int PlayerInfo::better_hit_pangya_gold(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_hit_pangya_gold);
 
 	if (pi->ui.getPangyaShotRate() >= 85.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_hit_pangya_gold);
 };
@@ -146,7 +146,7 @@ int PlayerInfo::better_fairway_gold(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_fairway_gold);
 
 	if (pi->ui.getFairwayRate() >= 90.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_fairway_gold);
 };
@@ -155,7 +155,7 @@ int PlayerInfo::better_putt_gold(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_putt_gold);
 
 	if (pi->ui.getPuttRate() >= 95.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_putt_gold);
 };
@@ -164,7 +164,7 @@ int PlayerInfo::better_quit_rate_gold(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(better_quit_rate_gold);
 
 	if (pi->ui.getQuitRate() <= 1.f)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(better_quit_rate_gold);
 };
@@ -173,7 +173,7 @@ int PlayerInfo::atirador_de_ouro(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(atirador_de_ouro);
 
 	if (pi->ti_current_season.getSumGold() >= 10u)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(atirador_de_ouro);
 };
@@ -182,7 +182,7 @@ int PlayerInfo::atirador_de_silver(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(atirador_de_silver);
 
 	if (pi->ti_current_season.getSumSilver() >= 10u)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(atirador_de_silver);
 };
@@ -191,7 +191,7 @@ int PlayerInfo::atirador_de_bronze(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(atirador_de_bronze);
 
 	if (pi->ti_current_season.getSumBronze() >= 10u)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(atirador_de_bronze);
 };
@@ -200,7 +200,7 @@ int PlayerInfo::master_course(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(master_course);
 
 	if (pi->isMasterCourse())
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(master_course);
 };
@@ -208,9 +208,9 @@ int PlayerInfo::master_course(void* _arg) {
 int PlayerInfo::natural_record_80(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_80);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -80)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_80);
 };
@@ -218,9 +218,9 @@ int PlayerInfo::natural_record_80(void* _arg) {
 int PlayerInfo::natural_record_200(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_200);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -200)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_200);
 };
@@ -228,9 +228,9 @@ int PlayerInfo::natural_record_200(void* _arg) {
 int PlayerInfo::natural_record_300(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_300);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -300)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_300);
 };
@@ -238,9 +238,9 @@ int PlayerInfo::natural_record_300(void* _arg) {
 int PlayerInfo::natural_record_350(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_350);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -350)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_350);
 };
@@ -248,9 +248,9 @@ int PlayerInfo::natural_record_350(void* _arg) {
 int PlayerInfo::natural_record_390(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_390);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -390)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_390);
 };
@@ -258,9 +258,9 @@ int PlayerInfo::natural_record_390(void* _arg) {
 int PlayerInfo::natural_record_420(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_420);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -420)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_420);
 };
@@ -268,9 +268,9 @@ int PlayerInfo::natural_record_420(void* _arg) {
 int PlayerInfo::natural_record_470(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_470);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -470)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_470);
 };
@@ -278,9 +278,9 @@ int PlayerInfo::natural_record_470(void* _arg) {
 int PlayerInfo::natural_record_540(void* _arg) {
 	BEGIN_CALL_BACK_TITLE_CONDITION(natural_record_540);
 
-	// No JP ele pega o do Grand Prix
+	// In JP it takes the Grand Prix one
 	if (pi->getSumRecordGrandPrix() <= -540)
-		ret = 1;	// passa na condição
+		ret = 1;	// passes the condition
 
 	END_CALL_BACK_TITLE_CONDITION(natural_record_540);
 };
@@ -297,7 +297,7 @@ PlayerInfo::PlayerInfo() : player_info() {
 
 	clear();
 
-	// Inicializa o map de Title call back condition
+	// Initializes the Title call back condition map
 	mp_title_callback.insert(std::make_pair(0x15, stTitleMapCallback(PlayerInfo::better_hit_pangya_bronze, this)));
 	mp_title_callback.insert(std::make_pair(0x16, stTitleMapCallback(PlayerInfo::better_fairway_bronze, this)));
 	mp_title_callback.insert(std::make_pair(0x17, stTitleMapCallback(PlayerInfo::better_putt_bronze, this)));
@@ -328,7 +328,7 @@ PlayerInfo::~PlayerInfo() {
 	
 	clear();
 
-	// Limpa map do title call back
+	// Clears the title call back map
 	if (!mp_title_callback.empty())
 		mp_title_callback.clear();
 
@@ -384,7 +384,7 @@ void PlayerInfo::clear() {
 	location.clear();
 	state = 0u;
 	state_lounge = 0u;
-	whisper = 1u;	// Whisper Começa ativo, que desativa ele é o pangya na hora de logar
+	whisper = 1u;	// Whisper starts active, pangya is what deactivates it when logging in
 
 	m_state_logged = 0;
 
@@ -934,9 +934,9 @@ std::vector< WarehouseItemEx* > PlayerInfo::findAllPartNotEquiped(uint32_t _type
 	std::for_each(mp_wi.begin(), mp_wi.end(), [&](auto& el) {
 		auto it = mp_ce.end();
 
-		if (el.second._typeid == _typeid && (el.second.flag & 96) != 96/*Não pode Part Rental*/ && (el.second.flag & 0x20) != 0x20 && (el.second.flag & 0x40) != 0x40 && (it = std::find_if(mp_ce.begin(), mp_ce.end(), [&](auto& el2) {
+		if (el.second._typeid == _typeid && (el.second.flag & 96) != 96/*Cannot be Part Rental*/ && (el.second.flag & 0x20) != 0x20 && (el.second.flag & 0x40) != 0x40 && (it = std::find_if(mp_ce.begin(), mp_ce.end(), [&](auto& el2) {
 			return el2.second.isPartEquiped(el.second._typeid, el.second.id);
-		})) == mp_ce.end()/*Not Found, então a roupa não está equipada*/) {
+		})) == mp_ce.end()/*Not Found, so the clothing is not equipped*/) {
 			v_item.push_back(&el.second);
 		}	// End if
 	});
@@ -1071,9 +1071,9 @@ ExtraPower PlayerInfo::getExtraPower(bool _pwr_condition_actived) {
 								|| (ab->efeito.type[1] == 11 && ab->efeito.rate[1] == 0)
 								|| (ab->efeito.type[2] == 11 && ab->efeito.rate[2] == 0)) {
 								
-								// Efeito type 11 o pangya decide qual é a condição pelo typeid do item, dentro do pangya
+								// Effect type 11 pangya decides which is the condition by the item typeid, inside pangya
 
-								// Aqui só da força se a condição foi ativada, como 3 (Power Gauge) ou sem (Power Gauge)
+								// Here it only gives power if the condition was activated, such as 3 (Power Gauge) or without (Power Gauge)
 								if (_pwr_condition_actived)
 									power_drive.m_auxpart += auxpart->efeito.power_drive; // Power
 							
@@ -1083,7 +1083,7 @@ ExtraPower PlayerInfo::getExtraPower(bool _pwr_condition_actived) {
 
 									if (ab->efeito.type[j] == 13/*SetEffectTable*/) {
 
-										// Continua já verificou esse SetEffectTable
+										// Continue, this SetEffectTable was already checked
 										if (std::find(effect_id_past.begin(), effect_id_past.end(), (uint32_t)ab->efeito.rate[j]) != effect_id_past.end())
 											continue;
 
@@ -1220,9 +1220,9 @@ uint32_t PlayerInfo::getSlotPower() {
 				}
 			}
 
-			// Card -- Card só da slot
+			// Card -- Card only gives slot
 
-			// Pega o valor máximo de slot de POWER
+			// Gets the maximum POWER slot value
 			int32_t value = getCharacterMaxSlot(CharacterInfo::Stats::S_POWER);
 
 			if (value != -1 && ei.char_info->pcl[0] > value)
@@ -1247,7 +1247,7 @@ uint32_t PlayerInfo::getSlotPower() {
 		if (clubset != nullptr)
 			power_slot += clubset->c[0];
 
-		// Pega o valor máximo de slot de POWER
+		// Gets the maximum POWER slot value
 		int32_t value = getClubSetMaxSlot(CharacterInfo::Stats::S_POWER);
 
 		if (value != -1 && ei.csi.slot_c[0] > value)
@@ -1261,7 +1261,7 @@ uint32_t PlayerInfo::getSlotPower() {
 
 int32_t PlayerInfo::getCharacterMaxSlot(CharacterInfo::Stats _stats) {
 
-	// pega o número máximo de slot de power do character equipado
+	// gets the maximum number of power slots of the equipped character
 	int32_t value = 0;
 
 	if (ei.char_info == nullptr) {
@@ -1285,21 +1285,21 @@ int32_t PlayerInfo::getCharacterMaxSlot(CharacterInfo::Stats _stats) {
 		return -1;
 	}
 
-	// Slot de Part Equiped
+	// Equipped Part slot
 	value += value_part;
 
-	// Slot de AuxPart Equiped
+	// Equipped AuxPart slot
 	value += value_auxpart;
 
-	// Slot do Set Effect Table
+	// Set Effect Table slot
 	value += value_set_effect_table;
 
-	// Slot de Card Equiped
+	// Equipped Card slot
 	value += value_card;
 
-	// Level + POWER, cada level da +1 de POWER
+	// Level + POWER, each level gives +1 POWER
 	if (_stats == CharacterInfo::Stats::S_POWER)
-		value += ((mi.level - 1/*Rookie tem uma letra a+*/) / 5/*Levels*/);
+		value += ((mi.level - 1/*Rookie has a letter a+*/) / 5/*Levels*/);
 
 	auto mastery = sIff::getInstance().findCharacterMastery(ei.char_info->_typeid);
 
@@ -1365,17 +1365,17 @@ PlayerRoomInfo::uItemBoost PlayerInfo::checkEquipedItemBoost() {
 	for (auto& _el : mp_wi) {
 
 		// Pang Boost X2
-		// Verifica a quantidade do item para gastar menos processo se ele não tiver a quantidade necessária para ativar a flag
+		// Checks the item quantity to spend less processing if it does not have the quantity needed to activate the flag
 		if (_el.second.STDA_C_ITEM_QNTD > 0 && std::find(passive_item_pang_x2, LAST_ELEMENT_IN_ARRAY(passive_item_pang_x2), _el.second._typeid) != LAST_ELEMENT_IN_ARRAY(passive_item_pang_x2))
 			ib.stItemBoost.ucPangMastery = 1u;
 
 		// Pang Boost X4
-		// Verifica a quantidade do item para gastar menos processo se ele não tiver a quantidade necessária para ativar a flag
+		// Checks the item quantity to spend less processing if it does not have the quantity needed to activate the flag
 		if (_el.second.STDA_C_ITEM_QNTD > 0 && std::find(passive_item_pang_x4, LAST_ELEMENT_IN_ARRAY(passive_item_pang_x4), _el.second._typeid) != LAST_ELEMENT_IN_ARRAY(passive_item_pang_x4))
 			ib.stItemBoost.ucPangNitro = 1u;
 
-		// Tenta não consumir mais processo, quando já estiver as duas flag setada.
-		// Tentando verificar outros itens que possa ter ainda no map
+		// Tries not to consume more processing, when both flags are already set.
+		// Trying to check other items that may still be in the map
 		if (ib.stItemBoost.ucPangMastery == 1u && ib.stItemBoost.ucPangNitro == 1u)
 			break;
 	}
@@ -1402,7 +1402,7 @@ bool PlayerInfo::isMasterCourse() {
 		return el == 1u;
 	});
 
-	return count == (MS_NUM_MAPS - 2)/*-2 por que tira o map 12 que nunca foi feito e o 17 que é o SSC*/;
+	return count == (MS_NUM_MAPS - 2)/*-2 because it removes map 12 which was never made and 17 which is the SSC*/;
 }
 
 bool PlayerInfo::checkEquipedItem(uint32_t _typeid) {
@@ -1474,8 +1474,8 @@ bool PlayerInfo::ownerCaddieItem(uint32_t _typeid) {
 
 	auto cad = findCaddieByTypeid((iff::CADDIE << 26) | sIff::getInstance().getCaddieIdentify(_typeid));
 
-	// Se não tiver o caddie não pode ter o caddie item(parts caddie)
-	// Verificar se tem o caddie, o caddie item não precisa
+	// If it does not have the caddie it cannot have the caddie item (caddie parts)
+	// Check if it has the caddie, the caddie item does not need it
 	if (cad == nullptr /*|| cad->parts_typeid != _typeid*/)
 		return true;
 
@@ -1500,10 +1500,10 @@ bool PlayerInfo::ownerSetItem(uint32_t _typeid) {
 
 	if (set != nullptr) {
 		for (auto i = 0u; i < (sizeof(set->package.item_typeid) / sizeof(set->package.item_typeid[0])); ++i) {
-			// Eleminar a verificação do character que ele só inclui se o player não tiver ele
-			// se ele tiver não faz diferença não anula o verificação do set
+			// Eliminate the character check since it is only included if the player does not have it
+			// if it has it, it makes no difference, does not cancel the set check
 			if (set->package.item_typeid[i] != 0 && sIff::getInstance().getItemGroupIdentify(set->package.item_typeid[i]) != iff::CHARACTER)
-				if (ownerItem(set->package.item_typeid[i]))	// se tiver 1 item que seja não pode ganhar o set se não vai duplicar os itens, que ele tem
+				if (ownerItem(set->package.item_typeid[i]))	// if it has even 1 item it cannot get the set, otherwise it will duplicate the items it has
 					return true;
 		}
 	}
@@ -1514,7 +1514,7 @@ bool PlayerInfo::ownerSetItem(uint32_t _typeid) {
 bool PlayerInfo::ownerItem(uint32_t _typeid, int option) {
 	bool ret = false;
 
-	// Verifica se ele tem no Dolfini Locker
+	// Checks if it has it in the Dolfini Locker
 	if (df.ownerItem(_typeid))
 		return true;
 
@@ -1554,16 +1554,16 @@ bool PlayerInfo::ownerItem(uint32_t _typeid, int option) {
 	case iff::HAIR_STYLE:
 		ret = ownerHairStyle(_typeid);
 		break;
-	case iff::CAD_ITEM:		// Esse aqui verifica se já tem, mas não que não pode ter mais. mas sim para aumentar o tempo
+	case iff::CAD_ITEM:		// This one checks if it already has it, but not that it cannot have more, rather to increase the time
 		ret = ownerCaddieItem(_typeid);
 		break;
 	}
 
-	// Player não tem o item no warehouse e nem no Dolfini Locker, Verifica no Mail Box dele
-	// Option diferente de 0 não verifica no Mail Box, por que o player está tirando do Mail Box o Item
+	// Player does not have the item in the warehouse nor in the Dolfini Locker, Checks in its Mail Box
+	// Option different from 0 does not check the Mail Box, because the player is taking the Item out of the Mail Box
 	if (option == 0 && !ret) {
 	
-		// Verifica se ele tem no Mail Box
+		// Checks if it has it in the Mail Box
 		ret = ownerMailBoxItem(_typeid);
 	}
 
@@ -1792,12 +1792,12 @@ void PlayerInfo::addPang(uint64_t _pang) {
 		// Check alteration on pang of DB 
 		if (checkAlterationPangOnDB()) {
 
-			// Pang é diferente atualiza o pang com o valor do banco de daos
+			// Pang is different, update the pang with the database value
 			_smp::message_pool::getInstance().push(new message("[PlayerInfo::addPang][Error] Player[UID=" + std::to_string(uid) + "] pang on db is different of server.", CL_FILE_LOG_AND_CONSOLE));
 
 			auto old_pang = ui.pang;
 
-			// Atualiza o valor do pang do server com o do banco de dados
+			// Updates the server pang value with the database one
 			updatePang();
 
 			// Log
@@ -1806,7 +1806,7 @@ void PlayerInfo::addPang(uint64_t _pang) {
 					+ "] no banco de dados eh diferente do que esta no server, atualiza para o valor do banco de dados.", CL_FILE_LOG_AND_CONSOLE));
 		}
 
-		// Add o pang para o player
+		// Add the pang to the player
 		ui.pang += _pang;
 
 		m_update_pang_db.requestUpdateOnDB();
@@ -1868,7 +1868,7 @@ void PlayerInfo::updateCookie() {
 
 		_smp::message_pool::getInstance().push(new message("[PlayerInfo::updateCookie][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Relanção por que essa função não tem retorno para verifica, então a exception garante que o código não vai continua
+		// Rethrow because this function has no return to check, so the exception ensures the code does not continue
 		throw;
 	}
 };
@@ -1892,7 +1892,7 @@ void PlayerInfo::updatePang() {
 
 		_smp::message_pool::getInstance().push(new message("[PlayerInfo::updatePang][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Relanção por que essa função não tem retorno para verifica, então a exception garante que o código não vai continua
+		// Rethrow because this function has no return to check, so the exception ensures the code does not continue
 		throw;
 	}
 };
@@ -1973,7 +1973,7 @@ void PlayerInfo::updateTrofelInfo(uint32_t _trofel_typeid, unsigned char _trofel
 
 	uint32_t type = sIff::getInstance().getMatchTypeIdentity(_trofel_typeid);
 
-	// Verifica se é o 2C e se o Tipo do Trofel é menor ou igual a 12, que é o Pro 7 o ultimo
+	// Checks if it is 2C and the Trophy Type is less than or equal to 12, which is Pro 7 the last
 	if (sIff::getInstance().getItemSubGroupIdentify24(_trofel_typeid) != 0 && type > 12/*Pro 7*/)
 		throw exception("[PlayerInfo::updateTrofelInfo][Error] player[UID=" + std::to_string(uid) + "] tentou atualizar um trofel[TYPEID="
 				+ std::to_string(_trofel_typeid) + ", RANK=" + std::to_string((unsigned short)_trofel_rank) + "] que nao eh normal, eh um outro trofel. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_INFO, 202, 0));
@@ -1982,7 +1982,7 @@ void PlayerInfo::updateTrofelInfo(uint32_t _trofel_typeid, unsigned char _trofel
 		throw exception("[PlayerInfo::updateTrofelInfo][Error] player[UID=" + std::to_string(uid) + "] tentou atualizar um trofel[TYPEID="
 				+ std::to_string(_trofel_typeid) + ", RANK=" + std::to_string((unsigned short)_trofel_rank) + "] rank eh invalido. Bug,", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_INFO, 203, 0));
 
-	// Update Trofel Info Atual (season atual)
+	// Update Current Trophy Info (current season)
 	ti_current_season.update(type, _trofel_rank);
 
 	snmdb::NormalManagerDB::getInstance().add(4, new CmdUpdateNormalTrofel(uid, ti_current_season), PlayerInfo::SQLDBResponse, this);
@@ -2004,7 +2004,7 @@ void PlayerInfo::updateTrofelInfo(uint32_t _uid, uint32_t _trofel_typeid, unsign
 
 	uint32_t type = sIff::getInstance().getMatchTypeIdentity(_trofel_typeid);
 
-	// Verifica se é o 2C e se o Tipo do Trofel é menor ou igual a 12, que é o Pro 7 o ultimo
+	// Checks if it is 2C and the Trophy Type is less than or equal to 12, which is Pro 7 the last
 	if (sIff::getInstance().getItemSubGroupIdentify24(_trofel_typeid) != 0 && type > 12/*Pro 7*/)
 		throw exception("[PlayerInfo::updateTrofelInfo][Error] player[UID=" + std::to_string(_uid) + "] tentou atualizar um trofel[TYPEID="
 				+ std::to_string(_trofel_typeid) + ", RANK=" + std::to_string((unsigned short)_trofel_rank) + "] que nao eh normal, eh um outro trofel. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_INFO, 202, 0));
@@ -2024,7 +2024,7 @@ void PlayerInfo::updateTrofelInfo(uint32_t _uid, uint32_t _trofel_typeid, unsign
 
 	TrofelInfo ti = cmd_ti.getInfo();
 
-	// Update Trofel Info Atual (season atual)
+	// Update Current Trophy Info (current season)
 	ti.update(type, _trofel_rank);
 
 	snmdb::NormalManagerDB::getInstance().add(4, new CmdUpdateNormalTrofel(_uid, ti), PlayerInfo::SQLDBResponse, nullptr);
@@ -2039,7 +2039,7 @@ void PlayerInfo::updateMedal(uMedalWin _medal_win) {
 	// Update medal info player
 	ui.medal.add(_medal_win);
 
-	// Update Info do player na database
+	// Update player Info in the database
 	updateUserInfo();
 };
 
@@ -2053,7 +2053,7 @@ void PlayerInfo::updateMedal(uint32_t _uid, uMedalWin _medal_win) {
 		throw exception("[PlayerInfo::updateMedal][Error] Player[UID=" + std::to_string(_uid)
 				+ "] tentou atualizar medalhas, mas passou nenhuma medalha para atualizar. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_INFO, 600, 0));
 
-	// Pega o Info do player para atualizar
+	// Gets the player Info to update
 	CmdUserInfo cmd_ui(_uid, true);		// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_ui, nullptr, nullptr);
@@ -2068,7 +2068,7 @@ void PlayerInfo::updateMedal(uint32_t _uid, uMedalWin _medal_win) {
 	// Update medal info player
 	user_info.medal.add(_medal_win);
 
-	// Update Info do player na database
+	// Update player Info in the database
 	PlayerInfo::updateUserInfo(_uid, user_info);
 
 };
@@ -2093,13 +2093,13 @@ int PlayerInfo::addExp(uint32_t _exp) {
 		if ((exp = ExpByLevel[level]) == ~0u)
 			_smp::message_pool::getInstance().push(new message("[AddExp][Log] player[UID=" + std::to_string(uid) + "] ja eh infinit legend I, nao precisar mais add exp para ele.", CL_FILE_LOG_AND_CONSOLE));
 		else {
-			// Att Exp do player
+			// Update player Exp
 			ui.exp += _exp;
 
 			if (ui.exp >= exp) { // LEVEL UP!
 				unsigned char new_level = 0u, ant_level = 0u;
 			
-				// Atualiza todos os levels das estruturas que o player tem
+				// Updates all the levels of the structures the player has
 				ant_level = (unsigned char)level;
 
 				// Check if up n levels
@@ -2109,7 +2109,7 @@ int PlayerInfo::addExp(uint32_t _exp) {
 					mi.level = new_level;
 					ui.level = new_level;
 
-					// Att Exp do player
+					// Update player Exp
 					ui.exp -= exp;
 
 					// LEVEL UP!
@@ -2120,7 +2120,7 @@ int PlayerInfo::addExp(uint32_t _exp) {
 				_smp::message_pool::getInstance().push(new message("[AddExp][Log] player[UID=" + std::to_string(uid) + "] Upou de Level[FROM=" + std::to_string((unsigned short)ant_level) + ", TO=" 
 						+ std::to_string((unsigned short)new_level) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			}else // Update só a Exp
+			}else // Update only the Exp
 				ret = 0;
 
 			_smp::message_pool::getInstance().push(new message("[AddExp][Log] player[UID=" + std::to_string(uid) + "] adicionou Experiencia[value=" + std::to_string(_exp) + "] e ficou com [LEVEL=" 
@@ -2161,7 +2161,7 @@ void PlayerInfo::updateLocationDB() {
 		m_pl.room = mi.sala_numero;
 		m_pl.place = place;
 
-		// Sincroniza para não ter valores inseridos errados no banco de dados
+		// Synchronizes so there are no wrongly inserted values in the database
 		m_pl.requestUpdateOnDB();
 
 		snmdb::NormalManagerDB::getInstance().add(5, new CmdUpdatePlayerLocation(uid, m_pl), PlayerInfo::SQLDBResponse, this);
@@ -2186,27 +2186,27 @@ bool PlayerInfo::updateGrandPrixClear(uint32_t _typeid, uint32_t _position) {
 
 	if (it == v_gpc.end()) {
 
-		// Não tem esse GP o client acaba de completar um novo GP
+		// Does not have this GP, the client just completed a new GP
 		it = v_gpc.insert(v_gpc.end(), GrandPrixClear(_typeid, _position));
 
-		// Insere no Banco de dados
+		// Inserts into the Database
 		snmdb::NormalManagerDB::getInstance().add(6, new CmdInsertGrandPrixClear(uid, *it), PlayerInfo::SQLDBResponse, this);
 
-		// Update no Cliente
+		// Update on the Client
 		upt_client = true;
 	
 	}else {
 
-		// Player já tem esse Grand Prix Clear verifica se ele ficou em um posição melhor
+		// Player already has this Grand Prix Clear, checks if it finished in a better position
 		if (it->position > _position) {
 
-			// Player ficou em uma position melhor atualiza o Grand Prix Clear
+			// Player finished in a better position, updates the Grand Prix Clear
 			it->position = _position;
 
 			// Update on DB
 			snmdb::NormalManagerDB::getInstance().add(7, new CmdUpdateGrandPrixClear(uid, *it), PlayerInfo::SQLDBResponse, this);
 
-			// Update on Cliente
+			// Update on Client
 			upt_client = true;
 		}
 	}
@@ -2221,7 +2221,7 @@ void PlayerInfo::addGrandZodiacPontos(uint64_t _pontos) {
 
 	grand_zodiac_pontos += _pontos;
 
-	// Update no Banco de dados
+	// Update in the Database
 	snmdb::NormalManagerDB::getInstance().add(8, new CmdGrandZodiacPontos(uid, grand_zodiac_pontos, CmdGrandZodiacPontos::eCMD_GRAND_ZODIAC_TYPE::CGZT_UPDATE), PlayerInfo::SQLDBResponse, this);
 
 	// Log
@@ -2240,10 +2240,10 @@ void PlayerInfo::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _a
 
 		auto pi = reinterpret_cast< PlayerInfo* >(_arg);
 
-		// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+		// For now it just exits, later I will do another kind of handling if needed
 		if (_pangya_db.getException().getCodeError() != 0) {
 
-			// Trata alguns tipo aqui, que são necessários
+			// Handles some types here, which are necessary
 			switch (_msg_id) {
 				case 1: // Update Pang
 				{
@@ -2280,7 +2280,7 @@ void PlayerInfo::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _a
 			// Success update on DB
 			pi->m_update_pang_db.confirmUpdadeOnDB();
 
-			// Não tem retorno então não precisa reinterpretar o pangya_db
+			// Has no return so there is no need to reinterpret the pangya_db again
 			//auto cmd_up = reinterpret_cast< CmdUpdatePang* >(&_pangya_db);
 			break;
 		}
@@ -2290,13 +2290,13 @@ void PlayerInfo::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _a
 			// Success update on DB
 			pi->m_update_cookie_db.confirmUpdadeOnDB();
 
-			// Não tem retorno então não precisa reinterpretar o pangya_db
+			// Has no return so there is no need to reinterpret the pangya_db again
 			//auto cmd_uc = reinterpret_cast< CmdUpdateCookie* >(&_pangya_db);
 			break;
 		}
 		case 3:	// UPDATE USER INFO
 		{
-			// Não tem retorno então não precisa reinterpretar o pangya_db
+			// Has no return so there is no need to reinterpret the pangya_db again
 			// auto cmd_uui = reinterpret_cast< CmdUpdateUserInfo* >(&_pangya_db);
 			break;
 		}

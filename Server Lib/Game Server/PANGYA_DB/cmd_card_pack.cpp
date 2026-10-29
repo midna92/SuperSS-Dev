@@ -1,6 +1,6 @@
-// Arquivo cmd_card_pack.cpp
-// Criado em 01/07/2018 as 00:45 por Acrisio
-// Implementa��o da classe CmdCardPack
+// File cmd_card_pack.cpp
+// Created on 01/07/2018 at 00:45 by Acrisio
+// Implementation of the class CmdCardPack
 
 #if defined(_WIN32)
 #pragma pack(1)

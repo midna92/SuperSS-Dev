@@ -1,6 +1,6 @@
-// Arquivo cmd_find_dolfini_locker_item.cpp
-// Criado em 24/05/2019 as 00:20 por Acrisio
-// Implementação da classe CmdFindDolfiniLockerItem
+// File cmd_find_dolfini_locker_item.cpp
+// Created on 24/05/2019 at 00:20 by Acrisio
+// Implementation of the class CmdFindDolfiniLockerItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -46,7 +46,7 @@ void CmdFindDolfiniLockerItem::lineResult(result_set::ctx_res* _result, uint32_t
 		//strcpy_s(dli.item.sd_copier_nick, _result->data[6]);
 		m_dli.item.sd_status = (unsigned char)IFNULL(atoi, _result->data[7]);
 		m_dli.index = IFNULL(atoll, _result->data[8]);
-		m_dli.item.qntd = IFNULL(atoi, _result->data[9]);	// DOLFINI_LOCKER_FLAG, mas é quantidade
+		m_dli.item.qntd = IFNULL(atoi, _result->data[9]);	// DOLFINI_LOCKER_FLAG, but it is quantity
 
 		if (uid_req != m_uid)
 			throw exception("[CmdFindDolfiniLockerItem::lineResult][Error] O dolfini info requerido retornou um uid diferente. UID_req: "

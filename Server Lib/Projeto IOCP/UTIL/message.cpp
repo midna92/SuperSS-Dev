@@ -1,6 +1,6 @@
-// Arquivo message.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe message
+// File message.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of the class message
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -70,7 +70,7 @@ message::message(std::wstring s, size_t _tipo) : m_tipo(_tipo) {
 #endif
 
 	m_message = WcToMb(s);
-	//m_message.assign(s.begin(), s.end());	// Convert de WSTRING para STRING
+	//m_message.assign(s.begin(), s.end());	// Convert from WSTRING to STRING
 
 	m_message = std::string(time) + "\t" + m_message;
 };

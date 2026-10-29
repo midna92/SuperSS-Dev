@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_member_points.cpp
-// Criado em 29/12/2019 as 13:09 por Acrisio
-// Implementa��o da classe CmdUpdateGuildMemberPoints
+// File cmd_update_guild_member_points.cpp
+// Created on 29/12/2019 at 13:09 by Acrisio
+// Implementation of class CmdUpdateGuildMemberPoints
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateGuildMemberPoints::~CmdUpdateGuildMemberPoints() {
 
 void CmdUpdateGuildMemberPoints::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

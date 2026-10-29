@@ -1,6 +1,6 @@
-// Arquivo cmd_trophy_special.cpp
-// Criado em 21/03/2018 as 23:08 por Acrisio
-// Implementa��o da classe CmdTrophySpecial
+// File cmd_trophy_special.cpp
+// Created on 21/03/2018 at 23:08 by Acrisio
+// Implementation of the class CmdTrophySpecial
 
 #if defined(_WIN32)
 #pragma pack(1)

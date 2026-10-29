@@ -1,6 +1,6 @@
-// Arquivo socket.h
-// Criado em 02/03/2017 por Acrisio
-// Definição da classe socket
+// File socket.h
+// Created on 02/03/2017 by Acrisio
+// Definition of class socket
 
 #pragma once
 #ifndef _STDA_SOCKET_H
@@ -106,14 +106,14 @@ namespace stdA {
 		};
 
 	public:
-		// ip rules, se habilitado, o DDoS Proteção também é habilitado
+		// ip rules, if enabled, DDoS Protection is also enabled
 		bool ip_rules;
 
 	private:
-		// Conexão histórico, ip & 0xFFFF
+		// Connection history, ip & 0xFFFF
 		PConnectHistory connect_history[0x10000];
 
-		// Conexão Viva, ip & 0xFFFF
+		// Live connection, ip & 0xFFFF
 		PConnectLive connect_live[0x10000];
 
 		// Access Control
@@ -137,15 +137,15 @@ namespace stdA {
 #endif
 
 #if defined(_WIN32)
-		static DWORD WINAPI pThread_Timer(LPVOID lpParameter);			// Thread que chame a função connec_check_clear de 5 em 5 minutos
+		static DWORD WINAPI pThread_Timer(LPVOID lpParameter);			// Thread that calls the connec_check_clear function every 5 minutes
 #elif defined(__linux__)
-		static void* pThread_Timer(LPVOID lpParameter);			// Thread que chame a função connec_check_clear de 5 em 5 minutos
+		static void* pThread_Timer(LPVOID lpParameter);			// Thread that calls the connec_check_clear function every 5 minutes
 #endif
 
 #if defined(_WIN32)
-		LARGE_INTEGER gettick();										// Pega o QueryPerformanceCounter do mommento
+		LARGE_INTEGER gettick();										// Get the current QueryPerformanceCounter
 #elif defined(__linux__)
-		timespec gettick();												// Pega o QueryPerformanceCounter do mommento
+		timespec gettick();												// Get the current QueryPerformanceCounter
 #endif
 
 #if defined(_WIN32)
@@ -155,50 +155,50 @@ namespace stdA {
 #endif
 
 	public:
-		int connect_check(SOCKET _sock, UINT32 ip);						// Check se o ip pode conectar
+		int connect_check(SOCKET _sock, UINT32 ip);						// Check whether the ip can connect
 
-		int connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip);	// Verifica se o ip pode ter mais conexões que é permitido
+		int connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip);	// Check whether the ip can have more connections than allowed
 
-		bool connect_check_continue();									// Verifica se continuar com a thread_timer
+		bool connect_check_continue();									// Check whether to continue with the thread_timer
 
-		void thread_connect_check_off();								// Desligar a thread connect_check, modificando a variavel atomica
+		void thread_connect_check_off();								// Turn off the connect_check thread, by modifying the atomic variable
 
 		UINT32 getDDoS_AutoReset();										// Get Interval DDoS Auto Reset history
 
-		void reload_config_file();										// Ler novamente o aquivo de configuração do socket
+		void reload_config_file();										// Read the socket configuration file again
 
-		static int getConnectTime(SOCKET _sock);						// [Estática que não precisa da classe socket para executar essa função] Pega o Tempo de conexão do socket no sistema
+		static int getConnectTime(SOCKET _sock);						// [Static, does not need the socket class to run this function] Get the socket connection time from the system
 
 	private:
 #if defined(_WIN32)
-		int connect_check_clear(LARGE_INTEGER tick);					// Limpa o histórico de conexão que já passaram do tempo permitido
-		int connect_live_check_clear(LARGE_INTEGER tick);				// Limpa o histórico de conexão com o mesmo ip connectado
+		int connect_check_clear(LARGE_INTEGER tick);					// Clear the connection history entries that have exceeded the allowed time
+		int connect_live_check_clear(LARGE_INTEGER tick);				// Clear the connection history with the same connected ip
 #elif defined(__linux__)
-		int connect_check_clear(timespec tick);							// Limpa o histórico de conexão que já passaram do tempo permitido
-		int connect_live_check_clear(timespec tick);					// Limpa o histórico de conexão com o mesmo ip connectado
+		int connect_check_clear(timespec tick);							// Clear the connection history entries that have exceeded the allowed time
+		int connect_live_check_clear(timespec tick);					// Clear the connection history with the same connected ip
 #endif
 
-		int connect_check_is_live();									// Tira as connexões que não estão masi conectada da lista ligada
+		int connect_check_is_live();									// Remove the connections that are no longer connected from the linked list
 
-		void close_connect_history();									// limpa e fecha o histórico de conexão
+		void close_connect_history();									// clear and close the connection history
 
-		void close_connect_live();										// Limpa e fecha conexões vivas
+		void close_connect_live();										// Clear and close live connections
 
-		void close_access_allow();										// limpa o vector de access allow
+		void close_access_allow();										// clear the access allow vector
 
-		void close_acces_deny();										// limpa o vector de access deny
+		void close_acces_deny();										// clear the access deny vector
 
-		int access_ipmask(const char* str, PAccessControl acc);			// passa de ip str para ip mask
+		int access_ipmask(const char* str, PAccessControl acc);			// convert from ip str to ip mask
 
-		void config_read(const char* file_name);						// Ler as configuraçao do socket
+		void config_read(const char* file_name);						// Read the socket configuration
 		
 	protected:
 		SOCKET m_socket;
 		SOCKADDR_IN m_sockaddr;
 
 #if defined(_WIN32)
-		CRITICAL_SECTION m_cs_ip;										// Critical Section para o Historico de conexão
-		CRITICAL_SECTION m_cs_ipx;										// Critical Section para as Conexões Vivas
+		CRITICAL_SECTION m_cs_ip;										// Critical Section for the connection history
+		CRITICAL_SECTION m_cs_ipx;										// Critical Section for the live connections
 #elif defined(__linux__)
 		pthread_mutex_t m_cs_ip;
 		pthread_mutex_t m_cs_ipx;

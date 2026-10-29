@@ -1,6 +1,6 @@
-// Arquivo cmd_use_item_buff.cpp
-// Criado em 07/07/2018 as 21:42 por Acrisio
-// Implementa��o da classe CmdUseItemBuff
+// File cmd_use_item_buff.cpp
+// Created on 07/07/2018 at 21:42 by Acrisio
+// Implementation of class CmdUseItemBuff
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_register_logon_server.hpp
-// Criado em 01/04/2018 as 20:48 por Acrisio
-// Defini��o da classe CmdRegisterLogonServer
+// File cmd_register_logon_server.hpp
+// Created on 01/04/2018 at 20:48 by Acrisio
+// Definition of the CmdRegisterLogonServer class
 
 #pragma once
 #ifndef _STDA_CMD_REGISTER_LOGON_SERVER_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_pang.cpp
-// Criado em 03/10/2019 as 18:15 por Acrisio
-// Implementa��o da classe CmdPang
+// File cmd_pang.cpp
+// Created on 03/10/2019 at 18:15 by Acrisio
+// Implementation of the class CmdPang
 
 #if defined(_WIN32)
 #pragma pack(1)

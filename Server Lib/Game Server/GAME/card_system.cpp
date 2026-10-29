@@ -1,6 +1,6 @@
-// Arquivo card_system.cpp
-// Criado em 30/06/2018 as 18:06 por Acrisio
-// Implementa��o da classe CardSystem
+// File card_system.cpp
+// Created on 30/06/2018 at 18:06 by Acrisio
+// Implementation of class CardSystem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -76,7 +76,7 @@ CardSystem::CardSystem() : m_load(false) {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initialize
 	initialize();
 }
 
@@ -113,7 +113,7 @@ void CardSystem::initialize() {
 			break;
 		}
 		case 3:	// Card Pack
-			// N�o usa esses, por que � card pack os dois
+			// Does not use these, because they are both card pack
 			break;
 		default:
 			throw exception("[CardSystem::initialize][Error] Card Group Type Is invalid.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CARD_SYSTEM, 4, 0));
@@ -142,7 +142,7 @@ void CardSystem::initialize() {
 			el.second.card.assign(it->second.card.begin(), it->second.card.end());
 	}
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
@@ -155,7 +155,7 @@ void CardSystem::initialize() {
 	
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;

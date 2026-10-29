@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_nick.cpp
-// Criado em 01/04/2018 as 12:55 por Acrisio
-// Implementa��o da classe CmdVerifyNick
+// File cmd_verify_nick.cpp
+// Created on 01/04/2018 at 12:55 by Acrisio
+// Implementation of class CmdVerifyNick
 
 #if defined(_WIN32)
 #pragma pack(1)

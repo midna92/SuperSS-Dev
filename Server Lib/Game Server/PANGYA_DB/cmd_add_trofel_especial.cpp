@@ -1,6 +1,6 @@
-// Arquivo cmd_add_trofel_espcial.cpp
-// Criado em 21/06/2019 as 18:28 por Acrisio
-// Implementa��o da classe CmdAddTrofelEspecial
+// File cmd_add_trofel_espcial.cpp
+// Created on 21/06/2019 at 18:28 by Acrisio
+// Implementation of the class CmdAddTrofelEspecial
 
 #if defined(_WIN32)
 #pragma pack(1)

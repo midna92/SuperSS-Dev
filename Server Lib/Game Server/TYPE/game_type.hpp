@@ -1,6 +1,6 @@
-// Arquivo game_type.hpp
-// Criado em 19/08/2018 as 12:09 por Acrisio
-// Definição dos tipos usados na classe Game
+// File game_type.hpp
+// Created on 19/08/2018 at 12:09 by Acrisio
+// Definition of the types used in class Game
 
 #pragma once
 #ifndef _STDA_GAME_TYPE_HPP
@@ -32,7 +32,7 @@ namespace stdA {
 #define TICKET_REPORT_SCROLL_TYPEID 0x1A000042ul
 #define TICKET_REPORT_TYPEID		0x1A000041ul
 
-// Anel que da +1.1% de Club Mastery
+// Ring that gives +1.1% Club Mastery
 #define KURAFAITO_RING_CLUBMASTERY 0x70210009ul
 
 //	0x1A00019F/*Auto Commander*/
@@ -48,12 +48,12 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 // CheckPassiveItem
 #define CHECK_PASSIVE_ITEM(_typeid) (sIff::getInstance().getItemGroupIdentify((_typeid)) == iff::ITEM && sIff::getInstance().getItemSubGroupIdentify24((_typeid)) > 1/*Passive Item*/)
 
-///* ROUND SOMA LEVEL ROOM GAME
-// soma "Total Level"
-// Return ROUND soma
+///* ROUND SUM LEVEL ROOM GAME
+// sum "Total Level"
+// Return ROUND sum
 #define STDA_ROUND_SOMA_LEVEL(_soma) ((_soma) + (5 - ((_soma) % 5)) - 5)
 
-///* TRANSFORMA O VALOR de porcentagem de exibição 100% para 1,0
+///* CONVERTS the display percentage value 100% to 1.0
 #define TRANSF_SERVER_RATE_VALUE(_value) ((_value) <= 0 ? 1 : (_value) / 100.f)
 
 ///* isSilentWindItem
@@ -68,30 +68,30 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 // Return bool
 #define isSafetyItem(_typeid) std::find(safety_item, LAST_ELEMENT_IN_ARRAY(safety_item), (_typeid)) != LAST_ELEMENT_IN_ARRAY(safety_item)
 
-///* MAKE TROFEL ROOM GAME
+///* MAKE TROPHY ROOM GAME
 // Argument:
-//	soma "Total Level"
-//	num_player "Numero de Jogadores
-// Return trofel Typeid or 0
+//	sum "Total Level"
+//	num_player "Number of Players
+// Return trophy Typeid or 0
 #define STDA_MAKE_TROFEL(_soma, _num_player) (((_num_player) != 0) ? (iff::MATCH << 26) | (((STDA_ROUND_SOMA_LEVEL(_soma) / (_num_player)) / 5) << 16)  : 0)
 
 	const uint32_t silent_wind_item[]{ 0x18000006, 0x1800002C, 0x1800002D, 0x1800002F };
 
 	const uint32_t safety_item[]{ 0x18000028, 0x1800002D };
 
-	const uint32_t passive_item[]{ 0x1A00000A, 0x1A00000B, 0x1A00000D, 0x1A00000E, 0x1A00000F/*1 Por Game*/, 0x1A000013, 0x1A000014/*1 Por Game*/
+	const uint32_t passive_item[]{ 0x1A00000A, 0x1A00000B, 0x1A00000D, 0x1A00000E, 0x1A00000F/*1 Per Game*/, 0x1A000013, 0x1A000014/*1 Per Game*/
 															, 0x1A00002F, 0x1A000035, 0x1A000084, 0x1A000085, 0x1A000086, 0x1A000090, 0x1A000099, 0x1A0000AD, 0x1A0000FC/*Double Exp*/,
 										0x1A000001/*2*/ , 0x1A000002/*2*/ , 0x1A0000AE/*2*/  , 0x1A000005/*x4*/ , 0x1A0003B7/*x4*/, 0x1A0001D7/*0,5*/, 0x1A0001D8/*0,5*/
 																		, 0x1A00025A/*0,4*/, 0x1A000007/*0,2*/, 0x1A000008/*0,2*/, 0x1A000009/*0,2*/ , 0x1A00000C/*0,2*/ /*Double Pang*/,
 										0x1A000040/*Auto Caliper*/ , 0x1A000011/*Time Booster*/ , 0x1A00019F/*Auto Commander*/ , 0x1A0001A0/*Vector Sign*/ , 0x1A000136/*Fairy's Tears*/ ,
 										0x1A000338/*Banana Club Mastery Boost*/ /*Help On Game*/ };
 
-	// Consome 1 por jogo
-	// Pirulito x2 de Exp boost que só consome 1 por jogo, os outros consome por hole
-	const uint32_t passive_item_exp_1perGame[]{ 0x1A00000F/*1 Por Game*/, 0x1A000014/*1 Por Game*/ };
+	// Consumes 1 per game
+	// x2 Exp boost lollipop that only consumes 1 per game, the others consume per hole
+	const uint32_t passive_item_exp_1perGame[]{ 0x1A00000F/*1 Per Game*/, 0x1A000014/*1 Per Game*/ };
 
-	// Exp Boost todos são x2
-	const uint32_t passive_item_exp[]{ 0x1A00000A, 0x1A00000B, 0x1A00000D, 0x1A00000E, 0x1A00000F/*1 Por Game*/, 0x1A000013, 0x1A000014/*1 Por Game*/
+	// Exp Boost all are x2
+	const uint32_t passive_item_exp[]{ 0x1A00000A, 0x1A00000B, 0x1A00000D, 0x1A00000E, 0x1A00000F/*1 Per Game*/, 0x1A000013, 0x1A000014/*1 Per Game*/
 										  , 0x1A00002F, 0x1A000035, 0x1A000084, 0x1A000085, 0x1A000086, 0x1A000090, 0x1A000099, 0x1A0000AD, 0x1A0000FC,/*Double Exp*/ };
 	
 	// Pang Boost X2
@@ -115,7 +115,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 											 0x1A00025A/*0,4*/,
 											 0x1A000007/*0,2*/, 0x1A000008/*0,2*/, 0x1A000009/*0,2*/, 0x1A00000C/*0,2*/ /*Double Pang*/ };
 	
-	// Banana que da x2 Club Mastry, consome 1 por Hole [BANANA_CLUB_MASTERY_BOOST]
+	// Banana that gives x2 Club Mastery, consumes 1 per Hole [BANANA_CLUB_MASTERY_BOOST]
 	const uint32_t passive_item_club_boost[]{ 0x1A000338 };
 
 	union uSpecialShot {
@@ -129,7 +129,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 			uint32_t tomahawk : 1;
 			uint32_t cobra : 1;
 			uint32_t spike : 1;
-			uint32_t _unused : 25;	// Não usa
+			uint32_t _unused : 25;	// Not used
 		}stSpecialShot;
 		std::string toString() {
 			return "Spin Front: " + std::to_string(stSpecialShot.spin_front)
@@ -164,12 +164,12 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 				+ "Natural Wind: X: " + std::to_string(natural_wind[0]) + " Y: " + std::to_string(natural_wind[1]) + STDA_END_LINE
 				;
 		};
-		float bar_point[2];					// [0] 2 Força, [1] 3 Impact Zone
+		float bar_point[2];					// [0] 2 Power, [1] 3 Impact Zone
 		float ball_effect[2];				// [0] X Spin,  [1] Y Spin
 		unsigned char acerto_pangya_flag;
-		uSpecialShot special_shot;			// Especial Short, Tomahawk, Cobra e Spike
+		uSpecialShot special_shot;			// Special Short, Tomahawk, Cobra and Spike
 		uint32_t time_hole_sync;
-		float mira;							// Mira da tacada do player, seria o R do location[x,y,z,r]
+		float mira;							// Player shot aim, would be the R of location[x,y,z,r]
 		uint32_t time_shot;
 		float bar_point1;
 		unsigned char club;
@@ -178,7 +178,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		int32_t natural_wind[2];				// Natural Wind Valor [0] X valor, [1] Y valor 
 	};
 
-	// Separei o spand time, que o pang battle não tem ele
+	// I separated the spend time, because pang battle does not have it
 	struct ShotData : public ShotDataBase {
 		ShotData(uint32_t _ul = 0u) : ShotDataBase(_ul) {
 			clear();
@@ -189,7 +189,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		std::string toString() {
 			return ShotDataBase::toString() + "Spend Time Game: " + std::to_string(spend_time_game) + STDA_END_LINE;
 		};
-		float spend_time_game;				// O Acumolo de tempo gasto no jogo, é o tempo decorrido geral
+		float spend_time_game;				// The accumulated time spent in the game, it is the overall elapsed time
 	};
 
 	struct ShotDataEx : public ShotData {
@@ -253,7 +253,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		Location location;
 		SHOT_STATE state;
 		unsigned char bunker_flag;
-		unsigned char ucUnknown;		// Deve ser relacionando ao bunker esses negocios
+		unsigned char ucUnknown;		// These things must be related to the bunker
 		uint32_t pang;
 		uint32_t bonus_pang;
 		inline bool isMakeHole() {
@@ -267,7 +267,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 				struct _stDisplay {
 					unsigned char over_drive : 1;
 					unsigned char _bit2_unknown : 1;
-					unsigned char super_pangya : 1;					// Só da com Power shot na primeira tacada
+					unsigned char super_pangya : 1;					// Only applies with Power shot on the first shot
 					unsigned char special_shot : 1;
 					unsigned char beam_impact : 1;
 					unsigned char chip_in_17_a_199 : 1;
@@ -275,20 +275,20 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 					unsigned char long_putt : 1;
 					unsigned char acerto_hole : 1;
 					unsigned char approach_shot : 1;				// Bonus
-					unsigned char chip_in_with_special_shot : 1;	// Chipou com especial tacada Ex: Tomahawk, Cobra e Spike, Power Spin e Power Curve
+					unsigned char chip_in_with_special_shot : 1;	// Chipped in with special shot Ex: Tomahawk, Cobra and Spike, Power Spin and Power Curve
 					unsigned char _bit12_unknown : 1;
 					unsigned char happy_bonus : 1;	// Happy Bonus
 					unsigned char clear_bonus : 1;
 					unsigned char aztec_bonus : 1;
-					unsigned char recovery_bonus : 1;				// Esse é quando manda back spin e cai no rough e o spin puxa para o fairway
-					unsigned char chip_in_without_special_shot : 1;	// Chipou sem especial tacada Ex: Tomahawk, Cobra e Spike
-					unsigned char bound_bonus : 1;					// Ganha bonus pang para cada kick na bola no chão
+					unsigned char recovery_bonus : 1;				// This is when back spin is used and it lands in the rough and the spin pulls it to the fairway
+					unsigned char chip_in_without_special_shot : 1;	// Chipped in without special shot Ex: Tomahawk, Cobra and Spike
+					unsigned char bound_bonus : 1;					// Gains bonus pang for each kick of the ball on the ground
 					unsigned char _bit19_unknown : 1;
 					unsigned char _bit20_unknown : 1;
-					unsigned char mascot_bonus_with_pangya : 1;		// Só da na primeira tacada
+					unsigned char mascot_bonus_with_pangya : 1;		// Only applies on the first shot
 					unsigned char mascot_bonus_without_pangya : 1;
-					unsigned char special_bonus_with_pangya : 1;	// Special bonus quando acerta pangya (esse bonus da com angel wings)
-					unsigned char special_bonus_without_pangya : 1;	// Special bonus quando erra pangya (esse bonus da com angel wings)
+					unsigned char special_bonus_with_pangya : 1;	// Special bonus when hitting pangya (this bonus applies with angel wings)
+					unsigned char special_bonus_without_pangya : 1;	// Special bonus when missing pangya (this bonus applies with angel wings)
 					unsigned char _bit25_unknown : 1;	// Esse pode ser Angel Bonus
 					unsigned char _bit26_unknown : 1;	// Esse pode ser ANgel Bonus 
 					unsigned char devil_bonus : 1;
@@ -359,8 +359,8 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 			};
 		};
 		stStateShot state_shot;
-		unsigned short tempo_shot;					// Acho que seja o tempo da tacada
-		unsigned char grand_prix_penalidade;		// Flag(valor) de penalidade do Grand Prix quando tem regras com penalidades
+		unsigned short tempo_shot;					// I think this is the shot time
+		unsigned char grand_prix_penalidade;		// Grand Prix penalty flag (value) when there are rules with penalties
 	};
 
 	struct ShotEndLocationData {
@@ -388,9 +388,9 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		stLocation location;
 		stLocation wind_influence;
 		BallPoint ball_point;
-		uSpecialShot special_shot;	// Tipo da tacada
+		uSpecialShot special_shot;	// Shot type
 		float ball_rotation_spin;
-		float ball_rotation_curve;	// Esse é a quantidade do efeito final depois de todos os algorithmos do pangya
+		float ball_rotation_curve;	// This is the amount of the final effect after all the pangya algorithms
 		unsigned char ucUnknown;
 		unsigned char taco;			// Club
 		float power_factor;
@@ -461,14 +461,14 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		uint32_t total_tacada_num;
 		int32_t score;
 		unsigned char giveup : 1;
-		uint32_t bad_condute;			// Má conduta, 3 give ups o jogo kika o player
-		uint32_t penalidade;			// Penalidade do Grand Prix Rule
+		uint32_t bad_condute;			// Misconduct, 3 give ups and the game kicks the player
+		uint32_t penalidade;			// Grand Prix Rule penalty
 		uint64_t pang;
 		uint64_t bonus_pang;
-		int64_t pang_pang_battle;			// Pang do Pang Battle que o player ganhou ou perdeu
-		int32_t pang_battle_run_hole;			// Player saiu do pang battle(-1) ou alguém saiu(+1)
-		uint32_t time_out;				// Count de time outs do player, 3 time outs o jogo kika o player
-		uint32_t exp;					// Exp que o player, ganhou no jogo
+		int64_t pang_pang_battle;			// Pang from Pang Battle that the player won or lost
+		int32_t pang_battle_run_hole;			// Player left the pang battle (-1) or someone left (+1)
+		uint32_t time_out;				// Player time out count, 3 time outs and the game kicks the player
+		uint32_t exp;					// Exp the player gained in the game
 	};
 
 	struct BarSpace {
@@ -483,8 +483,8 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 
 			state = (_state == 4) ? 3 /*Impact Zone Update*/ : _state;
 
-			// Tentou atualizar o State, mas os valores eram diferente, 
-			// mas teria que ser o mesmo por que ele só está com lag, pedindo para mandar o pacote de initShot
+			// Tried to update the State, but the values were different, 
+			// but it should have been the same because it is only lagging, asking to send the initShot packet
 			if (_state == 4 && point[state] != _point)
 				return false;
 
@@ -512,7 +512,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		};
 	protected:
 		unsigned char state;
-		float point[4];							// 0 ainda não está tacando, 1 início, 2 força, 3 impact zone
+		float point[4];							// 0 not shooting yet, 1 start, 2 power, 3 impact zone
 	};
 
 	struct UsedItem {
@@ -581,40 +581,40 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		uint64_t ullFlag;
 		struct {
 			uint64_t NONE : 1;
-			uint64_t PIXEL : 1;						// Pixel o valor em rate
-			uint64_t PIXEL_BY_WIND_NO_ITEM : 1;		// Pixel dependendo do vento o valor em rate, se usar item ou ps cancela o efeito
-			uint64_t PIXEL_OVER_WIND_NO_ITEM : 1;		// Pixel acima de um vento o valor em rate, se usar item ou ps cancela o efeito
-			uint64_t PIXEL_BY_WIND : 1;				// Pixel dependendo do vento o valor em rate
-			uint64_t PIXEL_2 : 1;						// Pixel o valor em rate
-			uint64_t PIXEL_WITH_WEAK_WIND : 1;		// Pixel quando o vento é fraco o valor em rate
-			uint64_t POWER_GAUGE_TO_START_HOLE : 1;	// Power Gauge no começo do hole para cada hole o valor em rate
-			uint64_t POWER_GAUGE_MORE_ONE : 1;		// Power Gauge da uma barra a+ 33 Units, o valor em rate
-			uint64_t POWER_GUAGE_TO_START_GAME : 1;	// Power Gauge no começo do jogo o valor em rate
-			uint64_t PAWS_NOT_ACCUMULATE : 1;			// Patinha não acumula com outro efeito de patinha, probabilidade está em rate
-			uint64_t SWITCH_TWO_EFFECT : 1;			// Item com 2 efeitos não simutâneos, qual efeito está em rate, 0 Yards, 1 Power Gauge
-			uint64_t EARCUFF_DIRECTION_WIND : 1;		// Muda a direção do vento, a probabilidade quem escolhe é o pangya
-			uint64_t COMBINE_ITEM_EFFECT : 1;			// Combinação de itens, em rate tem o ID da combinação em (IFF)SetEffectTable
-			uint64_t SAFETY_CLIENT_RANDOM : 1;		// Safety a probabilidade o cliente que decide
-			uint64_t PIXEL_RANDOM : 1;				// Pixel aleatório o valor está em rate, a probabilidade o cliente que decide
-			uint64_t WIND_1M_RANDOM : 1;				// Wind 1m aleatório a probabilidade está em rate
-			uint64_t PIXEL_BY_WIND_MIDDLE_DOUBLE : 1;	// Pixel dependendo do vento, vento médio dá o dobro, o valor em rate
-			uint64_t GROUND_100_PERCENT_RONDOM : 1;	// Terreno 100% aleatório, a probabilidade está em rate
-			uint64_t ASSIST_MIRACLE_SIGN : 1;			// Assist Olho Mágico
-			uint64_t VECTOR_SIGN : 1;					// Mostra uma seta na bola, dependendo do vento, tipo trajetória do assist
+			uint64_t PIXEL : 1;						// Pixel the value in rate
+			uint64_t PIXEL_BY_WIND_NO_ITEM : 1;		// Pixel depending on the wind the value in rate, if item or ps is used it cancels the effect
+			uint64_t PIXEL_OVER_WIND_NO_ITEM : 1;		// Pixel above a wind the value in rate, if item or ps is used it cancels the effect
+			uint64_t PIXEL_BY_WIND : 1;				// Pixel depending on the wind the value in rate
+			uint64_t PIXEL_2 : 1;						// Pixel the value in rate
+			uint64_t PIXEL_WITH_WEAK_WIND : 1;		// Pixel when the wind is weak the value in rate
+			uint64_t POWER_GAUGE_TO_START_HOLE : 1;	// Power Gauge at the start of the hole for each hole the value in rate
+			uint64_t POWER_GAUGE_MORE_ONE : 1;		// Power Gauge gives one bar of +33 Units, the value in rate
+			uint64_t POWER_GUAGE_TO_START_GAME : 1;	// Power Gauge at the start of the game the value in rate
+			uint64_t PAWS_NOT_ACCUMULATE : 1;			// Patinha does not stack with another patinha effect, probability is in rate
+			uint64_t SWITCH_TWO_EFFECT : 1;			// Item with 2 non-simultaneous effects, which effect is in rate, 0 Yards, 1 Power Gauge
+			uint64_t EARCUFF_DIRECTION_WIND : 1;		// Changes the wind direction, the probability is chosen by pangya
+			uint64_t COMBINE_ITEM_EFFECT : 1;			// Item combination, in rate there is the combination ID in (IFF)SetEffectTable
+			uint64_t SAFETY_CLIENT_RANDOM : 1;		// Safety, the client decides the probability
+			uint64_t PIXEL_RANDOM : 1;				// Random pixel the value is in rate, the client decides the probability
+			uint64_t WIND_1M_RANDOM : 1;				// Random Wind 1m the probability is in rate
+			uint64_t PIXEL_BY_WIND_MIDDLE_DOUBLE : 1;	// Pixel depending on the wind, medium wind gives double, the value in rate
+			uint64_t GROUND_100_PERCENT_RONDOM : 1;	// 100% random terrain, the probability is in rate
+			uint64_t ASSIST_MIRACLE_SIGN : 1;			// Assist Magic Eye
+			uint64_t VECTOR_SIGN : 1;					// Shows an arrow on the ball, depending on the wind, like the assist trajectory
 			uint64_t ASSIST_TRAJECTORY_SHOT : 1;		// Assist Trajectory Shot
-			uint64_t PAWS_ACCUMULATE : 1;				// Patinha acumula com outro efeito de patinha, a probabilidade está em rate
-			uint64_t POWER_GAUGE_FREE : 1;			// Power Gauge, ganha 1 Power Gauge de graça para usar na tacada
-			uint64_t SAFETY_RANDOM : 1;				// Safety aleatório a probabilidade está em rate
-			uint64_t ONE_IN_ALL_STATS : 1;			// [UNKNOWN] mas vou deixar o (Combine Itens) ONE IN ALL STATS, dá 1 para todos os stats, power, cltr, accuracy, spin e curve
-			uint64_t POWER_GAUGE_BY_MISS_SHOT : 1;	// Power Gauge mesmo que erre pangya ou use item de Power Gauge ele ainda dá Power Gauge
-			uint64_t PIXEL_BY_WIND_2 : 1;				// Pixel dependendo do vento o valor está em rate
-			uint64_t PIXEL_WITH_RAIN : 1;				// Pixel quando estiver chovendo(recovery) o valor está em rate
-			uint64_t NO_RAIN_EFFECT : 1;				// Sem efeito dá chuva no terreno
-			uint64_t PUTT_MORE_10Y_RANDOM : 1;		// +10y no Putt aleatório a probabilidade está em rate
+			uint64_t PAWS_ACCUMULATE : 1;				// Patinha stacks with another patinha effect, the probability is in rate
+			uint64_t POWER_GAUGE_FREE : 1;			// Power Gauge, gains 1 free Power Gauge to use on the shot
+			uint64_t SAFETY_RANDOM : 1;				// Random Safety the probability is in rate
+			uint64_t ONE_IN_ALL_STATS : 1;			// [UNKNOWN] but I will leave the (Combine Items) ONE IN ALL STATS, gives 1 to all stats, power, cltr, accuracy, spin and curve
+			uint64_t POWER_GAUGE_BY_MISS_SHOT : 1;	// Power Gauge even if you miss pangya or use a Power Gauge item it still gives Power Gauge
+			uint64_t PIXEL_BY_WIND_2 : 1;				// Pixel depending on the wind the value is in rate
+			uint64_t PIXEL_WITH_RAIN : 1;				// Pixel when it is raining (recovery) the value is in rate
+			uint64_t NO_RAIN_EFFECT : 1;				// No effect, it rains on the terrain
+			uint64_t PUTT_MORE_10Y_RANDOM : 1;		// Random +10y on Putt the probability is in rate
 			uint64_t UNKNOWN_31 : 1;
-			uint64_t MIRACLE_SIGN_RANDOM : 1;			// Olho Mágico aleatório a probabilidade está em rate
+			uint64_t MIRACLE_SIGN_RANDOM : 1;			// Random Magic Eye the probability is in rate
 			uint64_t UNKNOWN_33 : 1;
-			uint64_t DECREASE_1M_OF_WIND : 1, : 0;	// Diminui 1m do vento
+			uint64_t DECREASE_1M_OF_WIND : 1, : 0;	// Reduces the wind by 1m
 		}stFlag;
 	};
 
@@ -625,19 +625,19 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 
 	struct PlayerGameInfo {
 		enum eCARD_WIND_FLAG : unsigned char {
-			NONE,					// Nenhum Efeito
-			NORMAL,					// Normal, diminui 1m do vento, quando é 9m
-			RARE,					// Rare, diminui 1m de todos os ventos exceto menos 1m
-			SUPER_RARE,				// Super Rare, diminui 2m do vento, quando é 6m a 9m
-			SECRET,					// Secret, diminui 1m do vento, quando é 2m a 5m e diminui 2m do vento, quando é 6m a 9m
+			NONE,					// No Effect
+			NORMAL,					// Normal, reduces the wind by 1m, when it is 9m
+			RARE,					// Rare, reduces all winds by 1m except minus 1m
+			SUPER_RARE,				// Super Rare, reduces the wind by 2m, when it is 6m to 9m
+			SECRET,					// Secret, reduces the wind by 1m, when it is 2m to 5m and reduces the wind by 2m, when it is 6m to 9m
 		};
 		enum eFLAG_GAME : unsigned char {
-			PLAYING,				// Ainda esta jogando
-			TICKET_REPORT,			// Saiu com ticket report, "Terminou o jogo"
-			FINISH,					// Jogador terminou o jogo
-			BOT,					// É Bot do Grand Prix
-			QUIT,					// Saiu do jogo
-			END_GAME,				// Terminou o jogo, antes do jogar acabar
+			PLAYING,				// Still playing
+			TICKET_REPORT,			// Left with ticket report, "Finished the game"
+			FINISH,					// Player finished the game
+			BOT,					// Is a Grand Prix Bot
+			QUIT,					// Left the game
+			END_GAME,				// Finished the game, before the game ended
 		};
 		enum eTEAM : unsigned char {
 			T_RED,
@@ -687,7 +687,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 
 			card_wind_flag = eCARD_WIND_FLAG::NONE;
 			flag = eFLAG_GAME::PLAYING;
-			team = eTEAM::T_NONE;					// Valor Padrão
+			team = eTEAM::T_NONE;					// Default Value
 
 			effect_flag_shot.clear();
 			item_active_used_shot = 0u;
@@ -738,16 +738,16 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 				for (i = 9u; i < 18u; ++i)
 					last += score[i];
 
-				return (first * -1) - last;	// Pronto agora ele reflete o quanto que o player recuperou-se
+				return (first * -1) - last;	// Done, now it reflects how much the player recovered
 			};
 			short hole;						// Hole Atual
 			float best_chipin;
 			float best_long_puttin;
 			float best_drive;
-			unsigned char finish_hole[18];	// Flag para verificar se o player terminou o hole
-			unsigned char par_hole[18];		// Par do hole, [18 Holes o máximo de um jogo]
-			uint32_t tacada[18];		// Tacadas do hole, [18 Holes o máximo de um jogo]
-			char score[18];					// Score do hole, [18 Holes o máximo de um jogo]
+			unsigned char finish_hole[18];	// Flag to check whether the player finished the hole
+			unsigned char par_hole[18];		// Hole par, [18 Holes maximum in a game]
+			uint32_t tacada[18];		// Hole strokes, [18 Holes maximum in a game]
+			char score[18];					// Hole score, [18 Holes maximum in a game]
 		};
 		struct stTreasureHunterInfo {
 			stTreasureHunterInfo(uint32_t _ul = 0u) {
@@ -799,7 +799,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 
 				return *this;
 			};
-			uint32_t treasure_point;				// Treasure Hunter point do player no game
+			uint32_t treasure_point;				// Player Treasure Hunter point in the game
 			std::vector< TreasureHunterItem > v_item;	// Treasure Hunter Item
 		public:
 			unsigned char all_score;
@@ -828,61 +828,61 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 			struct stFlag {
 				unsigned char pang : 1;
 				unsigned char pang_nitro : 1;
-				unsigned char exp : 1, : 0;	// não sei esse aqui é o de experiência mesmo, por que só fiz o de pang no outro
+				unsigned char exp : 1, : 0;	// I don't know, this one is actually the experience one, because I only did the pang one in the other
 			}flag;
 		};
 		uint32_t uid;
 		uint32_t oid;
 		unsigned char level;
-		char		  hole;						// Número do Hole que o player está
-		unsigned char init_first_hole : 1;		// Flag que guarda quando o player inicializou o primeiro hole do jogo
+		char		  hole;						// Number of the Hole the player is on
+		unsigned char init_first_hole : 1;		// Flag that stores when the player started the first hole of the game
 		unsigned char finish_load_hole : 1;
 		unsigned char finish_char_intro : 1;
 		unsigned char init_shot : 1;
 		unsigned char finish_shot : 1;
 		unsigned char finish_shot2 : 1;
-		unsigned char finish_hole : 1;			// Usa no Grand Prix, flag de sincronização de hole conluído para trocar para o prox
-		unsigned char finish_hole2 : 1;			// Usa no Grand Prix, flag de sincronização do tempo do hole do player, para não dá time out depois que ele concluiu o hole
-		unsigned char finish_hole3 : 1;			// Usa no Grand Prix, flag de sincronização se o player já enviou o pacote de finalizar o hole antes
+		unsigned char finish_hole : 1;			// Used in Grand Prix, hole-completed synchronization flag to switch to the next
+		unsigned char finish_hole2 : 1;			// Used in Grand Prix, synchronization flag for the player's hole time, to avoid a time out after he completed the hole
+		unsigned char finish_hole3 : 1;			// Used in Grand Prix, synchronization flag for whether the player already sent the finish hole packet before
 		unsigned char sync_shot_flag : 1;
 		unsigned char sync_shot_flag2 : 1;
-		unsigned char finish_game : 1;			// Terminou o jogo
-		unsigned char assist_flag : 1;			// 0 não está com assist ligado, 1 está com assist ligado
-		unsigned char char_motion_item : 1;		// Está com intro de character Equipado
-		unsigned char premium_flag : 1;			// 1 Player é um usuário premium, 0 player normal
-		unsigned char enter_after_started : 1;	// Entrou no Jogo depois de ele ter começado
-		unsigned char finish_item_used : 1;		// 1 Player já finalizou os itens usados no jogo, não finalizar de novo se ele já estiver finalizado
-		unsigned char trofel;					// Trofel que ele ganhou, 1 ouro, 2 prate, 3 bronze
+		unsigned char finish_game : 1;			// Finished the game
+		unsigned char assist_flag : 1;			// 0 assist is off, 1 assist is on
+		unsigned char char_motion_item : 1;		// Has a character intro Equipped
+		unsigned char premium_flag : 1;			// 1 Player is a premium user, 0 normal player
+		unsigned char enter_after_started : 1;	// Joined the Game after it had started
+		unsigned char finish_item_used : 1;		// 1 Player already finalized the items used in the game, do not finalize again if already finalized
+		unsigned char trofel;					// Trophy he won, 1 gold, 2 silver, 3 bronze
 		unsigned short progress_bar;
 		uint32_t tempo;
 		unsigned char power_shot;
-		unsigned char club;						// Taco
-		short		  typeing;					// Escrevendo
+		unsigned char club;						// Club
+		short		  typeing;					// Writing
 		unsigned char chat_block;				// Chat Block
-		unsigned short degree;					// Degree(Graus) do player no Hole
-		uint32_t mascot_typeid;			// Typeid do Mascot equipado
-		uint32_t item_active_used_shot;	// O item Active usado na tacada
-		float		  earcuff_wind_angle_shot;	// Ângulo que o efeito earcuff ativou na tacada para o player
-		uEffectFlag effect_flag_shot;			// Effect Flag Shot(tacada), Wind 1m, Safety, Patinha e etc
-		eFLAG_GAME flag;						// Flag se acabou o camp, ainda esta jogando, quitou, saiu, ou o jogo terminou pro ele
-		uBoostItemFlag boost_item_flag;			// Flag que Exibe os icon de quais boost item o player está usando
+		unsigned short degree;					// Player Degree (angle) on the Hole
+		uint32_t mascot_typeid;			// Typeid of the equipped Mascot
+		uint32_t item_active_used_shot;	// The Active item used on the shot
+		float		  earcuff_wind_angle_shot;	// Angle at which the earcuff effect activated on the shot for the player
+		uEffectFlag effect_flag_shot;			// Effect Flag Shot, Wind 1m, Safety, Patinha, etc
+		eFLAG_GAME flag;						// Flag whether the camp ended, still playing, quit, left, or the game ended for him
+		uBoostItemFlag boost_item_flag;			// Flag that Displays the icons of which boost items the player is using
 		eCARD_WIND_FLAG card_wind_flag;			// Card Wind Flag
-		stTreasureHunterInfo thi;				// Treasure Hunter Info do player, esse é que aumenta com card
-		eTEAM team;								// Team(time) que o player está, antes usado no tourney de time, agora só usado no Match
-		TickTimeSync tick_sync_shot;			// Tick de quando o player recebeu o pacote para ele enviar o pacote sync shot
-		TickTimeSync tick_sync_end_shot;		// Tick de quando o player enviou o pacote de termino de tacada (FinishShot)
+		stTreasureHunterInfo thi;				// Player Treasure Hunter Info, this is the one that increases with card
+		eTEAM team;								// Team the player is on, previously used in the team tourney, now only used in Match
+		TickTimeSync tick_sync_shot;			// Tick of when the player received the packet to send the sync shot packet
+		TickTimeSync tick_sync_end_shot;		// Tick of when the player sent the shot finish packet (FinishShot)
 		BarSpace bar_space;
 		Location location;
 		GameData data;
 		ShotDataEx shot_data;
-		ShotEndLocationData shot_data_for_cube;	// Dados que vou usar para os locais de spaw do Spinning Cube
+		ShotEndLocationData shot_data_for_cube;	// Data I will use for the Spinning Cube spawn locations
 		ShotSyncData shot_sync;
 		UserInfoEx ui;
-		DropItemRet drop_list;					// Drop List do player
-		UsedItem used_item;						// Item usado no jogo
-		stProgress progress;					// Progresso do jogo, tacadas e score
-		SYSTEMTIME time_finish;					// Tempo que acabou o game
-		uMedalWin medal_win;					// Medal que Ganhou no Jogo
+		DropItemRet drop_list;					// Player Drop List
+		UsedItem used_item;						// Item used in the game
+		stProgress progress;					// Game progress, strokes and score
+		SYSTEMTIME time_finish;					// Time the game ended
+		uMedalWin medal_win;					// Medal won in the Game
 		SysAchievement sys_achieve;				// System of Achievement of Player
 	};
 
@@ -1059,7 +1059,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 			uint32_t uid;	// Player UID
 			TreasureHunterItem thi;
 		};
-		uint32_t treasure_point;				// Treasure Hunter point do player no game
+		uint32_t treasure_point;				// Player Treasure Hunter point in the game
 		std::vector< _stTreasureHunterItem > v_item;	// Treasure Hunter Item
 	public:
 		unsigned char all_score;
@@ -1086,7 +1086,7 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		};
 		unsigned char getCountHolesRainBySeq(uint32_t _seq) {
 
-			// Sequência de hole valor errado
+			// Hole sequence wrong value
 			if (_seq < 1 || _seq > 18)
 				return 0u;
 
@@ -1097,14 +1097,14 @@ constexpr uint32_t POWER_MILK_TYPEID = 0x18000025u;
 		};
 		void setRain(uint32_t _index, unsigned char _value) {
 
-			// Index invalido
+			// Invalid index
 			if ((int)_index < 0 || _index >= 18)
 				return;
 
 			rain[_index] = _value;
 		};
 	protected:
-		unsigned char rain[18];	// Máximo número de holes de um jogo
+		unsigned char rain[18];	// Maximum number of holes in a game
 	};
 
 	// Consecutivos Holes Rain(Recovery) Tempo Ruim

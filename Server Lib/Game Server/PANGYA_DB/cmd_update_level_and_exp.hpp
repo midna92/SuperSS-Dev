@@ -1,6 +1,6 @@
-// Arquivo cmd_update_level_and_exp.hpp
-// Criado em 06/07/2018 as 20:21 por Acrisio
-// Defini��o da classe CmdUpdateLevelAndExp
+// File cmd_update_level_and_exp.hpp
+// Created on 06/07/2018 at 20:21 by Acrisio
+// Definition of class CmdUpdateLevelAndExp
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_LEVEL_AND_EXP_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_auth_key_login.hpp
-// Criado em 07/04/2018 as 18:09 por Acrisio
-// Definição da classe CmdUpdateAuthKeyLogin
+// File cmd_update_auth_key_login.hpp
+// Created on 07/04/2018 at 18:09 by Acrisio
+// Definition of class CmdUpdateAuthKeyLogin
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_AUTH_KEY_LOGIN_HPP

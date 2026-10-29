@@ -1,6 +1,6 @@
-// Arquivo cmd_register_player_login.hpp
-// Criado em 01/04/2018 as 18:37 por Acrisio
-// Defini��o da classe CmdRegisterPlayerLogin
+// File cmd_register_player_login.hpp
+// Created on 01/04/2018 at 18:37 by Acrisio
+// Definition of the CmdRegisterPlayerLogin class
 
 #pragma once
 #ifndef _STDA_CMD_REGISTER_PLAYER_LOGIN_HPP

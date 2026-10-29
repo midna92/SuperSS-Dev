@@ -1,6 +1,6 @@
-// Arquivo pool.hpp
-// Criado em 14/11/2020 as 09:59 por Acrisio
-// Defini��o da classe Pool
+// File pool.hpp
+// Created on 14/11/2020 at 09:59 by Acrisio
+// Definition of the class Pool
 
 #pragma once
 #ifndef _STDA_POOL_HPP
@@ -67,7 +67,7 @@ namespace stdA {
 			thread* m_thread;
 			Socket m_socket;
 
-			// Id do server que carregou a DLL
+			// Id of the server that loaded the DLL
 			uint32_t m_server_id;
 
 			std::vector< unsigned char > m_sBuff;

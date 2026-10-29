@@ -1,6 +1,6 @@
-// Arquivo job.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe job
+// File job.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of class job
 
 #include "job.h"
 #include "../UTIL/exception.h"

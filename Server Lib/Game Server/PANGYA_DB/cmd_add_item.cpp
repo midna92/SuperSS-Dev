@@ -1,6 +1,6 @@
-// Arquivo cmd_add_item.cpp
-// Criado em 31/05/2018 as 10:22 por Acrisio
-// Implementa��o da classe CmdAddItem
+// File cmd_add_item.cpp
+// Created on 31/05/2018 at 10:22 by Acrisio
+// Implementation of the class CmdAddItem
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo room_grand_prix.hpp
-// Criado em 16/06/2019 as 17:53 por Acrisio
-// Definição da classe RoomGrandPrix
+// File room_grand_prix.hpp
+// Created on 16/06/2019 at 17:53 by Acrisio
+// Definition of the RoomGrandPrix class
 
 #pragma once
 #ifndef _STDA_ROOM_GRAND_PRIX_HPP
@@ -76,16 +76,16 @@ namespace stdA {
 					pthread_mutex_lock(&m_cs);
 #endif
 
-					// Está bloqueado
+					// Is locked
 					m_lock = true;
 
 				};
 				void unlock() {
 
 					if (!m_lock)
-						return;	// Não está bloqueado
+						return;	// Is not locked
 
-					// Desbloquea
+					// Unlock
 					m_lock = false;
 
 #if defined(_WIN32)
@@ -121,13 +121,13 @@ namespace stdA {
 			// Change Character
 			virtual void requestChangeCharacter(player& _session, CharacterInfo& _ce);
 
-			// Game, esse aqui é só para o Grand Prix ROOKIE(TUTO)
+			// Game, this one is only for Grand Prix ROOKIE (TUTO)
 			virtual bool requestStartGame(player& _session, packet *_packet) override;
 			
-			// O Grand Prix de tempo tem o seu próprio startGame já que quem começa é o server
+			// The time-based Grand Prix has its own startGame since the server is the one that starts it
 			bool startGame();
 
-			// Init Instance vector and lock, para não dá erro no destrutor por que vai destruir ele primeiro do que a instance da classe
+			// Init Instance vector and lock, to avoid an error in the destructor since it will be destroyed before the class instance
 			static void initFirstInstance();
 
 		protected:
@@ -135,22 +135,22 @@ namespace stdA {
 
 			virtual void count_down_to_start(int64_t _sec_to_start);
 
-			// Verifica Caddie
+			// Check Caddie
 			virtual bool checkCaddie(player& _session, CaddieInfoEx** _pCi, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
-			// Verifica Ball
+			// Check Ball
 			virtual bool checkBall(player& _session, WarehouseItemEx** _pWi, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
-			// Verifica ClubSet
+			// Check ClubSet
 			virtual bool checkClubSet(player& _session, WarehouseItemEx** _pWi, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
-			// Verifica Character
+			// Check Character
 			virtual bool checkCharacter(player& _session, CharacterInfo** _pCe, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
-			// Verifica Mascot
+			// Check Mascot
 			virtual bool checkMascot(player& _session, MascotInfoEx** _pMi, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
-			// Verifica ItemSlot
+			// Check ItemSlot
 			virtual bool checkItemSlot(player& _session, UserEquip** _ue, std::vector< IFF::GrandPrixConditionEquip >& _gp_condition);
 
 		protected:
@@ -161,7 +161,7 @@ namespace stdA {
 			timer *m_count_down;
 
 		private:
-			// Static funções e variaveis para garantir mexer com o ponteiro das sala Grand Prix que usar o time com um função callback
+			// Static functions and variables to ensure safe handling of the Grand Prix room pointer that uses the timer with a callback function
 			static void push_instancia(RoomGrandPrix* _rgp);
 			static void pop_instancia(RoomGrandPrix* _rgp);
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_email.hpp
-// Criado em 24/03/2018 as 15:33 por Acrisio
-// Defini��o da classe CmdDeleteEmail
+// File cmd_delete_email.hpp
+// Created on 24/03/2018 at 15:33 by Acrisio
+// Definition of the class CmdDeleteEmail
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_EMAIL_HPP

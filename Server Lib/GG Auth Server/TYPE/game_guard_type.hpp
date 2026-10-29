@@ -1,6 +1,6 @@
-// Arquivo game_guard_type.hpp
-// Criado em 31/03/2020 as 19:23 por Acrisio
-// Definição dos tipos usados pelo game guard
+// File game_guard_type.hpp
+// Created on 31/03/2020 at 19:23 by Acrisio
+// Definition of the types used by game guard
 
 #pragma once
 #ifndef _STDA_GAME_GUARD_TYPE_HPP

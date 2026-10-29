@@ -1,6 +1,6 @@
-// Arquivo cmd_first_login_check.cpp
-// Criado em 30/03/2018 as 20:19 por Acrisio
-// Implementa��o da classe CmdFirstLoginCheck
+// File cmd_first_login_check.cpp
+// Created on 30/03/2018 at 20:19 by Acrisio
+// Implementation of the CmdFirstLoginCheck class
 
 #if defined(_WIN32)
 #pragma pack(1)

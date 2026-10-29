@@ -1,6 +1,6 @@
-// Arquivo special_shuffle_course.cpp
-// Criado em 16/10/2018 as 22:42 por Acrisio
-// Implementa��o da classe SpecialShuffleCourse
+// File special_shuffle_course.cpp
+// Created on 16/10/2018 at 22:42 by Acrisio
+// Implementation of the SpecialShuffleCourse class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -32,21 +32,21 @@
 							  if (_packet == nullptr) \
 									throw exception("[SpecialShuffleCourse::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[SpecialShuffleCourse::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 1, 4)); \
 
 #define SPECIAL_SHUFFLE_COURSE_COIN_TYPEID 0x1A0000F8ul
 
-#define ART_ROGER_K_STEERING_WHEEL	0x1A0001BCu	// de 500 a 501000 pangs no Ultimo Hole do game de 18H
+#define ART_ROGER_K_STEERING_WHEEL	0x1A0001BCu	// from 500 to 501000 pangs on the Last Hole of the 18H game
 
 using namespace stdA;
 
 SpecialShuffleCourse::SpecialShuffleCourse(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie)
 	: TourneyBase(_players, _ri, _rv, _channel_rookie), m_SSC_state(false), m_coin_SSC(0u) {
 
-	// Atualiza Treasure Hunter System Course
+	// Updates Treasure Hunter System Course
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
@@ -59,10 +59,10 @@ SpecialShuffleCourse::SpecialShuffleCourse(std::vector< player* >& _players, Roo
 		_smp::message_pool::getInstance().push(new message("[SpecialShuffleCourse::SpecialShuffleCourse][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 point for each game started
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
 	for (auto& el : m_players) {
@@ -71,7 +71,7 @@ SpecialShuffleCourse::SpecialShuffleCourse(std::vector< player* >& _players, Roo
 
 		initAchievement(*el);
 
-		pgi->sys_achieve.incrementCounter(0x6C40001Fu/*Tourney*/);	// Por que ele � um Tourney
+		pgi->sys_achieve.incrementCounter(0x6C40001Fu/*Tourney*/);	// Because it is a Tourney
 	}
 
 	m_state = init_game();
@@ -117,9 +117,9 @@ bool SpecialShuffleCourse::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left Quit
 
-			if (m_game_init_state == 1/*Começou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
@@ -127,28 +127,28 @@ bool SpecialShuffleCourse::deletePlayer(player* _session, int _option) {
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+				requestFinishItemUsedGame(*(*it));	// Saves items used in the Tourney
 
-				// SSC não salva info
-				//requestSaveInfo(*(*it), 1); // Quitou ou tomou DC
+				// SSC does not save info
+				//requestSaveInfo(*(*it), 1); // Quit or got DC
 
 				//pgi->flag = PlayerGameInfo::eFLAG_GAME::QUIT;
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Response Player left the Game, removes him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo
+				// Response Player left the game
 				sendUpdateState(*_session, opt);
 
-				// Salva Achievement do player
+				// Saves the player's Achievement
 
 				if (AllCompleteGameAndClear())
-					ret = true;	// Termina o Tourney
+					ret = true;	// Finishes the Tourney
 
 				sendUpdateInfoAndMapStatistics(*_session, -1);
 			}
@@ -168,7 +168,7 @@ bool SpecialShuffleCourse::deletePlayer(player* _session, int _option) {
 
 		_smp::message_pool::getInstance().push(new message("[SpecialShuffleCourse::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -192,8 +192,8 @@ void SpecialShuffleCourse::changeHole(player& _session) {
 	if (checkEndGame(_session))
 		finish_SSC(_session, 0);
 	else
-		// Resposta terminou o hole
-		updateFinishHole(_session, 1);	// Terminou
+		// Response finished the hole
+		updateFinishHole(_session, 1);	// Finished
 }
 
 void SpecialShuffleCourse::finishHole(player& _session) {
@@ -211,41 +211,41 @@ void SpecialShuffleCourse::finish_SSC(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player won
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if he has assist on, and is above beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response finished the hole
 				updateFinishHole(_session, 1);
 
-				// Resposta Terminou o Jogo, ou Saiu
+				// Response Finished the Game, or Left
 				sendUpdateState(_session, 2);
 
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}else if (m_game_init_state == 1 && _option == 1) {	// Acabou o Tempo
+			}else if (m_game_init_state == 1 && _option == 1) {	// Time is up
 
-				requestFinishHole(_session, 1);		// Acabou o Tempo
+				requestFinishHole(_session, 1);		// Time is up
 
-				// adicionar as tacadas dos holes que ele n�o fez, por que acabou o tempo
-				// ------ O Original n�o soma as tacadas do resto dos holes que o player n�o jogou, quando o tempo acaba -------
+				// add the strokes of the holes he did not play, because time is up
+				// ------ The Original does not add the strokes of the rest of the holes the player did not play, when time runs out -------
 				//pgi->ui.tacada = pgi->data.total_tacada_num;
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response finished the hole
 				updateFinishHole(_session, 0);
 
-				// Resposta para acabou o tempo do Tourney
+				// Response for time up of the Tourney
 				sendTimeIsOver(_session);
 			}
 		}
@@ -256,7 +256,7 @@ void SpecialShuffleCourse::finish_SSC(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game Ex: 0xCE, 0x79 etc
 	}
 }
 
@@ -268,11 +268,11 @@ void SpecialShuffleCourse::timeIsOver() {
 
 		for (auto& el : m_player_info) {
 
-			// Só os que n�o acabaram
+			// Only those who did not finish
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				finish_SSC(*_session, 1/*Acabou Tempo*/);
+				finish_SSC(*_session, 1/*Time Up*/);
 			else if (el.second->flag == PlayerGameInfo::eFLAG_GAME::FINISH && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				// Resposta para acabou o tempo do Tourney
+				// Response for time up of the Tourney
 				sendTimeIsOver(*_session);
 		}
 
@@ -287,17 +287,17 @@ bool SpecialShuffleCourse::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// Cria o timer do Tourney
+		// Creates the Tourney timer
 		startTime();
 
-		// variavel que salva a data local do sistema
+		// variable that saves the system local date
 		initGameTime();
 
-		// Aqui achievement de rain count
-		// Esse aqui tem que ser na hora que finaliza o jogo por que depende de quantos holes o player completou
+		// Here rain count achievement
+		// This one has to be at the time the game finishes because it depends on how many holes the player completed
 		//rain_count_players();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_SSC_state = true;
 	}
@@ -307,7 +307,7 @@ bool SpecialShuffleCourse::init_game() {
 
 void SpecialShuffleCourse::finish() {
 
-	m_game_init_state = 2;	// Acabou
+	m_game_init_state = 2;	// Finished
 
 	requestCalculeRankPlace();
 
@@ -330,14 +330,14 @@ DropItemRet SpecialShuffleCourse::requestInitDrop(player& _session) {
 
 		INIT_PLAYER_INFO("requestInitDrop", "tentou sortear o Drop do SSC no jogo", &_session);
 
-		// Verifica se � o ultimo hole e sortea os pangs do final do SSC
+		// Checks if it is the last hole and draws the pangs at the end of the SSC
 		// Artefact Pang Drop
-		if (m_ri.qntd_hole == m_course->findHoleSeq(pgi->hole) && m_ri.qntd_hole == 18) {	// Ultimo Hole, de 18h Game
+		if (m_ri.qntd_hole == m_course->findHoleSeq(pgi->hole) && m_ri.qntd_hole == 18) {	// Last Hole, of the 18h Game
 			
 			DropSystem::stCourseInfo ci{ 0 };
 
 			// Init Course Info Drop System
-			ci.artefact = ART_ROGER_K_STEERING_WHEEL;	// Para da os Pangs do SSC � o mesmo que o artefact
+			ci.artefact = ART_ROGER_K_STEERING_WHEEL;	// To give the Pangs of the SSC it is the same as the artefact
 			ci.char_motion = pgi->char_motion_item;
 			ci.course = m_ri.course & 0x7F;
 			ci.hole = pgi->hole;
@@ -345,14 +345,14 @@ DropItemRet SpecialShuffleCourse::requestInitDrop(player& _session) {
 
 			auto art_pang = sDropSystem::getInstance().drawArtefactPang(ci, (uint32_t)m_players.size());
 
-			if (art_pang._typeid != 0) {	// Dropou
+			if (art_pang._typeid != 0) {	// Dropped
 
 				dir.v_drop.push_back(art_pang);
 
-				// add para o drop list do player
+				// add to the player's drop list
 				pgi->drop_list.v_drop.insert(pgi->drop_list.v_drop.end(), art_pang);
 
-				if (art_pang.qntd >= 30) {	// Envia notice que o player ganhou jackpot
+				if (art_pang.qntd >= 30) {	// Sends notice that the player won the jackpot
 
 					packet p((unsigned short)0x40);
 
@@ -388,17 +388,17 @@ void SpecialShuffleCourse::requestUpdateItemUsedGame(player& _session) {
 	// Club Mastery // (m_ri.course == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE ? 1.5f : 1.f)
 	ui.club.count += (uint32_t)(1.5f * 10.f * ui.club.rate * TRANSF_SERVER_RATE_VALUE(m_rv.clubset) * TRANSF_SERVER_RATE_VALUE(ui.rate.club));
 
-	// Passive Item exceto Time Booster e Auto Command, que soma o contador por uso, o cliente passa o pacote, dizendo que usou o item
+	// Passive Item except Time Booster and Auto Command, which add to the counter per use, the client sends the packet, saying it used the item
 	for (auto& el : ui.v_passive) {
 
-		// Passive Item no SSC só consome os item boost de pang e o Club Mastery Boost,
-		// Consome todos os outros menos os de Experiência
+		// Passive Item in SSC only consumes the pang boost items and the Club Mastery Boost,
+		// Consumes all the others except the Experience ones
 		if (std::find(passive_item_exp, LAST_ELEMENT_IN_ARRAY(passive_item_exp), el.second._typeid) == LAST_ELEMENT_IN_ARRAY(passive_item_exp)) {
 			
 			if (CHECK_PASSIVE_ITEM(el.second._typeid) && el.second._typeid != TIME_BOOSTER_TYPEID/*Time Booster*/ && el.second._typeid != AUTO_COMMAND_TYPEID)
 				el.second.count++;
 			else if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::BALL	/*Ball*/
-					|| sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::AUX_PART) /*AuxPart(Anel)*/
+					|| sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::AUX_PART) /*AuxPart(Ring)*/
 				el.second.count++;
 		}
 	}
@@ -406,36 +406,36 @@ void SpecialShuffleCourse::requestUpdateItemUsedGame(player& _session) {
 
 void SpecialShuffleCourse::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora é direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
 	requestDrawTreasureHunterItem(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Here rain count achievement
 
-	achievement_top_3_1st(_session);				// Se o Player ficou em Top 3 add +1 ao contador de top 3, e se ele ficou em primeiro add +1 ao do primeiro
+	achievement_top_3_1st(_session);				// If the Player finished in the Top 3 add +1 to the top 3 counter, and if he finished first add +1 to the first one
 
 	INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Response Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 }
 
 void SpecialShuffleCourse::requestDrawTreasureHunterItem(player& _session) {
 
-	// Sorteia os itens ganho do Treasure ponto do player
+	// Draws the items won from the player's Treasure points
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 
@@ -444,7 +444,7 @@ void SpecialShuffleCourse::requestDrawTreasureHunterItem(player& _session) {
 
 	INIT_PLAYER_INFO("requestDrawTreasureHunterItem", "tentou sortear os item(ns) do Treasure Hunter do jogo", &_session);
 
-	// Guarda os item(ns) ganho no treasure hunter system, no Player Game Info, para poder consultar ele depois
+	// Stores the item(s) won in the treasure hunter system, in the Player Game Info, to be able to query it later
 	/*pgi->thi.v_item = TreasureHunterSystem::drawItem(pgi->thi.treasure_point, m_ri.course & 0x7F);*/
 	pgi->thi.v_item = sTreasureHunterSystem::getInstance().drawItem(pgi->thi.treasure_point, m_ri.course & 0x7F);
 
@@ -455,7 +455,7 @@ void SpecialShuffleCourse::requestDrawTreasureHunterItem(player& _session) {
 
 void SpecialShuffleCourse::requestMakeMasterCoin() {
 
-	// minimo 3 moedas, max 4 moedas por cada jogador na sala
+	// minimum 3 coins, max 4 coins for each player in the room
 	//std::srand((size_t)this * std::clock() / ((size_t)time(nullptr) + 1) * (size_t)GetCurrentThreadId());
 
 	m_coin_SSC = 3 + ((m_player_info.size() == 0) ? 0 : sRandomGen::getInstance().rIbeMt19937_64_chrono() % (((uint32_t)m_player_info.size() * 4) - 3));
@@ -483,7 +483,7 @@ void SpecialShuffleCourse::requestSendMasterCoin(player& _session) {
 			return;
 		}
 
-		// Resposta para enviar SSC coin para o master da sala
+		// Response to send SSC coin to the room master
 		packet p((unsigned short)0x198);
 
 		p.addUint32(SPECIAL_SHUFFLE_COURSE_COIN_TYPEID);
@@ -495,7 +495,7 @@ void SpecialShuffleCourse::requestSendMasterCoin(player& _session) {
 
 			//auto v_item = std::vector< stItem >{ item };
 
-			// Update Item ON Game pacoteAA no JP n�o att as moedas na hora
+			// Update Item ON Game packetAA in JP does not update the coins right away
 			p.init_plain((unsigned short)0x216);
 			
 			p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -527,15 +527,15 @@ bool SpecialShuffleCourse::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 6/*packet06 pacote que termina o game*/) {
+		if (option == 6/*packet06 packet that ends the game*/) {
 
 			if (m_SSC_state)
-				finish_SSC(_session, 1);	// Termina sem ter acabado de jogar
+				finish_SSC(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
-			// N�o terminou o Jogo a tempo, add as tacadas dos outros holes que ele nao conseguiu terminar
-			// ------ O Original n�o soma as tacadas do resto dos holes que o player n�o jogou, quando o tempo acaba -------
+			// Did not finish the Game in time, add the strokes of the other holes he could not finish
+			// ------ The Original does not add the strokes of the rest of the holes the player did not play, when time runs out -------
 			//if (pgi->flag == PlayerGameInfo::eFLAG_GAME::END_GAME)
 				//pgi->ui.tacada = pgi->data.total_tacada_num;
 
@@ -549,31 +549,31 @@ bool SpecialShuffleCourse::finish_game(player& _session, int option) {
 			// Resposta Treasure Hunter Item
 			requestSendTreasureHunterItem(_session);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta que tem sempre que acaba um jogo, não sei o que é ainda, esse só não tem no HIO Event
+			// Response that is always sent when a game ends, I do not know what it is yet, only HIO Event does not have it
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse é novo do JP, tem Tourney, VS, Grand Prix, HIO Event, não vi talvez tenha nos outros também
+			// This one is new from JP, it has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
@@ -582,11 +582,11 @@ bool SpecialShuffleCourse::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means he finished the camp
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
-			m_game_init_state = 2;	// ACABOU
+			// Flag of the game that finished
+			m_game_init_state = 2;	// FINISHED
 		}
 	}
 

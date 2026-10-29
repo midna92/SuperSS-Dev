@@ -1,6 +1,6 @@
-// Arquivo cmd_my_room_config.cpp
-// Criado em 22/03/2018 as 20:25 por Acrisio
-// Implementa��o da classe CmdMyRoomConfig
+// File cmd_my_room_config.cpp
+// Created on 22/03/2018 at 20:25 by Acrisio
+// Implementation of the class CmdMyRoomConfig
 
 #if defined(_WIN32)
 #pragma pack(1)

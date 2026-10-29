@@ -1,6 +1,6 @@
-// Arquivo mail_box_manager.hpp
-// Criado em 26/05/2018 as 14:39 por Acrisio
-// Defini��o da classe MailBoxManager
+// File mail_box_manager.hpp
+// Created on 26/05/2018 at 14:39 by Acrisio
+// Definition of the MailBoxManager class
 
 #pragma once 
 #ifndef _STDA_CMD_MAIL_BOX_MANAGER_HPP

@@ -1,6 +1,6 @@
-// Arquivo common.hpp
-// Criado em 15/11/2020 as 10:12 por Acrisio
-// Defini��o dos tipos comuns
+// File common.hpp
+// Created on 15/11/2020 at 10:12 by Acrisio
+// Definition of the common types
 
 #pragma once
 #ifndef _STDA_COMMON_HPP
@@ -12,22 +12,22 @@
 namespace stdA {
 
 	enum class ePACKET : unsigned char {
-		LOGIN,							// Login com server Nodejs
-		HAND_SHAKE,						// Hand Shake - Login com server Nodejs
-		COMMAND_SERVER,					// Server manda comando para o Smart Server do Nodejs
-		REPLY_SERVER,					// Resposta para o Server
-		REPLY_SMART,					// Resposta para o Smart Calculator
-		REPLY_STADIUM,					// Resposta para o Stadium Calculator
+		LOGIN,							// Login with Nodejs server
+		HAND_SHAKE,						// Hand Shake - Login with Nodejs server
+		COMMAND_SERVER,					// Server sends command to the Nodejs Smart Server
+		REPLY_SERVER,					// Response to the Server
+		REPLY_SMART,					// Response to the Smart Calculator
+		REPLY_STADIUM,					// Response to the Stadium Calculator
 		COMMAND_SMART_PING,				// Ping
 		COMMAND_SMART_LIST_MACRO,		// List Macro
-		COMMAND_SMART_CALC,				// Calcula
+		COMMAND_SMART_CALC,				// Calculate
 		COMMAND_SMART_MACRO,			// Exec Macro
 		COMMAND_SMART_EXPRESSION,		// Exec Expression
 		COMMAND_STADIUM_PING,			// Ping
 		COMMAND_STADIUM_LIST_MACRO,		// List Macro
 		COMMAND_STADIUM_LIST_CALC,		// List Calculator
-		COMMAND_STADIUM_OPEN_CALC,		// Abre Calculator
-		COMMAND_STADIUM_CALC,			// Calcule
+		COMMAND_STADIUM_OPEN_CALC,		// Open Calculator
+		COMMAND_STADIUM_CALC,			// Calculate
 		COMMAND_STADIUM_MACRO,			// Exec Macro
 		COMMAND_STADIUM_EXPRESSION,		// Exec Expression
 	};

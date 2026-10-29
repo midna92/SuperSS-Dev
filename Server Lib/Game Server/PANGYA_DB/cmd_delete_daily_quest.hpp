@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_daily_quest.hpp
-// Criado em 24/03/2018 as 21:58 por Acrisio
-// Defini��o da classe CmdDeleteDailyQuest
+// File cmd_delete_daily_quest.hpp
+// Created on 24/03/2018 at 21:58 by Acrisio
+// Definition of the class CmdDeleteDailyQuest
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_DAILY_QUEST_HPP

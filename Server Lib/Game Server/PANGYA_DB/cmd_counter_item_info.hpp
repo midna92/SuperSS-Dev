@@ -1,6 +1,6 @@
-// Arquivo cmd_counter_item_info.hpp
-// Criado em 19/03/2018 as 23:13 por Acrisio
-// Defini��o da classe CmdCounterItemInfo
+// File cmd_counter_item_info.hpp
+// Created on 19/03/2018 at 23:13 by Acrisio
+// Definition of the class CmdCounterItemInfo
 
 #pragma once
 #ifndef _STDA_CMD_COUNTER_ITEM_INFO_HPP

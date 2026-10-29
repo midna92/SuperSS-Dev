@@ -1,6 +1,6 @@
-// Arquivo team.hpp
-// Criado em 02/11/2018 as 14:09 por Acrisio
-// Definição da classe Team
+// File team.hpp
+// Created on 02/11/2018 at 14:09 by Acrisio
+// Definition of the Team class
 
 #pragma once
 #ifndef _STDA_TEAM_HPP
@@ -27,14 +27,14 @@ namespace stdA {
 					clear();
 				};
 				void clear() { memset(this, 0, sizeof(team_ctx)); };
-				uint32_t point;				// Aqui é a pontuação do time
-				unsigned short degree;				// Angulo do team
-				unsigned char player_start_hole;	// Player que começou o Hole
-				unsigned char acerto_hole;			// Flag que acertou o hole
-				unsigned char hole;					// Hole que o team está
-				unsigned char win : 1;				// Flag que fala se o player ganhou o hole anterior
+				uint32_t point;				// This is the team score
+				unsigned short degree;				// Team angle
+				unsigned char player_start_hole;	// Player who started the Hole
+				unsigned char acerto_hole;			// Flag that hit the hole
+				unsigned char hole;					// Hole the team is on
+				unsigned char win : 1;				// Flag that tells whether the player won the previous hole
 				unsigned short finish;				// State finish Hole, 9 finish with int32_t putt, 10 finish with chip-in
-				unsigned char quit : 1;				// Player ou o Team desistiu
+				unsigned char quit : 1;				// Player or the Team gave up
 				GameData data;
 				Location location;
 			};
@@ -107,7 +107,7 @@ namespace stdA {
 			const unsigned short getStateFinish();
 			void setStateFinish(const unsigned short _finish);
 
-			// Team desistiu
+			// Team gave up
 			const unsigned char isQuit();
 			void setQuit(const unsigned char _quit);
 
@@ -123,7 +123,7 @@ namespace stdA {
 			// decrement
 			void decrementPlayerStartHole(unsigned char _dec = 1u);
 
-			// retorna o número de players no team(time)
+			// returns the number of players in the team
 			const uint32_t getCount();
 
 			// Requests
@@ -140,9 +140,9 @@ namespace stdA {
 
 			player* m_player_turn;
 
-			int32_t m_id;	// Cor, 0 Red, 1 Blue
+			int32_t m_id;	// Color, 0 Red, 1 Blue
 			
-			// Dados of team
+			// Team data
 			team_ctx m_team_ctx;
 
 #if defined(_WIN32)

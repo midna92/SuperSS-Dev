@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_achievement.hpp
-// Criado em 11/11/2018 as 14:34 por Acrisio
-// Implementa��o da classe CmdDeleteAchievement
+// File cmd_delete_achievement.hpp
+// Created on 11/11/2018 at 14:34 by Acrisio
+// Implementation of the class CmdDeleteAchievement
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteAchievement::~CmdDeleteAchievement() {
 
 void CmdDeleteAchievement::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um DELETE
+	// Not used here because it is a DELETE
 	return;
 }
 

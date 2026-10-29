@@ -1,6 +1,6 @@
-// Arquivo cmd_pang.hpp
-// Criado em 03/10/2019 as 18:07 por Acrisio
-// Defini��o da classe CmdPang
+// File cmd_pang.hpp
+// Created on 03/10/2019 at 18:07 by Acrisio
+// Definition of the class CmdPang
 
 #pragma once
 #ifndef _STDA_CMD_PANG_HPP

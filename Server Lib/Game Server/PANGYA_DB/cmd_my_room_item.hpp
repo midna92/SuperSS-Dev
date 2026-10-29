@@ -1,6 +1,6 @@
-// Arquivo cmd_my_room_item.hpp
-// Criado em 22/03/2018 as 20:39 por Acrisio
-// Defini��o da classe CmdMyRoomItem
+// File cmd_my_room_item.hpp
+// Created on 22/03/2018 at 20:39 by Acrisio
+// Definition of the class CmdMyRoomItem
 
 #pragma once
 #ifndef _STDA_CMD_MY_ROOM_ITEM_HPP

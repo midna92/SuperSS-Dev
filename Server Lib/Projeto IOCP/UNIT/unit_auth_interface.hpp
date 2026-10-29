@@ -1,6 +1,6 @@
-// Arquivo unit_auth_interface.hpp
-// Criado em 02/02/2021 as 19:20 por Acrisio
-// Definição da Interface Unit Auth Server
+// File unit_auth_interface.hpp
+// Created on 02/02/2021 at 19:20 by Acrisio
+// Definition of the Unit Auth Server Interface
 
 #pragma once
 #ifndef _STDA_UNIT_INTERFACE_HPP
@@ -26,11 +26,11 @@ namespace stdA {
 			virtual void authCmdInfoPlayerOnline(uint32_t _req_server_uid, uint32_t _player_uid) = 0;
 			virtual void authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi) = 0;
 
-			// requests Comandos e respostas dinâmicas
+			// requests Commands and dynamic responses
 			virtual void authCmdSendCommandToOtherServer(packet& _packet) = 0;
 			virtual void authCmdSendReplyToOtherServer(packet& _packet) = 0;
 
-			// Server envia comandos e resposta para outros server com o Auth Server
+			// Server sends commands and responses to other servers through the Auth Server
 			virtual void sendCommandToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type) = 0;
 			virtual void sendReplyToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type) = 0; 
     };

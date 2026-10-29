@@ -1,6 +1,6 @@
-// Arquivo cmd_card_pack.hpp
-// Criado em 01/07/2018 as 00:29 por Acrisio
-// Defini��o da classe CmdCardPack
+// File cmd_card_pack.hpp
+// Created on 01/07/2018 at 00:29 by Acrisio
+// Definition of the class CmdCardPack
 
 #pragma once
 #ifndef _STDA_CMD_CARD_PACK_HPP

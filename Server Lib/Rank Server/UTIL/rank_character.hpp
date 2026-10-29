@@ -1,6 +1,6 @@
-// Arquivo rank_character.hpp
-// Criado em 16/06/2020 as 18:18 por Acrisio
-// Defini��o da classe RankCharacter
+// File rank_character.hpp
+// Created on 16/06/2020 at 18:18 by Acrisio
+// Definition of the class RankCharacter
 
 #pragma once
 #ifndef _STDA_RANK_CHARACTER_HPP
@@ -11,7 +11,7 @@
 
 #include <string>
 
-// Usa pelo Rank Character Entry typedef
+// Used by the Rank Character Entry typedef
 #include <map>
 
 namespace stdA {
@@ -53,8 +53,8 @@ namespace stdA {
 			char m_nickname[22];
 			unsigned short m_level;
 
-			unsigned char m_term_s5_type;		// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
-			unsigned char m_class_type;			// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+			unsigned char m_term_s5_type;		// Options discontinued in Fresh UP!, but it still keeps them in the packets
+			unsigned char m_class_type;			// Options discontinued in Fresh UP!, but it still keeps them in the packets
 
 			// Character Info
 			CharacterInfo m_ci;

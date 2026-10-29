@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_config_info.cpp
-// Criado em 18/06/2020 as 21:28 por Acrisio
-// Implementa��o da classe CmdRankConfigInfo
+// File cmd_rank_config_info.cpp
+// Created on 18/06/2020 at 21:28 by Acrisio
+// Implementation of the class CmdRankConfigInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_chat_macro_user.cpp
-// Criado em 18/03/2018 as 11:21 por Acrisio
-// Implementação da classe CmdChatMacroUser
+// File cmd_chat_macro_user.cpp
+// Created on 18/03/2018 at 11:21 by Acrisio
+// Implementation of class CmdChatMacroUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -33,7 +33,7 @@ void CmdChatMacroUser::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 				// Translate Msg From Encoded Char not printed
 				auto _chat = verifyAndTranslate(_result->data[i], 2/*fixed size*/);
 
-				// !@ possivel erro de violação de acesso
+				// !@ possible access violation error
 				if (_chat.empty())
 #if defined(_WIN32)
 					memcpy_s(m_macro_user.macro[i], sizeof(chat_macro_user::macro[0]), _result->data[i], (strlen(_result->data[i]) > sizeof(chat_macro_user::macro[0]) ? sizeof(chat_macro_user::macro[0]) : strlen(_result->data[i])));

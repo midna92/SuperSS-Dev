@@ -1,6 +1,6 @@
-// Arquivo cmd_email_info2.cpp
-// Criado em 14/01/2021 as 06:27 por Acrisio
-// Implementa��o da classe CmdEmailInfo2
+// File cmd_email_info2.cpp
+// Created on 14/01/2021 at 06:27 by Acrisio
+// Implementation of the class CmdEmailInfo2
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -43,7 +43,7 @@ void CmdEmailInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 				// Translate Msg From Encoded Char not printed
 				auto _msg = verifyAndTranslate(_result->data[3], 2/*fixed size*/);
 			
-				// !@ possivel erro de viola��o de acesso
+				// !@ possible access violation error
 				if (_msg.empty())
 #if defined(_WIN32)
 					memcpy_s(m_ei.msg, sizeof(m_ei.msg), _result->data[3], (strlen(_result->data[3]) > sizeof(m_ei.msg) ? sizeof(m_ei.msg) : strlen(_result->data[3])));
@@ -69,14 +69,14 @@ void CmdEmailInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 
 	}
 
-	// Add o item
+	// Add the item
 	EmailInfo::item item{ 0 };
 
 	item._typeid = IFNULL(atoi, _result->data[7]);
 
 	if (item._typeid != 0) {
 
-		item.id = IFNULL(atoi, _result->data[6]); // ID vem antes de typeid na consulta
+		item.id = IFNULL(atoi, _result->data[6]); // ID comes before typeid in the query
 
 		item.flag_time = (unsigned char)IFNULL(atoi, _result->data[8]);
 		item.qntd = IFNULL(atoi, _result->data[9]);

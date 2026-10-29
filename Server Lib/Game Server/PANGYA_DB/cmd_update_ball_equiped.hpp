@@ -1,6 +1,6 @@
-// Arquivo cmd_update_ball_equiped.hpp
-// Criado em 25/03/2018 as 10:54 por Acrisio
-// Defini��o da classe CmdUpdateBallEquiped
+// File cmd_update_ball_equiped.hpp
+// Created on 25/03/2018 at 10:54 by Acrisio
+// Definition of class CmdUpdateBallEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_BALL_EQUIPED_HPP

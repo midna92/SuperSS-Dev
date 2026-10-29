@@ -1,6 +1,6 @@
-// Arquivo list_fifo_console.h
-// Criado em 30/07/2017 por Acrisio
-// Definição e Implementação da classe list_fifo_console_asyc
+// File list_fifo_console.h
+// Created on 30/07/2017 by Acrisio
+// Definition and implementation of the class list_fifo_console_asyc
 
 #pragma once
 #ifndef _STDA_LIST_FIFO_CONSOLE_H
@@ -82,7 +82,7 @@ namespace stdA {
 			std::string dir;
     };
 
-    // Implementação
+    // Implementation
     template <class _TA> list_fifo_console_asyc<_TA>::list_fifo_console_asyc() : list_fifo_asyc<_TA>() {
         
 #if defined(_WIN32)
@@ -104,7 +104,7 @@ namespace stdA {
 		prex = "";
 		dir = "Log";
 
-		//init_log_files();	// não inicializa o log ainda não, inicializa depois
+		//init_log_files();	// does not initialize the log yet, initializes later
     };
 
     template <class _TA> list_fifo_console_asyc<_TA>::~list_fifo_console_asyc() {
@@ -128,7 +128,7 @@ namespace stdA {
 
 		try {
 
-			// Bloquea
+			// Lock
 #if defined(_WIN32)
 			EnterCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -157,7 +157,7 @@ namespace stdA {
 						+ std::to_string(e.code().value()) + "]." << std::endl;
 			}
 
-			// Libera
+			// Release
 #if defined(_WIN32)
 			LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -166,7 +166,7 @@ namespace stdA {
 		
 		}catch (exception& e) {
 
-			// Libera
+			// Release
 #if defined(_WIN32)
 			LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -181,7 +181,7 @@ namespace stdA {
 
 		try {
 
-			// Bloquea
+			// Lock
 #if defined(_WIN32)
 			EnterCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -190,7 +190,7 @@ namespace stdA {
 
 			try {
 
-				// Dir do arquivo .ini ou padrão se não tiver
+				// Directory from the .ini file, or the default if there is none
 				ReaderIni ini(_INI_PATH);
 
 				ini.init();
@@ -203,12 +203,12 @@ namespace stdA {
 
 					if (std::filesystem::exists(status)) {
 
-						dir = tmp_dir;	// O diretório do Arquivo .ini existe, usa esse diretório
+						dir = tmp_dir;	// The directory from the .ini file exists, use that directory
 
 #if defined(_WIN32)
-					}else if (_mkdir(tmp_dir.c_str()) == 0/*Criou o direitório com sucesso*/)	// Tenta cria o diretório que está no Arquivo .ini, se conseguir usa esse diretório criado
+					}else if (_mkdir(tmp_dir.c_str()) == 0/*Directory created successfully*/)	// Try to create the directory from the .ini file, and if successful use that created directory
 #elif defined(__linux__)
-					}else if (mkdir(tmp_dir.c_str(), MODE_DIR_LOG) == 0/*Criou o direitório com sucesso*/)	// Tenta cria o diretório que está no Arquivo .ini, se conseguir usa esse diretório criado
+					}else if (mkdir(tmp_dir.c_str(), MODE_DIR_LOG) == 0/*Directory created successfully*/)	// Try to create the directory from the .ini file, and if successful use that created directory
 #endif
 						dir = tmp_dir;
 					else
@@ -226,8 +226,8 @@ namespace stdA {
 				// Log
 				std::cout << formatDateLocal(0) + "\t[(" + std::string(typeid(this).name()) + ")::init_log_files][Log] Nao consguiu pegar o diretorio do Arquivo .ini, usando o diretorio padrao \"Log\"." << std::endl;
 
-				// Não tem o log dir do arquivo ini, usa o padrão
-				// Verifica se diretório padrão está criado, se não cria ele
+				// There is no log dir in the ini file, use the default
+				// Check whether the default directory exists, and create it if not
 				dir = "Log";
 
 				auto s = std::filesystem::status(dir);
@@ -248,7 +248,7 @@ namespace stdA {
 
 			tm ti{ 0 };
 
-			// Atualiza o Day Time do Log para o atual e guarda ele na variável
+			// Update the Log Day Time to the current one and store it in the variable
 			std::time(&day_time);
 
 #if defined(_WIN32)
@@ -300,7 +300,7 @@ namespace stdA {
 						+ std::to_string(e.code().value()) + "] nao conseguiu abrir o arquivo='" + full_path + "'" << std::endl;
 			}
 
-			// Libera
+			// Release
 #if defined(_WIN32)
 			LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -309,7 +309,7 @@ namespace stdA {
 		
 		}catch (exception& e) {
 
-			// Libera
+			// Release
 #if defined(_WIN32)
 			LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -330,20 +330,20 @@ namespace stdA {
 
 		std::time(&now);
 
-		// Transforma os segundos dos tempos em struct time
+		// Convert the time seconds into a struct time
 #if defined(_WIN32)
 		if (localtime_s(&ti_now, &now) == 0 && localtime_s(&ti_day, &day_time) == 0) {
 #elif defined(__linux__)
 		if (localtime_r(&now, &ti_now) != nullptr && localtime_r(&day_time, &ti_day) != nullptr) {
 #endif
 
-			// Criar novos Logs que trocou o Dia do Log
+			// Create new Logs because the Log day changed
 			if (ti_day.tm_year < ti_now.tm_year || ti_day.tm_mon < ti_now.tm_mon || ti_day.tm_mday < ti_now.tm_mday) {
 				
-				// Recarrega os Log Files (Ele cria outros arquivos com outra data e hora do dia)
+				// Reload the Log Files (it creates other files with another date and time of day)
 				reload_log_files();
 			
-				// Criou novos logs, trocou o dia do log
+				// Created new logs, the log day changed
 				ret = true;
 			}
 		}
@@ -374,7 +374,7 @@ namespace stdA {
 
 			try {
 
-				// Bloquea
+				// Lock
 #if defined(_WIN32)
 				EnterCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -423,7 +423,7 @@ namespace stdA {
 					|| m->getTipo() == CL_FILE_LOG_IO_DATA_AND_CONSOLE || m->getTipo() == CL_FILE_LOG_TEST_AND_CONSOLE)
 					std::cout << m->get() << std::endl;
 
-				// Libera
+				// Release
 #if defined(_WIN32)
 				LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -434,13 +434,13 @@ namespace stdA {
 					
 					delete m;
 
-					// Limpa a variável
+					// Clear the variable
 					m = nullptr;
 				}
 			
 			}catch (exception& e) {
 
-				// Libera
+				// Release
 #if defined(_WIN32)
 				LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -451,7 +451,7 @@ namespace stdA {
 
 					delete m;
 
-					// Limpa a variável
+					// Clear the variable
 					m = nullptr;
 				}
 
@@ -459,7 +459,7 @@ namespace stdA {
 
 			}catch (std::ofstream::failure& e) {
 
-				// Libera
+				// Release
 #if defined(_WIN32)
 				LeaveCriticalSection(&cs_console);
 #elif defined(__linux__)
@@ -470,7 +470,7 @@ namespace stdA {
 
 					delete m;
 
-					// Limpa a variável
+					// Clear the variable
 					m = nullptr;
 				}
 

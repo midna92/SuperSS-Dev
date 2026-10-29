@@ -1,6 +1,6 @@
-// Arquivo smart_calculator_player_base.hpp
-// Criado em 21/11/2020 as 09:04 por Acrisio
-// Defini��o da classe(interface) ISmartCalculatorPlayer
+// File smart_calculator_player_base.hpp
+// Created on 21/11/2020 at 09:04 by Acrisio
+// Definition of the class (interface) ISmartCalculatorPlayer
 
 #pragma once
 #ifndef _STDA_SMART_CALCULATOR_PLAYER_BASE_HPP
@@ -22,7 +22,7 @@ namespace stdA {
 	constexpr uint32_t BASE_RESOLUTION_WIDTH	= 640u;
 	constexpr uint32_t BASE_RESOLUTION_HEIGHT	= 480u;
 
-	// Resolu��o 600 x 480
+	// Resolution 600 x 480
 	constexpr float DENSIDADE_PIXEL_480_PANGYA = 0.006f;
 
 	template<typename _Digit> _Digit fix(_Digit _value) {
@@ -82,7 +82,7 @@ namespace stdA {
 			uint32_t height;
 	};
 
-	// Type devio favorito
+	// Favorite deviation type
 	enum class eTYPE_DESVIO_FAVORITO : uint32_t {
 		YARD,
 		POWER_BAR,
@@ -141,7 +141,7 @@ namespace stdA {
 		return it != typeDesvioFavoritoName.end() ? it->second : "UNKNOWN";
 	};
 
-	// Defini��o da classe(interface) ICalculatorPlayer
+	// Definition of the class (interface) ICalculatorPlayer
 	class ICalculatorPlayer {
 		public:
 			ICalculatorPlayer(uint32_t _id) :
@@ -429,13 +429,13 @@ namespace stdA {
 
 			unsigned char power_slot;
 
-			// Pode ser negativo esses
+			// These can be negative
 			char auxpart_pwr;
 			char mascot_pwr;
 			char card_pwr;
 			char ps_card_pwr;
 
-			// Safety e Ground flag
+			// Safety and Ground flag
 			bool safety;
 			bool ground;
 
@@ -445,7 +445,7 @@ namespace stdA {
 			bool gm;
 	};
 
-	// Defini��o da classe(interface) Smart Calculator Player
+	// Definition of the class (interface) Smart Calculator Player
 	class ISmartCalculatorPlayer : public ICalculatorPlayer {
 		public:
 			ISmartCalculatorPlayer(uint32_t _id) : ICalculatorPlayer(_id), m_game_shot_value() {};
@@ -494,7 +494,7 @@ namespace stdA {
 		public:
 			unsigned char m_power;
 
-			// Pode ser negativo esses
+			// These can be negative
 			char m_auxpart_pwr;
 			char m_mascot_pwr;
 			char m_card_pwr;
@@ -516,7 +516,7 @@ namespace stdA {
 			stGameShotValue m_game_shot_value;
 	};
 
-	// Defini��o da classe(interface) Smart Calculator Player
+	// Definition of the class (interface) Smart Calculator Player
 	class IStadiumCalculatorPlayer : public ICalculatorPlayer {
 	public:
 		IStadiumCalculatorPlayer(uint32_t _id) : ICalculatorPlayer(_id) {};

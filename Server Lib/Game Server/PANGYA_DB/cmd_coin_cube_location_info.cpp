@@ -1,6 +1,6 @@
-// Arquivo cmd_coin_cube_location_info.cpp
-// Criado em 16/10/2020 as 03:23 por Acrisio
-// Implementa��o da classe CmdCoinCubeLocationInfo
+// File cmd_coin_cube_location_info.cpp
+// Created on 16/10/2020 at 03:23 by Acrisio
+// Implementation of the class CmdCoinCubeLocationInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

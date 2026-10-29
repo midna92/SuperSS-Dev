@@ -1,8 +1,8 @@
-// Arquivo packet_func_client.cpp
+// File packet_func_client.cpp
 // Crido em 21/10/2017 por Acrisio
-// Implementação da classe packet_func para o cliente(BOT)
+// Implementation of class packet_func for the cliente(BOT)
 
-// Tem que ter o pack aqui se não da erro na hora da allocação do HEAP
+// The pack must be here, otherwise it causes an error at HEAP allocation time
 #pragma pack(1)
 
 #include <WinSock2.h>
@@ -111,8 +111,8 @@ int packet_func::packet001(void* _arg1, void* _arg2) {
 			strcpy_s(ci->m_nickname, pd._packet->readString().c_str());
 			pd._packet->readInt16();
 		}else if (opt == 5) {
-			pd._packet->readString();	// Data de compilacao do server acho
-			pd._packet->readString();	// senha do pass de dentro do jogo(so o KR tem) (ACHO QUE � ISSO)
+			pd._packet->readString();	// Server compile date I think
+			pd._packet->readString();	// in-game password (only KR has it) (I THINK THAT IS IT)
 			pd._packet->readInt64();
 			strcpy_s(ci->m_nickname, pd._packet->readString().c_str());
 		}
@@ -158,7 +158,7 @@ int packet_func::packet002(void* _arg1, void* _arg2) {
 
 		//mc->DisconnectSession(&pd._session);
 
-		// Coloca no monitor para reconectar
+		// Put in the monitor to reconnect
 		pd._session.m_ci.m_uid = ~0;
 	}
 	return 0;
@@ -189,7 +189,7 @@ int packet_func::packet003(void* _arg1, void* _arg2) {
 
 			mc->ConnectAndAssoc(ci->m_list_servers.a_servers[0].ip, ci->m_list_servers.a_servers[0].port, ci_tmp);
 			
-			// Desconecta do Login Server
+			// Disconnect from the Login Server
 			//::shutdown(pd._session.m_sock, SD_BOTH);
 			mc->DisconnectSession(&pd._session);
 		}else {
@@ -198,7 +198,7 @@ int packet_func::packet003(void* _arg1, void* _arg2) {
 
 			mc->DisconnectSession(&pd._session);
 
-			// Coloca no monitor para reconectar
+			// Put in the monitor to reconnect
 			pd._session.m_ci.m_uid = ~0;
 		}
 	}
@@ -262,7 +262,7 @@ int packet_func::packet044(void* _arg1, void* _arg2) {
 	int err = (unsigned char)pd._packet->readInt8();
 
 	if (err == 0) {
-		// Pacote Principal
+		// Main Packet
 		_smp::message_pool::getInstance().push(new message("Pacote Principal.", CL_ONLY_CONSOLE));
 	}else if (err == 1)
 		_smp::message_pool::getInstance().push(new message("Erro ao logar com o game server. erro code: " + std::to_string((int)pd._packet->readInt8()), CL_ONLY_CONSOLE));
@@ -292,7 +292,7 @@ int packet_func::packet04D(void* _arg1, void* _arg2) {
 
 		ci->m_cuid = ci->m_list_canais.a_canais[0].id;	// Index 0
 		
-		InterlockedExchange(&ci->m_RC, 1);	// Recebi canais
+		InterlockedExchange(&ci->m_RC, 1);	// Received channels
 
 		_smp::message_pool::getInstance().push(new message("Recebi Canais: " + std::to_string(ci->m_list_canais.num_canais), CL_ONLY_CONSOLE));
 
@@ -314,7 +314,7 @@ int packet_func::packet04E(void* _arg1, void* _arg2) {
 
 		pd._session.m_ci.m_channel = (unsigned char)pd._session.m_ci.m_cuid;
 
-		// Entra na lobby
+		// Enter the lobby
 		pacote081(p, &pd._session);
 		session_send(p, &pd._session, 1);
 	}else if (err != 0 && err != 1) {
@@ -343,15 +343,15 @@ int packet_func::packet0F5(void* _arg1, void* _arg2) {
 
 	pd._session.m_ci.m_lobby = 1;
 
-	// Tenta entrar na sala 0
+	// Try to enter room 0
 	packet p((unsigned short)0x09);
 
-	p.addUint16(0u);	// Sala Número 0
-	p.addUint16(0u);	// Nenhum senha
+	p.addUint16(0u);	// Room Number 0
+	p.addUint16(0u);	// No password
 
 	session_send(p, &pd._session, 1);
 
-	// Cria o timer de mandar msg na lobby para esse player
+	// Create the timer to send a lobby message for this player
 	std::vector< DWORD > interval = { 100 };
 
 	std::srand(std::clock() * 7 * (DWORD_PTR)&pd._session * (DWORD_PTR)&pd._session);
@@ -383,7 +383,7 @@ int packet_func::packet1A9(void* _arg1, void* _arg2) {
 	if (pd._packet->readInt8() == 1) {
 		pd._session.m_ci.m_TTL = pd._packet->readInt32();
 
-		// Cria o timer de mandar TTL Time To Live (HeartBeat)
+		// Create the timer to send TTL Time To Live (HeartBeat)
 		std::vector< DWORD > interval = { pd._session.m_ci.m_TTL };
 
 		if ((pd._session.m_ci.m_timer_ttl = mc->postTimer(pd._session.m_ci.m_TTL,
@@ -427,7 +427,7 @@ int packet_func::packet1AD(void* _arg1, void* _arg2) {
 				pacote0A1(p, &pd._session, pd._session.m_ci.m_TRWK);
 				session_send(p, &pd._session, 1);
 				break;
-			case 0x0C:	// ENTRY POINT(cookies) mas n�o pede senha
+			case 0x0C:	// ENTRY POINT(cookies) but does not ask for a password
 				break;
 			case 0x0D: // LINK ON LOBBY 2
 				_smp::message_pool::getInstance().push(new message(std::string(pd._session.m_ci.link_weblink[1]) + "?ID=" + std::string(pd._session.m_ci.m_id) + "&KID=" + std::string(pd._session.m_ci.m_web_key), CL_FILE_LOG_AND_CONSOLE));
@@ -449,8 +449,8 @@ int packet_func::packet1AD(void* _arg1, void* _arg2) {
 int packet_func::packet_svFazNada(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_CLIENT(_arg1, _arg2);
 
-	// Esse pacote é para os pacotes que o server envia para o cliente
-	// e não precisa de tratamento depois que foi enviado para o cliente
+	// This packet is for the packets that the server sends to the client
+	// and needs no handling after it has been sent to the client
 
 	return 0;
 };
@@ -530,9 +530,9 @@ int packet_func::pacote004(packet& p, player *_session, int option, unsigned cha
 
 	p.init_plain((unsigned short)0x04);
 
-	// OPT 0 é Login Server Confirma desloga player já logado
-	// Tem mais coisas, que é premium, pcbang dailyquest mailbox não lido e etc
-	// que ver isso depois que o cliente entra no server e não antes como está agora
+	// OPT 0 is Login Server confirms logging out an already logged in player
+	// There is more stuff, such as premium, pcbang, dailyquest, unread mailbox, etc
+	// need to look at this after the client enters the server and not before as it is now
 	if (option == 1/*Entra Canal Game Server*/)
 		p.addInt8(canal_id);
 
@@ -640,7 +640,7 @@ void packet_func::abrirWeblink(player *_session, unsigned char who) {
 	packet p;
 
 	if (who == 12/*Entry Point - n�o precisa de chave*/) {
-		_session->m_ci.m_TRWK = who; // Quem (Qual weblink abrir)
+		_session->m_ci.m_TRWK = who; // Who (Which weblink to open)
 
 		_smp::message_pool::getInstance().push(new message(std::string(_session->m_ci.link_point) + "?ID=" + std::string(_session->m_ci.m_id) + "&KID=", CL_FILE_LOG_AND_CONSOLE));
 		
@@ -651,7 +651,7 @@ void packet_func::abrirWeblink(player *_session, unsigned char who) {
 	}else {
 		_smp::message_pool::getInstance().push(new message("Request WebKey.", CL_FILE_LOG_AND_CONSOLE));
 
-		_session->m_ci.m_TRWK = who; // Quem (Qual weblink abrir)
+		_session->m_ci.m_TRWK = who; // Who (Which weblink to open)
 
 		pacote0FB(p, _session);
 		session_send(p, _session, 1);
@@ -672,7 +672,7 @@ int packet_func::sendMessage(void *_arg1, void *_arg2) {
 	if (_session == nullptr)
 		return 1;
 
-	// _session não está mais conectada para o timer
+	// _session is no longer connected for the timer
 	if (!_session->getState()) {
 		_session->m_ci.m_timer_msg_lobby->stop();
 		
@@ -692,7 +692,7 @@ int packet_func::HeartBeat(void *_arg1, void *_arg2) {
 	_MAKE_BEGIN_CLIENT(_arg1);
 	player *_session = reinterpret_cast< player* >(_arg2);
 
-	// _session não está mais conectada para o timer
+	// _session is no longer connected for the timer
 	if (!_session->getState()) {
 		_session->m_ci.m_timer_ttl->stop();
 

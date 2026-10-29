@@ -1,6 +1,6 @@
-// Arquivo golden_time_type.hpp
-// Criado em 20/10/2020 as 19:03 por Acrisio
-// Defini��o dos tipos usados no Golden Time System
+// File golden_time_type.hpp
+// Created on 20/10/2020 at 19:03 by Acrisio
+// Definition of the types used in the Golden Time System
 
 #pragma once
 #ifndef _STDA_GOLDEN_TIME_TYPE_HPP
@@ -24,7 +24,7 @@ namespace stdA {
 #pragma pack(1)
 #endif
 
-	// A cada 100 players adiciona 1 ganhador para ser sorteado
+	// For every 100 players adds 1 winner to be drawn
 	constexpr uint32_t NUMBER_OF_PLAYER_TO_WINNER = 100u;
 
 	struct stItemReward {
@@ -52,7 +52,7 @@ namespace stdA {
 			};
 
 		public:
-			SYSTEMTIME time; // hora que o round vai ser executado
+			SYSTEMTIME time; // time at which the round will be executed
 			bool executed;
 			
 			stItemReward item;
@@ -61,9 +61,9 @@ namespace stdA {
 	struct stGoldenTime {
 		public:
 			enum eTYPE : unsigned char {
-				ONE_DAY,	// Come�a em 1 dia e termina no mesmo dia
-				INTERVAL,	// Intervalo de dias
-				FOREVER,	// Nunca acaba
+				ONE_DAY,	// Starts on 1 day and ends on the same day
+				INTERVAL,	// Interval of days
+				FOREVER,	// Never ends
 			};
 
 		public:
@@ -108,9 +108,9 @@ namespace stdA {
 
 				auto it = std::find_if(rounds.begin(), rounds.end(), [](stRound& _el) {
 					
-					bool check = !_el.executed && !isEmpty(_el.time) && getLocalTimeDiffDESC(_el.time) >= 0ll; // aqui o certo � s� ">"
+					bool check = !_el.executed && !isEmpty(_el.time) && getLocalTimeDiffDESC(_el.time) >= 0ll; // here the correct one is only ">"
 
-					// Passou o tempo j�, j� foi executado por que passou do tempo
+					// The time has already passed, it was already executed because the time passed
 					//_el.executed = !check;
 
 					return check;
@@ -127,14 +127,14 @@ namespace stdA {
 		public:
 			uint32_t id;
 			eTYPE type;
-			SYSTEMTIME date[2]; // Come�o e Fim
+			SYSTEMTIME date[2]; // Start and End
 			std::vector< stRound > rounds;
 
 			std::vector< stItemReward > item_rewards;
 
 			bool is_end;
 
-			uint32_t rate_of_players; // Rate de quantos players a cada NUMBER_OF_PLAYER players, padr�o 1
+			uint32_t rate_of_players; // Rate of how many players per every NUMBER_OF_PLAYER players, default 1
 
 			stRound* current_round;
 	};
@@ -143,7 +143,7 @@ namespace stdA {
 		public:
 			uint32_t uid;
 			bool is_premium;
-			bool is_playing; // se n�o estiver jogando, ele est� na sala lounge
+			bool is_playing; // if not playing, he is in the lounge room
 	};
 
 	struct stGoldenTimeReward {

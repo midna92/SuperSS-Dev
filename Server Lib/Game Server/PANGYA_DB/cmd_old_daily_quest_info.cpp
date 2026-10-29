@@ -1,6 +1,6 @@
-// Arquivo cmd_old_daily_quest_info.cpp
-// Criado em 24/03/2018 as 20:56 por Acrisio
-// Implementa��o da classe CmdOldDailyQuestInfo
+// File cmd_old_daily_quest_info.cpp
+// Created on 24/03/2018 at 20:56 by Acrisio
+// Implementation of the class CmdOldDailyQuestInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

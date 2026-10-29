@@ -1,6 +1,6 @@
-// Arquivo player_manager.hpp
-// Criado em 07/03/2018 as 22:15 por Acrisio
-// Definição da classe player_manager
+// File player_manager.hpp
+// Created on 07/03/2018 at 22:15 by Acrisio
+// Definition of class player_manager
 
 #pragma once
 #ifndef _STDA_PLAYER_MANAGER_HPP
@@ -61,12 +61,12 @@ namespace stdA {
 			static void SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg);
 
 		protected:
-			std::map< uint32_t, uIndexOID > m_indexes;		// Index de OID
+			std::map< uint32_t, uIndexOID > m_indexes;		// OID index
 
-			// Sem proteção de sincronização, chamar ela em uma função thread safe(thread com seguranção de sincronização)
+			// No synchronization protection, call it from a thread-safe function (thread with synchronization safety)
 			virtual int32_t findSessionFree() override;
 			
-			// Sem proteção de sincronização, chamar ela em uma função thread safe(thread com seguranção de sincronização)
+			// No synchronization protection, call it from a thread-safe function (thread with synchronization safety)
 			virtual uint32_t getNewOID();
 			virtual void freeOID(uint32_t _oid);
 	};

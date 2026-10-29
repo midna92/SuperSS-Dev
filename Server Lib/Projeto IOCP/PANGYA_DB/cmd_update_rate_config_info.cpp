@@ -1,6 +1,6 @@
-// Arquivo cmd_update_rate_config_info.cpp
-// Criado em 09/05/2019 as 19:26 por Acrisio
-// Implementação da classe CmdUpdateRateConfigInfo
+// File cmd_update_rate_config_info.cpp
+// Created on 09/05/2019 at 19:26 by Acrisio
+// Implementation of class CmdUpdateRateConfigInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -24,7 +24,7 @@ CmdUpdateRateConfigInfo::~CmdUpdateRateConfigInfo() {
 
 void CmdUpdateRateConfigInfo::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// Não usa por que é um UPDATE
+	// Not used because it's an UPDATE
 	return;
 }
 

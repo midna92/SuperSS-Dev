@@ -1,6 +1,6 @@
-// Arquivo tourney.hpp
-// Criado em 22/09/2018 as 12:06 por Acrisio
-// Defini��o da classe Tourney
+// File tourney.hpp
+// Created on 22/09/2018 at 12:06 by Acrisio
+// Definition of the Tourney class
 
 #pragma once
 #ifndef _STDA_TOURNEY_HPP
@@ -18,7 +18,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Game->Course->Hole methods
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 
 			virtual void changeHole(player& _session) override;
@@ -31,7 +31,7 @@ namespace stdA {
 			virtual void requestStartAfterEnter(job& _job) override;
 			virtual void requestEndAfterEnter() override;
 
-			// Tempo
+			// Time
 			/*virtual void startTime() override;
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -39,7 +39,7 @@ namespace stdA {
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finish Game
 			virtual bool init_game() override;
 
 			virtual void clear_time_after_enter();
@@ -60,10 +60,10 @@ namespace stdA {
 
 			virtual void requestFinishData(player& _session);
 
-			// request calcule shot spinning cube - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot spinning cube - It is implemented in the classes that will use it
 			virtual void requestCalculeShotSpinningCube(player& _session, ShotSyncData& _ssd) override;
 
-			// request calcule shot coin - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot coin - It is implemented in the classes that will use it
 			virtual void requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) override;
 
 		protected:
@@ -77,7 +77,7 @@ namespace stdA {
 			virtual bool finish_game(player& _session, int option = 0) override;
 
 		protected:
-			timer *m_pTimer_after_enter;		// Timer de entrar depois no Tourney
+			timer *m_pTimer_after_enter;		// Timer to enter Tourney later
 
 			bool m_tourney_state;
 	};

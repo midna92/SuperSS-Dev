@@ -1,6 +1,6 @@
-// Arquivo cmd_add_warehouse_item.hpp
-// Criado em 25/03/2018 as 19:26 por Acrisio
-// Defini��o da classe CmdAddWarehouseItem
+// File cmd_add_warehouse_item.hpp
+// Created on 25/03/2018 at 19:26 by Acrisio
+// Definition of the class CmdAddWarehouseItem
 
 #pragma once
 #ifndef _STDA_CMD_ADD_WAREHOUSE_ITEM_HPP

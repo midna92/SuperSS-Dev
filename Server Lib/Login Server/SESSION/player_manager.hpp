@@ -1,6 +1,6 @@
-// Arquivo player_manager.h
-// Criado em 11/03/2018 as 14:18 por Acrisio
-// Definição da classe player_manager
+// File player_manager.h
+// Created on 11/03/2018 at 14:18 by Acrisio
+// Definition of the player_manager class
 
 #pragma once
 #ifndef _STDA_PLAYER_MANAGER_H

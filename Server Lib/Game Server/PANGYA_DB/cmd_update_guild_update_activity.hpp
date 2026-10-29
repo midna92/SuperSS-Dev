@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_update_activity.hpp
-// Criado em 30/11/2019 as 17:27 por Acrisio
-// Defini��o da classe CmdUpdateGuildUpdateActivity
+// File cmd_update_guild_update_activity.hpp
+// Created on 30/11/2019 at 17:27 by Acrisio
+// Definition of class CmdUpdateGuildUpdateActivity
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_GUILD_UPDATE_ACTIVITY_HPP

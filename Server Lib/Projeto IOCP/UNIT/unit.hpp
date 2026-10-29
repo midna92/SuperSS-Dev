@@ -1,6 +1,6 @@
-// Arquivo unit.hpp
-// Criado em 02/12/2018 as 12:28 por Acrisio
-// Definição da classe unit
+// File unit.hpp
+// Created on 02/12/2018 at 12:28 by Acrisio
+// Definition of the class unit
 
 #pragma once
 #ifndef _STDA_UNIT_HPP
@@ -156,8 +156,8 @@ namespace stdA {
 			int32_t volatile m_continue_accpet;
 #endif
 			
-			// ponteiro para o socket que foi criado no accept
-			socket* m_accept_sock;		// socket que controla os checks das conexão se pode ou não logar
+			// pointer to the socket that was created in the accept
+			socket* m_accept_sock;		// socket that controls the connection checks on whether it can log in or not
     };
 }
 

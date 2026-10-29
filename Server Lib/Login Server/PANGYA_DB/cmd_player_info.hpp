@@ -1,6 +1,6 @@
-// Arquivo cmd_player_info.hpp
-// Criado em 17/03/2018 as 18:18 por Acrisio
-// Definição da classe CmdPlayerInfo
+// File cmd_player_info.hpp
+// Created on 17/03/2018 at 18:18 by Acrisio
+// Definition of the CmdPlayerInfo class
 
 #pragma once
 #ifndef _STDA_CMD_PLAYER_INFO_HPP

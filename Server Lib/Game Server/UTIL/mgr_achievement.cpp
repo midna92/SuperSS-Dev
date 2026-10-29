@@ -1,6 +1,6 @@
-// Arquivo mgr_achievement.cpp
-// Criado em 08/04/2018 as 23:47 por Acrisio
-// Implementação da classe MgrAchievement
+// File mgr_achievement.cpp
+// Created on 08/04/2018 at 23:47 by Acrisio
+// Implementation of the MgrAchievement class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -91,7 +91,7 @@ void MgrAchievement::initAchievement(uint32_t _uid, std::multimap< uint32_t, Ach
 
 void MgrAchievement::initAchievement(bool _create) {
 
-	if (!_create) {	// Verifica se o player tem Achievement, antes de criar
+	if (!_create) {	// Checks if the player has Achievement, before creating
 
 		CmdCheckAchievement cmd_cAchieve(m_uid, true);	// waitable
 
@@ -104,10 +104,10 @@ void MgrAchievement::initAchievement(bool _create) {
 			throw cmd_cAchieve.getException();
 		}
 
-		// Cria Achievements do player
+		// Creates the player's Achievements
 		if (!cmd_cAchieve.getLastState()) {
 
-			auto qi = sIff::getInstance().findQuestItem(CLEAR_10_DAILY_QUEST_TYPEID);	// Daily Quest 10 dias Clear
+			auto qi = sIff::getInstance().findQuestItem(CLEAR_10_DAILY_QUEST_TYPEID);	// Daily Quest 10 days Clear
 
 			AchievementInfoEx ai{};
 
@@ -140,8 +140,8 @@ void MgrAchievement::initAchievement(bool _create) {
 
 	}else {	// Create Achievement
 
-		// Cria Achievements do player
-		auto qi = sIff::getInstance().findQuestItem(CLEAR_10_DAILY_QUEST_TYPEID);	// Daily Quest 10 dias Clear
+		// Creates the player's Achievements
+		auto qi = sIff::getInstance().findQuestItem(CLEAR_10_DAILY_QUEST_TYPEID);	// Daily Quest 10 days Clear
 
 		AchievementInfoEx ai{};
 
@@ -202,7 +202,7 @@ void MgrAchievement::resetAchievement(std::multimap<uint32_t, AchievementInfoEx>
 		throw exception("[MgrAchievement::resetAchievement][Error] iterator achievement invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MGR_ACHIEVEMENT, 1601, 0));
 
 
-	// Zera o(s) Counter Item(ns)
+	// Zeroes the Counter Item(s)
 	if (!_it->second.map_counter_item.empty()) {
 		
 		for (auto& el : _it->second.map_counter_item) {
@@ -213,7 +213,7 @@ void MgrAchievement::resetAchievement(std::multimap<uint32_t, AchievementInfoEx>
 		}
 	}
 
-	// Zera o clear date unix da(s) Quest(s)
+	// Zeroes the unix clear date of the Quest(s)
 	if (!_it->second.v_qsi.empty()) {
 
 		for (auto& el : _it->second.v_qsi) {
@@ -224,7 +224,7 @@ void MgrAchievement::resetAchievement(std::multimap<uint32_t, AchievementInfoEx>
 		}
 	}
 
-	// Atualiza o Achievement
+	// Updates the Achievement
 	_it->second.status = AchievementInfo::ACHIEVEMENT_STATUS::ACTIVED;
 
 	snmdb::NormalManagerDB::getInstance().add(6, new CmdUpdateAchievementUser(m_uid, _it->second), MgrAchievement::SQLDBResponse, this);
@@ -278,7 +278,7 @@ std::multimap< uint32_t, AchievementInfoEx >::iterator MgrAchievement::addAchiev
 
 	IFF::QuestStuff *qsi = nullptr;
 
-	// Add Pontos Achievement Quest Concluído
+	// Add Achievement Points Quest Completed
 	if (sIff::getInstance().getItemGroupIdentify(_ai._typeid) == iff::ACHIEVEMENT && _ai.status == AchievementInfo::ACTIVED || _ai.status == AchievementInfo::CONCLUEDED) {
 		
 		for (auto& el : _ai.v_qsi) {
@@ -301,7 +301,7 @@ void MgrAchievement::sendAchievementGuiToPlayer(session& _session) {
 
 	CHECK_SESSION("sendAchievementGuiToPlayer", _session);
 
-	// Tem que passar o 22D com os dados, e 22C para mostrar o GUI
+	// Must pass the 22D with the data, and 22C to show the GUI
 
 	std::multimap< uint32_t, AchievementInfoEx > v_element;
 
@@ -337,7 +337,7 @@ void MgrAchievement::sendAchievementGuiToPlayer(session& _session) {
 
 				if (ii->counter_item_id > 0 && (cii = map_i->second.findCounterItemById(ii->counter_item_id)) != nullptr)
 					p.addInt32(cii->value);
-				else // não tem o counter id e nem o typeid
+				else // has neither the counter id nor the typeid
 					p.addZeroByte(4);
 
 				p.addInt32(ii->clear_date_unix);
@@ -346,7 +346,7 @@ void MgrAchievement::sendAchievementGuiToPlayer(session& _session) {
 
 		packet_func::session_send(p, &_session, 1);
 
-	}	// FIM MAKE_SPLIT_PACKET
+	}	// END MAKE_SPLIT_PACKET
 
 	p.init_plain((unsigned short)0x22C);
 
@@ -366,7 +366,7 @@ void MgrAchievement::sendAchievementToPlayer(session& _session) {
 	packet p;
 	CounterItemInfo *cii = nullptr;
 
-	size_t por_packet = ((MAX_BUFFER_PACKET - 100) > (17 + 4 + (16 * 10))) ? (MAX_BUFFER_PACKET - 100) / ((17 + 4) + (16 * 10)) : 1;	// por pacote
+	size_t por_packet = ((MAX_BUFFER_PACKET - 100) > (17 + 4 + (16 * 10))) ? (MAX_BUFFER_PACKET - 100) / ((17 + 4) + (16 * 10)) : 1;	// per packet
 	size_t i = 0, index = 0, total = elements;
 
 	for (; map_i != map_ai.end(); total -= por_packet) {
@@ -390,7 +390,7 @@ void MgrAchievement::sendAchievementToPlayer(session& _session) {
 				if (ii->counter_item_id > 0 && (cii = map_i->second.findCounterItemById(ii->counter_item_id)) != nullptr) {
 					p.addInt32(cii->_typeid);
 					p.addInt32(cii->id);
-				}else // não tem o counter id e nem o typeid
+				}else // has neither the counter id nor the typeid
 					p.addZeroByte(8);
 
 				p.addInt32(ii->clear_date_unix);
@@ -421,7 +421,7 @@ void MgrAchievement::sendCounterItemToPlayer(session& _session) {
 
 	packet_func::session_send(p, &_session, 0);
 
-	}	// FIM MAKE_SPLIT_PACKET --- // Fim do primeiro FOR, então estou usando o end desse MACRO por que ele colocar no VECTOR no final
+	}	// END MAKE_SPLIT_PACKET --- // End of the first FOR, so I am using the end of this MACRO because it puts into the VECTOR at the end
 }
 
 void MgrAchievement::incrementPoint(uint32_t _increase) {
@@ -526,7 +526,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::Achievem
     IFF::QuestStuff *qs = nullptr;
     
     if (_achievement.quest_typeid[0] > 0) {
-        //CmdCreateQuest cmd_cq(pi->uid, *qi, 3/*1 pendente, 2 excluida, 3 ativa, 4 concluida*/);
+        //CmdCreateQuest cmd_cq(pi->uid, *qi, 3/*1 pending, 2 deleted, 3 active, 4 completed*/);
 		auto name = std::string(_achievement.name);
 
         cmd_ca.setAchievement(_achievement._typeid, name, _status);
@@ -561,7 +561,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::Achievem
 					if (cmd_cq.getException().getCodeError() != 0 || qsi.id == -1 || (cmd_cq.getIncludeCounter() && cii.id == 0))
                         throw exception("[MgrAchievement::createAchievement(IFF::Achievement)][Error] nao conseguiu criar quest para o player: " + std::to_string(_uid), STDA_MAKE_ERROR(STDA_ERROR_TYPE::MGR_ACHIEVEMENT, 3, 0));
 
-					// Add o Counter Item Id para o Quest Stuff Info, se a quest tem o counter item
+					// Adds the Counter Item Id to the Quest Stuff Info, if the quest has the counter item
 					if (cmd_cq.getIncludeCounter())
 						qsi.counter_item_id = cii.id;
 
@@ -574,7 +574,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::Achievem
                 }
             } while (++i < (sizeof(_achievement.quest_typeid) / sizeof(_achievement.quest_typeid[0])));
 
-			// Atualiza os counter item id nas quest stuff se o achievement esta com o quest base
+			// Updates the counter item ids in the quest stuff if the achievement has the base quest
 			auto it = ai.getQuestBase();
 
 			if (it != ai.v_qsi.end()) {
@@ -617,7 +617,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::QuestIte
     IFF::QuestStuff *qs = nullptr;
 
     if (_qi.quest.qntd > 0 || _qi.quest._typeid[0] > 0) {
-        //CmdCreateQuest cmd_cq(pi->uid, *qi, 3/*1 pendente, 2 excluida, 3 ativa, 4 concluida*/);
+        //CmdCreateQuest cmd_cq(pi->uid, *qi, 3/*1 pending, 2 deleted, 3 active, 4 completed*/);
 		auto name = std::string(_qi.name);
 
 		cmd_ca.setAchievement(_qi._typeid, name, _status);
@@ -652,7 +652,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::QuestIte
 					if (cmd_cq.getException().getCodeError() != 0 || qsi.id == -1 || (cmd_cq.getIncludeCounter() && cii.id == 0))
                         throw exception("[MgrAchievement::createAchievement(IFF::QuestItem)][Error] nao conseguiu criar quest para o player: " + std::to_string(_uid), STDA_MAKE_ERROR(STDA_ERROR_TYPE::MGR_ACHIEVEMENT, 3, 0));
 
-					// Add o Counter Item Id para o Quest Stuff Info, se a quest tem o counter item
+					// Adds the Counter Item Id to the Quest Stuff Info, if the quest has the counter item
 					if (cmd_cq.getIncludeCounter())
 						qsi.counter_item_id = cii.id;
 
@@ -665,7 +665,7 @@ AchievementInfoEx MgrAchievement::createAchievement(uint32_t _uid, IFF::QuestIte
                 }
             } while (++i < _qi.quest.qntd);
 
-			// Atualiza os counter item id nas quest stuff se o achievement esta com o quest base
+			// Updates the counter item ids in the quest stuff if the achievement has the base quest
 			auto it = ai.getQuestBase();
 
 			if (it != ai.v_qsi.end()) {
@@ -693,7 +693,7 @@ void MgrAchievement::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[MgrAchievement::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

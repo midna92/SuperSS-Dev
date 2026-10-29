@@ -1,6 +1,6 @@
-// Arquivo cmd_add_friend.cpp
-// Criado em 04/08/2018 as 22:22 por Acrisio
-// Implementa��o da classe CmdAddFriend
+// File cmd_add_friend.cpp
+// Created on 04/08/2018 at 22:22 by Acrisio
+// Implementation of class CmdAddFriend
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdAddFriend::~CmdAddFriend() {
 
 void CmdAddFriend::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used because it is an INSERT
 	return;
 }
 
@@ -34,7 +34,7 @@ response* CmdAddFriend::prepareConsulta(database& _db) {
 	if (m_fi.uid == 0)
 		throw exception("[CmdAddFriend::prepareConsulta][Error] m_fi.uid is invalid(zero)", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));
 
-	// Zero Bit Online And Sex Of State Flag
+	// Zero the Online bit and the Sex of the State Flag
 	m_fi.state.stState.online = 0;
 	m_fi.state.stState.sex = 0;
 

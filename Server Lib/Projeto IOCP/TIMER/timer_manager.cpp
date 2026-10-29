@@ -1,6 +1,6 @@
-// Arquivo timer_manager.cpp
-// Criado em 01/01/2018 por Acrisio
-// Implementação da classe timer_manager
+// File timer_manager.cpp
+// Created on 01/01/2018 by Acrisio
+// Implementation of class timer_manager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -195,11 +195,11 @@ void timer_manager::deleteTimer(timer *_timer) {
 		if (_timer == nullptr)
 			throw exception("[timer_manager::deleteTimer][Error] timer *_timer is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER_MANAGER, 3, 1));
 
-		// Para o Tempo se ele não estiver parado
+		// Stop the Timer if it is not stopped
 		if (_timer->getState() != timer::STOPPED)
 			_timer->stop();
 
-		// Adiciona a o Deleta Timer, por que antes só estava tirando do vector
+		// Add to the Delete Timer, because before it was only removing from the vector
 		if ((index = findIndexTimer(_timer)) != ~0) {
 
 			if (m_timers[index] != nullptr)

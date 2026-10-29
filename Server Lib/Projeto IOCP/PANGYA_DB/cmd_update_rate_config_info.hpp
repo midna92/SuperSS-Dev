@@ -1,6 +1,6 @@
-// Aqui cmd_update_rate_config_info.hpp
-// Criado em 09/05/2019 as 19:16 por Acrisio
-// Definição da classe CmdUpdateRateConfigInfo
+// Here cmd_update_rate_config_info.hpp
+// Created on 09/05/2019 at 19:16 by Acrisio
+// Definition of class CmdUpdateRateConfigInfo
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_RATE_CONFIG_INFO_HPP

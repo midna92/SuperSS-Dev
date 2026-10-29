@@ -1,6 +1,6 @@
-// Arquivo vector3d.cpp
-// Criado em 03/10/2020 as 13:32 por Acrisio
-// Implemeta��o da classe Vector3D
+// File vector3d.cpp
+// Created on 03/10/2020 at 13:32 by Acrisio
+// Implementation of the Vector3D class
 
 #include "vector3d.hpp"
 #include "matrix3d.hpp"

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_coin_cube_location.hpp
-// Criado em 17/10/2020 as 17:25 por Acrisio
-// Defini��o da classe CmdUpdateCoinCubeLocation
+// File cmd_update_coin_cube_location.hpp
+// Created on 17/10/2020 at 17:25 by Acrisio
+// Definition of class CmdUpdateCoinCubeLocation
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_COIN_CUBE_LOCATION_HPP

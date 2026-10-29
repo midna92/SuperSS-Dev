@@ -1,6 +1,6 @@
-// Arquivo cmd_update_coin_cube_location.cpp
-// Criado em 17/10/2020 as 17:44 por Acrisio
-// Implementa��o da classe CmdUpdateCoinCubeLocation
+// File cmd_update_coin_cube_location.cpp
+// Created on 17/10/2020 at 17:44 by Acrisio
+// Implementation of class CmdUpdateCoinCubeLocation
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -27,7 +27,7 @@ CmdUpdateCoinCubeLocation::~CmdUpdateCoinCubeLocation() {
 }
 
 void CmdUpdateCoinCubeLocation::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index*/) {
-	// N�o usa por que � UPDATE e INSERT
+	// Not used because it is UPDATE and INSERT
 	return;
 }
 
@@ -37,7 +37,7 @@ response* CmdUpdateCoinCubeLocation::prepareConsulta(database& _db) {
 		throw exception("[CmdUpdateCoinCubeLocation::prepareConsulta][Error] m_ccu.hole_number(" 
 				+ std::to_string((unsigned short)m_ccu.hole_number) + ") invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));
 
-	// Prote��o contra os jogos random & 0x7F
+	// Protection against random games & 0x7F
 	if (sIff::getInstance().findCourse(iff::COURSE << 0x1A | (m_ccu.course_id & 0x7Fu)) == nullptr)
 		throw exception("[CmdUpdateCoinCubeLocation::prepareConsulta][Error] m_ccu.course_id(" 
 				+ std::to_string((unsigned short)m_ccu.course_id) + ") not exists in IFF_STRUCT", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));

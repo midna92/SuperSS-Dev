@@ -1,6 +1,6 @@
-// Arquivo cmd_set_notice_caddie_holy_day.hpp
-// Criado em 15/07/2018 as 19:25 por Acrisio
-// Defini��o da classe CmdSetNoticeCaddieHolyDay
+// File cmd_set_notice_caddie_holy_day.hpp
+// Created on 15/07/2018 at 19:25 by Acrisio
+// Definition of the class CmdSetNoticeCaddieHolyDay
 
 #pragma once
 #ifndef _STDA_CMD_SET_NOTICE_CADDIE_HOLY_DAY_HPP

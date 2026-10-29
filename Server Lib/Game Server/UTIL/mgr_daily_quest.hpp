@@ -1,6 +1,6 @@
-// Arquivo mgr_daily_quest.hpp
-// Criado em 13/04/2018 as 15:09 por Acrisio
-// Defini��o da classe MgrDailyQuest
+// File mgr_daily_quest.hpp
+// Created on 13/04/2018 at 15:09 by Acrisio
+// Definition of the MgrDailyQuest class
 
 #pragma once
 #ifndef _STDA_MGR_DAILY_QUEST_HPP
@@ -23,7 +23,7 @@ namespace stdA {
 			static void requestAcceptQuest(player& _session, packet *_packet);
 			static void requestTakeRewardQuest(player& _session, packet *_packet);
 
-			// Auxiliares
+			// Auxiliaries
 			static bool checkCurrentQuestUser(DailyQuestInfo& _dqi, player& _session);
 			static bool checkCurrentQuest(DailyQuestInfo& _dqi);
 

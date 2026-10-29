@@ -1,6 +1,6 @@
-// Arquivo cmd_achievement_info.hpp
-// Criado em 21/03/2018 as 21:49 por Acrisio
-// Defini��o da classe CmdAchievementInfo
+// File cmd_achievement_info.hpp
+// Created on 21/03/2018 at 21:49 by Acrisio
+// Definition of the class CmdAchievementInfo
 
 #pragma once
 #ifndef _STDA_CMD_ACHIEVEMENT_INFO_HPP
@@ -39,7 +39,7 @@ namespace stdA {
 			uint32_t m_uid;
 			std::multimap< uint32_t, AchievementInfoEx > map_ai;
 
-			const char* m_szConsulta = "pangya.ProcGetNewAchievement";	// Antigo pangya.ProcGetAchievement_New
+			const char* m_szConsulta = "pangya.ProcGetNewAchievement";	// Old pangya.ProcGetAchievement_New
 	};
 }
 

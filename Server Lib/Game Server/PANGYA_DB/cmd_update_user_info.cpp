@@ -1,6 +1,6 @@
-// Arquivo cmd_update_user_info.cpp
-// Criado em 08/09/2018 as 12:42 por Acrisio
-// Implementa��o da classe CmdUpdateUserInfo
+// File cmd_update_user_info.cpp
+// Created on 08/09/2018 at 12:42 by Acrisio
+// Implementation of class CmdUpdateUserInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateUserInfo::~CmdUpdateUserInfo() {
 
 void CmdUpdateUserInfo::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 
@@ -38,7 +38,7 @@ response* CmdUpdateUserInfo::prepareConsulta(database& _db) {
 				+ ", " + std::to_string(m_ui.ob) + ", " + std::to_string(m_ui.total_distancia) + ", " + std::to_string(m_ui.hole)
 				+ ", " + std::to_string(m_ui.hole_in) + ", " + std::to_string(m_ui.hio) + ", " + std::to_string(m_ui.bunker)
 				+ ", " + std::to_string(m_ui.fairway) + ", " + std::to_string(m_ui.albatross) + ", " + std::to_string(m_ui.mad_conduta)
-				+ ", " + std::to_string(m_ui.putt_in) + ", " + /*std::to_string(m_ui.exp) + ", " + std::to_string(m_ui.level) exp, level e pang, n�o atualiza aqui, por que ele tem os seus pr�prios
+				+ ", " + std::to_string(m_ui.putt_in) + ", " + /*std::to_string(m_ui.exp) + ", " + std::to_string(m_ui.level) exp, level and pang, does not update here, because it has its own
 				+ ", " + std::to_string(m_ui.pang) + ", " +*/ std::to_string(m_ui.media_score) + ", " + std::to_string(m_ui.best_score[0])
 				+ ", " + std::to_string(m_ui.best_score[1]) + ", " + std::to_string(m_ui.best_score[2]) + ", " + std::to_string(m_ui.best_score[3])
 				+ ", " + std::to_string(m_ui.best_score[4]) + ", " + std::to_string(m_ui.best_pang[0]) + ", " + std::to_string(m_ui.best_pang[1])

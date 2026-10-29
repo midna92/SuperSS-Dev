@@ -1,6 +1,6 @@
-// Arquivo cmd_update_ball_qntd.hpp
-// Criado em 31/05/2018 as 09:21 por Acrisio
-// Defini��o da classe CmdAddBallQntd
+// File cmd_update_ball_qntd.hpp
+// Created on 31/05/2018 at 09:21 by Acrisio
+// Definition of class CmdAddBallQntd
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_BALL_QNTD_HPP

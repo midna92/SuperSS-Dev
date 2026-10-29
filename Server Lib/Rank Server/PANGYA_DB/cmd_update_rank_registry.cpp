@@ -1,6 +1,6 @@
-// Arquivo cmd_update_rank_registry.cpp
-// Criado em 18/06/2020 as 23:00 por Acrisio
-// Implementa��o da classe CmdUpdateRankRegistry
+// File cmd_update_rank_registry.cpp
+// Created on 18/06/2020 at 23:00 by Acrisio
+// Implementation of the class CmdUpdateRankRegistry
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ void CmdUpdateRankRegistry::lineResult(result_set::ctx_res* _result, uint32_t /*
 			m_date = _result->data[1];
 
 	}else
-		checkColumnNumber(1, (uint32_t)_result->cols); // S� para enviar a exception, por que a consulta retornou n�mero de colunas inv�lidas
+		checkColumnNumber(1, (uint32_t)_result->cols); // Only to throw the exception, because the query returned an invalid number of columns
 }
 
 response* CmdUpdateRankRegistry::prepareConsulta(database& _db) {

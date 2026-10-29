@@ -1,6 +1,6 @@
-// Arquivo cmd_login_reward_player_info.hpp
-// Criado em 27/10/2020 as 19:04 por Acrisio
-// Defini��o da classe CmdLoginRewardPlayerInfo
+// File cmd_login_reward_player_info.hpp
+// Created on 27/10/2020 at 19:04 by Acrisio
+// Definition of the class CmdLoginRewardPlayerInfo
 
 #pragma once
 #ifndef _STDA_CMD_LOGIN_REWARD_PLAYER_INFO_HPP

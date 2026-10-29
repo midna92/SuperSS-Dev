@@ -1,6 +1,6 @@
-// Arquivo cmd_update_friend.cpp
-// Criado em 05/08/2018 as 22:20 por Acrisio
-// Implementa��o da classe CmdUpdateFriend
+// File cmd_update_friend.cpp
+// Created on 05/08/2018 at 22:20 by Acrisio
+// Implementation of class CmdUpdateFriend
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateFriend::~CmdUpdateFriend() {
 
 void CmdUpdateFriend::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 
@@ -34,7 +34,7 @@ response* CmdUpdateFriend::prepareConsulta(database& _db) {
 	if (m_fi.uid == 0)
 		throw exception("[CmdUpdateFriend::prepareConsulta][Error] m_fi.uid is invalid(zero)", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));
 
-	// Zera o bit Online e o Sexo do State Flag
+	// Zero the Online bit and the Sex of the State Flag
 	m_fi.state.stState.online = 0;
 	m_fi.state.stState.sex = 0;
 

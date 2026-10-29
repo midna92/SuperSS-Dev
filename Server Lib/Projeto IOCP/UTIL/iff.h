@@ -1,6 +1,6 @@
-// Arquico iff.h
-// Criado em 03/10/2017 por Acrisio
-// Definição da classe iff
+// File iff.h
+// Created on 03/10/2017 by Acrisio
+// Definition of the class iff
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -51,7 +51,7 @@ namespace stdA {
 				CAD_ITEM,			// 32
 				SET_ITEM,			// 36
 				COURSE,				// 40
-				MATCH,				// 44 Troféu
+				MATCH,				// 44 Trophy
 				TITLE,				// 48
 				ENCHANT,			// 52
 				SKIN,				// 56
@@ -140,7 +140,7 @@ namespace stdA {
 			/*static*/ IFF::SetEffectTable *findFirstItemInSetEffectTable(uint32_t _typeid);
 			/*static*/ std::vector< IFF::SetEffectTable > findAllItemInSetEffectTable(uint32_t _typeid);
 			
-			// find Commom Item
+			// find Common Item
 			/*static*/ IFF::Base *findCommomItem(uint32_t _typeid);
 
 			// Checkers
@@ -500,25 +500,25 @@ namespace stdA {
 			/*static*/ std::map< uint32_t, IFF::Mascot > load_mascot();
 
 		public:
-			// Metôdos auxíliares de Type ID Item
-			// Part Base de Part Num, é o 0x400
+			// Auxiliary methods for Item Type ID
+			// Part Base of Part Num, it is 0x400
 			/*static*/ uint32_t getItemGroupIdentify(uint32_t _typeid);
 			/*static*/ uint32_t getItemSubGroupIdentify24(uint32_t _typeid);
 			/*static*/ uint32_t getItemSubGroupIdentify22(uint32_t _typeid);
-			/*static*/ uint32_t getItemSubGroupIdentify21(uint32_t _typeid);	// Usado pelo SetItem separar os itens por secção
+			/*static*/ uint32_t getItemSubGroupIdentify21(uint32_t _typeid);	// Used by SetItem to separate the items by section
 			/*static*/ uint32_t getItemCharIdentify(uint32_t _typeid);
 			/*static*/ uint32_t getItemCharPartNumber(uint32_t _typeid);
 			/*static*/ uint32_t getItemCharTypeNumber(uint32_t _typeid);
 			/*static*/ uint32_t getItemIdentify(uint32_t _typeid);
 			/*static*/ uint32_t getItemTitleNum(uint32_t _typeid);
 
-			// Trofel Normal Type Identity (0x03FF0000 & _typeid >> 16)
+			// Normal Trophy Type Identity (0x03FF0000 & _typeid >> 16)
 			/*static */uint32_t getMatchTypeIdentity(uint32_t _typeid);
 
 			/*static */uint32_t getCaddieItemType(uint32_t _typeid);
 			/*static */uint32_t getCaddieIdentify(uint32_t _typeid);
 			
-			// Acho que eu fiz para usar no enchant de up stat de taqueira e character
+			// I think I made this to use in the enchant of club and character stat upgrades
 			/*static */uint32_t getEnchantSlotStat(uint32_t _typeid);
 
 			/*static */uint32_t getItemAuxPartNumber(uint32_t _typeid);

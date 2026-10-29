@@ -1,6 +1,6 @@
-// Arquivo cmd_user_info.cpp
-// Criado em 18/03/2018 as 13:39 por Acrisio
-// Implementação da classe CmdUserInfo
+// File cmd_user_info.cpp
+// Created on 18/03/2018 at 13:39 by Acrisio
+// Implementation of class CmdUserInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

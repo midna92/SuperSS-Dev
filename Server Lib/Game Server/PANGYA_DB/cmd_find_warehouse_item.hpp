@@ -1,6 +1,6 @@
-// Arquivo cmd_find_warehouse_item.hpp
-// Criado em 22/05/2018 as 22:31 por Acrisio
-// Defini��o da class CmdFindWarehouseItem
+// File cmd_find_warehouse_item.hpp
+// Created on 22/05/2018 at 22:31 by Acrisio
+// Definition of the class CmdFindWarehouseItem
 
 #pragma once
 #ifndef _STDA_CMD_FIND_WAREHOUSE_ITEM_HPP

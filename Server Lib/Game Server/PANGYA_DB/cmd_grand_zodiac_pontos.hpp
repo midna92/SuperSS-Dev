@@ -1,6 +1,6 @@
-// Arquivo cmd_grand_zodiac_pontos.hpp
-// Criado em 25/06/2020 as 15:54 por Acrisio
-// Defini��o da classe CmdGrandZodiacPontos
+// File cmd_grand_zodiac_pontos.hpp
+// Created on 25/06/2020 at 15:54 by Acrisio
+// Definition of the class CmdGrandZodiacPontos
 
 #pragma once
 #ifndef _STDA_CMD_GRAND_ZODIAC_PONTOS_HPP

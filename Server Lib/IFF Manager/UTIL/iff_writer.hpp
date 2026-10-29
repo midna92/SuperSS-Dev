@@ -1,6 +1,6 @@
-// Aquivo iff_writer.hpp
-// Criado em 03/06/2019 as 19:44 por Acrisio
-// Defini��o da classe iff_writer
+// File iff_writer.hpp
+// Created on 03/06/2019 at 19:44 by Acrisio
+// Definition of the iff_writer class
 
 #pragma once
 #ifndef _STDA_IFF_WRITER_HPP

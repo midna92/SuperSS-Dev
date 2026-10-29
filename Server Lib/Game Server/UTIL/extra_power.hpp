@@ -1,6 +1,6 @@
-// Arquivo extra_power.hpp
-// Criado em 07/10/202 as 13:59 por Acrisio
-// Defini��o da classe ExtraPower
+// File extra_power.hpp
+// Created on 07/10/202 at 13:59 by Acrisio
+// Definition of the ExtraPower class
 
 #pragma once
 #ifndef _STDA_EXTRA_POWER_HPP
@@ -42,7 +42,7 @@ namespace stdA {
 			virtual float getTotal(unsigned char _psf) override;
 
 		private:
-			// Drive normal
+			// Normal drive
 			stPowerQntd m_drive;
 
 			// Power Shot

@@ -1,6 +1,6 @@
-// Arquivo cmd_create_achievement.hpp
-// Criado em 31/03/2018 as 21:50 por Acrisio
-// Defini��o da classe CmdCreateAchievement
+// File cmd_create_achievement.hpp
+// Created on 31/03/2018 at 21:50 by Acrisio
+// Definition of the class CmdCreateAchievement
 
 #pragma once
 #ifndef _STDA_CMD_CREATE_ACHIEVEMENT_HPP

@@ -1,6 +1,6 @@
-// Arquivo lobby.h
-// Criado em 24/12/2017 por Acrisio
-// Definição da classe lobby
+// File lobby.h
+// Created on 24/12/2017 by Acrisio
+// Definition of class lobby
 
 #pragma once
 #ifndef _STDA_LOBBY_H

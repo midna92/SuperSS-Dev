@@ -1,6 +1,6 @@
-// Arquivo list_async.h
-// Criado em 14/01/2018 por Acrisio
-// Definição e Implementação do Template list_async
+// File list_async.h
+// Created on 14/01/2018 by Acrisio
+// Definition and implementation of template list_async
 
 #pragma once
 #ifndef _STDA_LIST_ASYNC_H
@@ -134,7 +134,7 @@ namespace stdA {
 		return nullptr;
 	};
 
-    // Implementação da classe
+    // Implementation of the class
     template< class _LA > list_async< _LA >::list_async() {
         init();
     };
@@ -388,7 +388,7 @@ namespace stdA {
 		
 		}catch (exception& e) {
 
-                // Qualquer erro que não seja do LIST_ASYNC o critical section não foi liberado ainda
+                // Any error that is not from LIST_ASYNC means the critical section has not been released yet
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::LIST_ASYNC)
 #if defined(_WIN32)
                         LeaveCriticalSection(&m_cs);
@@ -396,7 +396,7 @@ namespace stdA {
                         pthread_mutex_unlock(&m_cs);
 #endif
 
-                // Relança
+                // Rethrow
                 throw exception(e.getMessageError(), e.getCodeError());
         }
 
@@ -428,7 +428,7 @@ namespace stdA {
 		
 		}catch (exception& e) {
 
-            // Qualquer erro que não seja do LIST_ASYNC o critical section não foi liberado ainda
+            // Any error that is not from LIST_ASYNC means the critical section has not been released yet
             if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::LIST_ASYNC)
 #if defined(_WIN32)
                     LeaveCriticalSection(&m_cs);
@@ -436,7 +436,7 @@ namespace stdA {
                     pthread_mutex_unlock(&m_cs);
 #endif
 
-            // Relança
+            // Rethrow
             throw exception(e.getMessageError(), e.getCodeError());
         }
 
@@ -467,7 +467,7 @@ namespace stdA {
 		
 			}catch (exception& e) {
 
-                // Qualquer erro que não seja do LIST_ASYNC o critical section não foi liberado ainda
+                // Any error that is not from LIST_ASYNC means the critical section has not been released yet
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::LIST_ASYNC)
 #if defined(_WIN32)
                         LeaveCriticalSection(&m_cs);
@@ -475,7 +475,7 @@ namespace stdA {
                         pthread_mutex_unlock(&m_cs);
 #endif
 
-                // Relança
+                // Rethrow
                 throw exception(e.getMessageError(), e.getCodeError());
         }
 
@@ -509,7 +509,7 @@ namespace stdA {
 		
         }catch (exception& e) {
 
-                // Qualquer erro que não seja do LIST_ASYNC o critical section não foi liberado ainda
+                // Any error that is not from LIST_ASYNC means the critical section has not been released yet
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::LIST_ASYNC)
 #if defined(_WIN32)
                         LeaveCriticalSection(&m_cs);
@@ -517,7 +517,7 @@ namespace stdA {
                         pthread_mutex_unlock(&m_cs);
 #endif
 
-                // Relança
+                // Rethrow
                 throw exception(e.getMessageError(), e.getCodeError());
         }
 
@@ -547,7 +547,7 @@ namespace stdA {
 		
         }catch (exception& e) {
 
-                // Qualquer erro que não seja do LIST_ASYNC o critical section não foi liberado ainda
+                // Any error that is not from LIST_ASYNC means the critical section has not been released yet
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::LIST_ASYNC)
 #if defined(_WIN32)
                         LeaveCriticalSection(&m_cs);
@@ -555,7 +555,7 @@ namespace stdA {
                         pthread_mutex_unlock(&m_cs);
 #endif
 
-			// Relança
+			// Rethrow
 			throw exception(e.getMessageError(), e.getCodeError());
 		}
 

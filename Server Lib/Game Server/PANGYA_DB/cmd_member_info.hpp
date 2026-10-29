@@ -1,6 +1,6 @@
-// Arquivo cmd_member_info.hpp
-// Criado em 18/03/2018 as 13:11 por Acrisio
-// Definição da classe CmdMemberInfo
+// File cmd_member_info.hpp
+// Created on 18/03/2018 at 13:11 by Acrisio
+// Definition of the class CmdMemberInfo
 
 #pragma once
 #ifndef _STDA_CMD_MEMBER_INFO_HPP

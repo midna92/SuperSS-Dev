@@ -1,6 +1,6 @@
-// Arquivo iff_writer.cpp
-// Criado em 03/06/2019 as 19:48 por Acrisio
-// Implementação da classe iff_writer
+// File iff_writer.cpp
+// Created on 03/06/2019 at 19:48 by Acrisio
+// Implementation of the iff_writer class
 
 #pragma pack(1)
 
@@ -41,14 +41,14 @@
 					break; \
 		} \
 \
-		/* Cabeçário */ \
+		/* Header */ \
 		IFF::Head head{ 0 }; \
 \
 		/* External Attributes */ \
 		zip_uint8_t opsys; \
 		zip_uint32_t attr; \
 \
-		/* Encontrou o arquivo ele existe, abre para ler o cabeçário */ \
+		/* Found the file, it exists, opens it to read the header */ \
 		if (index < num_entries) { \
 \
 			zip_file *file = zip_fopen_index(z, index, ZIP_FL_UNCHANGED); \
@@ -64,10 +64,10 @@
 \
 				zip_fread(file, (char*)&head, sizeof(IFF::Head)); \
 \
-				/* Fecha o file depois que pegou o cabeçario */ \
+				/* Closes the file after getting the header */ \
 				zip_fclose(file); \
 \
-				/* Verifica a versão do cabeçalho */ \
+				/* Checks the header version */ \
 				if (head.version != IFF_VERSION/*13*/ || (head.count_element * sizeof(_type) + sizeof(IFF::Head)) != ZIP_GET_REAL_SIZE(st.size)) { \
 \
 					_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Error] " + std::string((_iff_name))  \
@@ -97,7 +97,7 @@
 				return; \
 			} \
 \
-		}else {	/* Não existe cria um cabeçario e seta o file attributos */ \
+		}else {	/* Does not exist, creates a header and sets the file attributes */ \
 \
 			_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Log] nao tinha o arquivo "  \
 					+ std::string((_iff_name)) + ", cria um novo.", CL_FILE_LOG_AND_CONSOLE)); \
@@ -126,7 +126,7 @@
 			memcpy(buff + index_buff, &el, sizeof(_type));	index_buff += sizeof(_type); \
 		} \
 \
-		/* Cria zip_source_buffer e salva no arquivo iff */ \
+		/* Creates zip_source_buffer and saves to the iff file */ \
 		if ((s = zip_source_buffer(z, buff, index_buff, 0)) == NULL || (index = zip_file_add(z, (_iff_name), s, ZIP_FL_UNCHANGED | ZIP_FL_OVERWRITE)) < 0) { \
 \
 			_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Error] nao conseguiu adicionar o arquivo " + std::string((_iff_name))  \
@@ -142,7 +142,7 @@
 			_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Error] zip_file_set_external_attributes, ErrCode: " \
 					+ std::to_string(zip_get_error(z)->zip_err) + " ErrMsg: " + std::string(zip_strerror(z)), CL_FILE_LOG_AND_CONSOLE)); \
 \
-		/* Fecha zip */ \
+		/* Closes zip */ \
 		zip_close(z); \
 
 #define SAVE_IFF_MAP(_type, _method, _iff_name, _map) BEGIN_SAVE_IFF(_type, (_method), (_iff_name), (_map).size()); \
@@ -162,7 +162,7 @@
 			memcpy(buff + index_buff, &el.second, sizeof(_type));	index_buff += sizeof(_type); \
 		} \
 \
-		/* Cria zip_source_buffer e salva no arquivo iff */ \
+		/* Creates zip_source_buffer and saves to the iff file */ \
 		if ((s = zip_source_buffer(z, buff, index_buff, 0)) == NULL || (index = zip_file_add(z, (_iff_name), s, ZIP_FL_UNCHANGED | ZIP_FL_OVERWRITE)) < 0) { \
 \
 			_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Error] nao conseguiu adicionar o arquivo " + std::string((_iff_name))  \
@@ -178,7 +178,7 @@
 			_smp::message_pool::getInstance().push(new message("[iff_writer::" + std::string((_method)) + "][Error] zip_file_set_external_attributes, ErrCode: " \
 					+ std::to_string(zip_get_error(z)->zip_err) + " ErrMsg: " + std::string(zip_strerror(z)), CL_FILE_LOG_AND_CONSOLE)); \
 \
-		/* Fecha zip */ \
+		/* Closes zip */ \
 		zip_close(z); \
 
 using namespace stdA;

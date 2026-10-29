@@ -1,6 +1,6 @@
-// Arquivo Smart Calculator.hpp
-// Criado em 15/11/2020 as 17:26 por Acrisio
-// Defini��o da classe SmartCalculator
+// File Smart Calculator.hpp
+// Created on 15/11/2020 at 17:26 by Acrisio
+// Definition of class SmartCalculator
 
 #pragma once
 #ifndef _STDA_SMART_CALCULATOR_HPP
@@ -104,7 +104,7 @@ namespace stdA {
 
 			void close();
 
-			// Trava a recarga do Smart Calculator
+			// Lock the Smart Calculator reload
 			bool hasStopped();
 			void setStop(bool _stop);
 
@@ -131,7 +131,7 @@ namespace stdA {
 			void responseCallBackPlayer(const uint32_t _uid, const std::string _response, const eTYPE_CALCULATOR_CMD _type);
 			void responseCallBackServer(const uint32_t _uid, const std::string _response);
 
-			// Commandos
+			// Commands
 			static void cmdSmartAndStadiumCalculatorPing(void* _this, const eTYPE_CALCULATOR_CMD _type, const uint32_t _uid, const std::vector< std::string >& _args);
 			static void cmdSmartAndStadiumCalculatorInfo(void* _this, const eTYPE_CALCULATOR_CMD _type, const uint32_t _uid, const std::vector< std::string >& _args);
 			static void cmdSmartAndStadiumCalculatorMyInfo(void* _this, const eTYPE_CALCULATOR_CMD _type, const uint32_t _uid, const std::vector< std::string >& _args);
@@ -184,13 +184,13 @@ namespace stdA {
 #if defined(_WIN32)
 			HMODULE m_hDll;
 #elif defined(__linux__)
-			// Linux o de dll(.so) é void*
+			// On Linux the dll (.so) one is void*
 			void* m_hDll;
 #endif
 
 			bool m_load;
 
-			// Flag que n�o deixa ele recarregar at� ela est� desativada
+			// Flag that does not let it reload until it is disabled
 			bool m_stopped;
 
 #if defined(_WIN32)

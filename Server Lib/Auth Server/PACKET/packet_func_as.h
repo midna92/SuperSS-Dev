@@ -1,6 +1,6 @@
-// Arquivo packet_func_as.h
-// Criado em 02/12/2018 as 13:29 por Acrisio
-// Definição da classe packet_func
+// File packet_func_as.h
+// Created on 02/12/2018 at 13:29 by Acrisio
+// Definition of class packet_func
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_AS_H
@@ -29,7 +29,7 @@ namespace stdA {
 	class packet_func : public packet_func_base {
 	public:
 		// Cliente
-		static int packet001(void* _arg1, void* _arg2);	// request::Autenticação
+		static int packet001(void* _arg1, void* _arg2);	// request::Authentication
 		static int packet002(void* _arg1, void* _arg2); // request::Disconnect player
 		static int packet003(void* _arg1, void* _arg2); // request::Confirm Disconnect player
 		static int packet004(void* _arg1, void* _arg2);	// request::Info Player

@@ -1,6 +1,6 @@
-// Arquivo grand_prix_type.hpp
-// Criado em 27/06/2019 as 14:54 por Acrisio
-// Definição dos tipos usados na classe GrandPrix
+// File grand_prix_type.hpp
+// Created on 27/06/2019 at 14:54 by Acrisio
+// Definition of the types used in class GrandPrix
 
 #ifndef _STDA_GRAND_PRIX_TYPE_HPP
 #define _STDA_GRAND_PRIX_TYPE_HPP
@@ -93,7 +93,7 @@ namespace stdA {
 			int32_t			med_shot_per_hole;
 			eTYPE_SCORE		type_score;
 
-			// Player Game Info do Bot para usar na hora de classificação do rank
+			// Bot Player Game Info to use at rank classification time
 			PlayerGameInfo pi;
 
 			std::vector< Hole > hole;
@@ -120,7 +120,7 @@ namespace stdA {
 #pragma pack()
 #endif
 
-	// Estrutura que controle o tempo dos player no Grand Prix
+	// Structure that controls the players' time in Grand Prix
 	struct TimerManager {
 		public:
 			struct timer_ctx {
@@ -152,7 +152,7 @@ namespace stdA {
 
 				clear();
 
-				// Verifica se está bloqueado e libera por que a classe vai ser destruída
+				// Checks if it is locked and releases it because the class will be destroyed
 				if (m_lock)
 					unlock();
 
@@ -226,7 +226,7 @@ namespace stdA {
 			// unlock
 			void unlock() {
 
-				// Não está bloqueado para poder desbloquear
+				// Not locked so it can be unlocked
 				if (!m_lock)
 					return;
 
@@ -280,7 +280,7 @@ namespace stdA {
 					};
 					~lock_ctx() {
 
-						// Verifica se está bloqueado e libera por que a classe vai ser destruída
+						// Checks if it is locked and releases it because the class will be destroyed
 						if (m_lock)
 							unlock();
 
@@ -304,7 +304,7 @@ namespace stdA {
 
 					void unlock() {
 
-						// Não está bloqueado para desbloquear
+						// Not locked so it can be unlocked
 						if (!m_lock)
 							return;
 
@@ -343,7 +343,7 @@ namespace stdA {
 
 				clear();
 
-				// Verifica se está bloqueado e libera por que a classe vai ser destruída
+				// Checks if it is locked and releases it because the class will be destroyed
 				if (m_lock)
 					unlock();
 
@@ -377,7 +377,7 @@ namespace stdA {
 					it->lock();
 				else {
 
-					// O player ainda não tem um locker, cria uma para ele e bloquea
+					// The player does not have a locker yet, creates one for him and locks it
 					auto lc = insertLock(_player);
 
 					if (lc != nullptr)
@@ -395,7 +395,7 @@ namespace stdA {
 
 				if (it != m_lockers.end())
 					it->unlock();
-				// eslse não precisa criar um locker para desbloquear um locker que o player não tem
+				// else no need to create a locker to unlock a locker the player does not have
 
 				unlock();
 			};
@@ -431,7 +431,7 @@ namespace stdA {
 
 			void unlock() {
 
-				// Não está bloqueado para poder desbloquear
+				// Not locked so it can be unlocked
 				if (!m_lock)
 					return;
 
@@ -503,7 +503,7 @@ namespace stdA {
 
 			void unlock() {
 
-				// Não está bloqueado para poder liberar
+				// Not locked so it can be released
 				if (!m_lock)
 					return;
 

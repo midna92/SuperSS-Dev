@@ -1,6 +1,6 @@
-// Arquivo player.cpp
-// Criado em 29/07/2018 as 13:38 por Acrisio
-// Implement��o da classe player
+// File player.cpp
+// Created on 29/07/2018 at 13:38 by Acrisio
+// Implementation of class player
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ bool player::clear() {
 
 	bool ret = true;
 
-	if ((ret = session::clear()))	// Verifica se limpou ou est� esperando outra thread limpa, que esta usando a session
+	if ((ret = session::clear()))	// Check whether it was cleaned or is waiting for another thread that is using the session to clean it
 		m_pi.clear();
 
 	return ret;

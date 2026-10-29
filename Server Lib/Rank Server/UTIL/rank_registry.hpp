@@ -1,6 +1,6 @@
-// Arquivo rank_registry.hpp
-// Criado em 16/06/2020 as 14:48 por Acrisio
-// Defini��o da classe RankRegistry
+// File rank_registry.hpp
+// Created on 16/06/2020 at 14:48 by Acrisio
+// Definition of the class RankRegistry
 
 #pragma once
 #ifndef _STDA_RANK_REGISTRY_HPP
@@ -11,7 +11,7 @@
 #include <string>
 #include "../../Projeto IOCP/PACKET/packet.h"
 
-// Usando no typedef do RankEntry
+// Used in the RankEntry typedef
 #include <map>
 #include <vector>
 
@@ -20,7 +20,7 @@
 
 namespace stdA {
 
-	// Passou de 10 mil o pangya zera no compact packet
+	// Over 10 thousand, pangya zeroes it in the compact packet
 	constexpr uint32_t LIMIT_RANK_POSITION_TO_COMPACT_PACKET_SHOW = 10000u;
 
 	class RankRegistry {
@@ -52,7 +52,7 @@ namespace stdA {
 			uint32_t m_uid;
 			uint32_t m_current_position;
 			uint32_t m_last_position;
-			int32_t m_value;						// Dados
+			int32_t m_value;						// Data
 
 	};
 

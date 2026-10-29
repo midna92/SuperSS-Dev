@@ -1,6 +1,6 @@
-// Arquivo cmd_cookie.cpp
-// Criado em 19/03/2018 as 21:37 por Acrisio
-// Implementação da classe CmdCookie
+// File cmd_cookie.cpp
+// Created on 19/03/2018 at 21:37 by Acrisio
+// Implementation of the class CmdCookie
 
 #if defined(_WIN32)
 #pragma pack(1)

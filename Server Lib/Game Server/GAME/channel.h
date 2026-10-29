@@ -1,6 +1,6 @@
 // Arquivo channel.h
-// Criado em 24/12/2017 por Acrisio
-// Definição da classe channel
+// Created on 24/12/2017 by Acrisio
+// Definition of the channel class
 
 #pragma once
 #ifndef _STDA_CHANNEL_H
@@ -69,10 +69,10 @@ namespace stdA {
 			void enterLobbyGrandPrix(player& _session);
 			void leaveLobbyGrandPrix(player& _session);
 
-			// retorna todos os players elegíveis a participar do Evento Golden Time
+			// return all players eligible to participate in the Golden Time Event
 			std::vector< stPlayerReward > getAllEligibleToGoldenTime();
 			
-			// Send FireWorks para os players que ganharam no Golden Time
+			// Send FireWorks to the players who won in Golden Time
 			void sendFireWorksWinnerGoldenTime(std::vector< stPlayerReward >& _winners);
 
 			// Room
@@ -121,10 +121,10 @@ namespace stdA {
 			void requestPlayerStateCharacterLounge(player& _session, packet* _packet);
 			void requestToggleAssist(player& _session, packet *_packet);
 			void requestInvite(player& _session, packet *_packet);
-			void requestCheckInvite(player& _session, packet *_packet);	// Esse aqui o O Server Original nao retorna nada para o cliente, acho que é só um check
+			void requestCheckInvite(player& _session, packet *_packet);	// For this one the Original Server returns nothing to the client, I think it is just a check
 			void requestChatTeam(player& _session, packet *_packet);
 
-			// Request Player sai do Web Guild, verifica se tem alguma atualização para passar para o player no server
+			// Request Player leaves the Web Guild, check if there is any update to pass to the player on the server
 			void requestExitedFromWebGuild(player& _session, packet* _packet);
 
 			// Request Game
@@ -134,7 +134,7 @@ namespace stdA {
 			void requestFinishCharIntro(player& _session, packet *_packet);
 			void requestFinishHoleData(player& _session, packet *_packet);
 
-			// Server enviou a resposta do InitShot para o cliente
+			// Server sent the InitShot reply to the client
 			void requestInitShotSended(player& _session, packet *_packet);
 
 			void requestInitShot(player& _session, packet *_packet);
@@ -231,7 +231,7 @@ namespace stdA {
 			void requestExtendRental(player& _session, packet *_packet);
 			void requestDeleteRental(player& _session, packet *_packet);
 
-			// Attendance reward, Premios por logar no pangya
+			// Attendance reward, Rewards for logging in to pangya
 			void requestCheckAttendanceReward(player& _session, packet *_packet);
 			void requestAttendanceRewardLoginCount(player& _session, packet *_packet);
 
@@ -287,10 +287,10 @@ namespace stdA {
 			// Pede o Cookies
 			void requestCookie(player& _session, packet *_packet);
 
-			// Pede para atualizar Gacha Coupon(s)
+			// Request to update Gacha Coupon(s)
 			void requestUpdateGachaCoupon(player& _session, packet *_packet);
 
-			// Box System, Box que envia para o MailBox e a Box que envia direto para o MyRoom
+			// Box System, Box that sends to the MailBox and the Box that sends directly to MyRoom
 			void requestOpenBoxMail(player& _session, packet *_packet);
 			void requestOpenBoxMyRoom(player& _session, packet *_packet);
 
@@ -349,7 +349,7 @@ namespace stdA {
 			void requestPlayPapelShop(player& _session, packet *_packet);
 			void requestPlayBigPapelShop(player& _session, packet *_packet);
 
-			// Msg Chat da Sala
+			// Room Chat Msg
 			void requestSendMsgChatRoom(player& _session, std::string _msg);
 
 			// senders
@@ -360,8 +360,8 @@ namespace stdA {
 			void destroyRoom(short _number);
 
 		protected:
-			// Tourney Tempo que pode entrar no tourney depois de ter começado acabou troca o info da sala
-			// Arg1 Channel ponteiro, Arg2 Numero da Sala
+			// Tourney Time during which one can enter the tourney after it started ended, change the room info
+			// Arg1 Channel pointer, Arg2 Room Number
 			static int _enter_left_time_is_over(void* _arg1, void* _arg2);
 
         protected:
@@ -374,7 +374,7 @@ namespace stdA {
 			void deleteInviteTimeRequest(InviteChannelInfo& _ici);
 			void deleteInviteTimeResquestByInvited(player& _session);
 
-			// Tira o request do convidado da sala[Character] o tempo acabou para ele responder ao convite
+			// Remove the room guest's request[Character], time ran out for him to answer the invite
 			bool send_time_out_invite(InviteChannelInfo& _ici);
 			void clear_invite_time();
 

@@ -1,6 +1,6 @@
 // Arquivo drop_system.hpp
-// Criado em 07/09/2018 as 13:37 por Acrisio
-// Definição da classe DropSystem
+// Created on 07/09/2018 at 13:37 by Acrisio
+// Definition of the DropSystem class
 
 #pragma once
 #ifndef _STDA_DROP_SYSTEM_HPP
@@ -28,13 +28,13 @@ namespace stdA {
 				~stDropCourse() {};
 				struct stDropItem {
 					enum eTIPO : unsigned char {
-						ALL_PROBABILITY,			// Todos holes pode dropar, tem chance
-						SEQUENCE_DROP,				// Dropa em uma quantidade fixe de 2 em 2 holes 1 em 1 hole, pode ser de 1 a 18
-						LAST_HOLE_PROBABILITY,		// Ultimo hole tem a chance de dropar
+						ALL_PROBABILITY,			// All holes can drop, there is a chance
+						SEQUENCE_DROP,				// Drops in a fixed quantity every 2 holes or every 1 hole, can be from 1 to 18
+						LAST_HOLE_PROBABILITY,		// Last hole has a chance to drop
 					};
 					enum ePROB_TIPO : unsigned char {
-						_3HOLES_ALL,				// 3 Holes ou todos os holes, para outros tipos de drop
-						_6HOLES_SEQUENCE,			// 6 Holes ou a sequência que o item pode dropar
+						_3HOLES_ALL,				// 3 Holes or all holes, for other drop types
+						_6HOLES_SEQUENCE,			// 6 Holes or the sequence in which the item can drop
 						_9HOLES,					// 9 Holes
 						_18HOLES,					// 18 Holes
 					};
@@ -61,9 +61,9 @@ namespace stdA {
 			struct stCourseInfo {
 				void clear() { memset(this, 0, sizeof(stCourseInfo)); };
 				unsigned char course;
-				unsigned char hole;				// Número do hole em relação do course
-				unsigned char seq_hole;			// Sequência do hole de 1 a 18
-				unsigned char qntd_hole;		// Quantidade de holes do jogo
+				unsigned char hole;				// Hole number relative to the course
+				unsigned char seq_hole;			// Hole sequence from 1 to 18
+				unsigned char qntd_hole;		// Number of holes in the game
 				uint32_t artefact;
 				unsigned char char_motion : 1;
 				unsigned char angel_wings : 2;	// 1 2 3 YES, 0 NO

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_rank_registry.hpp
-// Criado em 18/06/2020 as 22:55 por Acrisio
-// Defini��o da classe CmdUpdateRankRegistry
+// File cmd_update_rank_registry.hpp
+// Created on 18/06/2020 at 22:55 by Acrisio
+// Definition of the class CmdUpdateRankRegistry
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_RANK_REGISTRY_HPP

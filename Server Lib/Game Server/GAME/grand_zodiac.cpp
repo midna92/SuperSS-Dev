@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac.cpp
-// Criado em 25/06/2020 as 18:30 por Acrisio
-// Implementa��o da classe GrandZodiac
+// File grand_zodiac.cpp
+// Created on 25/06/2020 at 18:30 by Acrisio
+// Implementation of class GrandZodiac
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -29,7 +29,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[GrandZodiac::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) PlayerGrandZodiacInfo *pgi = reinterpret_cast< PlayerGrandZodiacInfo* >(getPlayerInfo((__session))); \
 	if (pgi == nullptr) \
 		throw exception("[GrandZodiac::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC, 1, 4)); \
@@ -99,10 +99,10 @@ void GrandZodiac::finish_grand_zodiac(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player earned
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if assist is on and the level is above Beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
@@ -110,14 +110,14 @@ void GrandZodiac::finish_grand_zodiac(player& _session, int _option) {
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}//else if (m_game_init_state == 1 && _option == 1)	// Acabou o Tempo
+			}//else if (m_game_init_state == 1 && _option == 1)	// Time is up
 		}
 
 		setGameFlag(pgi, (_option == 0) ? PlayerGameInfo::eFLAG_GAME::FINISH : PlayerGameInfo::eFLAG_GAME::END_GAME);
 		
 		GetLocalTime(&pgi->time_finish);
 
-		// Terminou o jogo no Grand Zodiac
+		// Finished the game in Grand Zodiac
 		setEndGame(pgi);
 
 		setFinishGameFlag(pgi, 1u);
@@ -128,7 +128,7 @@ void GrandZodiac::finish_grand_zodiac(player& _session, int _option) {
 		packet_func::session_send(p, &_session, 1);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish(_option);	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish(_option);	// Sends the packets that end the game, e.g.: 0xCE, 0x79, etc
 	}
 }
 
@@ -140,10 +140,10 @@ void GrandZodiac::timeIsOver() {
 
 		for (auto& el : m_player_info) {
 
-			// S� os que n�o acabaram
+			// Only those who did not finish
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING && (_session = findSessionByUID(el.second->uid)) != nullptr) {
 				
-				// Send full time que o pr�prio cliente termina
+				// Send full time that the client itself ends
 				packet p((unsigned short)0x8D);
 
 				p.addUint32(m_ri.time_30s);
@@ -163,10 +163,10 @@ bool GrandZodiac::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that stores the system local date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_grand_zodiac_state = true;
 	}
@@ -192,7 +192,7 @@ void GrandZodiac::requestFinishExpGame() {
 					exp = (int)(45.f * ((121 - pgzi->m_gz.position) / 100.f));
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(el.second->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 
-					if (el.second->level < 70/*Ultimo level n�o ganha exp*/)
+					if (el.second->level < 70/*Last level does not gain exp*/)
 						el.second->data.exp = exp;
 				}
 
@@ -201,7 +201,7 @@ void GrandZodiac::requestFinishExpGame() {
 				exp = (int)(pgzi->m_gz.hole_in_one / 2);
 				exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(el.second->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 
-				if (el.second->level < 70/*Ultimo level n�o ganha exp*/)
+				if (el.second->level < 70/*Last level does not gain exp*/)
 					el.second->data.exp = exp;
 			}
 		}
@@ -210,7 +210,7 @@ void GrandZodiac::requestFinishExpGame() {
 
 void GrandZodiac::finish(int option) {
 
-	m_game_init_state = 2;	// Acabou
+	m_game_init_state = 2;	// Finished
 
 	requestCalculeRankPlace();
 
@@ -239,7 +239,7 @@ void GrandZodiac::drawDropItem(player& _session) {
 
 			auto seed = sRandomGen::getInstance().rIbeMt19937_64_chronoRange(1, 10000);
 
-			if (seed > 9000/*10%*/) { // Dropou
+			if (seed > 9000/*10%*/) { // Dropped
 
 				// 0x1800002C - Silent Nerver Stabilizer
 				// 0x1800002D - Safe Silent
@@ -254,13 +254,13 @@ void GrandZodiac::drawDropItem(player& _session) {
 				di.qntd = (seed == 0) ? 5 : 3;
 				di.type = DropItem::eTYPE::NORMAL_QNTD;
 
-				// Add Droped item to pgi player
+				// Add Dropped item to player pgi
 				pgi->drop_list.v_drop.push_back(di);
 
 				// Update item game, show msg
 				packet p((unsigned short)0x40);
 
-				p.addUint8(15);			// Dropou item
+				p.addUint8(15);			// Dropped item
 
 				p.addString(_session.m_pi.nickname);
 				p.addUint16(0u);		// Message empty
@@ -268,7 +268,7 @@ void GrandZodiac::drawDropItem(player& _session) {
 				p.addUint32(di._typeid);
 				p.addUint32(di.qntd);
 
-				// Envia para todos
+				// Sends to everyone
 				packet_func::game_broadcast(*this, p, 1);
 				
 			}
@@ -288,29 +288,29 @@ void GrandZodiac::requestFinishData(player& _session, int option) {
 
 		INIT_PLAYER_INFO("requestFinishData", "tentou finalizar os dado do player no jogo", &_session);
 
-		requestSaveInfo(_session, 0/*Terminou*/);
+		requestSaveInfo(_session, 0/*Finished*/);
 
-		// Atualiza itens usados no Grand Zodiac
+		// Updates items used in Grand Zodiac
 		requestUpdateItemUsedGame(_session);
 
-		// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+		// Finish Artefact Frozen Flame is now handled directly in Finish Item Used Game
 		requestFinishItemUsedGame(_session);
 
-		// Salva pontos do Grand Zodiac ganho
+		// Saves Grand Zodiac points earned
 		if (pgi->m_gz.pontos > 0)
 			_session.m_pi.addGrandZodiacPontos(pgi->m_gz.pontos);
 
-		// Salve trofe�
+		// Save trophy
 		sendTrofel(_session);
 
 		requestSaveDrop(_session);
 
 		sendTimeIsOver(_session);
 
-		// Resposta terminou game - Placar
+		// Response game finished - Scoreboard
 		sendPlacar(_session);
 
-		// Resposta Update Pang
+		// Response Update Pang
 		p.init_plain((unsigned short)0xC8);
 
 		p.addUint64(_session.m_pi.ui.pang);
@@ -336,17 +336,17 @@ void GrandZodiac::requestFinishData(player& _session, int option) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+		// Update Mascot Info ON GAME, if the player has a mascot equipped
 		if (_session.m_pi.ei.mascot_info != nullptr) {
 			packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Achievement Aqui
+		// Achievement Here
 		pgi->sys_achieve.finish_and_update(_session);
 
-		// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+		// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not check whether the others have it too
 		p.init_plain((unsigned short)0x24F);
 
 		p.addUint32(0);	// OK
@@ -354,7 +354,7 @@ void GrandZodiac::requestFinishData(player& _session, int option) {
 		packet_func::session_send(p, &_session, 1);
 
 		// Exp
-		if (pgi->data.exp > 0) // s� add exp se for maior que 0
+		if (pgi->data.exp > 0) // only add exp if greater than 0
 			_session.addExp(pgi->data.exp, true); // Update in Game
 
 	}catch (exception& e) {
@@ -369,7 +369,7 @@ void GrandZodiac::updateFinishHole(player& _session, int _option) {
 
 		INIT_PLAYER_INFO("updateFinishHole", "tentou atualizar o finish hole do grand zodiac", &_session);
 
-		// Passa a localiza��o do player, esse � a primeira, vez ent�o passa os valores do init Hole sempre
+		// Passes the player's location, this is the first time, so it always passes the init Hole values
 		packet p((unsigned short)0x1EE);
 
 		p.addUint32(_session.m_oid);
@@ -395,7 +395,7 @@ void GrandZodiac::requestMakeTrofel() {
 
 	auto players_num = m_player_info.size();
 
-	if (players_num >= 20u && players_num < 30u) // Bronza
+	if (players_num >= 20u && players_num < 30u) // Bronze
 		qntd = 1u;
 	else if (players_num >= 30 && players_num < 50) // Silver and Bronza
 		qntd = 2u;
@@ -418,7 +418,7 @@ void GrandZodiac::requestMakeTrofel() {
 
 void GrandZodiac::startGoldenBeam() {
 
-	// Come�a o tempo do golden beam time
+	// Starts the golden beam time
 #if defined(_WIN32)
 	InterlockedExchange(&m_golden_beam_state, 1u);
 #elif defined(__linux__)
@@ -435,7 +435,7 @@ void GrandZodiac::endGoldenBeam() {
 	
 	try {
 
-		// Acabou o tempo do golden beam time
+		// The golden beam time is over
 #if defined(_WIN32)
 		InterlockedExchange(&m_golden_beam_state, 0u);
 #elif defined(__linux__)
@@ -449,11 +449,11 @@ void GrandZodiac::endGoldenBeam() {
 
 		if (!m_mp_golden_beam_player.empty()) {
 
-			uint64_t jackpot = m_players.size() * (sRandomGen::getInstance().rIbeMt19937_64_chronoRange(1, 5) * 500); // rand de 500 a 2500 por player
+			uint64_t jackpot = m_players.size() * (sRandomGen::getInstance().rIbeMt19937_64_chronoRange(1, 5) * 500); // rand from 500 to 2500 per player
 
 			auto seed = sRandomGen::getInstance().rIbeMt19937_64_chronoRange(0, 1);
 
-			if (m_mp_golden_beam_player.size() == 1 || seed == 0ull/*1 Ganhou tudo*/) {
+			if (m_mp_golden_beam_player.size() == 1 || seed == 0ull/*1 Won everything*/) {
 
 				auto it = m_mp_golden_beam_player.begin();
 
@@ -471,7 +471,7 @@ void GrandZodiac::endGoldenBeam() {
 
 					p.init_plain((unsigned short)0x40);
 
-					p.addUint8(13);		// 1 Ganhou sozinho o jackpot no Grand Zodiac
+					p.addUint8(13);		// 1 Won the jackpot alone in Grand Zodiac
 
 					p.addString(it->first->m_pi.nickname);
 					p.addUint16(0u);	// Msg empty
@@ -485,7 +485,7 @@ void GrandZodiac::endGoldenBeam() {
 					_smp::message_pool::getInstance().push(new message("[GrandZodiac::endGoldenBeam][Log][WARNING] Player[UID="
 							+ std::to_string(pgi->uid) + "] ganhou jackpot, mas ele nao esta mais no jogo, para receber o jackpot.", CL_FILE_LOG_AND_CONSOLE));
 
-			}else if (seed == 1ull/*Todos ganham*/) {
+			}else if (seed == 1ull/*Everyone wins*/) {
 
 				auto equal_jackpot = jackpot / m_mp_golden_beam_player.size();
 
@@ -503,7 +503,7 @@ void GrandZodiac::endGoldenBeam() {
 
 						p.init_plain((unsigned short)0x40);
 
-						p.addUint8(14);		// Todos que fizeram hio no golden beam garanham o jackpot
+						p.addUint8(14);		// Everyone who made a hio during the golden beam wins the jackpot
 
 						p.addString(el.first->m_pi.nickname);
 						p.addUint16(0u);	// Msg Empty
@@ -554,7 +554,7 @@ void GrandZodiac::sendTrofel(player& _session) {
 
 			stItem item{ 0 };
 
-			// Inicializa o Trof�u
+			// Initializes the Trophy
 			item.type = 2;
 			item.id = -1;
 			item._typeid = pgi->m_gz.trofeu;
@@ -564,11 +564,11 @@ void GrandZodiac::sendTrofel(player& _session) {
 			// Update on Server and Database
 			if (item_manager::addItem(item, _session, 0, 0) >= item_manager::RetAddItem::TYPE::T_SUCCESS) {
 
-				// Adicionou o Trof�u com sucesso para o player
+				// Trophy successfully added to the player
 				_smp::message_pool::getInstance().push(new message("[GrandZodiac::sendTrofel][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] ganhou Grand Zodiac Trofeu[TYPEID=" + std::to_string(pgi->m_gz.trofeu) + "] na Posicao[RANK=" + std::to_string(pgi->m_gz.position) + "].", CL_FILE_LOG_AND_CONSOLE));
 
-				// Update Trof�u on Game
+				// Update Trophy on Game
 				p.init_plain((unsigned short)0x1FA);
 
 				p.addUint32(item._typeid);
@@ -601,15 +601,15 @@ bool GrandZodiac::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 0x12C/*packet12C pacote que termina o Grand Zodiac*/ || option == 2/*Saiu*/) {
+		if (option == 0x12C/*packet12C packet that ends Grand Zodiac*/ || option == 2/*Left*/) {
 
 			bool is_hacker_or_bug = false;
 
 			if (m_timer != nullptr)
-				is_hacker_or_bug = ((int)(m_ri.time_30s - m_timer->getElapsed()) / (60 * 1000/*Minuto*/)) >= 1 ? true : false;
+				is_hacker_or_bug = ((int)(m_ri.time_30s - m_timer->getElapsed()) / (60 * 1000/*Minute*/)) >= 1 ? true : false;
 
 			if (m_grand_zodiac_state)
-				finish_grand_zodiac(_session, (option == 0x12C && !is_hacker_or_bug) ? 0 : 1);	// Termina sem ter acabado de jogar
+				finish_grand_zodiac(_session, (option == 0x12C && !is_hacker_or_bug) ? 0 : 1);	// Ends without having finished playing
 		}
 	}
 

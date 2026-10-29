@@ -1,6 +1,6 @@
-// Arquivo cmd_papel_shop_coupon.hpp
-// Criado em 09/07/2018 as 20:11 por Acrisio
-// Defini��o da classe CmdPapelShopCoupon
+// File cmd_papel_shop_coupon.hpp
+// Created on 09/07/2018 at 20:11 by Acrisio
+// Definition of the class CmdPapelShopCoupon
 
 #pragma once
 #ifndef _STDA_CMD_PAPEL_SHOP_COUPON_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_quest.cpp
-// Criado em 11/11/2018 as 13:27 por Acrisio
-// Implementa��o da classe CmdDeleteQuest
+// File cmd_delete_quest.cpp
+// Created on 11/11/2018 at 13:27 by Acrisio
+// Implementation of the class CmdDeleteQuest
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -30,7 +30,7 @@ CmdDeleteQuest::~CmdDeleteQuest() {
 
 void CmdDeleteQuest::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um DELETE
+	// Not used here because it is a DELETE
 	return;
 }
 

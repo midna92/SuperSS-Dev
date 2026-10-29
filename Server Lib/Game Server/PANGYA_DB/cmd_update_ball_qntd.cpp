@@ -1,6 +1,6 @@
-// Arquivo cmd_update_ball_qntd.cpp
-// Criado em 31/05/2018 as 09:30 por Acrisio
-// Implementa��o da classe CmdUpdateBallQntd
+// File cmd_update_ball_qntd.cpp
+// Created on 31/05/2018 at 09:30 by Acrisio
+// Implementation of class CmdUpdateBallQntd
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateBallQntd::~CmdUpdateBallQntd() {
 
 void CmdUpdateBallQntd::lineResult(result_set::ctx_res* /*result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdUpdateBallQntd::prepareConsulta(database& _db) {

@@ -1,6 +1,6 @@
-// Arquivo cmd_add_character_hair_style.cpp
-// Criado em 25/03/2018 as 20:18 por Acrisio
-// Implementa��o da classe CmdAddCharacterHairStyle
+// File cmd_add_character_hair_style.cpp
+// Created on 25/03/2018 at 20:18 by Acrisio
+// Implementation of the class CmdAddCharacterHairStyle
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdAddCharacterHairStyle::~CmdAddCharacterHairStyle() {
 
 void CmdAddCharacterHairStyle::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa aqui por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

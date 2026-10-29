@@ -1,6 +1,6 @@
-// Arquivo ball3d.cpp
-// Criado em 03/10/2020 as 14:31 por Acrisio
-// Implementa��o da classe Ball3D
+// File ball3d.cpp
+// Created on 03/10/2020 at 14:31 by Acrisio
+// Implementation of the Ball3D class
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo message_server.cpp
-// Criado em 29/07/2018 as 13:19 por Acrisio
-// Implementa��o da classe message_server
+// File message_server.cpp
+// Created on 29/07/2018 at 13:19 by Acrisio
+// Implementation of the message_server class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -45,8 +45,8 @@
 							  if (_packet == nullptr) \
 									throw exception("[message_server::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 6, 0)); \
 
-// Verifica se session est� autorizada para executar esse a��o, 
-// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+// Checks if the session is authorized to perform this action, 
+// if it did not log in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[message_server::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 1, 0x5000501)); \
@@ -64,11 +64,11 @@ message_server::message_server() : server(m_player_manager, 1, 12, 4), m_player_
 
 		config_init();
 
-		// Carrega IFF_STRUCT
+		// Load IFF_STRUCT
 		if (!sIff::getInstance().isLoad())
 			sIff::getInstance().load();
 
-		// Request Cliente
+		// Request Client
 		packet_func::funcs.addPacketCall(0x12, packet_func::packet012, this);
 		packet_func::funcs.addPacketCall(0x13, packet_func::packet013, this);
 		packet_func::funcs.addPacketCall(0x14, packet_func::packet014, this);
@@ -92,13 +92,13 @@ message_server::message_server() : server(m_player_manager, 1, 12, 4), m_player_
 		packet_func::funcs.addPacketCall(0x2C, packet_func::packet02C, this);
 		packet_func::funcs.addPacketCall(0x2D, packet_func::packet02D, this);
 
-		// Resposta Server
+		// Server Response
 		packet_func::funcs_sv.addPacketCall(0x2E, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x2F, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x30, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x3B, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x3C, packet_func::packet_svFazNada, this);
-		packet_func::funcs_sv.addPacketCall(0x40, packet_func::packet_svFazNada, this);	// Msg Aviso Lobby, cliente tamb�m aceita o Message Server enviar esse Pacote
+		packet_func::funcs_sv.addPacketCall(0x40, packet_func::packet_svFazNada, this);	// Lobby notice message, the client also accepts the Message Server sending this packet
 
 		// Auth Server
 		packet_func::funcs_as.addPacketCall(0x01, packet_func::packet_as001, this);
@@ -145,8 +145,8 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 			throw exception("[message_server::requestLogin][Error] player[UID=" + std::to_string(uid) + ", NICKNAME=" 
 					+ nickname + "] tentou logar com Server, mas o nickname esta vazio. Hacker ou Bug",  STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 2, 0x5200102));
 
-		// Verifica se o IP/MAC Address est� banido
-		if (haveBanList(_session.getIP(), "", false/*N�o tem MAC Address esse pacote*/))
+		// Check whether the IP/MAC Address is banned
+		if (haveBanList(_session.getIP(), "", false/*This packet has no MAC Address*/))
 			throw exception("[message_server::requestLogin][Error] Player[UID=" + std::to_string(uid) + ", NICKNAME=" + nickname + ", IP=" + _session.getIP() 
 					+ "] tentou logar com o Server, mas ele esta com IP banido.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 5, 0x5200105));
 
@@ -166,7 +166,7 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 					+ nickname + "] tentou logar com Server, mas o nickname do databse[NICKNAME_DB=" + std::string(_session.m_pi.nickname) + "] eh diferente do fornecido pelo cliente. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5200104));
 
-		// Verifica se o player est� bloqueado
+		// Check whether the player is blocked
 		if (_session.m_pi.block_flag.m_id_state.id_state.ull_IDState != 0) {
 
 			if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_TEMPORARY && (_session.m_pi.block_flag.m_id_state.block_time == -1 || _session.m_pi.block_flag.m_id_state.block_time > 0)) {
@@ -183,23 +183,23 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 
 			}else if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_ALL_IP) {
 
-				// Bloquea todos os IP que o player logar e da error de que a area dele foi bloqueada
+				// Blocks every IP the player logs in from and returns an error saying their area was blocked
 
-				// Add o ip do player para a lista de ip banidos
+				// Add the player's IP to the banned IP list
 				snmdb::NormalManagerDB::getInstance().add(1, new CmdInsertBlockIP(_session.m_ip, "255.255.255.255"), message_server::SQLDBResponse, this);
 
-				// Resposta
+				// Response
 				throw exception("[message_server::requestLogin][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + ", IP=" + std::string(_session.m_ip)
 						+ "] Block ALL IP que o player fizer login.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 1031, 0));
 
 			}else if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_MAC_ADDRESS) {
 
-				// Bloquea o MAC Address que o player logar e da error de que a area dele foi bloqueada
+				// Blocks the MAC Address the player logs in from and returns an error saying their area was blocked
 
-				// Add o MAC Address do player para a lista de MAC Address banidos
+				// Add the player's MAC Address to the banned MAC Address list
 				//snmdb::NormalManagerDB::getInstance().add(2, new CmdInsertBlockMAC(mac_address), message_server::SQLDBResponse, this);
 
-				// Resposta
+				// Response
 				throw exception("[message_server::requestLogin][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 						+ ", IP=" + std::string(_session.m_ip) + ", MAC=UNKNON] (MSG nao recebe o MAC Address do cliente) Block MAC Address que o player fizer login.",  
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 1032, 0));
@@ -207,7 +207,7 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 			}
 		}
 
-		// Verifica se j� tem outro socket com o mesmo uid conectado
+		// Check whether another socket with the same uid is already connected
 		auto s = HasLoggedWithOuterSocket(_session);
 
 		if (s != nullptr) {
@@ -222,7 +222,7 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 3, 0x5200103));
 		}
 
-		// Verifica com o Auth Server se o player est� connectado no server que ele diz e se � o mesmo IP ADDRESS
+		// Check with the Auth Server whether the player is connected to the server they claim and whether it is the same IP ADDRESS
 		if (m_unit_connect->isLive()) {
 
 			m_unit_connect->getInfoPlayerOnline(_session.m_pi.server_uid, _session.m_pi.uid);
@@ -234,16 +234,16 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 		/*// Loading Friend List
 		_session.m_pi.m_friend_manager.init(_session.m_pi);
 
-		// Logado [Online]
+		// Logged in [Online]
 		_session.m_pi.m_state = 4;
 
-		// Authorized a ficar online no server por tempo indeterminado
+		// Authorized to stay online on the server indefinitely
 		_session.m_is_authorized = 1u;
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[Login][Log] player[UID=" + std::to_string(_session.m_pi.uid) + ", NICKNAME=" + std::string(_session.m_pi.nickname) + "] logou com sucesso!", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para o Pedido de Login
+		// Response to the login request
 		p.init_plain((unsigned short)0x2F);
 
 		p.addUint8(0);	// OK
@@ -254,7 +254,7 @@ void message_server::requestLogin(player& _session, packet *_packet) {
 
 	}catch (exception& e) {
 
-		// Resposta
+		// Response
 		p.init_plain((unsigned short)0x2F);
 
 		p.addUint8(1);	// Error;
@@ -298,22 +298,22 @@ void message_server::confirmLoginOnOtherServer(player& _session, uint32_t _req_s
 					+ ", REQ_SERVER=" + std::to_string(_req_server_uid) + "] request Info player, mas nao eh o mesmo IP[IP=" + _session.getIP() + ", REQ_IP=" + _aspi.ip 
 					+ "] que foi retornado do request com o Auth Server.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5200204));
 
-		// Confirm Login com sucesso, Atualiza o cliente
+		// Confirm login successfully, update the client
 
 		// Loading Friend List
 		_session.m_pi.m_friend_manager.init(_session.m_pi);
 
-		// Logado [Online]
+		// Logged in [Online]
 		_session.m_pi.m_state = 4;
 
-		// Authorized a ficar online no server por tempo indeterminado
+		// Authorized to stay online on the server indefinitely
 		_session.m_is_authorized = 1u;
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[message_server::confirmLoginOnOtherServer][Log] player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ ", NICKNAME=" + std::string(_session.m_pi.nickname) + "] logou com sucesso!", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para o Pedido de Login
+		// Response to the login request
 		p.init_plain((unsigned short)0x2F);
 
 		p.addUint8(0);	// OK
@@ -324,7 +324,7 @@ void message_server::confirmLoginOnOtherServer(player& _session, uint32_t _req_s
 
 	} catch (exception& e) {
 
-		// Resposta
+		// Response
 		p.init_plain((unsigned short)0x2F);
 
 		p.addUint8(1);	// Error;
@@ -353,8 +353,8 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 		_smp::message_pool::getInstance().push(new message("[FriendList][Log] envia lista de amigos para o player[UID=" + std::to_string(_session.m_pi.uid) + "].", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("FriendAndGuildMemberList");
 
 		auto friend_list = _session.m_pi.m_friend_manager.getAllFriendAndGuildMember();
@@ -378,7 +378,7 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 
 		FriendInfoEx *pFi = nullptr;
 
-		// Resposta para Lista de Amigos e Membros da Guild
+		// Response for the Friends and Guild Members list
 		if (mp.paginas > 0) {
 
 			for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -396,12 +396,12 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 
 					auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-					// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-					if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(_session.m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+					// If the Player has them in the friend list, and they are not blocked in the friend's list
+					if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(_session.m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 						p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-						// State Icon Player
+						// Player State Icon
 						p.addUint8(s->m_pi.m_state);
 
 						switch (s->m_pi.m_state) {
@@ -422,14 +422,14 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 						// Online
 						(*begin)->state.stState.online = 1;
 
-					}else {	// player n�o est� online
-						p.addInt16(-1);		// Sala Numero
-						p.addInt32(-1);		// Sala Tipo
+					}else {	// player is not online
+						p.addInt16(-1);		// Room Number
+						p.addInt32(-1);		// Room Type
 						p.addInt32(-1);		// Server GUID
-						p.addInt8(-1);		// Canal ID
-						p.addZeroByte(64);	// Canal Nome
+						p.addInt8(-1);		// Channel ID
+						p.addZeroByte(64);	// Channel Name
 
-						// State Icon Player, OFFLINE not change icon
+						// Player State Icon, OFFLINE does not change the icon
 						p.addUint8(5);	// OFFLINE
 
 						// Offline
@@ -438,8 +438,8 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 
 					p.addInt8((*begin)->cUnknown_flag);
 
-					// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-					p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == _session.m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+					// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+					p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == _session.m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 					p.addUint8((*begin)->state.ucState);
 					p.addUint8((*begin)->flag.ucFlag);
@@ -450,7 +450,7 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 		
 		}else {
 
-			// N�o tem nenhum amigo, manda a p�gina vazia
+			// Has no friends, send the empty page
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x102);	// Sub Packet Id
@@ -468,7 +468,7 @@ void message_server::requestFriendAndGuildMemberList(player& _session, packet *_
 
 		p.addUint16(0x102);	// Sub Packet Id
 
-		p.addUint8(1);	// pagina
+		p.addUint8(1);	// page
 
 		p.addUint32(0);	// 0 Members
 
@@ -490,8 +490,8 @@ void message_server::requestUpdateChannelPlayerInfo(player& _session, packet *_p
 
 		_session.m_pi.m_cpi = cpi;
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UpdateChannelPlayerInfo");
 
 #ifdef _DEBUG
@@ -545,11 +545,11 @@ void message_server::requestUpdatePlayerState(player& _session, packet *_packet)
 
 		unsigned char state = _packet->readUint8();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UpdatePlayerState");
 
-		// S� Atualiza se o state for diferente
+		// Only update if the state is different
 		if (_session.m_pi.m_state != state)
 			_session.m_pi.m_state = state;
 
@@ -584,8 +584,8 @@ void message_server::requestUpdatePlayerLogout(player& _session, packet *_packet
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UpdatePlayerLogout");
 
 #ifdef _DEBUG
@@ -612,8 +612,8 @@ void message_server::requestChatFriend(player& _session, packet *_packet) {
 		uint32_t uid = _packet->readUint32();
 		std::string msg = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChatFriend");
 
 		if (uid == 0)
@@ -650,7 +650,7 @@ void message_server::requestChatFriend(player& _session, packet *_packet) {
 			throw exception("[message_server::requestChatFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar Message[MSG="
 					+ msg + "] para o Amigo[UID=" + std::to_string(uid) + "], mas amigo bloqueou ele. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE, 7, 0x5200307));
 
-		// Log Para os GMs
+		// Log for the GMs
 		auto gm = m_player_manager.findAllGM();
 
 		if (!gm.empty()) {
@@ -659,9 +659,9 @@ void message_server::requestChatFriend(player& _session, packet *_packet) {
 
 			for (auto& el : gm) {
 				
-				// Nao envia o log de MSN->PM novamente para o GM que enviou ou recebeu MSN->PM
+				// Do not send the MSN->PM log again to the GM who sent or received the MSN->PM
 				if (el->m_pi.uid != _session.m_pi.uid && el->m_pi.uid != s->m_pi.uid) {
-					// Responde no chat do player
+					// Reply in the player's chat
 					p.init_plain((unsigned short)0x40);
 
 					p.addUint8(0);
@@ -681,7 +681,7 @@ void message_server::requestChatFriend(player& _session, packet *_packet) {
 				+ msg + "] para seu Amigo[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Resposta para send chat to friend
+		// Response for send chat to friend
 		p.init_plain((unsigned short)0x30);
 
 		p.addUint16(0x113);	// Sub Packet Id
@@ -695,9 +695,9 @@ void message_server::requestChatFriend(player& _session, packet *_packet) {
 		packet_func::session_send(p, s, 1);		// TO
 
 		// ------------------------------- Chat History Discord ------------------------------------
-		// Envia a mensagem para o discord chat log se estiver ativado
+		// Send the message to the discord chat log if enabled
 
-		// Verifica se o m_chat_discod flag est� ativo para enviar o chat para o discord
+		// Check whether the m_chat_discod flag is active to send the chat to discord
 		if (m_si.rate.smart_calculator && m_chat_discord)
 			sendMessageToDiscordChatHistory(
 				"[MSN->PM]",																										// From
@@ -727,8 +727,8 @@ void message_server::requestChatGuild(player& _session, packet *_packet) {
 
 		std::string msg = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChatGuild");
 
 		if (_session.m_pi.guild_uid == 0)
@@ -739,7 +739,7 @@ void message_server::requestChatGuild(player& _session, packet *_packet) {
 			throw exception("[message_server::requestChatGuild][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar Message[MSG=" 
 					+ msg + "] para o Chat da Guild[UID=" + std::to_string(_session.m_pi.guild_uid) + "], mas a msg is empty. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 2, 0x5200402));
 
-		// Log Para os GMs
+		// Log for the GMs
 		auto gm = m_player_manager.findAllGM();
 
 		if (!gm.empty()) {
@@ -755,9 +755,9 @@ void message_server::requestChatGuild(player& _session, packet *_packet) {
 
 			for (auto& el : gm) {
 
-				// Nao envia o log de Club Chat novamente para o GM que enviou ou recebeu Club Chat
+				// Do not send the Club Chat log again to the GM who sent or received the Club Chat
 				if (el->m_pi.uid != _session.m_pi.uid && el->m_pi.guild_uid != _session.m_pi.guild_uid) {
-					// Responde no chat do player
+					// Reply in the player's chat
 					p.init_plain((unsigned short)0x40);
 
 					p.addUint8(0);
@@ -777,7 +777,7 @@ void message_server::requestChatGuild(player& _session, packet *_packet) {
 				+ std::to_string(_session.m_pi.guild_uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Resposta para send chat to Guild
+		// Response for send chat to Guild
 		p.init_plain((unsigned short)0x30);
 
 		p.addUint16(0x113);	// Sub Packet Id
@@ -790,14 +790,14 @@ void message_server::requestChatGuild(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);	// SEND TO PLAYER TOO
 
-		// Usa o m_player_manager.findAllGuildMember, que pega todos os players que est�o na mesma guild
+		// Uses m_player_manager.findAllGuildMember, which gets all players that are in the same guild
 		packet_func::friend_broadcast(m_player_manager.findAllGuildMember(_session.m_pi.guild_uid), p, &_session, 1);	// All GUILD MEMBER
 		//packet_func::friend_broadcast(m_player_manager.findAllFriend(_session.m_pi.m_friend_manager.getAllGuildMember()), p, &_session, 1);	// ALL GUILD MEMBER
 
 		// ------------------------------- Chat History Discord ------------------------------------
-		// Envia a mensagem para o discord chat log se estiver ativado
+		// Send the message to the discord chat log if enabled
 
-		// Verifica se o m_chat_discod flag est� ativo para enviar o chat para o discord
+		// Check whether the m_chat_discod flag is active to send the chat to discord
 		if (m_si.rate.smart_calculator && m_chat_discord)
 			sendMessageToDiscordChatHistory(
 				"[CC]",																												// From
@@ -828,8 +828,8 @@ void message_server::requestCheckNickname(player& _session, packet *_packet) {
 		
 		nickname = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("CheckNickname");
 
 		if (nickname.empty())
@@ -855,7 +855,7 @@ void message_server::requestCheckNickname(player& _session, packet *_packet) {
 #endif // _DEBUG
 
 
-		// Resposta para Check Nickname
+		// Response for Check Nickname
 		p.init_plain((unsigned short)0x30);
 
 		p.addUint16(0x117);	// Sub Packet Id
@@ -893,8 +893,8 @@ void message_server::requestAssingApelido(player& _session, packet *_packet) {
 		uint32_t uid = _packet->readUint32();
 		std::string apelido = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("AssingApelido");
 
 		if (uid == 0)
@@ -930,7 +930,7 @@ void message_server::requestAssingApelido(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[AssingApelido][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] colocou apelido[VALUE="
 				+ apelido + "] no Amigo[UID="  + std::to_string(pFi->uid) + ", NICKNAME=" + std::string(pFi->nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para assing apelido
+		// Response for assign nickname
 		p.init_plain((unsigned short)0x30);
 
 		p.addUint16(0x119);	// Sub Packet Id
@@ -965,8 +965,8 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 
 		uint32_t uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("BlockFriend");
 
 		if (uid == 0)
@@ -987,13 +987,13 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 
 		FriendInfoEx *pFi2 = nullptr;
 
-		if (s != nullptr) {	// Player est� online
+		if (s != nullptr) {	// Player is online
 
 			if ((pFi2 = s->m_pi.m_friend_manager.findFriend(_session.m_pi.uid)) == nullptr)
 				throw exception("[message_server::requestBlockFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou bloqueiar Amigo[UID="
 						+ std::to_string(uid) + "], mas o amigo nao tem ele na lista de amigos. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5300104));
 
-			// Amigo
+			// Friend
 			pFi->state.stState.block = 1;
 
 			// UPDATE ON DB
@@ -1003,7 +1003,7 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[BlockFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] bloqueou o Amigo[UID="
 					+ std::to_string(s->m_pi.uid) + ", NICKNAME=" + std::string(s->m_pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o block friend REQUEST
+			// Response for the block friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10C);	// Sub Packet Id
@@ -1014,7 +1014,7 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta para o block friend REQUESTED, Envia que o player deslogou
+			// Response for the block friend REQUESTED, send that the player logged out
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10F);	// Sub Packet Id
@@ -1052,7 +1052,7 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 				throw exception("[message_server::requestBlockFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou bloqueiar Amigo[UID="
 						+ std::to_string(uid) + "], mas o amigo nao tem ele na lista de amigos. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5300104));
 
-			// Amigo
+			// Friend
 			pFi->state.stState.block = 1;
 
 			// UPDATE ON DB
@@ -1062,7 +1062,7 @@ void message_server::requestBlockFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[BlockFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] bloqueou o Amigo[UID="
 					+ std::to_string(pi.uid) + ", NICKNAME=" + std::string(pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o block friend REQUEST
+			// Response for the block friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10C);	// Sub Packet Id
@@ -1097,8 +1097,8 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 
 		uint32_t uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UnblockFriend");
 
 		if (uid == 0)
@@ -1119,13 +1119,13 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 
 		FriendInfoEx *pFi2 = nullptr;
 
-		if (s != nullptr) {	// Player est� online
+		if (s != nullptr) {	// Player is online
 
 			if ((pFi2 = s->m_pi.m_friend_manager.findFriend(_session.m_pi.uid)) == nullptr)
 				throw exception("[message_server::requestUnBlockFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou desbloquear Amigo[UID="
 						+ std::to_string(uid) + "], mas o amigo nao tem ele na lista de amigos. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5200204));
 
-			// Amigo
+			// Friend
 			pFi->state.stState.block = 0;
 
 			// UPDATE ON DB
@@ -1135,7 +1135,7 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[UnBlockFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] desbloqueou o Amigo[UID="
 					+ std::to_string(s->m_pi.uid) + ", NICKNAME=" + std::string(s->m_pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o unblock friend REQUEST
+			// Response for the unblock friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10D);	// Sub Packet Id
@@ -1146,7 +1146,7 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta para o unblock friend REQUESTED - Passa Pacote que ele esta online
+			// Response for the unblock friend REQUESTED - Pass a packet saying they are online
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x115);	// Sub Packet Id
@@ -1189,7 +1189,7 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 				throw exception("[message_server::requestUnBlockFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou desbloquear Amigo[UID="
 						+ std::to_string(uid) + "], mas o amigo nao tem ele na lista de amigos. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 4, 0x5300204));
 
-			// Amigo
+			// Friend
 			pFi->state.stState.block = 0;
 
 			// UPDATE ON DB
@@ -1199,7 +1199,7 @@ void message_server::requestUnblockFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[UnBlockFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] desbloqueou o Amigo[UID="
 					+ std::to_string(pi.uid) + ", NICKNAME=" + std::string(pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o unblock friend REQUEST
+			// Response for the unblock friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10D);	// Sub Packet Id
@@ -1235,8 +1235,8 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 		uint32_t uid = _packet->readUint32();
 		std::string nickname = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("AddFriend");
 
 		if (uid == 0)
@@ -1261,7 +1261,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 
 		FriendInfoEx fi{ 0 }, fi2{ 0 };
 
-		if (s != nullptr) {	// Player est� connectado
+		if (s != nullptr) {	// Player is connected
 
 #if defined(_WIN32)
 			if (_stricmp(nickname.c_str(), s->m_pi.nickname) != 0)
@@ -1317,7 +1317,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 			// Log
 			_smp::message_pool::getInstance().push(new message("[AddFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] add Amigo[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o add Friend
+			// Response for the add Friend
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x104);	// Sub Packet Id
@@ -1328,7 +1328,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 
 			p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-			// State Icon Player
+			// Player State Icon
 			p.addUint8(s->m_pi.m_state);
 
 			p.addInt8(fi.cUnknown_flag);
@@ -1338,7 +1338,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta para o player que foi adicionado
+			// Response for the player that was added
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x106);	// Sub Packet Id
@@ -1347,7 +1347,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 
 			p.addBuffer(&_session.m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-			// State Icon Player
+			// Player State Icon
 			p.addUint8(_session.m_pi.m_state);
 
 			p.addInt8(fi2.cUnknown_flag);
@@ -1436,7 +1436,7 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 			// Log
 			_smp::message_pool::getInstance().push(new message("[AddFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] add Amigo[UID=" + std::to_string(pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o add Friend
+			// Response for the add Friend
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x104);	// Sub Packet Id
@@ -1445,13 +1445,13 @@ void message_server::requestAddFriend(player& _session, packet *_packet) {
 
 			p.addBuffer(&fi, sizeof(FriendInfo));
 
-			p.addInt16(-1);		// Sala N�mero
-			p.addInt32(-1);		// Sala Tipo
+			p.addInt16(-1);		// Room Number
+			p.addInt32(-1);		// Room Type
 			p.addInt32(-1);		// Server GUID
-			p.addInt8(-1);		// Canal ID
-			p.addZeroByte(64);	// Canal Nome
+			p.addInt8(-1);		// Channel ID
+			p.addZeroByte(64);	// Channel Name
 
-			// State Icon Player
+			// Player State Icon
 			p.addUint8(5);	// OFFLINE
 
 			fi.state.stState.online = 0;	// Offline
@@ -1487,8 +1487,8 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 
 		uint32_t uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ConfirmFriend");
 
 		if (uid == 0)
@@ -1513,16 +1513,16 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 
 		FriendInfoEx *pFi2 = nullptr;
 
-		if (s != nullptr) {	// Player est� online
+		if (s != nullptr) {	// Player is online
 
 			if ((pFi2 = s->m_pi.m_friend_manager.findFriend(_session.m_pi.uid)) == nullptr)
 				throw exception("[message_server::requestConfirmFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou aceitar Amigo[UID="
 						+ std::to_string(uid) + "], mas o player nao esta na lista do amigo que ele vai aceitar. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 5, 0x5200804));
 
-			// Amigo
+			// Friend
 			pFi->state.stState._friend = 1;
 
-			// Amigo
+			// Friend
 			pFi2->state.stState.request_friend = 0;
 			pFi2->state.stState._friend = 1;
 
@@ -1534,7 +1534,7 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[ConfirmFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] aceitou Amigo[UID="
 					+ std::to_string(s->m_pi.uid) + ", NICKNAME=" + std::string(s->m_pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o confirm friend REQUEST
+			// Response for the confirm friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16((unsigned short)0x109);	// Sub Packet Id
@@ -1545,7 +1545,7 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta para o confirm friend REQUESTED
+			// Response for the confirm friend REQUESTED
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10A);	// Sub Packet Id
@@ -1585,10 +1585,10 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 				throw exception("[message_server::requestConfirmFriend][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou aceitar Amigo[UID="
 						+ std::to_string(uid) + "], mas o player nao esta na lista do amigo que ele vai aceitar. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 5, 0x5200805));
 
-			// Amigo
+			// Friend
 			pFi->state.stState._friend = 1;
 
-			// Amigo
+			// Friend
 			pFi2->state.stState.request_friend = 0;
 			pFi2->state.stState._friend = 1;
 
@@ -1601,7 +1601,7 @@ void message_server::requestConfirmFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[ConfirmFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] aceitou Amigo[UID="
 					+ std::to_string(pi.uid) + ", NICKNAME=" + std::string(pi.nickname) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Resposta para o confirm friend REQUEST
+			// Response for the confirm friend REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16((unsigned short)0x109);	// Sub Packet Id
@@ -1637,8 +1637,8 @@ void message_server::requestDeleteFriend(player& _session, packet *_packet) {
 		uint32_t uid = _packet->readUint32();
 		std::string nickname = _packet->readString();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("DeleteFriend");
 
 		if (uid == 0)
@@ -1659,7 +1659,7 @@ void message_server::requestDeleteFriend(player& _session, packet *_packet) {
 
 		FriendInfoEx *pFi2 = nullptr;
 
-		if (s != nullptr) {	// Player est� online
+		if (s != nullptr) {	// Player is online
 
 #if defined(_WIN32)
 			if (_stricmp(nickname.c_str(), s->m_pi.nickname) != 0)
@@ -1681,7 +1681,7 @@ void message_server::requestDeleteFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[DeleteFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] deletou Amigo[UID="
 					+ std::to_string(s->m_pi.uid) + ", NICKNAME=" + nickname + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Respsta para o delete friend TO REQUEST
+			// Response for the delete friend TO REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10B);	// Sub Packet Id
@@ -1692,7 +1692,7 @@ void message_server::requestDeleteFriend(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta para o delete friend TO REQUESTED
+			// Response for the delete friend TO REQUESTED
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10B);	// Sub Packet Id
@@ -1748,7 +1748,7 @@ void message_server::requestDeleteFriend(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[DeleteFriend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] deletou Amigo[UID="
 					+ std::to_string(pi.uid) + ", NICKNAME=" + nickname + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Respsta para o delete friend TO REQUEST
+			// Response for the delete friend TO REQUEST
 			p.init_plain((unsigned short)0x30);
 
 			p.addUint16(0x10B);	// Sub Packet Id
@@ -1779,8 +1779,8 @@ void message_server::requestNotityPlayerWasInvitedToRoom(player& _session, packe
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("NotifyPlayerWasInvitedToRoom");
 
 		uint32_t player_invited_uid = _packet->readUint32();
@@ -1805,8 +1805,8 @@ void message_server::requestInvitPlayerToGuildBattleRoom(player& _session, packe
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("InvitPlayerToGuildBattleRoom");
 
 		uint32_t server_uid = _packet->readUint32();
@@ -1866,10 +1866,10 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 			if (el.second != nullptr)
 				el.second->m_pi.m_friend_manager.init(el.second->m_pi);
 
-		// Verifica se o player est� online
+		// Check whether the player is online
 		auto s = m_player_manager.findPlayer(member_uid);
 
-		// Player n�o est� online
+		// Player is not online
 		if (s == nullptr || 
 #if defined(_WIN32)
 			s->m_sock == INVALID_SOCKET
@@ -1889,7 +1889,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 
 			auto pi = cmd_pi.getInfo();
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -1901,7 +1901,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -1919,12 +1919,12 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -1945,14 +1945,14 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -1961,8 +1961,8 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -1973,7 +1973,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -1986,7 +1986,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player foi aceito na Guild
+			// Notify the Guild players that the player was accepted into the Guild
 			p.init_plain((unsigned short)0x3B);
 
 			p.addUint32(pi.uid);
@@ -1994,19 +1994,19 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 			p.addUint8(pi.sex);
 			p.addString(pi.id);
 			p.addString(pi.nickname);
-			p.addUint16(0x1F);				// No Server Antigo estava 0x1F e 0x125 nas op��es que peguei nos pacotes do pangya USA
+			p.addUint16(0x1F);				// In the Old Server it was 0x1F and 0x125 in the options I captured from the pangya USA packets
 
-			packet_func::friend_broadcast(v_cm, p, (session*)1/*S� para enviar, esse ele n�o usa s� verifica se � o mesmo para n�o enviar para o mesmo player*/, 1);
+			packet_func::friend_broadcast(v_cm, p, (session*)1/*Only for sending, it does not use this one, it only checks whether it is the same so as not to send to the same player*/, 1);
 
-		}else {	// Player est� online	
+		}else {	// Player is online	
 
-			// Add o player a Guild
+			// Add the player to the Guild
 			s->m_pi.guild_uid = club_id;
 
 			// Update All Friend/Guild Member
 			s->m_pi.m_friend_manager.init(s->m_pi);
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -2018,7 +2018,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -2036,12 +2036,12 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -2062,14 +2062,14 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -2078,8 +2078,8 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -2090,7 +2090,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -2103,7 +2103,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player foi aceito na Guild
+			// Notify the Guild players that the player was accepted into the Guild
 			p.init_plain((unsigned short)0x3B);
 
 			p.addUint32(s->m_pi.uid);
@@ -2111,7 +2111,7 @@ void message_server::requestAcceptGuildMember(packet *_packet) {
 			p.addUint8(s->m_pi.sex);
 			p.addString(s->m_pi.id);
 			p.addString(s->m_pi.nickname);
-			p.addUint16(0x1F);				// No Server Antigo estava 0x1F e 0x125 nas op��es que peguei nos pacotes do pangya USA
+			p.addUint16(0x1F);				// In the Old Server it was 0x1F and 0x125 in the options I captured from the pangya USA packets
 
 			packet_func::friend_broadcast(v_cm, p, s, 1);
 		}
@@ -2154,10 +2154,10 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 			if (el.second != nullptr)
 				el.second->m_pi.m_friend_manager.init(el.second->m_pi);
 
-		// Verifica se o player est� online
+		// Check whether the player is online
 		auto s = m_player_manager.findPlayer(member_uid);
 
-		// Player n�o est� online
+		// Player is not online
 		if (s == nullptr || 
 #if defined(_WIN32)
 			s->m_sock == INVALID_SOCKET
@@ -2177,7 +2177,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 
 			auto pi = cmd_pi.getInfo();
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -2189,7 +2189,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -2207,12 +2207,12 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -2233,14 +2233,14 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -2249,8 +2249,8 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -2261,7 +2261,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -2274,22 +2274,22 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player saiu na Guild
+			// Notify the Guild players that the player left the Guild
 			p.init_plain((unsigned short)0x3C);
 
 			p.addUint32(pi.uid);
 
-			packet_func::friend_broadcast(v_cm, p, (session*)1/*S� para enviar, esse ele n�o usa s� verifica se � o mesmo para n�o enviar para o mesmo player*/, 1);
+			packet_func::friend_broadcast(v_cm, p, (session*)1/*Only for sending, it does not use this one, it only checks whether it is the same so as not to send to the same player*/, 1);
 
-		}else {	// Player est� online	
+		}else {	// Player is online	
 
-			// player saiu da Guild
+			// player left the Guild
 			s->m_pi.guild_uid = 0;
 
 			// Update All Friend/Guild Member
 			s->m_pi.m_friend_manager.init(s->m_pi);
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -2301,7 +2301,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -2319,12 +2319,12 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -2345,14 +2345,14 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -2361,8 +2361,8 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -2373,7 +2373,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -2386,7 +2386,7 @@ void message_server::requestMemberExitedFromGuild(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player saiu na Guild
+			// Notify the Guild players that the player left the Guild
 			p.init_plain((unsigned short)0x3C);
 
 			p.addUint32(s->m_pi.uid);
@@ -2432,10 +2432,10 @@ void message_server::requestKickGuildMember(packet *_packet) {
 			if (el.second != nullptr)
 				el.second->m_pi.m_friend_manager.init(el.second->m_pi);
 
-		// Verifica se o player est� online
+		// Check whether the player is online
 		auto s = m_player_manager.findPlayer(member_uid);
 
-		// Player n�o est� online
+		// Player is not online
 		if (s == nullptr || 
 #if defined(_WIN32)
 			s->m_sock == INVALID_SOCKET
@@ -2455,7 +2455,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 
 			auto pi = cmd_pi.getInfo();
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -2467,7 +2467,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -2485,12 +2485,12 @@ void message_server::requestKickGuildMember(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -2511,14 +2511,14 @@ void message_server::requestKickGuildMember(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -2527,8 +2527,8 @@ void message_server::requestKickGuildMember(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -2539,7 +2539,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -2552,22 +2552,22 @@ void message_server::requestKickGuildMember(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player saiu na Guild
+			// Notify the Guild players that the player left the Guild
 			p.init_plain((unsigned short)0x3C);
 
 			p.addUint32(pi.uid);
 
-			packet_func::friend_broadcast(v_cm, p, (session*)1/*S� para enviar, esse ele n�o usa s� verifica se � o mesmo para n�o enviar para o mesmo player*/, 1);
+			packet_func::friend_broadcast(v_cm, p, (session*)1/*Only for sending, it does not use this one, it only checks whether it is the same so as not to send to the same player*/, 1);
 
-		}else {	// Player est� online	
+		}else {	// Player is online	
 
-			// player saiu da Guild
+			// player left the Guild
 			s->m_pi.guild_uid = 0;
 
 			// Update All Friend/Guild Member
 			s->m_pi.m_friend_manager.init(s->m_pi);
 
-			// Envia para cada player sua lista de amigos
+			// Send each player their friend list
 			{
 				for (auto& el : v_cm) {
 
@@ -2579,7 +2579,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 		
 						FriendInfoEx *pFi = nullptr;
 
-						// Resposta para Lista de Amigos e Membros da Guild
+						// Response for the Friends and Guild Members list
 						if (mp.paginas > 0) {
 
 							for (auto i = 0u; i < mp.paginas; i++, ++mp) {
@@ -2597,12 +2597,12 @@ void message_server::requestKickGuildMember(packet *_packet) {
 
 									auto s = (player*)m_player_manager.findSessionByUID((*begin)->uid);
 
-									// Se o Player tem ele na lista de amigos, e ele n�o estiver bloqueado na lista do amigo
-									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player est� online
+									// If the Player has them in the friend list, and they are not blocked in the friend's list
+									if (s != nullptr && (pFi = s->m_pi.m_friend_manager.findFriendInAllFriend(el.second->m_pi.uid)) != nullptr && !pFi->state.stState.block) {	// Player is online
 
 										p.addBuffer(&s->m_pi.m_cpi, sizeof(ChannelPlayerInfo));
 
-										// State Icon Player
+										// Player State Icon
 										p.addUint8(s->m_pi.m_state);
 
 										switch (s->m_pi.m_state) {
@@ -2623,14 +2623,14 @@ void message_server::requestKickGuildMember(packet *_packet) {
 										// Online
 										(*begin)->state.stState.online = 1;
 
-									}else {	// player n�o est� online
-										p.addInt16(-1);		// Sala Numero
-										p.addInt32(-1);		// Sala Tipo
+									}else {	// player is not online
+										p.addInt16(-1);		// Room Number
+										p.addInt32(-1);		// Room Type
 										p.addInt32(-1);		// Server GUID
-										p.addInt8(-1);		// Canal ID
-										p.addZeroByte(64);	// Canal Nome
+										p.addInt8(-1);		// Channel ID
+										p.addZeroByte(64);	// Channel Name
 
-										// State Icon Player, OFFLINE not change icon
+										// Player State Icon, OFFLINE does not change the icon
 										p.addUint8(5);	// OFFLINE
 
 										// Offline
@@ -2639,8 +2639,8 @@ void message_server::requestKickGuildMember(packet *_packet) {
 
 									p.addInt8((*begin)->cUnknown_flag);
 
-									// Aqui quando � o player e ele est� guild � 1/*Master*/, 2 sub, e outros membro guild � 0, e quando � friend � o level
-									p.addUint8((*begin)->flag.ucFlag == 2/*S� Guild Member*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
+									// Here, when it is the player and they are in a guild it is 1/*Master*/, 2 sub, and other guild members are 0, and when it is a friend it is the level
+									p.addUint8((*begin)->flag.ucFlag == 2/*Guild Member only*/ ? ((*begin)->uid == el.second->m_pi.uid ? 1/*Master*/ : 0) : (*begin)->level);
 					
 									p.addUint8((*begin)->state.ucState);
 									p.addUint8((*begin)->flag.ucFlag);
@@ -2651,7 +2651,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 		
 						}else {
 
-							// N�o tem nenhum amigo, manda a p�gina vazia
+							// Has no friends, send the empty page
 							p.init_plain((unsigned short)0x30);
 
 							p.addUint16(0x102);	// Sub Packet Id
@@ -2664,7 +2664,7 @@ void message_server::requestKickGuildMember(packet *_packet) {
 				}
 			}
 
-			// Notifica os player d� Guild que o player saiu na Guild
+			// Notify the Guild players that the player left the Guild
 			p.init_plain((unsigned short)0x3C);
 
 			p.addUint32(s->m_pi.uid);
@@ -2686,7 +2686,7 @@ void message_server::authCmdShutdown(int32_t _time_sec) {
 
 	try {
 
-		// Shut down com tempo
+		// Shut down with time
 		if (m_shutdown == nullptr) {
 
 			// Log
@@ -2706,23 +2706,23 @@ void message_server::authCmdShutdown(int32_t _time_sec) {
 }
 
 void message_server::authCmdBroadcastNotice(std::string /*_notice*/) {
-	// Message Server n�o usa esse Comando
+	// Message Server does not use this command
 	return;
 }
 
 void message_server::authCmdBroadcastTicker(std::string /*_nickname*/, std::string /*_msg*/) {
-	// Message Server n�o usa esse Comando
+	// Message Server does not use this command
 	return;
 }
 
 void message_server::authCmdBroadcastCubeWinRare(std::string /*_msg*/, uint32_t /*_option*/) {
-	// Message Server n�o usa esse Comando
+	// Message Server does not use this command
 	return;
 }
 
 void message_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _player_uid, unsigned char _force) {
 
-	// Aqui no Message Server Ainda n�o usa o force, ele desconecta o player do mesmo jeito
+	// Here in the Message Server the force is not used yet, it disconnects the player the same way
 	UNREFERENCED_PARAMETER(_force);
 
 	try {
@@ -2735,7 +2735,7 @@ void message_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t 
 			_smp::message_pool::getInstance().push(new message("[message_server::authCmdDisconnectPlayer][log] Comando do Auth Server, Server[UID=" + std::to_string(_req_server_uid)
 					+ "] pediu para desconectar o Player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Deconecta o Player
+			// Disconnect the Player
 			DisconnectSession(s);
 
 			// UPDATE ON Auth Server
@@ -2752,12 +2752,12 @@ void message_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t 
 }
 
 void message_server::authCmdConfirmDisconnectPlayer(uint32_t _player_uid) {
-	// Message Server n�o usa esse Comando
+	// Message Server does not use this command
 	return;
 }
 
 void message_server::authCmdNewMailArrivedMailBox(uint32_t /*_player_uid*/, uint32_t /*_mail_id*/) {
-	// Message Server n�o usa esse Comando
+	// Message Server does not use this command
 	return;
 }
 
@@ -2793,7 +2793,7 @@ void message_server::authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid
 
 		if (s != nullptr) {
 
-			// Confirma Login com outro server
+			// Confirm Login with another server
 			confirmLoginOnOtherServer(*s, _req_server_uid, _aspi);
 
 		}else
@@ -2813,7 +2813,7 @@ void message_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will add other handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[message_server::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -2854,16 +2854,16 @@ void message_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 
 void message_server::shutdown_time(int32_t _time_sec) {
 
-	if (_time_sec <= 0)	// Desliga o Server Imediatemente
+	if (_time_sec <= 0)	// Shut down the Server immediately
 		shutdown();
 	else {
 
 		job _job(server::end_time_shutdown, this, (void*)0);
 
-		// Se o Shutdown Timer estiver criado descria e cria um novo
+		// If the Shutdown Timer is created, destroy it and create a new one
 		if (m_shutdown != nullptr) {
 
-			// Para o Tempo se ele n�o estiver parado
+			// Stop the timer if it is not stopped
 			if (m_shutdown->getState() != timer::STOPPED)
 				m_shutdown->stop();
 
@@ -2884,8 +2884,8 @@ bool message_server::sendUpdatePlayerLogoutToFriends(player& _session) {
 
 	try {
 
-		// J� enviou os pacote de update de logou do player
-		// Se estiver 0 troca para 1, e retorno o que estava e compara, s� sai se for 1
+		// Already sent the player's login update packets
+		// If it is 0 change it to 1, and return what it was and compare, only exits if it was 1
 #if defined(_WIN32)
 		if (InterlockedCompareExchange(&_session.m_pi.m_logout, 1, 0) == 1)
 			return false;
@@ -2895,7 +2895,7 @@ bool message_server::sendUpdatePlayerLogoutToFriends(player& _session) {
 			return false;
 #endif
 
-		// Resposta para os amigos do player, que ele deslogou
+		// Response for the player's friends, that they logged out
 		p.init_plain((unsigned short)0x30);
 
 		p.addUint16(0x10F);	// Sub Packet Id
@@ -2966,7 +2966,7 @@ void message_server::onDisconnected(session *_session) {
 		if (p->isConnected() && p->getState() && __atomic_compare_exchange_n(&p->m_pi.m_logout, &check_m, 0, true, __ATOMIC_RELAXED, __ATOMIC_RELAXED)) {
 #endif
 			
-			// S� envia o UpdatePlayerLogout se o player estiver autorizado(Fez o login)
+			// Only send the UpdatePlayerLogout if the player is authorized (has logged in)
 			if (p->m_is_authorized)
 				ret = sendUpdatePlayerLogoutToFriends(*p);
 
@@ -2977,25 +2977,25 @@ void message_server::onDisconnected(session *_session) {
 		_smp::message_pool::getInstance().push(new message("[message_server::onDisconnected][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Log, Para n�o mostrar essa mensagem 2x
+	// Log, so as not to show this message twice
 	if (ret)
 		_smp::message_pool::getInstance().push(new message("[message_server::onDisconnected][Log] Player Desconectou ID: " + std::string(p->m_pi.id) + " UID: " + std::to_string(p->m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
 }
 
 void message_server::onHeartBeat() {
-	// Aqui depois tenho que colocar uma verifica��o que eu queira fazer no server
-	// Esse fun��o � chamada na thread monitor
+	// Later I have to put a check here that I want to do on the server
+	// This function is called in the monitor thread
 
 	try {
 
-		// Server ainda n�o est� totalmente iniciado
+		// Server is not fully started yet
 		if (m_state != INITIALIZED)
 			return;
 
 		// Begin Check System Singleton Static
 
-		// Carrega Smart Calculator Lib, S� inicializa se ele estiver ativado
+		// Load Smart Calculator Lib, only initializes if it is enabled
 		if (m_si.rate.smart_calculator && !sSmartCalculator::getInstance().hasStopped() && !sSmartCalculator::getInstance().isLoad())
 			sSmartCalculator::getInstance().load();
 
@@ -3013,7 +3013,7 @@ void message_server::onStart() {
 
 	try {
 
-		// N�o faz nada por enquanto
+		// Does nothing for now
 
 	}catch (exception& e) {
 
@@ -3028,7 +3028,7 @@ bool message_server::checkCommand(std::stringstream& _command) {
 	_command >> s;
 
 	if (!s.empty() && s.compare("exit") == 0)
-		return true;	// Sai
+		return true;	// Exit
 	else if (!s.empty() && s.compare("reload_files") == 0) {
 
 		reload_files();
@@ -3037,7 +3037,7 @@ bool message_server::checkCommand(std::stringstream& _command) {
 	
 	}else if (!s.empty() && s.compare("reload_socket_config") == 0) {
 
-		// Ler novamento o arquivo de configura��o do socket
+		// Read the socket configuration file again
 		if (m_accept_sock != nullptr)
 			m_accept_sock->reload_config_file();
 		else
@@ -3054,16 +3054,16 @@ bool message_server::checkCommand(std::stringstream& _command) {
 			if (m_si.rate.smart_calculator) {
 
 				if (sTipo.compare("reload") == 0)
-					sSmartCalculator::getInstance().load(); // Recarrega
+					sSmartCalculator::getInstance().load(); // Reload
 				else if (sTipo.compare("close") == 0) {
 
-					// Set Flag stopped para n�o reiniciar sozinho no onHearBeat
+					// Set the stopped flag so it does not restart by itself in onHearBeat
 					sSmartCalculator::getInstance().setStop(true);
 
-					sSmartCalculator::getInstance().close(); // Fecha
+					sSmartCalculator::getInstance().close(); // Close
 
 				}else if (sTipo.compare("start") == 0)
-					sSmartCalculator::getInstance().load(); // Inicia(Load)
+					sSmartCalculator::getInstance().load(); // Start (Load)
 				else if (sTipo.compare("chat_discord") == 0) {
 
 					m_chat_discord = !m_chat_discord;
@@ -3105,16 +3105,16 @@ bool message_server::checkPacket(session& _session, packet *_packet) {
 		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Mesmo pacote */
 		_session.m_check_packet.checkPacketId(_packet->getTipo())) {
 		
-		uint32_t limit_count = CHK_PCKT_COUNT_LIMIT;	// Padr�o
+		uint32_t limit_count = CHK_PCKT_COUNT_LIMIT;	// Default
 
-		// Game Server Vou deixar em 10x, por que � mais dificil atacar ele
+		// Game Server I will leave it at 10x, because it is harder to attack
 		switch (_packet->getTipo()) {
-		case 0x1D:	// Pacote que Atualiza Status, ele envia um a cada pagina de lista de amigo
-			limit_count += 7;	// Add + 7 para ficar 10, 10 p�gina no m�ximo de amigos
+		case 0x1D:	// Packet that updates status, it sends one per friend list page
+			limit_count += 7;	// Add + 7 to make it 10, 10 pages maximum of friends
 			break;
 		case 0:
 		default:
-			limit_count += 2;	// Sobe para 5 por que o message server � mais dif�cil de atacar ele
+			limit_count += 2;	// Raise to 5 because the message server is harder to attack
 		}
 
 		if (_session.m_check_packet.incrementCount() >= limit_count/*_session.m_check_packet.count++ >= limit_count /* deu o limit de count DERRUBA a session */) {
@@ -3129,10 +3129,10 @@ bool message_server::checkPacket(session& _session, packet *_packet) {
 	}//else // Zera o contador, n�o entrou no intervalo ou n�o � o mesmo pacote
 		//_session.m_check_packet.count = 0;
 
-	// Att packet ID
+	// Update packet ID
 	//_session.m_check_packet.packet_id = _packet->getTipo();
 
-	// Att tick
+	// Update tick
 	//_session.m_check_packet.tick = std::clock();
 
 	///--------------- FIM CHECK PACKET SESSION
@@ -3154,8 +3154,8 @@ void message_server::init_option_accepted_socket(SOCKET _accepted) {
 	DWORD retk = 0;
 
 	keep.onoff = 1;
-	keep.keepalivetime = 20000; // Estava 10000(10 segundos)
-	keep.keepaliveinterval = 2000; // Estava 1000(1 segundo)
+	keep.keepalivetime = 20000; // Was 10000 (10 seconds)
+	keep.keepaliveinterval = 2000; // Was 1000 (1 second)
 
 	if (WSAIoctl(_accepted, SIO_KEEPALIVE_VALS, &keep, sizeof(keep), nullptr, 0, &retk, nullptr, nullptr) == SOCKET_ERROR)
 		throw exception("[message_server::init_option_accepted_socket][Error] nao conseguiu setar o socket option KEEPALIVE[ONOFF=" + std::to_string(keep.onoff) 
@@ -3167,7 +3167,7 @@ void message_server::init_option_accepted_socket(SOCKET _accepted) {
 			+ "] KEEPALIVE[ONOFF=" + std::to_string(keep.onoff) + ", TIME=" + std::to_string(keep.keepalivetime) 
 			+ ", INTERVAL=" + std::to_string(keep.keepaliveinterval) + "] foi ativado para esse ", CL_FILE_LOG_AND_CONSOLE));
 
-	// Deixa o TCP_NODELAY o nagle algorithm desligado para teste se o message mesmo com o keep alive ainda fica caindo e reconectando
+	// Leave TCP_NODELAY (nagle algorithm off) for testing whether the message server, even with keep alive, still keeps dropping and reconnecting
 	if (setsockopt(_accepted, IPPROTO_TCP, TCP_NODELAY, (char*)&tcp_nodelay, sizeof(tcp_nodelay)) == SOCKET_ERROR)
 		throw exception("[message_server::init_option_accepted_socket][Error] nao conseguiu desabilitar tcp delay(nagle algorithm).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 53, WSAGetLastError()));
 #elif defined(__linux__)
@@ -3175,16 +3175,16 @@ void message_server::init_option_accepted_socket(SOCKET _accepted) {
 	if (fcntl(_accepted.fd, F_SETFL, flag) != 0)
 		throw exception("[message_server::init_option_accepted_socket][Error] nao conseguiu habilitar o NONBLOCK(fcntl).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 53, errno));
 
-	// keepalive do linux
+	// Linux keepalive
 	int keepalive = 1; // Enable
 	if (setsockopt(_accepted.fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[message_server::init_option_accepted_socket][error] nao conseguiu habilitaro keepalive(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 53, errno));
 
-	keepalive = 20; // Keepalive 20 segundos
+	keepalive = 20; // Keepalive 20 seconds
 	if (setsockopt(_accepted.fd, SOL_TCP, TCP_KEEPIDLE, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[message_server::init_option_accepted_socket][Error] nao conseguiu setar o keepalive idl time(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 53, errno));
 
-	keepalive = 2;	// Keepalive interval probs, 2 segundos
+	keepalive = 2;	// Keepalive interval probes, 2 seconds
 	if (setsockopt(_accepted.fd, SOL_TCP, TCP_KEEPINTVL, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[message_server::init_option_accepted_socket][Error] nao conseguiu setar o keepalive interval pobs(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MESSAGE_SERVER, 53, errno));
 
@@ -3199,17 +3199,17 @@ void message_server::init_option_accepted_socket(SOCKET _accepted) {
 
 void message_server::config_init() {
 
-	// Tipo Server
+	// Server Type
 	m_si.tipo = 3;
 
-	// Recupera Valores de rate do server do banco de dados
+	// Retrieve the server rate values from the database
 	CmdRateConfigInfo cmd_rci(m_si.uid, true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_rci, nullptr, nullptr);
 
 	cmd_rci.waitEvent();
 
-	if (cmd_rci.getException().getCodeError() != 0 || cmd_rci.isError()/*Deu erro na consulta n�o tinha o rate config info para esse server, pode ser novo*/) {
+	if (cmd_rci.getException().getCodeError() != 0 || cmd_rci.isError()/*Query error, there was no rate config info for this server, it may be new*/) {
 
 		if (cmd_rci.getException().getCodeError() != 0)
 			_smp::message_pool::getInstance().push(new message("[message_server::config_init][ErrorSystem] " + cmd_rci.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -3223,22 +3223,22 @@ void message_server::config_init() {
 		m_si.rate.treasure = 100;
 		m_si.rate.memorial_shop = 100;
 		m_si.rate.chuva = 100;
-		m_si.rate.grand_zodiac_event_time = 1u;	// Ativo por padr�o
-		m_si.rate.grand_prix_event = 1u;		// Ativo por padr�o
-		m_si.rate.golden_time_event = 1u;		// Ativo por padr�o
-		m_si.rate.login_reward_event = 1u;		// Ativo por padr�o
-		m_si.rate.bot_gm_event = 1u;			// Ativo por padr�o
-		m_si.rate.smart_calculator = 1u;		// Atibo por padr�o
+		m_si.rate.grand_zodiac_event_time = 1u;	// Enabled by default
+		m_si.rate.grand_prix_event = 1u;		// Enabled by default
+		m_si.rate.golden_time_event = 1u;		// Enabled by default
+		m_si.rate.login_reward_event = 1u;		// Enabled by default
+		m_si.rate.bot_gm_event = 1u;			// Enabled by default
+		m_si.rate.smart_calculator = 1u;		// Enabled by default
 		
-		m_si.rate.angel_event = 0u;				// Desativado por padr�o
+		m_si.rate.angel_event = 0u;				// Disabled by default
 		m_si.rate.pang = 0u;
 		m_si.rate.exp = 0u;
 		m_si.rate.club_mastery = 0u;
 
-		// Atualiza no banco de dados
+		// Update in the database
 		snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateRateConfigInfo(m_si.uid, m_si.rate), message_server::SQLDBResponse, this);
 	
-	}else {	// Conseguiu recuperar com sucesso os valores do server
+	}else {	// Successfully retrieved the server values
 
 		m_si.rate.scratchy = cmd_rci.getInfo().scratchy;
 		m_si.rate.papel_shop_rare_item = cmd_rci.getInfo().papel_shop_rare_item;
@@ -3270,10 +3270,10 @@ void message_server::reload_files() {
 
 void message_server::reload_systems() {
 
-	// Recarrega IFF_STRUCT
+	// Reload IFF_STRUCT
 	sIff::getInstance().load();
 
-	// Recarrega Smart Calculator Lib, s� recarrega se ele estiver ativado
+	// Reload Smart Calculator Lib, only reloads if it is enabled
 	if (m_si.rate.smart_calculator)
 		sSmartCalculator::getInstance().load();
 }
@@ -3287,7 +3287,7 @@ void message_server::reloadGlobalSystem(uint32_t _tipo) {
 			reload_systems();
 			break;
 		case 1:		// IFF
-			// Recarrega IFF_STRUCT
+			// Reload IFF_STRUCT
 			sIff::getInstance().load();
 			break;
 		case 2:		// Card
@@ -3295,21 +3295,21 @@ void message_server::reloadGlobalSystem(uint32_t _tipo) {
 		case 4:		// Papel Shop
 		case 5:		// Box
 		case 6:		// Memorial Shop
-		case 7:		// Cube e Coin
+		case 7:		// Cube and Coin
 		case 8:		// Treasure Hunter
 		case 9:		// Drop
 		case 10:	// Attendance Reward
-		case 11:	// Map Course Dados
+		case 11:	// Map Course Data
 		case 12:	// Approach Mission
 		case 13:	// Grand Zodiac Event
 		case 14:	// Coin Cube Location Update System
 		case 15:	// Golden Time System
 		case 16:	// Login Reward System
 		case 17:	// Bot GM Event
-			// N�o tem esses Systemas aqui
+			// These Systems are not here
 			break;
 		case 18:	// Smart Calculator Lib
-			// Recarrega Smart Calculator Lib
+			// Reload Smart Calculator Lib
 			sSmartCalculator::getInstance().load();
 			break;
 		default:
@@ -3339,7 +3339,7 @@ void message_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		case 0: // Pang
 		case 1:	// Exp
 		case 2:	// Mastery
-		case 3:	// Chuva
+		case 3:	// Rain
 		case 4:	// Treasure Hunter
 		case 5:	// Scratchy
 		case 6:	// Papel Shop Rare Item
@@ -3355,7 +3355,7 @@ void message_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.smart_calculator = (short)_qntd;
 
-			// Recarrega o Smart Calculator System se ele foi ativado
+			// Reload the Smart Calculator System if it was enabled
 			if (m_si.rate.smart_calculator)
 				reloadGlobalSystem(18/*Smart Calculator*/);
 
@@ -3366,7 +3366,7 @@ void message_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 					+ std::to_string(_qntd) + "], tipo desconhecido.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 120, 0));
 		}
 
-		// Update no DB os server do server que foram alterados
+		// Update in the DB the server values that were changed
 		snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateRateConfigInfo(m_si.uid, m_si.rate), message_server::SQLDBResponse, this);
 
 		// Log

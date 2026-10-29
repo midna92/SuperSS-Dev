@@ -1,6 +1,6 @@
-// Arquivo cmd_ticket_report_dados_info.hpp
-// Criado em 13/10/218 as 13:14 por Acrisio
-// Defini��o da classe CmdTicketReportDadosInfo
+// File cmd_ticket_report_dados_info.hpp
+// Created on 13/10/218 at 13:14 by Acrisio
+// Definition of the class CmdTicketReportDadosInfo
 
 #pragma once
 #ifndef _STDA_CMD_TICKET_REPORT_DADOS_INFO_HPP

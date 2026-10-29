@@ -1,6 +1,6 @@
-// Arquivo cmd_add_dolfini_locker_item.cpp
-// Criado em 02/06/2018 as 23:28 por Acrisio
-// Implementa��o da classe CmdAddDolfiniLockerItem
+// File cmd_add_dolfini_locker_item.cpp
+// Created on 02/06/2018 at 23:28 by Acrisio
+// Implementation of the class CmdAddDolfiniLockerItem
 
 #if defined(_WIN32)
 #pragma pack(1)

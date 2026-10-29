@@ -1,6 +1,6 @@
-// Arquivo cmd_add_login_reward_player.cpp
-// Criado em 27/10/2020 as 19:37 por Acrisio
-// Implementa��o da classe CmdAddLoginRewardPlayer
+// File cmd_add_login_reward_player.cpp
+// Created on 27/10/2020 at 19:37 by Acrisio
+// Implementation of the class CmdAddLoginRewardPlayer
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_item.hpp
-// Criado em 24/10/2020 as 02:44 por Acrisio
-// Defini��o da classe CmdGoldenTimeItem
+// File cmd_golden_time_item.hpp
+// Created on 24/10/2020 at 02:44 by Acrisio
+// Definition of the class CmdGoldenTimeItem
 
 #pragma once
 #ifndef _STDA_CMD_GOLDEN_TIME_ITEM_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_server_key.cpp
-// Criado em 15/12/2018 as 15:25 por Acrisio
-// Implementação da classe CmdAuthServerKey
+// File cmd_auth_server_key.cpp
+// Created on 15/12/2018 at 15:25 by Acrisio
+// Implementation of class CmdAuthServerKey
 
 #if defined(_WIN32)
 #pragma pack(1)

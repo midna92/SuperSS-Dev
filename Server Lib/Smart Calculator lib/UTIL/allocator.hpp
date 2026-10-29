@@ -1,6 +1,6 @@
-// Arquivo allocator.hpp
-// Criado em 21/11/2020 as 10:38 por Acrisio
-// Definição e Implementação de alocadores
+// File allocator.hpp
+// Created on 21/11/2020 at 10:38 by Acrisio
+// Definition and implementation of allocators
 
 #pragma once
 #ifndef _STDA_ALLOCATOR_HPP

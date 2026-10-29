@@ -1,6 +1,6 @@
-// Arquivo cmd_pay_caddie_holy_day.hpp
-// Criado em 15/07/2018 as 18:26 por Acrisio
-// Defini��o da classe CmdPayCaddieHolyDay
+// File cmd_pay_caddie_holy_day.hpp
+// Created on 15/07/2018 at 18:26 by Acrisio
+// Definition of the class CmdPayCaddieHolyDay
 
 #pragma once
 #ifndef _STDA_CMD_PAY_CADDIE_HOLY_DAY_HPP

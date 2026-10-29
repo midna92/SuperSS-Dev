@@ -1,6 +1,6 @@
-// Arquivo approach_type.hpp
-// Criado em 12/06/2020 as 12:01 por Acrisio
-// Defini��o dos tipos usados no Approach
+// File approach_type.hpp
+// Created on 12/06/2020 at 12:01 by Acrisio
+// Definition of the types used in Approach
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -65,11 +65,11 @@ namespace stdA {
 			}
 
 		public:
-			unsigned char numero;			// N�mero da miss�o
-			unsigned char box_qntd;			// Quantidade de box que a miss�o d�
-			eMISSION_TYPE tipo;				// Tipo da miss�o = Co-op, free-for-all; Players Reward (one player, all players, Everybody who clears)
-			uint32_t condition[2];		// Condi��es da miss�o, 1 e 2
-			std::string nick;				// Nick name do player se a miss�o tiver uma condi��o para o player
+			unsigned char numero;			// Mission number
+			unsigned char box_qntd;			// Number of boxes the mission gives
+			eMISSION_TYPE tipo;				// Mission type = Co-op, free-for-all; Players Reward (one player, all players, Everybody who clears)
+			uint32_t condition[2];		// Mission conditions, 1 and 2
+			std::string nick;				// Player nickname if the mission has a condition for the player
 	};
 
 	struct mission_approach_ex : public mission_approach {
@@ -87,7 +87,7 @@ namespace stdA {
 			};
 			
 		public:
-			bool is_player_uid;		// Tem que colocar o player uid e o nick do player
+			bool is_player_uid;		// Must set the player uid and the player nick
 	};
 
 	struct mission_approach_dados {
@@ -95,9 +95,9 @@ namespace stdA {
 			union uMissionFlag{
 				uint32_t flag;
 				struct {
-					uint32_t players : 5;		// O m�nimo de player que pode ter para ativar a miss�o, 0 permite todos
-					uint32_t condition1 : 13;	// Condi��o que vai ter Ex: player rank 5 chip in completa a miss�o
-					uint32_t condition2 : 13;	// Condi��o 2 � a mesma da 1 se precisar da segunda
+					uint32_t players : 5;		// The minimum number of players required to activate the mission, 0 allows all
+					uint32_t condition1 : 13;	// Condition that will exist Ex: player rank 5 chip in completes the mission
+					uint32_t condition2 : 13;	// Condition 2 is the same as 1 if the second is needed
 				}bits;
 			};
 
@@ -123,8 +123,8 @@ namespace stdA {
 	struct approach_dados {
 		public:
 			enum eSTATUS : unsigned char {
-				IN_GAME,			// Est� no jogo
-				LEFT_GAME			// Deixou o jogo
+				IN_GAME,			// Is in the game
+				LEFT_GAME			// Left the game
 			};
 
 		public:
@@ -151,11 +151,11 @@ namespace stdA {
 			eSTATUS status;
 			uint32_t oid;
 			uint32_t uid;
-			unsigned char position;		// Posi��o do player, -1 nenhuma
-			uint32_t box;			// N�mero de box que o player ganhou
-			uint32_t distance;		// Dist�ncia que o player ficou do hole, -1 se fez chip-in, timeout, OB ou Water hazard
-			uint32_t time;			// Tempo da tacada do player, -1 se ele fez chip-in, timeout, OB ou Water hazard
-			unsigned short rank_box;	// Box por Top Rank e no final do Approach
+			unsigned char position;		// Player position, -1 none
+			uint32_t box;			// Number of boxes the player won
+			uint32_t distance;		// Distance the player was from the hole, -1 if chip-in, timeout, OB or Water hazard
+			uint32_t time;			// Player shot time, -1 if chip-in, timeout, OB or Water hazard
+			unsigned short rank_box;	// Boxes by Top Rank and at the end of Approach
 	};
 
 	struct approach_dados_ex : public approach_dados {
@@ -175,8 +175,8 @@ namespace stdA {
 
 			enum eSTATE_QUIT : unsigned char {
 				SQ_IN_GAME,
-				SQ_QUIT_START,		// Quitou mas tem que mostrar no score board do hole
-				SQ_QUIT_ENDED		// Quitou e j� foi mostrado no score board do hole que ele quitou
+				SQ_QUIT_START,		// Quit but must be shown on the hole score board
+				SQ_QUIT_ENDED		// Quit and it was already shown on the hole score board that he quit
 			};
 
 		public:
@@ -198,7 +198,7 @@ namespace stdA {
 			};
 			void toPacket(packet& _packet) {
 
-				// status � o primeiro addr dos dados da fun��o
+				// status is the first addr of the function data
 				//_packet.addBuffer(&status, sizeof(approach_dados) - sizeof(this)/*Sizeof pointer (Pointer of virtual table, vtable)*/);
 
 				_packet.addUint8(status);
@@ -236,7 +236,7 @@ namespace stdA {
 			eSTATE_QUIT state_quit;
 	};
 
-	// Polimorfirsmo da struct PlayerGameInfo
+	// Polymorphism of struct PlayerGameInfo
 	struct PlayerApproachInfo : public PlayerGameInfo {
 		public:
 			PlayerApproachInfo(uint32_t _ul = 0u) : PlayerGameInfo(_ul), m_app_dados{0} {
@@ -254,7 +254,7 @@ namespace stdA {
 			};
 
 		public:
-			approach_dados_ex m_app_dados;		// Approach dados do player
+			approach_dados_ex m_app_dados;		// Approach player data
 	};
 
 #if defined(__linux__)

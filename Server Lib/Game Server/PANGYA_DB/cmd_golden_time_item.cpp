@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_item.cpp
-// Criado em 24/10/2020 as 02:50 por Acrisio
-// Implementa��o da classe CmdGoldenTimeItem
+// File cmd_golden_time_item.cpp
+// Created on 24/10/2020 at 02:50 by Acrisio
+// Implementation of the class CmdGoldenTimeItem
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_memorial_level_info.hpp
-// Criado em 22/07/2018 as 12:09 por Acrisio
-// Defini��o da classe CmdMemorialLevelInfo
+// File cmd_memorial_level_info.hpp
+// Created on 22/07/2018 at 12:09 by Acrisio
+// Definition of the class CmdMemorialLevelInfo
 
 #pragma once
 #ifndef _STDA_CMD_MEMORIAL_LEVEL_INFO_HPP

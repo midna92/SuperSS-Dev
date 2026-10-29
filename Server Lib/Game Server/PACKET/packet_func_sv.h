@@ -1,6 +1,6 @@
-// Arquivo packet_func_sv.h
-// Criado em 13/08/2017 por Acrisio
-// Definição da classe packet_func para o Game Server
+// File packet_func_sv.h
+// Created on 13/08/2017 by Acrisio
+// Definition of the packet_func class for the Game Server
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_SV_H
@@ -40,21 +40,21 @@
 namespace stdA {
     class packet_func : public packet_func_base {
         public:
-            // cliente
+            // client
             static int packet002(void* _arg1, void* _arg2);	// Login
-			static int packet003(void* _arg1, void* _arg2);	// Msg player
-			static int packet004(void* _arg1, void* _arg2);	// Entra canal
+			static int packet003(void* _arg1, void* _arg2);	// Player msg
+			static int packet004(void* _arg1, void* _arg2);	// Enter channel
 			static int packet006(void* _arg1, void* _arg2);	// [Game] request::Finish Game
 			static int packet007(void* _arg1, void* _arg2);	// Check Nick
-			static int packet008(void* _arg1, void* _arg2);	// Cria sala
-			static int packet009(void* _arg1, void* _arg2);	// Entra na sala
-			static int packet00A(void* _arg1, void* _arg2);	// Troca info da sala
-			static int packet00B(void* _arg1, void* _arg2);	// Att Item no Canal Ex: Character
-			static int packet00C(void* _arg1, void* _arg2);	// Att Item na Sala Ex: Character
-			static int packet00D(void* _arg1, void* _arg2); // Att Estado do player na sala
-			static int packet00E(void* _arg1, void* _arg2);	// [Game] request::Começa Jogo
-			static int packet00F(void* _arg1, void* _arg2);	// Sai da sala
-			static int packet010(void* _arg1, void* _arg2);	// Troca o team do player na sala
+			static int packet008(void* _arg1, void* _arg2);	// Create room
+			static int packet009(void* _arg1, void* _arg2);	// Enter room
+			static int packet00A(void* _arg1, void* _arg2);	// Change room info
+			static int packet00B(void* _arg1, void* _arg2);	// Update Item in the Channel Ex: Character
+			static int packet00C(void* _arg1, void* _arg2);	// Update Item in the Room Ex: Character
+			static int packet00D(void* _arg1, void* _arg2); // Update player state in the room
+			static int packet00E(void* _arg1, void* _arg2);	// [Game] request::Start Game
+			static int packet00F(void* _arg1, void* _arg2);	// Leave room
+			static int packet010(void* _arg1, void* _arg2);	// Change the player's team in the room
 			static int packet011(void* _arg1, void* _arg2);	// [Game] request::Finish Load Hole
 			static int packet012(void* _arg1, void* _arg2);	// [Game] request::Init Shot
 			static int packet013(void* _arg1, void* _arg2);	// [Game] request::Change Mira
@@ -64,45 +64,45 @@ namespace stdA {
 			static int packet017(void* _arg1, void* _arg2);	// [Game] request::Use Active Item
 			static int packet018(void* _arg1, void* _arg2);	// [Game] request::Change State Typeing "Escrevendo"
 			static int packet019(void* _arg1, void* _arg2);	// [Game] request::Move Ball
-			static int packet01A(void* _arg1, void* _arg2);	// [Game] request::Inicializa o Hole
+			static int packet01A(void* _arg1, void* _arg2);	// [Game] request::Initialize the Hole
 			static int packet01B(void* _arg1, void* _arg2);	// [Game] request::Sync Shot
 			static int packet01C(void* _arg1, void* _arg2); // [Game] request::Finish Shot
-			static int packet01D(void* _arg1, void* _arg2);	// [Shop] Compra Item Shop
-			static int packet01F(void* _arg1, void* _arg2);	// [Shop] Presente para um outro player
-			static int packet020(void* _arg1, void* _arg2);	// Update Item equipado
+			static int packet01D(void* _arg1, void* _arg2);	// [Shop] Buy Item Shop
+			static int packet01F(void* _arg1, void* _arg2);	// [Shop] Gift for another player
+			static int packet020(void* _arg1, void* _arg2);	// Update equipped Item
 			static int packet022(void* _arg1, void* _arg2);	// [Game] request::Start Turn Time
-			static int packet026(void* _arg1, void* _arg2);	// Chuta(Kick) o player da sala
-			static int packet029(void* _arg1, void* _arg2);	// [Invite Room] request:: Invite Room Info, algo do tipo, o Original o server num retorna nada
+			static int packet026(void* _arg1, void* _arg2);	// Kick the player from the room
+			static int packet029(void* _arg1, void* _arg2);	// [Invite Room] request:: Invite Room Info, something like that, the original server returns nothing
 			static int packet02A(void* _arg1, void* _arg2);	// [Private Message] request:: Private Message
-			static int packet02D(void* _arg1, void* _arg2);	// Info Sala
-			static int packet02F(void* _arg1, void* _arg2);	// Info Player
+			static int packet02D(void* _arg1, void* _arg2);	// Room Info
+			static int packet02F(void* _arg1, void* _arg2);	// Player Info
 			static int packet030(void* _arg1, void* _arg2);	// [Game] request::Pause Or UnPause Game
 			static int packet031(void* _arg1, void* _arg2);	// [Game] request::Finish Hole Data
-			static int packet032(void* _arg1, void* _arg2);	// Troca o estado do Player na sala(AFK or normal)
+			static int packet032(void* _arg1, void* _arg2);	// Change the Player's state in the room(AFK or normal)
 			static int packet033(void* _arg1, void* _arg2);	// Client send exception message of crash client
 			static int packet034(void* _arg1, void* _arg2);	// [Game] request::Finish Char Intro
 			static int packet035(void* _arg1, void* _arg2);	// [Game] request Team Finish Hole
-			static int packet036(void* _arg1, void* _arg2);	// [Game] request:: Resposta se quer continuar o Versus
+			static int packet036(void* _arg1, void* _arg2);	// [Game] request:: Answer whether to continue the Versus
 			static int packet037(void* _arg1, void* _arg2);	// [Game] request::Finish VERSUS Last Player On VERSUS
-			static int packet039(void* _arg1, void* _arg2);	// [Caddie Pay Day Holy::Paga Ferias do Caddie] request::PayHolyDay
+			static int packet039(void* _arg1, void* _arg2);	// [Caddie Pay Day Holy::Pays the Caddie's Holidays] request::PayHolyDay
 			static int packet03A(void* _arg1, void* _arg2);	// [Game] request::Report Game Chat
 
-			// 2018-03-04 19:26:39.633	Tipo: 60(0x3C), desconhecido ou nao implementado. func_arr::getPacketCall()	 Error Code: 335609856
+			// 2018-03-04 19:26:39.633	Type: 60(0x3C), unknown or not implemented. func_arr::getPacketCall()	 Error Code: 335609856
 			// 2018-03-04 19:26:39.633	size packet: 4
 			//
 			//0000 3C 00 1F 01 -- -- -- -- -- -- -- -- -- -- -- -- 	<...............
-			//static int packet03C(void* _arg1, void* _arg2);	// manda msg OFF na opção 0x6F e a opção 0x11F pede a lista de amigos para enviar presente
+			//static int packet03C(void* _arg1, void* _arg2);	// sends msg OFF on option 0x6F and option 0x11F requests the friend list to send a gift
 			
 			static int packet03C(void* _arg1, void* _arg2);	// [Sub Packet Request]. 0x111[MSG OFF], 0x11F[LIST FRIEND]
 			static int packet03D(void* _arg1, void* _arg2);	// [Cookie] request Cookies
 			static int packet03E(void* _arg1, void* _arg2); // [Game][GM::Spy] request::EnterSpyRoom(Observer)
 			static int packet041(void* _arg1, void* _arg2);	// [Command GM] request::Identity
 			static int packet042(void* _arg1, void* _arg2);	// [Game] request::Init Shot Arrow Sequence
-			static int packet043(void* _arg1, void* _arg2);	// [Server] Pede Server List
+			static int packet043(void* _arg1, void* _arg2);	// [Server] Request Server List
 			static int packet047(void* _arg1, void* _arg2);	// [Rank] request::Rank Server
 			static int packet048(void* _arg1, void* _arg2);	// [Game] request::LoadGamePercent
 			static int packet04A(void* _arg1, void* _arg2);	// [Game] request::Active Replay
-			static int packet04B(void* _arg1, void* _arg2);	// [UpdateStats(ClubSet/Character*)] request::UpdateStats, *Character só nas season's passadas
+			static int packet04B(void* _arg1, void* _arg2);	// [UpdateStats(ClubSet/Character*)] request::UpdateStats, *Character only in past seasons
 			static int packet04F(void* _arg1, void* _arg2);	// [Game] request::Change State Chat Block
 			static int packet054(void* _arg1, void* _arg2);	// [Game] request::Chat Team
 			static int packet055(void* _arg1, void* _arg2);	// [Private Message] request::Change Whisper State
@@ -116,11 +116,11 @@ namespace stdA {
 			// Disconnect User, 2 Bytes Online ID
 			// 0000 61 00 00 00 00 00 -- -- -- -- -- -- -- -- -- --a...............
 			static int packet061(void* _arg1, void* _arg2);	// [Command GM] request::Disconnect User(oid)
-			static int packet063(void* _arg1, void* _arg2);	// Att Coordenada do Player na sala
+			static int packet063(void* _arg1, void* _arg2);	// Update Player coordinates in the room
 			static int packet064(void* _arg1, void* _arg2);	// [DeleteActiveItem] request::DeleteActiveItem
 			static int packet065(void* _arg1, void* _arg2);	// [Game] request::Active Booster
 			static int packet066(void* _arg1, void* _arg2);	// [Ticker] request::Send Ticker
-			static int packet067(void* _arg1, void* _arg2);	// [Ticker] request::File Ticker Dados
+			static int packet067(void* _arg1, void* _arg2);	// [Ticker] request::File Ticker Data
 			static int packet069(void* _arg1, void* _arg2);	// [ChatMacro] request::ChangeChatMacroUser
 			static int packet06B(void* _arg1, void* _arg2);	// [Caddie] request::Set Notice Caddie Holy Day
 			static int packet073(void* _arg1, void* _arg2);	// [MyRoom] request::Change Message Mascot
@@ -134,54 +134,54 @@ namespace stdA {
 			static int packet07B(void* _arg1, void* _arg2);	// [Personal Shop] request::PangSale
 			static int packet07C(void* _arg1, void* _arg2);	// [Personal Shop] request::OpenSaleShop
 			static int packet07D(void* _arg1, void* _arg2);	// [Personal Shop] request::BuyItemSaleShop
-			static int packet081(void* _arg1, void* _arg2);	// Entra na lobby multiplayer
-			static int packet082(void* _arg1, void* _arg2); // Sai da lobby multiplayer
-			static int packet083(void* _arg1, void* _arg2);	// Troca de canal apartir da lobby
+			static int packet081(void* _arg1, void* _arg2);	// Enter the multiplayer lobby
+			static int packet082(void* _arg1, void* _arg2); // Leave the multiplayer lobby
+			static int packet083(void* _arg1, void* _arg2);	// Change channel from the lobby
 			static int packet088(void* _arg1, void* _arg2);	// [GameGuard] Reply GameGuard Auth
-			static int packet08B(void* _arg1, void* _arg2);	// Pede Msn Server
+			static int packet08B(void* _arg1, void* _arg2);	// Request Server Msn
 			static int packet08F(void* _arg1, void* _arg2);	// [Command GM] request::Command GM
 			static int packet098(void* _arg1, void* _arg2);	// [Papel Shop] request::Open Papel Shop
-			static int packet09C(void* _arg1, void* _arg2);	// Pede os ultimos 5 Players que Jogou
+			static int packet09C(void* _arg1, void* _arg2);	// Request the last 5 Players played with
 			static int packet09D(void* _arg1, void* _arg2);	// [Game] request::EnterGameAfterStarted
 			static int packet09E(void* _arg1, void* _arg2);	// [Gacha Coupon] request::UpdateGachaCoupon
-			static int packet0A1(void* _arg1, void* _arg2);	// [Web Link] request Enter Web Link 1 byte qual web link
-			static int packet0A2(void* _arg1, void* _arg2);	// [Web Link] request Quit Web Link. (Só vi ele sendo utilizado no Guild WebLink)
+			static int packet0A1(void* _arg1, void* _arg2);	// [Web Link] request Enter Web Link 1 byte which web link
+			static int packet0A2(void* _arg1, void* _arg2);	// [Web Link] request Quit Web Link. (I only saw it used in the Guild WebLink)
 			static int packet0AA(void* _arg1, void* _arg2);	// [Game] request::Use Ticket Report ON Tourney
 			static int packet0AB(void* _arg1, void* _arg2);	// [Ticket Report Scroll] request::Open Ticket Report Scroll
 			static int packet0AE(void* _arg1, void* _arg2);	// [Tutorial] request::MakeTutorial
 			static int packet0B2(void* _arg1, void* _arg2);	// [Box System] request::Open Box MyRoom
-			static int packet0B4(void* _arg1, void* _arg2);	// Ele manda o número da sala que ele foi convidado e aceito e depois relogou com o game server, aí ele manda esse pacote com o número da sala
-			static int packet0B5(void* _arg1, void* _arg2);	// Pede para entrar no my room do player
-			static int packet0B7(void* _arg1, void* _arg2);	// Pede o character equipado do player no my room
-			static int packet0B9(void* _arg1, void* _arg2);	// [UCC::Self Design System] request:: Info, [Salve Temporario ou eterno]
+			static int packet0B4(void* _arg1, void* _arg2);	// It sends the number of the room he was invited to and accepted, and after relogging into the game server, it sends this packet with the room number
+			static int packet0B5(void* _arg1, void* _arg2);	// Request to enter the player's my room
+			static int packet0B7(void* _arg1, void* _arg2);	// Request the player's equipped character in my room
+			static int packet0B9(void* _arg1, void* _arg2);	// [UCC::Self Design System] request:: Info, [Save Temporary or permanent]
 			static int packet0BA(void* _arg1, void* _arg2);	// [Room:: Invite Player] request::Invite Player
 			static int packet0BD(void* _arg1, void* _arg2);	// [CardSpecial] request::Use card special
-			static int packet0C1(void* _arg1, void* _arg2);	// Att Place(lugar) do player
-			static int packet0C9(void* _arg1, void* _arg2);	// [UCC::Self Design System] request::Key For Save UCC(temporario ou para sempre)
+			static int packet0C1(void* _arg1, void* _arg2);	// Update the player's Place
+			static int packet0C9(void* _arg1, void* _arg2);	// [UCC::Self Design System] request::Key For Save UCC(temporary or forever)
 			static int packet0CA(void* _arg1, void* _arg2);	// [CardSystem] request::Open Card Pack
 			static int packet0CB(void* _arg1, void* _arg2);	// [Game::Approach] request::FinishGame
 			static int packet0CC(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Check Pass Enter Dolfini Locker
 			static int packet0CD(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Item(ns)
 			static int packet0CE(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Add Item
 			static int packet0CF(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Remove Item
-			static int packet0D0(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Cria senha
-			static int packet0D1(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Trocar senha
-			static int packet0D2(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Trocar Modo de Entrar, se precisa de senha ou nao
-			static int packet0D3(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Check if have Dolfini Locker Password(Verifica se tem dolfini locker senha)
+			static int packet0D0(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Create password
+			static int packet0D1(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Change password
+			static int packet0D2(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Change Enter Mode, whether a password is required or not
+			static int packet0D3(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Check if have Dolfini Locker Password(Checks whether there is a dolfini locker password)
 			static int packet0D4(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Update Pang
 			static int packet0D5(void* _arg1, void* _arg2);	// [Dolfini Locker] request::Pang
 			static int packet0D8(void* _arg1, void* _arg2);	// [Item Buff] request::Use item buff
-			static int packet0DE(void* _arg1, void* _arg2);	// player não pode ver a mensagem que o player(nickname) mandou para ele, o player está avisando para o server que ele não pode ver a mensagem.
+			static int packet0DE(void* _arg1, void* _arg2);	// player cannot see the message that the player(nickname) sent to him, the player is notifying the server that he cannot see the message.
 			static int packet0E5(void* _arg1, void* _arg2);	// [Game] request::Active Cutin
 			static int packet0E6(void* _arg1, void* _arg2);	// [Rental] request::Extend
 			static int packet0E7(void* _arg1, void* _arg2);	// [Rental] request::Delete
-			static int packet0EB(void* _arg1, void* _arg2);	// Pede o Estado do Character Equipado do player no lounge
+			static int packet0EB(void* _arg1, void* _arg2);	// Request the state of the player's Equipped Character in the lounge
 			static int packet0EC(void* _arg1, void* _arg2);	// [CometRefill] request:: Refill Comet
 			static int packet0EF(void* _arg1, void* _arg2);	// [Box System] request::Open Box MailBox
 			static int packet0F4(void* _arg1, void* _arg2); // TTL(Time to Live) heartbeat
 			static int packet0FB(void* _arg1, void* _arg2);	// Web Key Auth
-			static int packet0FE(void* _arg1, void* _arg2); // Pede o pacote1B1 com uns valores que ainda não sei direito
-			static int packet119(void* _arg1, void* _arg2);	// Troca de server
+			static int packet0FE(void* _arg1, void* _arg2); // Requests the packet1B1 with some values that I don't fully know yet
+			static int packet119(void* _arg1, void* _arg2);	// Change server
 			static int packet126(void* _arg1, void* _arg2);	// [Tiki Shop(PointShop)] request::requestOpenPointShop
 			static int packet127(void* _arg1, void* _arg2);	// [Tiki Shop(PointShop)] request::requestPointShop Points
 			static int packet128(void* _arg1, void* _arg2);	// [Tiki Shop(PointShop)] request::requestExchangeTPByItem
@@ -194,24 +194,24 @@ namespace stdA {
 			static int packet131(void* _arg1, void* _arg2);	// [Game] request::Exit Chip-in Practice
 			static int packet137(void* _arg1, void* _arg2);	// [Game] request::Start First Hole Grand Zodiac
 			static int packet138(void* _arg1, void* _arg2);	// [Game] request::Active Wing
-			static int packet140(void* _arg1, void* _arg2);	// Quando entra no shop manda esse pacote
+			static int packet140(void* _arg1, void* _arg2);	// Sends this packet when entering the shop
 			static int packet141(void* _arg1, void* _arg2);	// [Game] request::Change Wind Next Hole Repeat
-			static int packet143(void* _arg1, void* _arg2); // [MailBox] Abre o MailBox
+			static int packet143(void* _arg1, void* _arg2); // [MailBox] Open the MailBox
 			static int packet144(void* _arg1, void* _arg2); // [MailBox] Info Email
 			static int packet145(void* _arg1, void* _arg2);	// [MailBox] Send Email With/out Item
-			static int packet146(void* _arg1, void* _arg2); // [MailBox] Move Item Para o Armario
-			static int packet147(void* _arg1, void* _arg2);	// [MailBox] Exclui Email
+			static int packet146(void* _arg1, void* _arg2); // [MailBox] Move Item to the Wardrobe
+			static int packet147(void* _arg1, void* _arg2);	// [MailBox] Delete Email
 			static int packet14B(void* _arg1, void* _arg2);	// [Papel Shop] request::Play Papel Shop Normal
-			static int packet151(void* _arg1, void* _arg2); // [DailyQuest] Abre DailyQuest
-			static int packet152(void* _arg1, void* _arg2);	// [DailyQuest] Aceite DailyQuest
-			static int packet153(void* _arg1, void* _arg2); // [DailyQuest] Request pega recompensa da quest
-			static int packet154(void* _arg1, void* _arg2);	// [DailyQuest] Desiste da(s) Quest aceita anteriormente
+			static int packet151(void* _arg1, void* _arg2); // [DailyQuest] Open DailyQuest
+			static int packet152(void* _arg1, void* _arg2);	// [DailyQuest] Accept DailyQuest
+			static int packet153(void* _arg1, void* _arg2); // [DailyQuest] Request to get the quest reward
+			static int packet154(void* _arg1, void* _arg2);	// [DailyQuest] Give up the previously accepted Quest(s)
 			static int packet155(void* _arg1, void* _arg2); // [CardSystem::LoloCardCompose] request::Card Compose
 			static int packet156(void* _arg1, void* _arg2);	// [Game] request::Active Auto Command
-			static int packet157(void* _arg1, void* _arg2); // [Achievement] request::Abre Achievement
+			static int packet157(void* _arg1, void* _arg2); // [Achievement] request::Open Achievement
 			static int packet158(void* _arg1, void* _arg2);	// [CadieMagicBox] request::Exchange Item
 			static int packet15C(void* _arg1, void* _arg2);	// [Game] request::Active Paws
-			static int packet15D(void* _arg1, void* _arg2);	// [Game] request::Active Ring	[Esse é o Pacote de 1 Anel]
+			static int packet15D(void* _arg1, void* _arg2);	// [Game] request::Active Ring	[This is the 1 Ring Packet]
 			static int packet164(void* _arg1, void* _arg2);	// [ClubSet Workshop] request::Up Level
 			static int packet165(void* _arg1, void* _arg2);	// [ClubSet Workshop] request::Up Level Confirm
 			static int packet166(void* _arg1, void* _arg2);	// [ClubSet Workshop] request::Up Level Cancel
@@ -221,8 +221,8 @@ namespace stdA {
 			static int packet16B(void* _arg1, void* _arg2);	// [ClubSet Workshop] request::Recovery Pts
 			static int packet16C(void* _arg1, void* _arg2);	// [ClubSet Workshop] request::Transfer Mastery Pts
 			static int packet16D(void* _arg1, void* _arg2);	// [ClubSet Reset] request::ClubSet Reset
-			static int packet16E(void* _arg1, void* _arg2); // [AttendenceReward] Abre AttendenceReward
-			static int packet16F(void* _arg1, void* _arg2); // [AttendenceReward] Counta o AttendenceReward do dia e abre ele
+			static int packet16E(void* _arg1, void* _arg2); // [AttendenceReward] Open AttendenceReward
+			static int packet16F(void* _arg1, void* _arg2); // [AttendenceReward] Counts the day's AttendenceReward and opens it
 			static int packet171(void* _arg1, void* _arg2);	// [Game] request::Active Earcuff
 			static int packet172(void* _arg1, void* _arg2);	// [Event] request::OpenEventWorkshop2013
 			static int packet176(void* _arg1, void* _arg2);	// [Grand Prix] request Enter Lobby Grand Prix
@@ -231,7 +231,7 @@ namespace stdA {
 			static int packet17A(void* _arg1, void* _arg2);	// [Grand Prix] request Leave Room Grand Prix
 			static int packet17F(void* _arg1, void* _arg2);	// [Memorial System] request::Play Memorial
 			static int packet180(void* _arg1, void* _arg2);	// [Game] request::Active Glove
-			static int packet181(void* _arg1, void* _arg2);	// [Game] request::Active Ring Terreno [Esse é o Pacote de combinação de 2 Aneis]
+			static int packet181(void* _arg1, void* _arg2);	// [Game] request::Active Ring Terreno [This is the 2 Rings combination Packet]
 			static int packet184(void* _arg1, void* _arg2);	// [Assist] request::Toggle Assist
 			static int packet185(void* _arg1, void* _arg2);	// [Assist] request::Active Assist Green
 			static int packet186(void* _arg1, void* _arg2);	// [Papel Shop] request::Play Papel Shop Big
@@ -335,12 +335,12 @@ namespace stdA {
 			static int						pacote249(packet& p, player *_session, AttendanceRewardInfo& ari, int option = 0);
 			static int						pacote257(packet& p, player *_session, uint32_t _uid, std::vector< TrofelEspecialInfo >& v_tegi, unsigned char season);
 			static int						pacote25D(packet& p, player *_session, std::vector< TrofelEspecialInfo >& v_element, int option = 0);
-			static int						pacote26D(packet& p, player *_session, uint32_t _unix_end_date);	// Passa o Unix End Date do Premium Ticket
+			static int						pacote26D(packet& p, player *_session, uint32_t _unix_end_date);	// Passes the Unix End Date of the Premium Ticket
 
-			// Metôdos de auxílio
+			// Helper methods
 			static int principal(packet& p, PlayerInfo *pi, ServerInfoEx& _si);
 
-			// Metôdos de auxílio de criação de pacotes
+			// Helper methods for packet creation
 			static void channel_broadcast(channel& _channel, packet& p, unsigned char _debug);
 			static void channel_broadcast(channel& _channel, std::vector< packet* > v_p, unsigned char _debug);
 

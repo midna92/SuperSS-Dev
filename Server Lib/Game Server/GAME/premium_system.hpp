@@ -1,6 +1,6 @@
-// Arquivo premium_system.hpp
-// Criado em 28/10/2020 as 16:38 por Acrisio
-// Defini��o da classe PremiumSystem
+// File premium_system.hpp
+// Created on 28/10/2020 at 16:38 by Acrisio
+// Definition of the PremiumSystem class
 
 #pragma once
 #ifndef _STDA_PREMIUM_SYSTEM_HPP
@@ -18,7 +18,7 @@ namespace stdA {
 			PremiumSystem();
 			virtual ~PremiumSystem();
 
-			// Verifica se o tempo do ticket premium user acabou e manda a mensagem para o player, e exclui o ticket do player no SERVER, DB e GAME
+			// Checks whether the premium user ticket time has ended and sends the message to the player, and deletes the player's ticket on the SERVER, DB and GAME
 			void checkEndTimeTicket(player& _session);
 
 			void addPremiumUser(player& _session, WarehouseItemEx& _ticket, uint32_t _time);

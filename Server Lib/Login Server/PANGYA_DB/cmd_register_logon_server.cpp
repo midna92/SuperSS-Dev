@@ -1,6 +1,6 @@
-// Arquivo cmd_register_logon_server.cpp
-// Criado em 0/04/2018 as 20:52 por Acrisio
-// Implementa��o da classe CmdRegisterLogonServer
+// File cmd_register_logon_server.cpp
+// Created on 0/04/2018 at 20:52 by Acrisio
+// Implementation of the CmdRegisterLogonServer class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdRegisterLogonServer::~CmdRegisterLogonServer() {
 
 void CmdRegisterLogonServer::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

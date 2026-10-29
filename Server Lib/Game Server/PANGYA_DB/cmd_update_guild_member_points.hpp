@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_member_points.hpp
-// Criado em 29/12/2019 as 13:04 por Acrisio
-// Defini��o da classe CmdUpdateGuildMemberPoints
+// File cmd_update_guild_member_points.hpp
+// Created on 29/12/2019 at 13:04 by Acrisio
+// Definition of class CmdUpdateGuildMemberPoints
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_GUILD_MEMBER_POINTS_HPP

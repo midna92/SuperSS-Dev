@@ -1,6 +1,6 @@
-// Arquivo player_info.cpp
-// Criado em 29/07/2018 as 13:32 por Acrisio
-// Implementa��o da classe PlayerInfo
+// File player_info.cpp
+// Created on 29/07/2018 at 13:32 by Acrisio
+// Implementation of class PlayerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -30,7 +30,7 @@ void PlayerInfo::clear() {
 
 	m_state = 0u;
 
-	// Zera
+	// Reset
 #if defined(_WIN32)
 	InterlockedExchange(&m_logout, 0u);
 #elif defined(__linux__)

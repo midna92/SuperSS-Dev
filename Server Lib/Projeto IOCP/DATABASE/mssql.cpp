@@ -1,6 +1,6 @@
-// Arquivo mssql.cpp
-// Criado em 27/01/2018 as 23:30 Acrisio
-// Implentação da classe mssql
+// File mssql.cpp
+// Created on 27/01/2018 at 23:30 by Acrisio
+// Implementation of class mssql
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -27,7 +27,7 @@
 #define DB_NAME L"pangya"
 #define USER_NAME L"pangya"
 #define USER_PASS L"pangya"
-#define DB_PORT 1433u           // Essa opção só funciona se o sql server for o pago que o express não aceita o por IP
+#define DB_PORT 1433u           // This option only works if the sql server is the paid one, as the express edition does not accept it by IP
 
 using namespace stdA;
 
@@ -125,7 +125,7 @@ void mssql::init() {
 				SQLFreeHandle(SQL_HANDLE_DBC, &m_ctx.hDbc);
 		}
 
-		// Relança para quem chamou tratar o erro
+		// Rethrow so the caller handles the error
 		throw;
 	}
 };
@@ -164,7 +164,7 @@ void mssql::connect() {
 #if defined(_WIN32)
 		std::wstring connect_str = std::wstring(std::wstring(L"DSN=") + m_db_address + L";DATABASE=" + m_db_name + L";UID=" + m_user_name + L";PWD=" + m_user_pass);
 #elif defined(__linux__)
-		// wstring to u16string, Linux wstring é wchar_t que é char32_t
+		// wstring to u16string, on Linux wstring is wchar_t which is char32_t
 		std::u16string connect_str = [](std::wstring _el) -> std::u16string {
 			return std::u16string(_el.begin(), _el.end());
 		}(std::wstring(std::wstring(L"DSN=") + m_db_address + L";DATABASE=" + m_db_name + L";UID=" + m_user_name + L";PWD=" + m_user_pass));
@@ -198,7 +198,7 @@ void mssql::connect() {
 
 		m_connected = false;
 
-		// Relança para quem chamou tratar o erro
+		// Rethrow so the caller handles the error
 		throw;
 	}
 };
@@ -277,7 +277,7 @@ response* mssql::ExecQuery(std::wstring _query) {
 		do {
 
 			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLNumResultCols(m_ctx.hStmt, &numResults), _query);
-			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Linha afetadas, não é a quantidade de linha retornada não
+			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Affected rows, not the number of rows returned
 
 			res->setRowsAffected(numRows);
 
@@ -291,26 +291,26 @@ response* mssql::ExecQuery(std::wstring _query) {
 
 					while (ret == SQL_SUCCESS) {
 
-						result->addLine();	// Adiciona linha
+						result->addLine();	// Add row
 
 						for (i = 1; i <= (size_t)numResults; ++i) {
 							HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLColAttribute(m_ctx.hStmt, (SQLUSMALLINT)i, SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &szData), _query);
 
-							// Verifica tipo da coluna
+							// Check the column type
 							HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLColAttribute(m_ctx.hStmt, (SQLUSMALLINT)i, SQL_DESC_TYPE, NULL, 0, NULL, &type_col), _query);
 
 							col = result->getColAt(i - 1);
 							*col = new char[szData + 1];
 
-							// Estáva C_CHAR
+							// Was C_CHAR
 							if ((ret = SQLGetData(m_ctx.hStmt, (SQLUSMALLINT)i, (type_col == SQL_C_BINARY ? SQL_C_BINARY : SQL_C_CHAR), *col, szData + 1, &szData)) != SQL_SUCCESS)
 								HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, ret, _query);
 
-							// !@Error quando o valor era null, o SQLGetData retornava nada no buffer e -1 no szData
-							// e o cliente pensava que tinha dados por que a variável estava com lixo na memória
-							// e pensava que tinha dados.
-							// !$Correção Verifica se pegou valor nulo, ele retorna -1 no szData, 
-							// deleta o dados alocado e coloca o valor nullptr no ponteiro para o cliente saber
+							// !@Error when the value was null, SQLGetData returned nothing in the buffer and -1 in szData
+							// and the client thought there was data because the variable had garbage in memory
+							// and thought there was data.
+							// !$Fix Checks whether a null value was obtained, it returns -1 in szData, 
+							// delete the allocated data and set the pointer to nullptr so the client knows
 							if (szData <= 0 && *col != nullptr) {
 								delete[] *col;
 								*col = nullptr;
@@ -343,11 +343,11 @@ response* mssql::ExecQuery(std::wstring _query) {
 		if (STDA_ERROR_DECODE(e.getCodeError()) == GERAL_ERROR)
 			clear_stmt(_query);
 
-		// Erro no link de vinculação da conexão com o banco de dados, reconecta
+		// Error in the connection binding link with the database, reconnect
 		if (e.getMessageError().find("08S01") != std::string::npos || e.getFullMessageError().find("24000") != std::string::npos)
-			reconnect();	// Reconnecta
+			reconnect();	// Reconnect
 
-		// Relança para quem chamou tratar o erro
+		// Rethrow so the caller handles the error
 		throw;
 	}
 
@@ -375,8 +375,8 @@ response* mssql::ExecProc(std::wstring _proc_name, std::wstring _proc_params) {
     response *res = new response;
     result_set *result = nullptr;
 
-    // MYSQL USA PARENTESES MAS O MSSQL server não usa
-    // EXEMPLE: L"exec pangya.ProcGetGuildInfo 4218, 1"
+    // MYSQL USES PARENTHESES BUT MSSQL server does not
+    // EXAMPLE: L"exec pangya.ProcGetGuildInfo 4218, 1"
 	std::wstring _query = (L"exec " + _proc_name + L" " + _proc_params);
 
 	try {
@@ -401,7 +401,7 @@ response* mssql::ExecProc(std::wstring _proc_name, std::wstring _proc_params) {
 		do {
 
 			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLNumResultCols(m_ctx.hStmt, &numResults), _query);
-			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Linha afetadas, não é a quantidade de linha retornada não
+			HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Affected rows, not the number of rows returned
 
 			res->setRowsAffected(numRows);
 
@@ -416,26 +416,26 @@ response* mssql::ExecProc(std::wstring _proc_name, std::wstring _proc_params) {
 
 					while (ret == SQL_SUCCESS) {
 
-						result->addLine();	// Adiciona linha
+						result->addLine();	// Add row
 
 						for (i = 1; i <= (size_t)numResults; ++i) {
 							HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLColAttribute(m_ctx.hStmt, (SQLUSMALLINT)i, SQL_DESC_DISPLAY_SIZE, NULL, 0, NULL, &szData), _query);
 
-							// Verifica tipo da coluna
+							// Check the column type
 							HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLColAttribute(m_ctx.hStmt, (SQLUSMALLINT)i, SQL_DESC_TYPE, NULL, 0, NULL, &type_col), _query);
 
 							col = result->getColAt(i - 1);
 							*col = new char[szData + 1];
 
-							// Estáva C_CHAR
+							// Was C_CHAR
 							if ((ret = SQLGetData(m_ctx.hStmt, (SQLUSMALLINT)i, (type_col == SQL_C_BINARY ? SQL_C_BINARY : SQL_C_CHAR), *col, szData + 1, &szData)) != SQL_SUCCESS)
 								HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, ret, _query);
 
-							// !@Error quando o valor era null, o SQLGetData retornava nada no buffer e -1 no szData
-							// e o cliente pensava que tinha dados por que a variável estava com lixo na memória
-							// e pensava que tinha dados.
-							// !$Correção Verifica se pegou valor nulo, ele retorna -1 no szData, 
-							// deleta o dados alocado e coloca o valor nullptr no ponteiro para o cliente saber
+							// !@Error when the value was null, SQLGetData returned nothing in the buffer and -1 in szData
+							// and the client thought there was data because the variable had garbage in memory
+							// and thought there was data.
+							// !$Fix Checks whether a null value was obtained, it returns -1 in szData, 
+							// delete the allocated data and set the pointer to nullptr so the client knows
 							if (szData <= 0 && *col != nullptr) {
 								delete[] *col;
 								*col = nullptr;
@@ -468,11 +468,11 @@ response* mssql::ExecProc(std::wstring _proc_name, std::wstring _proc_params) {
 		if (STDA_ERROR_DECODE(e.getCodeError()) == GERAL_ERROR)
 			clear_stmt(_query);
 
-		// Erro no link de vinculação da conexão com o banco de dados, reconecta
+		// Error in the connection binding link with the database, reconnect
 		if (e.getMessageError().find("08S01") != std::string::npos || e.getFullMessageError().find("24000") != std::string::npos)
-			reconnect();	// Reconnecta
+			reconnect();	// Reconnect
 
-		// Relança para quem chamou tratar o erro
+		// Rethrow so the caller handles the error
 		throw;
 	}
 
@@ -513,7 +513,7 @@ void mssql::clear_stmt(std::wstring _query) {
 	do {
 
 		HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLNumResultCols(m_ctx.hStmt, &numResults), _query);
-		HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Linha afetadas, não é a quantidade de linha retornada não
+		HandleDiagnosticRecord(m_ctx.hStmt, SQL_HANDLE_STMT, GERAL_ERROR, SQLRowCount(m_ctx.hStmt, &numRows), _query);           // Affected rows, not the number of rows returned
 
 		if (numResults > 0) {
 			ret = SQLFetch(m_ctx.hStmt);
@@ -540,7 +540,7 @@ void mssql::clear_stmt(std::wstring _query) {
 
 void mssql::HandleDiagnosticRecord(SQLHANDLE hHandle, SQLSMALLINT hType, ERROR_TYPE _error_type, RETCODE RetCode, std::wstring _query) {
    
-	// Não precisa tratar a msg nenhum por que não tem, a operação executada foi um sucesso
+	// No need to handle any message because there is none, the executed operation was successful
 	if (RetCode == SQL_SUCCESS)
 		return;
 	
@@ -567,7 +567,7 @@ void mssql::HandleDiagnosticRecord(SQLHANDLE hHandle, SQLSMALLINT hType, ERROR_T
 		if (std::u16string((const char16_t*)wszState).compare(u"01004")/*wcsncmp((const wchar_t*)wszState, L"01004", 5)*/) {
 			
 			//swprintf((wchar_t*)wszMessage2, sizeof(wszMessage2), L"[%5.5S] %S (%d)\n", (const wchar_t*)wszState, (const wchar_t*)wszMessage, iError);
-			// tem que ser assim, por que MS usa char16_t no wchar_t, Linux é char32_t
+			// it has to be this way, because MS uses char16_t for wchar_t, Linux uses char32_t
 			std::u16string u16tmp = u"[";
 
 			u16tmp += (char16_t*)wszState;
@@ -592,7 +592,7 @@ void mssql::HandleDiagnosticRecord(SQLHANDLE hHandle, SQLSMALLINT hType, ERROR_T
 	if (RetCode == SQL_SUCCESS_WITH_INFO) {
 		if (!tmp.empty())
 			_smp::message_pool::getInstance().push(new message(tmp + (_query.empty() ? L"" : std::wstring(L". Query: " + _query)), CL_FILE_LOG_AND_CONSOLE));
-	}else if (RetCode != SQL_NO_DATA)	// Teste esse aqui não estava
+	}else if (RetCode != SQL_NO_DATA)	// Test, this one was not there
 		throw exception(tmp + (_query.empty() ? L"" : std::wstring(L". Query: " + _query)), STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MSSQL, _error_type, (RetCode != -1 ? RetCode : iError)));
 #else
 	if (RetCode == SQL_SUCCESS_WITH_INFO) {

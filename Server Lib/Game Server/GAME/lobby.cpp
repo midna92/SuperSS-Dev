@@ -1,6 +1,6 @@
-// Arquivo lobby.cpp
-// Criado em 24/12/2017 por Acrisio
-// Implementação da classe lobby
+// File lobby.cpp
+// Created on 24/12/2017 by Acrisio
+// Implementation of class lobby
 
 #if defined(_WIN32)
 #pragma pack(1)

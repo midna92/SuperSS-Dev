@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_block_ip.hpp
-// Criado em 14/08/2019 as 11:28 por Acrisio
-// Definil��o da classe CmdInsertBlockIP
+// File cmd_insert_block_ip.hpp
+// Created on 14/08/2019 at 11:28 by Acrisio
+// Definition of class CmdInsertBlockIP
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_BLOCK_IP_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_last_player_game.cpp
-// Criado em 28/10/2018 as 14:24 por Acrisio
-// Implementa��o da classe CmdUpdateLastPlayerGame
+// File cmd_update_last_player_game.cpp
+// Created on 28/10/2018 at 14:24 by Acrisio
+// Implementation of class CmdUpdateLastPlayerGame
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateLastPlayerGame::~CmdUpdateLastPlayerGame() {
 
 void CmdUpdateLastPlayerGame::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 
@@ -35,7 +35,7 @@ response* CmdUpdateLastPlayerGame::prepareConsulta(database& _db) {
 
 	for (auto i = 0u; i < (sizeof(m_l5pg.players) / sizeof(m_l5pg.players[0])); ++i) {
 
-		if (m_l5pg.players[i].uid == 0u)	// n�o tem Player nesse passa null pra o DB
+		if (m_l5pg.players[i].uid == 0u)	// there is no Player here, passes null to the DB
 			param += ", null, null, null, null";
 		else {
 			param += ", " + std::to_string(m_l5pg.players[i].uid) + ", " + std::to_string(m_l5pg.players[i].sex);

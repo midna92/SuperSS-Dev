@@ -1,6 +1,6 @@
-// Arquivo cmd_update_user_info.hpp
-// Criado em 08/09/2018 as 12:36 por Acrisio
-// Defini��o da classe CmdUpdateUserInfo
+// File cmd_update_user_info.hpp
+// Created on 08/09/2018 at 12:36 by Acrisio
+// Definition of class CmdUpdateUserInfo
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_USER_INFO_HPP

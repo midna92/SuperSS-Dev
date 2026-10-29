@@ -1,6 +1,6 @@
-// Arquivo threadpl_server.cpp
-// Criado em 03/12/2017 por Acrisio
-// Implementação da classe threadpl_server
+// File threadpl_server.cpp
+// Created on 03/12/2017 by Acrisio
+// Implementation of class threadpl_server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -62,12 +62,12 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 				try {
 					
-					// getConnectTime pode lançar exception
+					// getConnectTime can throw an exception
 					if (_session->getConnectTime() <= 0 && _session->getState()) {
 
 						_smp::message_pool::getInstance().push(new message("[threadpl_server::translate_packet][Error] [STDA_OT_SEND_RAW_COMPLETED] _session[OID=" + std::to_string(_session->m_oid) + "] is not connected.", CL_FILE_LOG_AND_CONSOLE));
 
-						// Ainda não habilitar o disconnect session, vms aguardar as mensagens para ver se vai ter
+						// Do not enable disconnect session yet, we will wait for the messages to see if there will be any
 						//DisconnectSession(_session);
 					}
 				
@@ -86,7 +86,7 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 				packet *_packet = nullptr;
 				int32_t left = 0;
 
-				//_session->releaseSend();	// Erro se colocar ele aqui
+				//_session->releaseSend();	// Error if placed here
 				
 				do {
 
@@ -111,11 +111,11 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 							CLEAR_BUFFER_LOOP_SERVER;
 
-							// Libera o send
+							// Release the send
 							_session->releaseSend();
 
 							//break;
-							return;	// Return por que o break só vai sair do while, e esse break é para sair do switch, mas como depois do switch não tem nada, então só terminar a função
+							return;	// Return because the break would only exit the while, and this break is to exit the switch, but since there is nothing after the switch, just end the function
 
 						}else {
 
@@ -125,11 +125,11 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 							CLEAR_BUFFER_LOOP_SERVER;
 
-							// Libera o send
+							// Release the send
 							_session->releaseSend();
 
 							//break;
-							return;	// Return por que o break só vai sair do while, e esse break é para sair do switch, mas como depois do switch não tem nada, então só terminar a função
+							return;	// Return because the break would only exit the while, and this break is to exit the switch, but since there is nothing after the switch, just end the function
 						}
 
 					}catch (std::exception& e) {
@@ -142,11 +142,11 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 						CLEAR_BUFFER_LOOP_SERVER;
 
-						// Libera o send
+						// Release the send
 						_session->releaseSend();
 
 						//break;
-						return;	// Return por que o break só vai sair do while, e esse break é para sair do switch, mas como depois do switch não tem nada, então só terminar a função
+						return;	// Return because the break would only exit the while, and this break is to exit the switch, but since there is nothing after the switch, just end the function
 
 					}catch (...) {
 						_smp::message_pool::getInstance().push(new message("SEND_COMPLETED Exception desconhecida. {SESSION[IP=" + std::string(_session->getIP()) + "]}", CL_FILE_LOG_AND_CONSOLE));
@@ -157,30 +157,30 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 						CLEAR_BUFFER_LOOP_SERVER;
 
-						// Libera o send
+						// Release the send
 						_session->releaseSend();
 
 						//break;
-						return;	// Return por que o break só vai sair do while, e esse break é para sair do switch, mas como depois do switch não tem nada, então só terminar a função
+						return;	// Return because the break would only exit the while, and this break is to exit the switch, but since there is nothing after the switch, just end the function
 					}
 				} while (dwIOsize > 0);
 
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 
 			}else {
 
-				// Libera o send
+				// Release the send
 				_session->releaseSend();
 
 				try {
 					
-					// getConnectTime pode lançar exception
+					// getConnectTime can throw an exception
 					if (_session->getConnectTime() <= 0 && _session->getState()) {
 
 						_smp::message_pool::getInstance().push(new message("[threadpl_server::translate_packet][Error] [STDA_OT_SEND_COMPLETED] _session[OID=" + std::to_string(_session->m_oid) + "] is not connected.", CL_FILE_LOG_AND_CONSOLE));
 
-						// Ainda não habilitar o disconnect session, vms aguardar as mensagens para ver se vai ter
+						// Do not enable disconnect session yet, we will wait for the messages to see if there will be any
 						//DisconnectSession(_session);
 					}
 				
@@ -193,13 +193,13 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 			break;
 		case STDA_OT_RECV_COMPLETED:
 			if (dwIOsize > 0 && lpBuffer != nullptr) {
-				//_session->m_tick = std::clock();	// Tick time client para o TTL(time to live)
+				//_session->m_tick = std::clock();	// Client tick time for the TTL (time to live)
 
 				packet_head_client phc;
 				packet *_packet = nullptr;
 				int32_t left = 0;
 				
-				lpBuffer->addSize(dwIOsize);	// Add o size que recebeu no socket
+				lpBuffer->addSize(dwIOsize);	// Add the size received on the socket
 
 				do {
 					try {
@@ -307,10 +307,10 @@ void threadpl_server::translate_packet(session *_session, Buffer *lpBuffer, DWOR
 
 #if defined(_WIN32)
 				// Post new IO Operation - RECV REQUEST
-				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zera o over pra receber mais
+				memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Reset the over to receive more
 #endif
 
-				//_session->requestRecvBuffer();	// Manda devo para receber qualquer resposta do cliente
+				//_session->requestRecvBuffer();	// Post again to receive any response from the client
 				_session->releaseRecv();
 				//postIoOperation(_session, lpBuffer, operation - 1);
 			}else {

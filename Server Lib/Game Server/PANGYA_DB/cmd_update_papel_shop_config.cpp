@@ -1,6 +1,6 @@
-// Arquivo cmd_update_papel_shop_config.cpp
-// Criado em 08/12/2018 as 15:16 por Acrisio
-// Implementa��o da classe CmdUpdatePapelShopConfig
+// File cmd_update_papel_shop_config.cpp
+// Created on 08/12/2018 at 15:16 by Acrisio
+// Implementation of class CmdUpdatePapelShopConfig
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ void CmdUpdatePapelShopConfig::lineResult(result_set::ctx_res* _result, uint32_t
 	// Update ON DB
 	m_updated = IFNULL(atoi, _result->data[0]) == 1 ? true : false;
 
-	if (!m_updated) { // Não atualizou, pega os valores atualizados do banco de dados
+	if (!m_updated) { // Did not update, gets the updated values from the database
 		
 		m_ps.numero = IFNULL(atoi, _result->data[1]);
 		m_ps.price_normal = IFNULL(atoll, _result->data[2]);

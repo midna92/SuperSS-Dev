@@ -1,6 +1,6 @@
-// Arquivo personal_shop_manager.hpp
-// Criado em 01/04/2022 as 19:28 por Acrisio
-// Definição da classe PersonalShopManager
+// File personal_shop_manager.hpp
+// Created on 01/04/2022 at 19:28 by Acrisio
+// Definition of the PersonalShopManager class
 
 #pragma once
 #ifndef _STDA_PERSONAL_SHOP_MANAGER_HPP

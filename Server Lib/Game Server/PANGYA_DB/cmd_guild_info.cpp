@@ -1,6 +1,6 @@
-// Arquivo cmd_guild_info.cpp
-// Criado em 24/03/2018 as 20:23 por Acrisio
-// Implementa��o da classe CmdGuildInfo
+// File cmd_guild_info.cpp
+// Created on 24/03/2018 at 20:23 by Acrisio
+// Implementation of the class CmdGuildInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -31,7 +31,7 @@ void CmdGuildInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_re
 	if (is_valid_c_string(_result->data[3]))
 		STRCPY_TO_MEMORY_FIXED_SIZE(m_gi.mark_emblem, sizeof(m_gi.mark_emblem), _result->data[3]);
 	
-	m_gi.index_mark_emblem = (uint32_t)IFNULL(atoi, _result->data[4]); // Guild Mark index esse � usado no JP
+	m_gi.index_mark_emblem = (uint32_t)IFNULL(atoi, _result->data[4]); // Guild Mark index, this one is used on JP
 	
 	m_gi.point = IFNULL(atoi, _result->data[7]);
 	m_gi.pang = IFNULL(atoi, _result->data[8]);

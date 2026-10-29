@@ -1,6 +1,6 @@
-// Arquivo normal_db.cpp
-// Criado em 01/05/2018 as 13:01 por Acrisio
-// Implementação da classe NormalDB
+// File normal_db.cpp
+// Created on 01/05/2018 at 13:01 by Acrisio
+// Implementation of class NormalDB
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -86,7 +86,7 @@ void NormalDB::init() {
         if (m_state)
             throw exception("[NormalDB::init][Error] DB already initialized", STDA_MAKE_ERROR(STDA_ERROR_TYPE::NORMAL_DB, 2, 0));
 
-		// Libera os Loop das threads
+		// Release the thread loops
 #if defined(_WIN32)
 		InterlockedExchange(&m_continue_exec, 1u);
 		InterlockedExchange(&m_continue_response, 1u);
@@ -156,7 +156,7 @@ void NormalDB::sendCloseAndWait() {
 		m_pResponse->waitThreadFinish(INFINITE);
 	}
 
-	// acordar quem está dormindo e deletar que não está
+	// wake up the ones that are sleeping and delete the ones that are not
 	auto all = m_unExec.getAll();
 
 	for (auto& el : all) {
@@ -362,7 +362,7 @@ void* NormalDB::runExecQuery() {
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::LIST_ASYNC) {
                     if (STDA_ERROR_DECODE(e.getCodeError()) == 2/*Time Out*/)
                         continue;
-                    else if (STDA_ERROR_DECODE(e.getCodeError()) == 3/*Error ao pegar signal condition variable*/)
+                    else if (STDA_ERROR_DECODE(e.getCodeError()) == 3/*Error getting signal condition variable*/)
                         throw;
                 }else
                     throw;
@@ -379,26 +379,26 @@ void* NormalDB::runExecQuery() {
 
 			}catch (exception& e) {
 
-				// É erro de conexão
+				// It is a connection error
 				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::NORMAL_DB, 5)) {
 
 					// Log
 					_smp::message_pool::getInstance().push(new message("[NormalDB::runExecQuery][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Coloca a msg no pool devo até ter uma conexão com o banco de dados para executar
+					// Put the msg in the pool until there is a connection to the database to execute it
 					add(_msg);
 				}
 
-				// Relança
+				// Rethrow
 				throw;
 			}
 
-			// é para ativar quem estava esperando, ou manda para a thread que response pela função callback
+			// it is to wake whoever was waiting, or send it to the thread responsible for the callback function
 			if (_msg->isWaitable()) {
 
 				_msg->wakeupWaiter();
 
-				// Delete a msg aqui, o pangya_db quem chamou deleta lá
+				// Delete the msg here, the pangya_db caller deletes it there
 				delete _msg;
 
 			}else
@@ -456,7 +456,7 @@ void* NormalDB::runResponse() {
                 if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::LIST_ASYNC) {
                     if (STDA_ERROR_DECODE(e.getCodeError()) == 2/*Time Out*/)
                         continue;
-                    else if (STDA_ERROR_DECODE(e.getCodeError()) == 3/*Error ao pegar signal condition variable*/)
+                    else if (STDA_ERROR_DECODE(e.getCodeError()) == 3/*Error getting signal condition variable*/)
                         throw;
                 }else
                     throw;
@@ -469,7 +469,7 @@ void* NormalDB::runResponse() {
 
             _msg->execFunc();
 
-			// Libera Memória, o destrutor do msg_t libera a memória do pangya_db
+			// Free memory, the msg_t destructor frees the pangya_db memory
 			if (_msg != nullptr)
 				delete _msg;
         }
@@ -535,7 +535,7 @@ bool NormalDB::loadIni() {
     try {
         m_ctx_db.port = ini.readInt("NORMAL_DB", "DBPORT");
     }catch (exception& e) {
-        m_ctx_db.port = 0;  // o db utiliza a padrão se o valor for 0
+        m_ctx_db.port = 0;  // the db uses the default if the value is 0
 
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("[NormalDB::loadIni][WARNING] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));

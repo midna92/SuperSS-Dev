@@ -1,6 +1,6 @@
-// Arquivo database.cpp
-// Criado em 27/01/2018 as 23:13 por Acrisio
-// Implementação da classe database
+// File database.cpp
+// Created on 27/01/2018 at 23:13 by Acrisio
+// Implementation of class database
 
 #if defined(_WIN32)
 #pragma pack(1)

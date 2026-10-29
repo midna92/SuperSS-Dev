@@ -1,6 +1,6 @@
-// Arquivo cmd_mail_box_info.hpp
-// Criado em 24/03/2018 as 14:42 por Acrisio
-// Defini��o da classe CmdMailBoxInfo
+// File cmd_mail_box_info.hpp
+// Created on 24/03/2018 at 14:42 by Acrisio
+// Definition of the class CmdMailBoxInfo
 
 #pragma once
 #ifndef _STDA_CMD_MAIL_BOX_HPP

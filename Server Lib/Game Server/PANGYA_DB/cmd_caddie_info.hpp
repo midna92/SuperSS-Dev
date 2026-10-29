@@ -1,6 +1,6 @@
-// Arquivo cmd_caddie_info.hpp
-// Criado em 18/03/2018 as 21:24 por Acrisio
-// Defini��o da classe CmdCaddieInfo
+// File cmd_caddie_info.hpp
+// Created on 18/03/2018 at 21:24 by Acrisio
+// Definition of the class CmdCaddieInfo
 
 #pragma once
 #ifndef _STDA_CMD_CADDIE_INFO_HPP

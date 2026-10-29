@@ -1,6 +1,6 @@
-// Arquivo socket.hpp
-// Criado em 14/11/2020 as 08:22 por Acrisio
-// Defini��o da classe Socket
+// File socket.hpp
+// Created on 14/11/2020 at 08:22 by Acrisio
+// Definition of the class Socket
 
 #ifndef _STDA_SOCKET_HPP
 #define _STDA_SOCKET_HPP

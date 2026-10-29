@@ -1,6 +1,6 @@
-// Arquivo cmd_find_card.cpp
-// Criado em 22/05/2018 as 23:14 por Acrisio
-// Implementa��o da classe CmdFindCard
+// File cmd_find_card.cpp
+// Created on 22/05/2018 at 23:14 by Acrisio
+// Implementation of the class CmdFindCard
 
 #if defined(_WIN32)
 #pragma pack(1)

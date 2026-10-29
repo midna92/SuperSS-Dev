@@ -1,6 +1,6 @@
-// Arquivo session_pool.h
-// Criado em 17/06/2017 por Acrisio
-// Definição da classe session_pool
+// File session_pool.h
+// Created on 17/06/2017 by Acrisio
+// Definition of class session_pool
 
 #pragma once
 #ifndef STDA_SESSION_POOL_H

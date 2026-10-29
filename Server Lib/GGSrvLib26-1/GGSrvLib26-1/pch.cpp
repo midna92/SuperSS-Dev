@@ -1,5 +1,5 @@
-// pch.cpp: arquivo de origem correspondente ao cabeçalho pré-compilado
+// pch.cpp: source file corresponding to the precompiled header
 
 #include "pch.h"
 
-// Quando você estiver usando cabeçalhos pré-compilados, esse arquivo de origem será necessário para que a compilação seja bem-sucedida.
+// When you are using precompiled headers, this source file is necessary for the compilation to succeed.

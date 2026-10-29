@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_papel_shop_rare_win_log.hpp
-// Criado em 09/07/2018 as 22:07 por Acrisio
-// Defini��o da classe CmdInsertPapelShopRareWinLog
+// File cmd_insert_papel_shop_rare_win_log.hpp
+// Created on 09/07/2018 at 22:07 by Acrisio
+// Definition of the class CmdInsertPapelShopRareWinLog
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_PAPEL_SHOP_RARE_WIN_LOG_HPP

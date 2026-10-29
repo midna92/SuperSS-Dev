@@ -1,6 +1,6 @@
-// Arquivo queue_timer.hpp
-// Criado em 11/03/2021 as 17:50 por Acrisio
-// Definição da classe QueueTimer para simular o ThreadPool QueueTimer do Windows no Linux
+// File queue_timer.hpp
+// Created on 11/03/2021 at 17:50 by Acrisio
+// Definition of class QueueTimer to simulate the Windows ThreadPool QueueTimer on Linux
 
 #pragma once
 #ifndef _STDA_QUEUE_TIMER_HPP
@@ -60,9 +60,9 @@ namespace stdA {
         WaitOrTimerCallback callback;
         uint32_t flags;
         Event* event_delete;
-        uint8_t running_callback;   // Já está executando
-        uint8_t deleting;   // Está deletando
-        uint8_t toDelete;   // Marcou para deletar
+        uint8_t running_callback;   // Is already executing
+        uint8_t deleting;   // Is deleting
+        uint8_t toDelete;   // Marked for deletion
     } /*__attribute__ ((__packed__))*/;
 
     struct msg_time {

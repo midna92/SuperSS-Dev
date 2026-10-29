@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_dolfini_locker_item.hpp
-// Criado em 03/06/2018 as 00:44 por Acrisio
-// Defini��o da classe CmdDeleteDolfiniLockerItem
+// File cmd_delete_dolfini_locker_item.hpp
+// Created on 03/06/2018 at 00:44 by Acrisio
+// Definition of the class CmdDeleteDolfiniLockerItem
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_DOLFINI_LOCKER_ITEM_HPP

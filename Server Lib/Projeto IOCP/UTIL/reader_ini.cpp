@@ -1,11 +1,11 @@
-// Arquivo reader_ini.cpp
-// Criado em 27/03/2018 as 21:35 por Acrisio
-// Implementação da classe ReaderIni
+// File reader_ini.cpp
+// Created on 27/03/2018 at 21:35 by Acrisio
+// Implementation of the class ReaderIni
 
 #if defined(_WIN32)
 #pragma pack(1)
 #elif defined(__linux__)
-//#pragma pack(1)	// Não quero colocar o pack aqui no windows e nem no linux, mas no linux vou colocar nos lugares certos
+//#pragma pack(1)	// I do not want to put the pack here on Windows or Linux, but on Linux I will put it in the right places
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>

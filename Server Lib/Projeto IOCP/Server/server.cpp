@@ -1,6 +1,6 @@
-// Arquivo server.cpp
-// Criado em 17/12/2017 por Acrisio
-// Implementação da classe server
+// File server.cpp
+// Created on 17/12/2017 by Acrisio
+// Implementation of class server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -69,14 +69,14 @@ server::server(session_manager& _session_manager, uint32_t _accept_thread_num, u
 	  EventShutdown(nullptr), 
 	  EventAcceptConnection(nullptr),
 #endif
-	  m_shutdown(nullptr), m_Bot_TTL(10000u), m_chat_discord(true)/*Padrão ativado*/ {
+	  m_shutdown(nullptr), m_Bot_TTL(10000u), m_chat_discord(true)/*Default enabled*/ {
 	
 	try {
 
-		// Initializa o Server Static
+		// Initialize the static Server
 		ssv::sv = this;
 
-		// Inicializa o Unit_Connect, que conecta com o Auth Server
+		// Initialize the Unit_Connect, which connects to the Auth Server
 		m_unit_connect = new unit_auth_server_connect(*this, m_si);
 
 		// Config Initialize, INI FILE
@@ -156,15 +156,15 @@ server::server(session_manager& _session_manager, uint32_t _accept_thread_num, u
 		}
 #endif
 
-		// chama aqui, que quando o game_server estiver initializado(o construtor das classe base terminar e criar essa classe)
-		// pode chamar essas funções puras
+		// call here, so that when the game_server is initialized (the base class constructors finish and this class is created)
+		// it can call these pure functions
 
-		// AcceptEx, 2 para aceitar conexão mais rápido
+		// AcceptEx, 2 to accept connections faster
 		for (auto i = 0u; i < _accept_thread_num; ++i)
 			m_threads.push_back(new thread(TT_ACCEPTEX_IO, server::_worker_io_accept, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL));
 
 		// Accept(s)
-		m_threads.push_back(new thread(TT_ACCEPTEX, server::_acceptEx, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL/*1 = Primeiro, 2 = segundo core acho*/));		// Estava NORMAL
+		m_threads.push_back(new thread(TT_ACCEPTEX, server::_acceptEx, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL/*1 = Primeiro, 2 = segundo core acho*/));		// It was NORMAL
 
 #if defined(_WIN32)
 		InterlockedExchange(&m_continue_accept, 1);
@@ -233,10 +233,10 @@ server::~server() {
 		v_mac_ban_list.shrink_to_fit();
 	}
 
-	// Destroy o Unit Connect que conecta com o Auth Server
+	// Destroy the Unit Connect that connects to the Auth Server
 	destroy_unit();
 
-	// Fecha as Handle de Evento que usa na classe Server
+	// Close the Event Handles used in the Server class
 	closeHandles();
 
 	if (m_shutdown != nullptr && !m_timer_mgr.isEmpty()) 
@@ -334,8 +334,8 @@ void* server::monitor()
 
 				try {
 
-					// Verifica se já virou o dia e cria novos arquivos de log
-					// Todo dia 00:00 horas cria um novo arquivo de log
+					// Check whether the day has rolled over and create new log files
+					// Every day at 00:00 create a new log file
 					if (_smp::message_pool::getInstance().checkUpdateDayLog())
 						_smp::message_pool::getInstance().push(new message("[server::monitor::UpdateLogFiles][Log] Atualizou os arquivos de Log por que trocou de dia.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -359,16 +359,16 @@ void* server::monitor()
 					_smp::message_pool::getInstance().push(new message("[server::Monitor][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 				}
 		
-				cmdUpdateServerList();	// Pega a Lista de servidores online
+				cmdUpdateServerList();	// Get the list of online servers
 
-				cmdUpdateListBlock_IP_MAC();	// Pega a List de IP e MAC Address que estão bloqueadas
+				cmdUpdateListBlock_IP_MAC();	// Get the list of blocked IP and MAC Addresses
 
 				onHeartBeat();
 		
 #if defined(_WIN32)
-				Sleep(1000); // 1 second para próxima verificação
+				Sleep(1000); // 1 second until the next check
 #elif defined(__linux__)
-				usleep(1000000); // 1 second para próxima verificação
+				usleep(1000000); // 1 second until the next check
 #endif
 
 			}catch (exception& e) {
@@ -399,7 +399,7 @@ void* server::monitor()
 
 void server::waitAllThreadFinish(DWORD dwMilleseconds) {
 
-	// Libera todos que estão esperando o pangya_db ser executado
+	// Release everyone waiting for pangya_db to be executed
 	snmdb::NormalManagerDB::getInstance().freeAllWaiting("[server::waitAllThreadFinish][Error] Libera todos que estao esperando pangya_db ser executado");
 
 	// Monitor Thread
@@ -444,21 +444,21 @@ void server::waitAllThreadFinish(DWORD dwMilleseconds) {
 		case TT_WORKER_LOGICAL:
 			//for (auto io = 0u; io < (sizeof(m_iocp_logical) / sizeof(iocp)); ++io)
 #if defined(_WIN32)
-			m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// This one had Index[io], it was an array of 16 iocp
 #elif defined(__linux__)
-			m_iocp_logical.push(nullptr);										// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_logical.push(nullptr);										// This one had Index[io], it was an array of 16 iocp
 #endif
 			break;
 		case TT_WORKER_SEND:
 			//for (auto io = 0u; io < (sizeof(m_iocp_send) / sizeof(iocp)); ++io)
 #if defined(_WIN32)
-			m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);				// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);				// This one had Index[io], it was an array of 16 iocp
 #elif defined(__linux__)
-			m_iocp_send.push(nullptr);											// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_send.push(nullptr);											// This one had Index[io], it was an array of 16 iocp
 #endif
 			break;
 		case TT_ACCEPT:
-			// Libera ele se não estiver liberado ainda
+			// Release it if it is not released yet
 			setAcceptConnection();
 #if defined(_WIN32)
 			InterlockedDecrement(&m_continue_accept);
@@ -470,7 +470,7 @@ void server::waitAllThreadFinish(DWORD dwMilleseconds) {
 #endif
 			break;
 		case TT_ACCEPTEX:
-			// Libera ele se não estiver liberado ainda
+			// Release it if it is not released yet
 			setAcceptConnection();
 #if defined(_WIN32)
 			InterlockedDecrement(&m_continue_accept);
@@ -489,13 +489,13 @@ void server::waitAllThreadFinish(DWORD dwMilleseconds) {
 #endif
 			break;
 		case TT_JOB:
-			m_job_pool.push(nullptr);			// Sai do job
+			m_job_pool.push(nullptr);			// Exit the job
 			break;
 		case TT_CONSOLE:
-			_smp::message_pool::getInstance().push(nullptr);	// Sai do console
+			_smp::message_pool::getInstance().push(nullptr);	// Exit the console
 			break;
 		case TT_DB_NORMAL:
-			pangya_db::m_query_pool.push(nullptr);	// sai do db query pool
+			pangya_db::m_query_pool.push(nullptr);	// exit the db query pool
 			break;
 		case TT_MONITOR:
 #if defined(_WIN32)
@@ -572,13 +572,13 @@ void* server::accept()
 		socklen_t length = sizeof(remote);
 #endif
 	
-		addr.sin_family = AF_INET;	// depois coloca o host aqui // m_si.m_ip
+		addr.sin_family = AF_INET;	// then put the host here // m_si.m_ip
 		addr.sin_port = htons(m_si.port);
 		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	
 		sock = new socket(sv->getsocklistener(), 1);
 		
-		// pega a referencia do sock que controla as conexão que pode logar
+		// get the reference to the sock that controls which connections can log in
 		m_accept_sock = sock;
 
 		sock->bind(addr);
@@ -658,7 +658,7 @@ void* server::accept()
 								::shutdown(accpt, SD_BOTH);
 								::closesocket(accpt);
 
-								// Desconnectar o socket
+								// Disconnect the socket
 								continue;
 							}
 	
@@ -684,7 +684,7 @@ void* server::accept()
 	
 							onAcceptCompleted(_session);
 	
-							_session = nullptr;	// reseta aqui para usar ela de novo
+							_session = nullptr;	// reset here to use it again
 						}
 
 					}else
@@ -696,10 +696,10 @@ void* server::accept()
 				_smp::message_pool::getInstance().push(new message("[server::accept][SystemError] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	
 				if ((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::SESSION_MANAGER || STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::PLAYER_MANAGER) 
-						&& STDA_ERROR_DECODE(e.getCodeError()) != 3/*checou ao limit de sesssion*/)	// Diferente do erro chegou ao limite de usuarios online
+						&& STDA_ERROR_DECODE(e.getCodeError()) != 3/*reached the session limit*/)	// Different from the error of reaching the online users limit
 					throw;
 				else {
-					// aqui envia algo ou so deleta o sock
+					// here either send something or just delete the sock
 					if (_session != nullptr)
 						m_session_manager.deleteSession(_session);
 					else if (accpt != INVALID_SOCKET) {
@@ -754,7 +754,7 @@ void* server::accept()
 						::shutdown(accpt.fd, SD_BOTH);
 						::closesocket(accpt.fd);
 
-						// Desconnectar o socket
+						// Disconnect the socket
 						continue;
 					}
 
@@ -788,7 +788,7 @@ void* server::accept()
 
 					onAcceptCompleted(_session);
 
-					_session = nullptr;	// reseta aqui para usar ela de novo
+					_session = nullptr;	// reset here to use it again
 				}
 
 			}catch (exception e) {
@@ -796,10 +796,10 @@ void* server::accept()
 				_smp::message_pool::getInstance().push(new message("[server::accept][SystemError] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	
 				if ((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::SESSION_MANAGER || STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::PLAYER_MANAGER) 
-						&& STDA_ERROR_DECODE(e.getCodeError()) != 3/*checou ao limit de sesssion*/)	// Diferente do erro chegou ao limite de usuarios online
+						&& STDA_ERROR_DECODE(e.getCodeError()) != 3/*reached the session limit*/)	// Different from the error of reaching the online users limit
 					throw;
 				else {
-					// aqui envia algo ou so deleta o sock
+					// here either send something or just delete the sock
 					if (_session != nullptr)
 						m_session_manager.deleteSession(_session);
 					else if (accpt.fd != INVALID_SOCKET) {
@@ -891,13 +891,13 @@ void* server::acceptEx()
 		SOCKADDR_IN addr, remote;
 		int length = sizeof(remote);
 
-		addr.sin_family = AF_INET;	// depois coloca o host aqui // m_si.m_ip
+		addr.sin_family = AF_INET;	// then put the host here // m_si.m_ip
 		addr.sin_port = htons(m_si.port);
 		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 		sock = new socket(sv->getsocklistener(), 1);
 
-		// pega a referencia do sock que controla as conexão que pode logar
+		// get the reference to the sock that controls which connections can log in
 		m_accept_sock = sock;
 
 		sock->bind(addr);
@@ -973,7 +973,7 @@ void* server::acceptEx()
 
 						InterlockedIncrement(&m_acceptsPendents);
 
-						if (!m_lpfnAcceptEx(mHost, (SOCKET)over->buffer->getOperation(), (void*)over->buffer->getBuffer(), 0/*sem dados depois de aceitar conexão*/, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytesReceived, over)) {
+						if (!m_lpfnAcceptEx(mHost, (SOCKET)over->buffer->getOperation(), (void*)over->buffer->getBuffer(), 0/*no data after accepting the connection*/, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &dwBytesReceived, over)) {
 							
 							lastError = WSAGetLastError();
 
@@ -1006,7 +1006,7 @@ void* server::acceptEx()
 					ResetEvent(_event);
 					ResetEvent(EventMoreAccept);
 
-					// Checkpedents conexões aqui, mas eu não estou usando isso, ele aceita imediatamente, não espera por dados
+					// Check pending connections here, but I am not using this, it accepts immediately, does not wait for data
 
 					events[0] = EventShutdown;
 					events[1] = EventMoreAccept;
@@ -1022,11 +1022,11 @@ void* server::acceptEx()
 
 				} while (ret == WAIT_OBJECT_0 + 1 || ret == WAIT_OBJECT_0 + 2);
 
-				// @![Waring] Essa mensagem foi só para teste para ver se sai do while quando aandava o shutdown event
-				//_smp::message_pool::getInstance().push(new message("[server::acceptEx] sai do do while, volto para o while principal.", CL_FILE_LOG_AND_CONSOLE));
+				// @![Warning] This message was only for testing, to see if it exits the while when the shutdown event was triggered
+				//_smp::message_pool::getInstance().push(new message("[server::acceptEx] exit the while, back to the main while.", CL_FILE_LOG_AND_CONSOLE));
 			}catch (exception& e) {
 				
-				if (STDA_ERROR_DECODE(e.getCodeError()) != 3/*limit de contas*/)
+				if (STDA_ERROR_DECODE(e.getCodeError()) != 3/*account limit*/)
 					_smp::message_pool::getInstance().push(new message("[server::AcceptEx][SystemError] " + std::string(e.getFullMessageError()), CL_FILE_LOG_AND_CONSOLE));
 			
 			}catch (std::exception& e) {
@@ -1070,7 +1070,7 @@ void* server::acceptEx()
 					if (EventMoreAccept != nullptr)
 						EventMoreAccept->reset();
 
-					// Checkpedents conexões aqui, mas eu não estou usando isso, ele aceita imediatamente, não espera por dados
+					// Check pending connections here, but I am not using this, it accepts immediately, does not wait for data
 					ret = Event::waitMultipleEvent(2, events, FALSE, INFINITE);
 
 					if (ret != WAIT_OBJECT_0 && ret != WAIT_OBJECT_0 + 1 && ret != WAIT_OBJECT_0 + 2)
@@ -1081,11 +1081,11 @@ void* server::acceptEx()
 
 				} while (ret == WAIT_OBJECT_0 + 1 || ret == WAIT_OBJECT_0 + 2);
 
-				// @![Waring] Essa mensagem foi só para teste para ver se sai do while quando aandava o shutdown event
-				//_smp::message_pool::getInstance().push(new message("[server::acceptEx] sai do do while, volto para o while principal.", CL_FILE_LOG_AND_CONSOLE));
+				// @![Warning] This message was only for testing, to see if it exits the while when the shutdown event was triggered
+				//_smp::message_pool::getInstance().push(new message("[server::acceptEx] exit the while, back to the main while.", CL_FILE_LOG_AND_CONSOLE));
 			}catch (exception& e) {
 				
-				if (STDA_ERROR_DECODE(e.getCodeError()) != 3/*limit de contas*/)
+				if (STDA_ERROR_DECODE(e.getCodeError()) != 3/*account limit*/)
 					_smp::message_pool::getInstance().push(new message("[server::AcceptEx][SystemError] " + std::string(e.getFullMessageError()), CL_FILE_LOG_AND_CONSOLE));
 			
 			}catch (std::exception& e) {
@@ -1172,16 +1172,16 @@ void* server::disconnect_session()
 					
 					if (session_manager::isInit()) {
 
-						auto s = m_session_manager.getSessionToDelete(1000/*1 second para a liberar o while se não tiver sessions para disconectar*/);
+						auto s = m_session_manager.getSessionToDelete(1000/*1 second to release the while if there are no sessions to disconnect*/);
 
 						if (s != nullptr)
 							DisconnectSession(s);
 
 					}else
 #if defined(_WIN32)
-						Sleep(300/*espera 300 miliseconds até o session_manager ser inicializado*/);
+						Sleep(300/*wait 300 milliseconds until the session_manager is initialized*/);
 #elif defined(__linux__)
-						usleep(300000/*espera 300 miliseconds até o session_manager ser inicializado*/);
+						usleep(300000/*wait 300 milliseconds until the session_manager is initialized*/);
 #endif
 
 				}catch (exception& e) {
@@ -1232,7 +1232,7 @@ void* server::registerServer()
 		while (__atomic_compare_exchange_n(&m_continue_register_server, &check_m, 1, true, __ATOMIC_RELAXED, __ATOMIC_RELAXED)) {
 #endif
 			
-			// Intervalo de 1 segundo
+			// Interval of 1 second
 #if defined(_WIN32)
 			Sleep(1000u);
 #elif defined(__linux__)
@@ -1249,7 +1249,7 @@ void* server::registerServer()
 					
 			}catch (exception& e) {
 
-				// Query UPDATE não retorna nada ai retorna essa exception
+				// UPDATE query returns nothing, so it returns this exception
 				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PANGYA_DB, 2)
 					&& STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) != 3) {
 						
@@ -1289,7 +1289,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 #if defined(_WIN32)
 	try {
 
-		if (dwIOsize == 0/*Não uso o que recebe dados no accept, e uso esse valor para flag de erro para deletar o player que caiu*/) {
+		if (dwIOsize == 0/*I do not use the one that receives data on accept, and I use this value as an error flag to delete the player that dropped*/) {
 
 			if (*_listener == INVALID_SOCKET)
 				throw exception("[server::accept_completed] error socket invalido.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 50, 0));
@@ -1298,7 +1298,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 
 			InterlockedDecrement(&m_acceptsPendents);
 
-			// Aciona o evento de do accept para colocar mais 1 socket accept no backlog
+			// Trigger the accept event to put 1 more accept socket in the backlog
 			SetEvent(EventMoreAccept);
 
 			if (m_session_manager.isFull()) {
@@ -1328,7 +1328,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 			SOCKADDR *pLocal = nullptr;
 			SOCKADDR *pRemote = nullptr;
 
-			m_lpfnGetAcceptExSockaddrs((void*)lpBuffer->buffer->getBuffer(), 0/*nao recebe dados no acceptEx, por minha opção*/, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &pLocal, &sizeLocal, &pRemote, &sizeRemote);
+			m_lpfnGetAcceptExSockaddrs((void*)lpBuffer->buffer->getBuffer(), 0/*does not receive data in acceptEx, by my choice*/, sizeof(SOCKADDR_IN) + 16, sizeof(SOCKADDR_IN) + 16, &pLocal, &sizeLocal, &pRemote, &sizeRemote);
 
 			if (pLocal == nullptr) {
 
@@ -1407,7 +1407,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 				_smp::message_pool::getInstance().push(new message("[server::accept_completed][ErrorSystem]" + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 			}
 
-		}else if (dwIOsize != 0) { // Error do player deleta ele
+		}else if (dwIOsize != 0) { // Player error, delete it
 			
 			if (lpBuffer != nullptr && lpBuffer->buffer != nullptr) {
 				::shutdown((SOCKET)lpBuffer->buffer->getOperation(), SD_BOTH);
@@ -1431,7 +1431,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 #elif defined(__linux__)
 	try {
 
-		if (dwIOsize == 0/*Não uso o que recebe dados no accept, e uso esse valor para flag de erro para deletar o player que caiu*/) {
+		if (dwIOsize == 0/*I do not use the one that receives data on accept, and I use this value as an error flag to delete the player that dropped*/) {
 
 			if (_listener == nullptr || _listener->fd == INVALID_SOCKET)
 				throw exception("[server::accept_completed] error socket invalido.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 50, 0));
@@ -1475,7 +1475,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 				// volatile accept pendents
 				__atomic_sub_fetch(&m_acceptsPendents, 1, __ATOMIC_RELAXED);
 
-				// Aciona o evento de do accept para colocar mais 1 socket accept no backlog
+				// Trigger the accept event to put 1 more accept socket in the backlog
 				if (EventMoreAccept != nullptr)
 					EventMoreAccept->set();
 
@@ -1549,7 +1549,7 @@ void server::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffe
 				
 			}
 
-		}else if (dwIOsize != 0) {} // Error do player deleta ele
+		}else if (dwIOsize != 0) {} // Player error, delete it
 
 	}catch (exception& e) {
 
@@ -1570,7 +1570,7 @@ inline void server::dispach_packet_same_thread(session& _session, packet *_packe
 	
 	}catch (exception& e) {
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 			
 			_smp::message_pool::getInstance().push(new message("[server::dispach_packet_same_thread][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -1582,17 +1582,17 @@ inline void server::dispach_packet_same_thread(session& _session, packet *_packe
 					+ std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_ONLY_FILE_LOG));
 #endif
 
-			// Já tem quase todos pacotes sendo tratados, se o cliente mandar um pacote desconhecido derruba ele
+			// Almost all packets are already handled, if the client sends an unknown packet, drop it
 			DisconnectSession(&_session);
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
-			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// Handle the error here
+			// and log out the session that sent a wrong packet
+			/// put back ------> m_pe->_session_pool.deleteSession(_packet->getSession());
+			// if it is very severe, rethrow it to terminate the thread
 		}else
 			DisconnectSession(&_session);
 
-		// Relança exception
+		// Rethrow exception
 		throw;
 	}
 
@@ -1600,8 +1600,8 @@ inline void server::dispach_packet_same_thread(session& _session, packet *_packe
 
 		_session.usa();
 
-		// só pode contar o tick se for um pacote conhecido pelo, server, se contar por dados recebido, nunca vai derrubar o cliente mau intensionado
-		_session.m_tick = std::clock();	// Tick time client para o TTL(time to live)
+		// the tick can only be counted if it is a packet known by the server; if counting by received data, a malicious client will never be dropped
+		_session.m_tick = std::clock();	// Client tick time for the TTL (time to live)
 
 		ParamDispatch pd = { *(player*)&_session, _packet };
 
@@ -1626,7 +1626,7 @@ inline void server::dispach_packet_same_thread(session& _session, packet *_packe
 		_smp::message_pool::getInstance().push(new message("[server::dispach_packet_same_thread][Error][MY] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -1662,7 +1662,7 @@ inline void server::dispach_packet_sv_same_thread(session& _session, packet *_pa
 	
 	}catch (exception& e) {
 		
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 		
 			_smp::message_pool::getInstance().push(new message("[server::dispach_packet_sv_same_thread][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -1671,10 +1671,10 @@ inline void server::dispach_packet_sv_same_thread(session& _session, packet *_pa
 					+ ", OID=" + std::to_string(_session.m_oid) + "]size packet: " + std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_ONLY_FILE_LOG));
 #endif
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
-			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// Handle the error here
+			// and log out the session that sent a wrong packet
+			/// put back ------> m_pe->_session_pool.deleteSession(_packet->getSession());
+			// if it is very severe, rethrow it to terminate the thread
 		}else
 			throw;
 	}
@@ -1697,7 +1697,7 @@ inline void server::dispach_packet_sv_same_thread(session& _session, packet *_pa
 		_smp::message_pool::getInstance().push(new message("[server::dispach_packet_sv_same_thread][Error][MY] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -1767,23 +1767,23 @@ void server::init_option_accepted_socket(SOCKET _accepted) {
 	//int so_sndbuf = 0;
 	//int so_timeout = 0;
 
-	/// ---------- DESEMPENHO COM OS SOCKOPT -----------
-	/// COM NO_TCPDELAY					AVG(MEDIA) 0.552
-	/// COM SO_SNDBUF 0					AVG(MEDIA) 0.560
-	/// COM SO_RCVBUF 0					AVG(MEDIA) 0.570
-	/// COM NO_TCPDELAY e SO_SNDBUF 0	AVG(MEDIA) 0.569
-	/// COM NO_TCPDELAY e SO_RCVBUF 0	AVG(MEDIA) 0.566
-	/// SEM NENHUM SOCKOPT				AVG(MEDIA) 0.569
-	// Não tem muita diferença vou deixar só o NO_TCPDELAY mesmo
+	/// ---------- PERFORMANCE WITH THE SOCKOPTS -----------
+	/// WITH NO_TCPDELAY					AVG(MEAN) 0.552
+	/// WITH SO_SNDBUF 0					AVG(MEAN) 0.560
+	/// WITH SO_RCVBUF 0					AVG(MEAN) 0.570
+	/// WITH NO_TCPDELAY and SO_SNDBUF 0	AVG(MEAN) 0.569
+	/// WITH NO_TCPDELAY and SO_RCVBUF 0	AVG(MEAN) 0.566
+	/// WITHOUT ANY SOCKOPT				AVG(MEAN) 0.569
+	// There's not much difference, I'll keep only NO_TCPDELAY
 
 	//if (setsockopt(accpt, SOL_SOCKET, SO_SNDBUF, (char*)&so_sndbuf, sizeof(int)) == SOCKET_ERROR)
-	//	_smp::message_pool::getInstance().push(new message("nao conseguiu setar SO_SNDBUF para 0, threadpl_server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
+	//	_smp::message_pool::getInstance().push(new message("could not set SO_SNDBUF to 0, threadpl_server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
 
 	//if (setsockopt(accpt, SOL_SOCKET, SO_RCVTIMEO, (char*)&so_timeout, sizeof(int)) == SOCKET_ERROR)
-	//	_smp::message_pool::getInstance().push(new message("nao conseguiu set o recive time out. server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
+	//	_smp::message_pool::getInstance().push(new message("could not set the receive time out. server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
 
 	//if (setsockopt(accpt, SOL_SOCKET, SO_SNDTIMEO, (char*)&so_timeout, sizeof(int)) == SOCKET_ERROR)
-	//	_smp::message_pool::getInstance().push(new message("nao conseguiu set o send time out. server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
+	//	_smp::message_pool::getInstance().push(new message("could not set the send time out. server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
 
 #if defined(_WIN32)
 	tcp_keepalive keep;
@@ -1811,16 +1811,16 @@ void server::init_option_accepted_socket(SOCKET _accepted) {
 	if (fcntl(_accepted.fd, F_SETFL, flag) != 0)
 		throw exception("[server::init_option_accepted_socket][Error] nao conseguiu habilitar o NONBLOCK(fcntl).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 53, errno));
 
-	// keepalive do linux
+	// linux keepalive
 	int keepalive = 1; // Enable
 	if (setsockopt(_accepted.fd, SOL_SOCKET, SO_KEEPALIVE, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[server::init_option_accepted_socket][error] nao conseguiu habilitaro keepalive(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 53, errno));
 
-	keepalive = 20; // Keepalive 20 segundos
+	keepalive = 20; // Keepalive 20 seconds
 	if (setsockopt(_accepted.fd, SOL_TCP, TCP_KEEPIDLE, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[server::init_option_accepted_socket][Error] nao conseguiu setar o keepalive idl time(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 53, errno));
 
-	keepalive = 2;	// Keepalive interval probs, 2 segundos
+	keepalive = 2;	// Keepalive interval probes, 2 seconds
 	if (setsockopt(_accepted.fd, SOL_TCP, TCP_KEEPINTVL, &keepalive, sizeof(keepalive)) == -1)
 		throw exception("[server::init_option_accepted_socket][Error] nao conseguiu setar o keepalive interval pobs(setsockopt).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 53, errno));
 
@@ -1835,7 +1835,7 @@ void server::init_option_accepted_socket(SOCKET _accepted) {
 
 void server::cmdUpdateListBlock_IP_MAC() {
 
-	// List de IP Address Ban
+	// List of banned IP Addresses
 	CmdListIPBan cmd_lib(true);		// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_lib, nullptr, nullptr);
@@ -1847,7 +1847,7 @@ void server::cmdUpdateListBlock_IP_MAC() {
 
 	v_ip_ban_list = cmd_lib.getListIPBan();
 
-	// List de Mac Address Ban
+	// List of banned Mac Addresses
 	CmdListMacBan cmd_lmb(true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_lmb, nullptr, nullptr);
@@ -1862,13 +1862,13 @@ void server::cmdUpdateListBlock_IP_MAC() {
 
 bool server::haveBanList(std::string _ip_address, std::string _mac_address, bool _check_mac) {
 
-	// Verifica se é para verificar o MAC Address também
+	// Check whether the MAC Address should be checked as well
 	if (_check_mac) {
-		// Verifica primeiro se o MAC Address foi bloqueado
+		// First check whether the MAC Address was blocked
 
-		// Cliente não enviou um MAC Address válido, bloquea essa conexão que é hacker que mudou o ProjectG
+		// Client did not send a valid MAC Address, block this connection, it is a hacker who modified the ProjectG
 		if (_mac_address.empty())
-			return true;	// Cliente não enviou um MAC Address válido, bloquea essa conexão que é hacker que mudou o ProjectG
+			return true;	// Client did not send a valid MAC Address, block this connection, it is a hacker who modified the ProjectG
 
 		for (auto& el : v_mac_ban_list)
 			if (!el.empty() && /*el.compare(_mac_address) == 0*/
@@ -1878,15 +1878,15 @@ bool server::haveBanList(std::string _ip_address, std::string _mac_address, bool
 				strcasecmp(el.c_str(), _mac_address.c_str()) == 0
 #endif
 			)
-				return true;	// MAC Address foi bloqueado
+				return true;	// MAC Address was blocked
 	}
 
 
-	// IP Address inválido, bloquea essa conexão que é Hacker ou Bug
+	// Invalid IP Address, block this connection, it is a Hacker or a Bug
 	if (_ip_address.empty())
 		return true;
 
-	// Verifica se o IP Address foi bloqueado
+	// Check whether the IP Address was blocked
 	uint32_t ip = 0u;
 
 	inet_pton(AF_INET, _ip_address.c_str(), &ip);
@@ -1929,7 +1929,7 @@ void server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) 
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[server::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -2041,7 +2041,7 @@ void server::commandScan() {
 
 					command[0] = _getch();
 
-					// Recebeu um valor que é de 2 bytes, então ignora esse
+					// Received a 2-byte value, so ignore this one
 					if (command[1] < 0) {
 
 						command[1] = '\0';
@@ -2077,9 +2077,9 @@ void server::commandScan() {
 						while (!ss.eof()) {
 							if (checkCommand(ss)) {
 
-								shutdown = true;	// Sai do While Principal
+								shutdown = true;	// Exit the Main While
 
-								break;	// Sai do While de comandos
+								break;	// Exit the commands While
 							}
 						}
 
@@ -2124,7 +2124,7 @@ void server::commandScan() {
 
 			command[0] = _getch();
 
-			// Recebeu um valor que é de 2 bytes, então ignora esse
+			// Received a 2-byte value, so ignore this one
 			if (command[1] < 0) {
 
 				command[1] = '\0';
@@ -2164,9 +2164,9 @@ void server::commandScan() {
 				while (!ss.eof()) {
 					if (checkCommand(ss)) {
 
-						shutdown = true;	// Sai do While Principal
+						shutdown = true;	// Exit the Main While
 
-						break;	// Sai do While de comandos
+						break;	// Exit the commands While
 					}
 				}
 
@@ -2224,11 +2224,11 @@ void server::config_init() {
 
 		_smp::message_pool::getInstance().push(new message("[server::config_init][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Usa o valor padrão do anti bot TTL
+		// Use the default anti bot TTL value
 		m_Bot_TTL = 1000u;
 	}
 	
-	// Pega na classe de DB msm, aqui não pega mais
+	// Gets it in the DB class itself, no longer gets it here
 	/*memcpy_s(m_ctx_db.ip, sizeof(m_ctx_db.ip), m_reader_ini.readString("DATABASE", "DBIP").c_str(), sizeof(m_ctx_db.ip));
 	memcpy_s(m_ctx_db.name, sizeof(m_ctx_db.name), m_reader_ini.readString("DATABASE", "DBNAME").c_str(), sizeof(m_ctx_db.name));
 	memcpy_s(m_ctx_db.user, sizeof(m_ctx_db.user), m_reader_ini.readString("DATABASE", "DBUSER").c_str(), sizeof(m_ctx_db.user));
@@ -2393,7 +2393,7 @@ void server::authCmdSendCommandToOtherServer(packet& _packet) {
 	
 		}catch (exception& e) {
 
-			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 			
 				_smp::message_pool::getInstance().push(new message("[server::authCmdSendCommandToOtherServer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -2433,7 +2433,7 @@ void server::authCmdSendReplyToOtherServer(packet& _packet) {
 	
 		}catch (exception& e) {
 
-			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 			
 				_smp::message_pool::getInstance().push(new message("[server::authCmdSendReplyToOtherServer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -2458,7 +2458,7 @@ void server::sendCommandToOtherServerWithAuthServer(packet& _packet, uint32_t _s
 
 	try {
 
-		// Envia o comando para o outro server com o Auth Server
+		// Send the command to the other server through the Auth Server
 		m_unit_connect->sendCommandToOtherServer(_send_server_uid_or_type, _packet);
 
 	}catch (exception& e) {
@@ -2471,7 +2471,7 @@ void server::sendReplyToOtherServerWithAuthServer(packet& _packet, uint32_t _sen
 
 	try {
 
-		// Envia a resposta para o outro server com o Auth Server
+		// Send the response to the other server through the Auth Server
 		m_unit_connect->sendReplyToOtherServer(_send_server_uid_or_type, _packet);
 
 	}catch (exception& e) {
@@ -2489,14 +2489,14 @@ void server::setChatDiscord(bool _chat_discord) {
 	m_chat_discord = _chat_discord;
 };
 
-// Quem usa é só o Game Server(Smart Calculator e Chat History) e Message Server(Chat History)
+// Only the Game Server (Smart Calculator and Chat History) and Message Server (Chat History) use it
 void server::sendSmartCalculatorReplyToPlayer(const uint32_t _uid, std::string _from, std::string _msg) {
 	UNREFERENCED_PARAMETER(_uid);
 	UNREFERENCED_PARAMETER(_from);
 	UNREFERENCED_PARAMETER(_msg);
 }
 
-// Quem usa é só o Game Server(Smart Calculator e Chat History) e Message Server(Chat History)
+// Only the Game Server (Smart Calculator and Chat History) and Message Server (Chat History) use it
 void server::sendNoticeGMFromDiscordCmd(std::string& _notice) {
 	UNREFERENCED_PARAMETER(_notice);
 };
@@ -2509,7 +2509,7 @@ void server::sendMessageToDiscordChatHistory(std::string _nickname, std::string 
 		if (_nickname.empty() || _msg.empty())
 			return;
 
-		// Verifica se o m_chat_discod flag está ativo para enviar o chat para o discord
+		// Check whether the m_chat_discod flag is active to send the chat to discord
 		if (m_si.rate.smart_calculator && m_chat_discord)
 			sSmartCalculator::getInstance().sendCommandServer(_nickname + " - " + _msg);
 		

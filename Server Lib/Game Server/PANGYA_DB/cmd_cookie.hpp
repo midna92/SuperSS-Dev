@@ -1,6 +1,6 @@
-// Arquivo cmd_cookie.hpp
-// Criado em 19/03/2018 as 21:30 por Acrisio
-// Definição da classe CmdCookie
+// File cmd_cookie.hpp
+// Created on 19/03/2018 at 21:30 by Acrisio
+// Definition of the class CmdCookie
 
 #pragma once
 #ifndef _STDA_CMD_COOKIE_HPP

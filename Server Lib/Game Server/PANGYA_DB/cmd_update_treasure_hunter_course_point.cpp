@@ -1,6 +1,6 @@
-// Arquivo cmd_update_treasure_hunter_course_point.cpp
-// Criado em 22/09/2018 as 12:46 por Acrisio
-// Implementa��o da classe CmdTreasureHunterCoursePoint
+// File cmd_update_treasure_hunter_course_point.cpp
+// Created on 22/09/2018 at 12:46 by Acrisio
+// Implementation of class CmdTreasureHunterCoursePoint
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ CmdUpdateTreasureHunterCoursePoint::~CmdUpdateTreasureHunterCoursePoint() {
 
 void CmdUpdateTreasureHunterCoursePoint::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

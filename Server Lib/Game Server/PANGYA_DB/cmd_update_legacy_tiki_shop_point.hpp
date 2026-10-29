@@ -1,6 +1,6 @@
-// Arquivo cmd_update_legacy_tiki_shop_point.hpp
-// Criado em 26/10/2020 as 15:27 por Acrisio
-// Defini��o da classe CmdUpdateLegacyTikiShopPoint
+// File cmd_update_legacy_tiki_shop_point.hpp
+// Created on 26/10/2020 at 15:27 by Acrisio
+// Definition of class CmdUpdateLegacyTikiShopPoint
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_LEGACY_TIKI_SHOP_POINT_HPP

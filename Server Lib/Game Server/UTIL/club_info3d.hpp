@@ -1,6 +1,6 @@
-// Arquivo club_info3d.hpp
-// Criado em 03/10/2020 as 15:42 por Acrisio
-// Definição da classe ClubInfo3D
+// File club_info3d.hpp
+// Created on 03/10/2020 at 15:42 by Acrisio
+// Definition of the ClubInfo3D class
 
 #pragma once
 #ifndef _STDA_CLUB_INFO3D_HPP
@@ -38,7 +38,7 @@ namespace stdA {
 			std::vector< ClubInfo3D > m_clubs;
 	};
 
-	// Singleton de todos os clubs
+	// Singleton of all the clubs
 	typedef Singleton< AllClubInfo3D > sAllClubInfo3D;
 }
 

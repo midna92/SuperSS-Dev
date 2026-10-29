@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_key_game_info.cpp
-// Criado em 01/04/2018 as 20:15 por Acrisio
-// Implementação da classe CmdAuthKeyGameInfo
+// File cmd_auth_key_game_info.cpp
+// Created on 01/04/2018 at 20:15 by Acrisio
+// Implementation of class CmdAuthKeyGameInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

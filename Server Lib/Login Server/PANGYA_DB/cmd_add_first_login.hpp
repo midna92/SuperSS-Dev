@@ -1,6 +1,6 @@
-// Arquivo cmd_add_first_login.hpp
-// Criado em 01/04/2018 as 16:15 por Acrisio
-// Defini��o da classe CmdAddFirstLogin
+// File cmd_add_first_login.hpp
+// Created on 01/04/2018 at 16:15 by Acrisio
+// Definition of the CmdAddFirstLogin class
 
 #pragma once
 #ifndef _STDA_CMD_ADD_FIRST_LOGIN_HPP

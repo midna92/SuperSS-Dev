@@ -1,6 +1,6 @@
-// Arquivo cmd_add_mascot.hpp
-// Criado em 19/05/2018 as 16:27 por Acrisio
-// Defini��o da classe CmdAddMascot
+// File cmd_add_mascot.hpp
+// Created on 19/05/2018 at 16:27 by Acrisio
+// Definition of the class CmdAddMascot
 
 #pragma once
 #ifndef _STDA_CMD_ADD_MASCOT_HPP

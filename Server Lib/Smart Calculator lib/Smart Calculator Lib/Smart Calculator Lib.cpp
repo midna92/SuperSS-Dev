@@ -1,4 +1,4 @@
-// Smart Calculator Lib.cpp : Define as funções exportadas para a DLL.
+// Smart Calculator Lib.cpp : Defines the exported functions for the DLL.
 //
 
 #if defined(_WIN32)
@@ -51,5 +51,5 @@ SMARTCALCULATORLIB_API void responseCallBack(const uint32_t _id, const eTYPE_CAL
 	UNREFERENCED_PARAMETER(_id);
 	UNREFERENCED_PARAMETER(_type);
 	UNREFERENCED_PARAMETER(_response);
-	UNREFERENCED_PARAMETER(_server); // é o server == true, player == false
+	UNREFERENCED_PARAMETER(_server); // is the server == true, player == false
 }

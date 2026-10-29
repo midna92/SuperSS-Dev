@@ -1,6 +1,6 @@
-// Arquivo cmd_personal_shop_log.cpp
-// Criado em 10/06/2018 as 09:23 por Acrisio
-// Implementa��o da classe CmdPersonalShopLog
+// File cmd_personal_shop_log.cpp
+// Created on 10/06/2018 at 09:23 by Acrisio
+// Implementation of the class CmdPersonalShopLog
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdPersonalShopLog::~CmdPersonalShopLog() {
 
 void CmdPersonalShopLog::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o vai usar por que � um INSERT
+	// Will not be used because it is an INSERT
 }
 
 response* CmdPersonalShopLog::prepareConsulta(database& _db) {

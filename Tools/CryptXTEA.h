@@ -1,6 +1,6 @@
-// Arquivo CryptXTEA.h
-// Criado em 02/10/2015 por Acrisio
-// Definição e Implementação da classe CryptXTEA
+// File CryptXTEA.h
+// Created on 02/10/2015 by Acrisio
+// Definition and implementation of the class CryptXTEA
 
 #pragma once
 #ifndef CRYPTXTEA_H

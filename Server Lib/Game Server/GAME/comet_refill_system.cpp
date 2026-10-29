@@ -1,6 +1,6 @@
 // Arquivo comet_refill_system.cpp
-// Criado em 08/07/2018 as 22:21 por Acrisio
-// Implementa��o da classe CometRefillSystem
+// Created on 08/07/2018 at 22:21 by Acrisio
+// Implementation of the CometRefillSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -105,14 +105,14 @@ void CometRefillSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[CometRefillSystem::initialize][Log] Comet Refill System Carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server toma as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;

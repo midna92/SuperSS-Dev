@@ -1,6 +1,6 @@
-// Arquivo cmd_update_pang.hpp
-// Criado em 13/05/2018 as 10:51 por Acrisio
-// Defini��o da classe CmdUpdatePang
+// File cmd_update_pang.hpp
+// Created on 13/05/2018 at 10:51 by Acrisio
+// Definition of class CmdUpdatePang
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_PANG_HPP

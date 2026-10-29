@@ -1,6 +1,6 @@
-// Arquivo box_type.hpp
-// Criado em 15/07/2018 as 21:31 por Acrisio
-// Definição dos tipos usado pela classe BoxSystem
+// File box_type.hpp
+// Created on 15/07/2018 at 21:31 by Acrisio
+// Definition of the types used by class BoxSystem
 
 #pragma once
 #ifndef _STDA_BOX_TYPE_HPP
@@ -36,7 +36,7 @@ namespace stdA {
 		int32_t qntd;
 		uint32_t probabilidade;
 		BOX_TYPE_RARETY raridade;
-		unsigned char duplicar : 1, : 0;	// 0 ou 1, 1 pode duplicar item
+		unsigned char duplicar : 1, : 0;	// 0 or 1, 1 can duplicate item
 		unsigned char active : 1, : 0;		// 0 ou 1
 	};
 
@@ -51,10 +51,10 @@ namespace stdA {
 		int32_t numero;
 		int32_t id;
 		uint32_t _typeid;
-		uint32_t opened_typeid;			// Typeid da Box aberta se tiver
-		char msg[80];							// Msg da box
-		//unsigned char active : 1, : 0;			// 0 ou 1, melhor só ter essa opção no DB mesmo
-		std::vector< ctx_box_item > item;		// Todos os itens da box
+		uint32_t opened_typeid;			// Typeid of the opened Box if any
+		char msg[80];							// Box message
+		//unsigned char active : 1, : 0;			// 0 or 1, better to only have this option in the DB anyway
+		std::vector< ctx_box_item > item;		// All items of the box
 	};
 }
 

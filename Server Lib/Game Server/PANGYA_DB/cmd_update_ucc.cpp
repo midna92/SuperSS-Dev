@@ -1,6 +1,6 @@
-// Arquivo cmd_update_ucc.cpp
-// Criado em 14/07/2018 as 20:16 por Acrisio
-// Implementa��o da classe CmdUpdateUCC
+// File cmd_update_ucc.cpp
+// Created on 14/07/2018 at 20:16 by Acrisio
+// Implementation of class CmdUpdateUCC
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ void CmdUpdateUCC::lineResult(result_set::ctx_res* _result, uint32_t /*_index_re
 	if (m_type == COPY)
 		m_wi.ucc.seq = (unsigned short)IFNULL(atoi, _result->data[0]);
 	
-	// Ignora o retorno dos outros tipos
+	// Ignores the return of the other types
 
 	return;
 }

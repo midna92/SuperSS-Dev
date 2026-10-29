@@ -1,6 +1,6 @@
-// Arquivo cmd_save_nick.hpp
-// Criado em 01/04/2018 as 13:57 por Acrisio
-// Defini��o da classe CmdSaveNick
+// File cmd_save_nick.hpp
+// Created on 01/04/2018 at 13:57 by Acrisio
+// Definition of class CmdSaveNick
 
 #pragma once
 #ifndef _STDA_CMD_SAVE_NICK_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_find_mascot.hpp
-// Criado em 22/05/2018 as 21:55 por Acrisio
-// Defini��o da classe CmdFindMascot
+// File cmd_find_mascot.hpp
+// Created on 22/05/2018 at 21:55 by Acrisio
+// Definition of the class CmdFindMascot
 
 #pragma once
 #ifndef _STDA_CMD_FIND_MASCOT_HPP

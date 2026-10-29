@@ -1,6 +1,6 @@
-// Arquivo cmd_character_info.hpp
-// Criado em 18/03/2018 as 20:45 por Acrisio
-// Defini��o da classe CmdCharacterInfo
+// File cmd_character_info.hpp
+// Created on 18/03/2018 at 20:45 by Acrisio
+// Definition of the class CmdCharacterInfo
 
 #pragma once
 #ifndef _STDA_CMD_CHARACTER_INFO_HPP
@@ -18,8 +18,8 @@ namespace stdA {
 	class CmdCharacterInfo : public pangya_db {
 		public:
 			enum TYPE : unsigned char {
-				ALL,		// TODOS characters
-				ONE,		// Um character
+				ALL,		// ALL characters
+				ONE,		// One character
 			};
 
 		public:

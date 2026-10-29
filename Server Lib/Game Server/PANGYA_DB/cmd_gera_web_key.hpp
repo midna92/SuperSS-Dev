@@ -1,6 +1,6 @@
-// Arquivo cmd_gera_web_key.hpp
-// Criado em 25/03/2018 as 17:17 por Acrisio
-// Defini��o da classe CmdGeraWebKey
+// File cmd_gera_web_key.hpp
+// Created on 25/03/2018 at 17:17 by Acrisio
+// Definition of the class CmdGeraWebKey
 
 #pragma once
 #ifndef _STDA_CMD_GERA_WEB_KEY_HPP

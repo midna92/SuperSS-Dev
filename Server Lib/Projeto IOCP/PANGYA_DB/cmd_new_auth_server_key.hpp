@@ -1,6 +1,6 @@
-// Arquivo cmd_new_auth_server_key.hpp
-// Criado em 15/12/2018 as 15:36 por Acrisio
-// Definição da classe CmdNewAuthServerKey
+// File cmd_new_auth_server_key.hpp
+// Created on 15/12/2018 at 15:36 by Acrisio
+// Definition of class CmdNewAuthServerKey
 
 #pragma once
 #ifndef _STDA_CMD_NEW_AUTH_SERVER_KEY_HPP

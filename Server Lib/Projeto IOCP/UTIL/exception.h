@@ -1,6 +1,6 @@
-// Arquivo exception.h
-// Criado em 02/03/2017 por Acrisio
-// Definição da classe exception
+// File exception.h
+// Created on 02/03/2017 by Acrisio
+// Definition of the class exception
 
 #pragma once
 #ifndef _STDA_EXCEPTION_H

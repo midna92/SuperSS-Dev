@@ -1,6 +1,6 @@
-// Arquivo cmd_add_character.hpp
-// Criado em 25/03/2018 as 18:00 por Acrisio
-// Defini��o da classe CmdAddCharacter
+// File cmd_add_character.hpp
+// Created on 25/03/2018 at 18:00 by Acrisio
+// Definition of class CmdAddCharacter
 
 #pragma once
 #ifndef _STDA_CMD_ADD_CHARACTER_HPP

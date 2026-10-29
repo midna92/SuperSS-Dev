@@ -1,6 +1,6 @@
-// Arquivo md5.cpp
-// Criado em 18/03/2019 as 23:49 por Acrisio
-// Implementação da classe de suporte do hash de MD5 usando API do WinCrypt
+// File md5.cpp
+// Created on 18/03/2019 at 23:49 by Acrisio
+// Implementation of the MD5 hash support class using the WinCrypt API
 
 #if defined(_WIN32)
 #pragma pack(1)

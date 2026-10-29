@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_rental.hpp
-// Criado em 10/06/2018 as 17:42 por Acrisio
-// Defini��o da classe CmdDeleteRental
+// File cmd_delete_rental.hpp
+// Created on 10/06/2018 at 17:42 by Acrisio
+// Definition of the class CmdDeleteRental
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_RENTAL_HPP

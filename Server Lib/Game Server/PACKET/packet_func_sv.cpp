@@ -1,6 +1,6 @@
-// Arquivo packet_func_sv.cpp
-// Criado em 13/08/2017 por Acrisio
-// Implementação da classe packet_func para o Game Server
+// File packet_func_sv.cpp
+// Created on 13/08/2017 by Acrisio
+// Implementation of the packet_func class for the Game Server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -90,7 +90,7 @@
 							\
 						 }catch (exception& e) { \
 							\
-							if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/)) \
+							if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 								if ((_session)->devolve()) \
 									sgs::gs::getInstance().DisconnectSession((_session)); \
 							\
@@ -98,8 +98,8 @@
 								throw; \
 						 } \
 
-// Verifica se session está autorizada para executar esse ação, 
-// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+// Check whether the session is authorized to perform this action, 
+// if it did not log in to the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!pd._session.m_is_authorized) \
 												throw exception("[packet_func::" + std::string((method)) + "][Error] Player[UID=" + std::to_string(pd._session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_SV, 1, 0x7000501)); \
@@ -190,18 +190,18 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
 	enum NICK_CHECK : unsigned char {
-		SUCCESS,				// Sucesso por trocar o nick por que ele está disponível
-		UNKNOWN_ERROR,			// Erro desconhecido, Error ao verificar NICK
-		NICK_IN_USE,			// NICKNAME já em uso
-		INCORRECT_NICK,			// INCORRET nick, tamanho < 4 ou tem caracteres que não pode
-		NOT_ENOUGH_COOKIE,		// Não tem points suficiente
-		HAVE_BAD_WORD,			// Tem palavras que não pode no NICK
-		ERROR_DB,				// Erro DB
-		EMPETY_ERROR,			// Erro Vazio
-		EMPETY_ERROR_2,			// ERRO VAZIO 2
-		SAME_NICK_USED,			// O Mesmo nick vai ser usado, estou usando para o mesmo que o ID
-		EMPETY_ERROR_3,			// ERRO VAZIO 3
-		CODE_ERROR_INFO = 12	// CODE  ERROR INFO arquivo iff, o código do erro para mostra no cliente
+		SUCCESS,				// Success changing the nick because it is available
+		UNKNOWN_ERROR,			// Unknown error, Error when checking NICK
+		NICK_IN_USE,			// NICKNAME already in use
+		INCORRECT_NICK,			// INCORRECT nick, length < 4 or has characters that are not allowed
+		NOT_ENOUGH_COOKIE,		// Not enough points
+		HAVE_BAD_WORD,			// Has words that are not allowed in the NICK
+		ERROR_DB,				// DB Error
+		EMPETY_ERROR,			// Empty Error
+		EMPETY_ERROR_2,			// EMPTY ERROR 2
+		SAME_NICK_USED,			// The Same nick will be used, I am using it the same as the ID
+		EMPETY_ERROR_3,			// EMPTY ERROR 3
+		CODE_ERROR_INFO = 12	// CODE  ERROR INFO iff file, the error code to show on the client
 	};
 
 	NICK_CHECK nc(SUCCESS);
@@ -216,8 +216,8 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet007");
 
 		opt = pd._packet->readUint8();
@@ -300,7 +300,7 @@ int packet_func::packet007(void* _arg1, void* _arg2) {
 		if (error == 0 && nc == NICK_IN_USE) {
 			p.addInt32(mi.uid);
 
-			p.addBuffer(&mi, sizeof(MemberInfo));	// esse aqui no antigo enviar sem o número da sala
+			p.addBuffer(&mi, sizeof(MemberInfo));	// this one in the old one sent without the room number
 		}
 
 		session_send(p, &pd._session, 1);
@@ -327,7 +327,7 @@ int packet_func::packet008(void * _arg1, void * _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet008][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -348,7 +348,7 @@ int packet_func::packet009(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet009][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -369,7 +369,7 @@ int packet_func::packet00A(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet00A][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -390,7 +390,7 @@ int packet_func::packet00B(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet00B][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -404,26 +404,26 @@ int packet_func::packet00C(void* _arg1, void* _arg2) {
 
 		channel *_channel = gs->findChannel(pd._session.m_pi.channel);
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.lockSync();
 
 		if (_channel != nullptr)
 			_channel->requestChangePlayerItemRoom(pd._session, pd._packet);
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.unlockSync();
 
 	}catch (exception& e) {
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.unlockSync();
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet00C][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -444,7 +444,7 @@ int packet_func::packet00D(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet00D][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -486,7 +486,7 @@ int packet_func::packet00F(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet00F][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -507,7 +507,7 @@ int packet_func::packet010(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet010][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -788,7 +788,7 @@ int packet_func::packet01D(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet01D][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -809,7 +809,7 @@ int packet_func::packet01F(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet01F][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer excpetion que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -830,7 +830,7 @@ int packet_func::packet020(void* _arg1, void* _arg2) {
 		
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet020][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -872,7 +872,7 @@ int packet_func::packet026(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet026][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Diferente do erro 1 de channel
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Different from channel error 1
 			throw;
 	}
 
@@ -932,7 +932,7 @@ int packet_func::packet02D(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet02D][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Diferente do erro 1 de channel
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Different from channel error 1
 			throw;
 	}
 
@@ -1493,8 +1493,8 @@ int packet_func::packet061(void* _arg1, void* _arg2) {
 			_smp::message_pool::getInstance().push(new message("[packet_func::packet061][Log] player[UID=" + std::to_string(pd._session.m_pi.uid) 
 					+ "] tentou desconectar um player, mas o server ja faz o tratamento do packet08F do comando GM.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet061");
 
 	}catch (exception& e) {
@@ -1522,7 +1522,7 @@ int packet_func::packet063(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet063][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Diferente do erro 1 de channel
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Different from channel error 1
 			throw;
 	}
 
@@ -1920,7 +1920,7 @@ int packet_func::packet082(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet082][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Diferente do erro 1 de channel
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))		// Different from channel error 1
 			throw;
 	}
 
@@ -1972,8 +1972,8 @@ int packet_func::packet08B(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet08B");
 		
 		CmdServerList cmd_sl(CmdServerList::MSN, true);	// waitable
@@ -2171,13 +2171,13 @@ int packet_func::packet0B4(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Esse pacote é que o player aceitou convite do player entrou na sala saiu e relogou, ai manda esse pacote com o número da sala
+		// This packet is for when the player accepted a player's invite, entered the room, left and logged in again, then it sends this packet with the room number
 		/*_smp::message_pool::getInstance().push(new message("[packet_func::packet0B4][Log] Player[UID=" + std::to_string(pd._session.m_pi.uid) 
 				+ "] mandou o Pacote0B4 mas nao sei o que ele pede ou faz ainda. Hex: \n\r" 
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_FILE_LOG_AND_CONSOLE));*/
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0B4");
 
 		unsigned char option = pd._packet->readUint8();
@@ -2204,8 +2204,8 @@ int packet_func::packet09C(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet09C(Last5Player)");
 
 		// Last 5 Player Game Info
@@ -2229,21 +2229,21 @@ int packet_func::packet09D(void* _arg1, void* _arg2) {
 		
 		auto c = gs->findChannel(pd._session.m_pi.channel);
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.lockSync();
 
 		if (c != nullptr)
 			c->requestEnterGameAfterStarted(pd._session, pd._packet);
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.unlockSync();
 
 	}catch (exception& e) {
 
-		// Bloquear para ver se funciona o sync do entra depois no camp, 
-		// mesmo que o outro(0x9D) chama primeiro esse(0x0C) é mais rápido para verificar se o player está em uma sala
+		// Block to see whether the sync of join-after-start in the camp works, 
+		// even though the other one(0x9D) calls first, this one(0x0C) is faster to check whether the player is in a room
 		pd._session.unlockSync();
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet09D][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -2281,8 +2281,8 @@ int packet_func::packet0B5(void* _arg1, void* _arg2) {
 
 	try {
 		
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0B5(MyrRoomHouseInfo)");
 
 		uint32_t from_uid, to_uid;
@@ -2292,8 +2292,8 @@ int packet_func::packet0B5(void* _arg1, void* _arg2) {
 
 		packet p((unsigned short)0x12B);
 
-		// Aqui o player só pode pedir para entrar no dele mesmo
-		if (from_uid == to_uid && pd._session.m_pi.mrc.allow_enter) {	// Isso tinha no season 4, agora nos season posteriores tiraram isso
+		// Here the player can only ask to enter their own
+		if (from_uid == to_uid && pd._session.m_pi.mrc.allow_enter) {	// This existed in season 4, in later seasons it was removed
 			p.addUint32(1);	// option;
 
 			p.addUint32(to_uid);
@@ -2320,11 +2320,11 @@ int packet_func::packet0B7(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0B7(InfoPlayerMyRoom)");
 
-		// @@!! Ajeitar para pegar a função estática da sala que initializa o Player Room Info
+		// @@!! Fix to use the room's static function that initializes the Player Room Info
 		PlayerRoomInfoEx pri;
 
 		// Player Room Info Init
@@ -2336,7 +2336,7 @@ int packet_func::packet0B7(void* _arg1, void* _arg2) {
 		memcpy(pri.nickname, pd._session.m_pi.nickname, sizeof(pri.nickname));
 		memcpy(pri.guild_name, pd._session.m_pi.gi.name, sizeof(pri.guild_name));
 #endif
-		pri.position = 0;	// posição na sala
+		pri.position = 0;	// position in the room
 		pri.capability = pd._session.m_pi.m_cap;
 		pri.title = pd._session.m_pi.ue.m_title;
 
@@ -2348,15 +2348,15 @@ int packet_func::packet0B7(void* _arg1, void* _arg2) {
 #elif defined(__linux__)
 		memcpy(pri.skin, pd._session.m_pi.ue.skin_typeid, sizeof(pri.skin));
 #endif
-		pri.skin[4] = 0;		// Aqui tem que ser zero, se for outro valor não mostra a imagem do character equipado
+		pri.skin[4] = 0;		// This has to be zero here, if it is another value the equipped character image is not shown
 
 		pri.state_flag.uFlag.stFlagBit.master = 1;
-		pri.state_flag.uFlag.stFlagBit.ready = 1;	// Sempre está pronto(ready) o master
+		pri.state_flag.uFlag.stFlagBit.ready = 1;	// The master is always ready
 
 		pri.state_flag.uFlag.stFlagBit.sexo = pd._session.m_pi.mi.sexo;
 
-		// Só faz calculo de Quita rate depois que o player
-		// estiver no level Beginner E e jogado 50 games
+		// Only calculates Quit rate after the player
+		// is at level Beginner E and has played 50 games
 		if (pd._session.m_pi.level >= 6 && pd._session.m_pi.ui.jogado >= 50) {
 			float rate = pd._session.m_pi.ui.getQuitRate();
 
@@ -2395,22 +2395,22 @@ int packet_func::packet0B7(void* _arg1, void* _arg2) {
 
 		pri.flag_item_boost = pd._session.m_pi.checkEquipedItemBoost();
 		pri.ulUnknown_flg = 0;
-		//pri.id_NT não estou usando ainda
+		//pri.id_NT I am not using yet
 		//pri.ucUnknown106
-		pri.convidado = 0;	// Flag Convidado, [Não sei bem por que os que entra na sala normal tem valor igual aqui, já que é flag de convidado waiting], Valor constante da sala para os players(ACHO)
+		pri.convidado = 0;	// Guest Flag, [I do not really know why those who enter the room normally have the same value here, since it is a guest waiting flag], Constant room value for the players(I THINK)
 		pri.avg_score = pd._session.m_pi.ui.getMediaScore();
 		//pri.ucUnknown3
 
 		if (pd._session.m_pi.ei.char_info != nullptr)
 			pri.ci = *pd._session.m_pi.ei.char_info;
 
-		packet p((unsigned short)0x168);	// Character Equipado
+		packet p((unsigned short)0x168);	// Equipped Character
 
 		p.addBuffer(&pri, sizeof(PlayerRoomInfoEx));
 
 		session_send(p, &pd._session, 0);
 
-		p.init_plain((unsigned short)0x12D);	// Itens do Myroom, Mala, Email, sofa, teto chao, e poster, "NESSA SEASON, SÓ USA POSTER"
+		p.init_plain((unsigned short)0x12D);	// Myroom items, Suitcase, Email, sofa, ceiling floor, and poster, "IN THIS SEASON, ONLY POSTER IS USED"
 
 		p.addUint32(1);	// Option
 
@@ -2494,11 +2494,11 @@ int packet_func::packet0C1(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0C1(UpdatePlace)");
 
-		pd._session.m_pi.place = pd._packet->readUint8();	// Att place(lugar)
+		pd._session.m_pi.place = pd._packet->readUint8();	// Update place
 
 		// Update Location Player on DB
 		pd._session.m_pi.updateLocationDB();
@@ -2722,8 +2722,8 @@ int packet_func::packet0D3(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0D3(CheckDolfiniLocker)");
 
 		uint32_t check = 0u;
@@ -2813,12 +2813,12 @@ int packet_func::packet0DE(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Player não pode ver a message privada que o player mandou, avisa para o server
+		// Player cannot see the private message the player sent, notifies the server
 		/*_smp::message_pool::getInstance().push(new message("[packet_func::packet0DE][Log] Player[UID=" + std::to_string(pd._session.m_pi.uid) 
 				+ "] mandou o Pacote0DE mas nao sei o que ele pede ou faz ainda. Hex: \n\r" 
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_FILE_LOG_AND_CONSOLE));*/
 
-		// Envia mensagem para o player que enviou o MP que o player não pode ver a mensagem
+		// Sends a message to the player who sent the PM that the player cannot see the message
 		gs->requestNotifyNotDisplayPrivateMessageNow(pd._session, pd._packet);
 	
 	}catch (exception& e) {
@@ -2909,7 +2909,7 @@ int packet_func::packet0EB(void* _arg1, void* _arg2) {
 
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet0EB][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Por Hora relança qualquer exception que não seja do channel
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// For now rethrows any exception that is not from the channel
 			throw;
 	}
 
@@ -2966,12 +2966,12 @@ int packet_func::packet0F4(void* _arg1, void* _arg2) {
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("Atualiza Time Bot do player: " + std::to_string(pd._session.m_pi.uid) + ", time anterior: " + std::to_string((int64_t)(((std::clock() - pd._session.m_tick_bot) / (double)CLOCKS_PER_SEC) * 1000)) + "ms", CL_ONLY_FILE_LOG));
 #else
-		if (((std::clock() - pd._session.m_tick_bot) / (double)CLOCKS_PER_SEC) >= ((gs->getBotTTL() + (gs->getBotTTL() / 4)/*TTL time + 1/4 dele*/) / 1000.0))
+		if (((std::clock() - pd._session.m_tick_bot) / (double)CLOCKS_PER_SEC) >= ((gs->getBotTTL() + (gs->getBotTTL() / 4)/*TTL time + 1/4 of it*/) / 1000.0))
 			_smp::message_pool::getInstance().push(new message("[Warning][Bot Or Lag] Atualiza Time Bot do player: " + std::to_string(pd._session.m_pi.uid) + ", time anterior: " + std::to_string((int64_t)(((std::clock() - pd._session.m_tick_bot) / (double)CLOCKS_PER_SEC) * 1000)) + "ms", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0F4");
 
 		pd._session.m_tick_bot = std::clock();
@@ -2991,8 +2991,8 @@ int packet_func::packet0FB(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0FB(WebKey)");
 		
 		CmdGeraWebKey cmd_gwk(pd._session.m_pi.uid, true);
@@ -3030,11 +3030,11 @@ int packet_func::packet0FE(void* _arg1, void* _arg2) {
 
 	try {
 
-		// @@!! Depois tenho que descobrir o que seja isso que ele passa e o que recebe do cliente(OPTION)
+		// @@!! Later I have to find out what this is that it passes and what it receives from the client(OPTION)
 		_smp::message_pool::getInstance().push(new message("VALUE - (OPTION): " + std::to_string(pd._packet->readInt32()), CL_ONLY_FILE_LOG));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet0FE");
 
 		packet p;
@@ -3081,7 +3081,7 @@ int packet_func::packet126(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet126][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)
-			throw; // Relança
+			throw; // Rethrow
 	}
 
 	return 0;
@@ -3102,7 +3102,7 @@ int packet_func::packet127(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet127][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)
-			throw; // Relança
+			throw; // Rethrow
 	}
 
 	return 0;
@@ -3123,7 +3123,7 @@ int packet_func::packet128(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet128][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)
-			throw; // Relança
+			throw; // Rethrow
 	}
 
 	return 0;
@@ -3144,7 +3144,7 @@ int packet_func::packet129(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet129][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)
-			throw; // Relança
+			throw; // Rethrow
 	}
 
 	return 0;
@@ -3326,14 +3326,14 @@ int packet_func::packet140(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet140(requestEnterShop)");
 
 		packet p((unsigned short)0x20E);
 
 		p.addUint32(0);
-		p.addUint32(0);	// Não sei pode ACHO "ser Value acho, ou erro, pode ser dizendo que o shop esta bloqueado"
+		p.addUint32(0);	// I do not know, it may, I THINK "be a Value I think, or an error, it may be saying that the shop is blocked"
 
 		session_send(p, &pd._session, 0);
 
@@ -3640,18 +3640,18 @@ int packet_func::packet157(void* _arg1, void* _arg2) {
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet157][Log] Player[UID=" + std::to_string(pd._session.m_pi.uid) + "].\tPlayer Achievement request uid: " + std::to_string(uid), CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet157(requestAchievementInfo)");
 
 		MgrAchievement* mgr_achievement = nullptr;
 		player *s = nullptr;
 
-		if (pd._session.m_pi.uid == uid)	// O player solicitou o próprio achievement info
+		if (pd._session.m_pi.uid == uid)	// The player requested their own achievement info
 			mgr_achievement = &pd._session.m_pi.mgr_achievement;
-		else if ((s = gs->findPlayer(uid)) != nullptr)	// O player solicitou o achievement info de outro player online
+		else if ((s = gs->findPlayer(uid)) != nullptr)	// The player requested the achievement info of another online player
 			mgr_achievement = &s->m_pi.mgr_achievement;
-		else {	// O player solicitou o achievement info de outro player off-line
+		else {	// The player requested the achievement info of another off-line player
 
 			MgrAchievement mgr_achievement;
 
@@ -4538,7 +4538,7 @@ int packet_func::packet_sv22D(void* _arg1, void* _arg2) {
 
 	packet p;
 
-	// Já enviou o pacote22D com os achievement todo envia o pacote para abrir o GUI
+	// Already sent packet22D with all the achievements, now sends the packet to open the GUI
 	pacote22C(p, &pd._session);
 	//session_send(p, &pd._session, 0);
 	_smp::message_pool::getInstance().push(new message("Packet ID: " + std::to_string(pd._packet->getTipo()) + " has send.", CL_ONLY_FILE_LOG));
@@ -4549,8 +4549,8 @@ int packet_func::packet_sv22D(void* _arg1, void* _arg2) {
 int packet_func::packet_svFazNada(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
-	// Esse pacote é para os pacotes que o server envia para o cliente
-	// e não precisa de tratamento depois que foi enviado para o cliente
+	// This packet is for the packets the server sends to the client
+	// and needs no handling after it was sent to the client
 
 	return 0;
 };
@@ -4584,7 +4584,7 @@ int packet_func::packet_as001(void* _arg1, void* _arg2) {
 #if INTPTR_MAX == INT64_MAX && MY_GG_SRV_LIB == 0
 		sgs::gs::getInstance().authCmdKeyLoginGGAuthServer(_packet);
 #elif INTPTR_MAX == INT32_MAX || MY_GG_SRV_LIB == 1
-		// !@ Teste
+		// !@ Test
 		_smp::message_pool::getInstance().push(new message("[packet_func::packet_as001][Log] Teste, ver se esta funcionando.", CL_FILE_LOG_AND_CONSOLE));
 #else
 #error Unknown pointer size or missing size macros!
@@ -4672,7 +4672,7 @@ int packet_func::pacote047(packet& p, std::vector< RoomInfo > v_element, int opt
 
 	p.addUint8((unsigned char)((option == 0 ) ? v_element.size() : 1));				// count;
 	p.addInt8((unsigned char)option);
-	p.addInt16(-1);					// Não sei bem, mas sempre peguei esse pacote com -1 aqui
+	p.addInt16(-1);					// I do not know exactly, but I always captured this packet with -1 here
 
 	for (auto i = 0u; i < v_element.size(); ++i)
 		p.addBuffer(&v_element[i] , sizeof(RoomInfo));
@@ -4707,7 +4707,7 @@ int packet_func::pacote048(packet& p, player *_session, std::vector< PlayerRoomI
 
 		MAKE_MID_SPLIT_PACKET_VECTOR((option & 0x100 ? sizeof(PlayerRoomInfo) : sizeof(PlayerRoomInfoEx)));
 
-		p.addUint8(0);	// Final list de PlayerRoomInfo
+		p.addUint8(0);	// End of PlayerRoomInfo list
 
 		MAKE_END_SPLIT_PACKET(1);
 	}else {
@@ -4726,14 +4726,14 @@ int packet_func::pacote048(packet& p, player *_session, std::vector< PlayerRoomI
 			for (auto i = 0u; i < v_element.size(); i++)
 				p.addBuffer(&v_element[i], (option & 0x100 ? sizeof(PlayerRoomInfo) : sizeof(PlayerRoomInfoEx)));
 
-			p.addUint8(0);	// Final list de PlayerRoomInfo
+			p.addUint8(0);	// End of PlayerRoomInfo list
 
 			return 1;
 		}else {
 			MAKE_BEGIN_SPLIT_PACKET(0x48, _session, (option & 0x100 ? sizeof(PlayerRoomInfo) : sizeof(PlayerRoomInfoEx)), MAX_BUFFER_PACKET);
 
 			if ((option & 0xFF) == 0 && index != 0u)
-				p.addUint8(5u);	// Option 5 é para add os players aos que já tem na sala
+				p.addUint8(5u);	// Option 5 is to add the players to those already in the room
 			else
 				p.addUint8((unsigned char)option);
 
@@ -4746,7 +4746,7 @@ int packet_func::pacote048(packet& p, player *_session, std::vector< PlayerRoomI
 
 			MAKE_MID_SPLIT_PACKET_VECTOR((option & 0x100 ? sizeof(PlayerRoomInfo) : sizeof(PlayerRoomInfoEx)));
 
-			p.addUint8(0);	// Final list de PlayerRoomInfo
+			p.addUint8(0);	// End of PlayerRoomInfo list
 
 			MAKE_END_SPLIT_PACKET(1);
 		}
@@ -4773,10 +4773,10 @@ int packet_func::pacote04A(packet& p, RoomInfoEx& _ri, int option) {
 	
 	p.init_plain((unsigned short)0x4A);
 
-	p.addInt16((short)option);		// pode ser valor constante da sala ou o número, ainda não descobri, sempre passa -1 des vezes que vi
+	p.addInt16((short)option);		// it may be a constant room value or the number, I have not found out yet, it always passes -1 every time I saw it
 
-	// Tem que ser o tipo_show, por que ele é o que o cliente quer,
-	// o tipo(real) só server conhece para poder fazer o jogo direito 
+	// It has to be the tipo_show, because it is what the client wants,
+	// the (real) type only the server knows so it can run the game properly 
 	p.addUint8(_ri.tipo_show);
 	p.addUint8(_ri.course);
 	p.addUint8(_ri.qntd_hole);
@@ -4789,13 +4789,13 @@ int packet_func::pacote04A(packet& p, RoomInfoEx& _ri, int option) {
 
 	p.addUint32(_ri.natural.ulNaturalAndShortGame);
 	p.addUint8(_ri.max_player);
-	p.addInt8(_ri._30s);		// constante 30 de pangya
+	p.addInt8(_ri._30s);		// pangya constant 30
 	p.addUint8((unsigned char)_ri.state_flag);
 	p.addUint32(_ri.time_vs);
 	p.addUint32(_ri.time_30s);
 	p.addUint32(_ri.trofel);
 
-	p.addUint8(_ri.senha_flag);	// Senha Flag
+	p.addUint8(_ri.senha_flag);	// Password Flag
 
 	p.addString(_ri.nome);
 
@@ -4847,12 +4847,12 @@ int packet_func::pacote04B(packet& p, player *_session, unsigned char _type, int
 			else
 				p.addZeroByte(sizeof(MascotInfo));
 			break;
-		case 6:	// Itens Active 1 = Jester big cabeça, 2 = Hermes velocidade x2, 3 = Twilight Fogos na cabeça
+		case 6:	// Active Items 1 = Jester big head, 2 = Hermes speed x2, 3 = Twilight Fireworks on the head
 		{
 			p.addInt32(_valor);
 
 			if (_valor == ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_TWILIGHT/*Twilight*/)
-				p.addInt32(1);	// Ativa Fogos
+				p.addInt32(1);	// Activates Fireworks
 			else {
 
 				if (_session->m_pi.ei.char_info != nullptr) {
@@ -4873,7 +4873,7 @@ int packet_func::pacote04B(packet& p, player *_session, unsigned char _type, int
 					case ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_BIG_HEAD:	// Jester (Big head)
 						p.addFloat(it->second.scale_head);
 						break;
-					case ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_FAST_WALK:	// Hermes (Velocidade x2)
+					case ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_FAST_WALK:	// Hermes (Speed x2)
 						p.addFloat(it->second.walk_speed);
 						break;
 					}
@@ -4883,7 +4883,7 @@ int packet_func::pacote04B(packet& p, player *_session, unsigned char _type, int
 			break;
 		}
 		case 7:	// Player game
-			// Nada Aqui
+			// Nothing Here
 			break;
 		default:
 			throw exception("Error tipo desconhecido. Em packet_func::pacote04B()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_SV, 3, 0));
@@ -4917,10 +4917,10 @@ int packet_func::pacote04D(packet& p, player *_session, std::vector< channel* >&
 int packet_func::pacote04E(packet& p, player *_session, int option, int _codeErrorInfo) {
 	
 	/* Option Values
-	* 1 Sucesso
+	* 1 Success
 	* 2 Channel Full
-	* 3 Nao encontrou canal
-	* 4 Nao conseguiu pegar informções do canal
+	* 3 Channel not found
+	* 4 Could not get channel information
 	* 6 ErrorCode Info
 	*/
 
@@ -4941,27 +4941,27 @@ int packet_func::pacote06B(packet& p, player *_session, PlayerInfo *pi, unsigned
 
 	p.init_plain((unsigned short)0x6B);
 
-	p.addInt8(err_code);		// Error Code, 4 Sucesso, diferente é erro
+	p.addInt8(err_code);		// Error Code, 4 Success, anything else is an error
 	p.addInt8(type);
 
 	if (err_code == 4) {
 		switch (type) {
-		case 0:	// Character Equipado Com os Parts Equipado
+		case 0:	// Character Equipped With the Equipped Parts
 			if (_session->m_pi.ei.char_info != nullptr)
 				p.addBuffer(_session->m_pi.ei.char_info, sizeof(CharacterInfo));
 			else
 				p.addZeroByte(sizeof(CharacterInfo));
 			break;
-		case 1:	// Caddie Equipado
+		case 1:	// Equipped Caddie
 			if (_session->m_pi.ei.cad_info != nullptr)
 				p.addUint32(_session->m_pi.ei.cad_info->id);
 			else
 				p.addZeroByte(sizeof(uint32_t));
 			break;
-		case 2: // Itens Equipáveis
+		case 2: // Equippable Items
 			p.addBuffer(pi->ue.item_slot, sizeof(pi->ue.item_slot));
 			break;
-		case 3:	// Ball e Clubset Equipado
+		case 3:	// Equipped Ball and Clubset
 			if (_session->m_pi.ei.comet != nullptr) // Ball
 				p.addUint32(_session->m_pi.ei.comet->_typeid);
 			else
@@ -4971,26 +4971,26 @@ int packet_func::pacote06B(packet& p, player *_session, PlayerInfo *pi, unsigned
 		case 4:	// Skins
 			p.addBuffer(&_session->m_pi.ue.skin_typeid, sizeof(_session->m_pi.ue.skin_typeid));
 			break;
-		case 5:	// Only Chracter Equipado
+		case 5:	// Only Equipped Character
 			if (_session->m_pi.ei.char_info != nullptr)
 				p.addUint32(_session->m_pi.ei.char_info->id);
 			else
 				p.addZeroByte(sizeof(uint32_t));
 			break;
-		case 8:	// Mascot Equipado
+		case 8:	// Equipped Mascot
 			if (_session->m_pi.ei.mascot_info != nullptr)
 				p.addBuffer((MascotInfo*)_session->m_pi.ei.mascot_info, sizeof(MascotInfo));
 			else
 				p.addZeroByte(sizeof(MascotInfo));
 			break;
-		case 9:	// Character Cutin Equipado
+		case 9:	// Equipped Character Cutin
 			if (_session->m_pi.ei.char_info != nullptr) {
 				p.addUint32(_session->m_pi.ei.char_info->id);
 				p.addBuffer(_session->m_pi.ei.char_info->cut_in, sizeof(_session->m_pi.ei.char_info->cut_in));
 			}else
 				p.addZeroByte(20);
 			break;
-		case 10:	// Poster Equipado
+		case 10:	// Equipped Poster
 			p.addBuffer(&_session->m_pi.ue.poster, sizeof(_session->m_pi.ue.poster));
 			break;
 		}
@@ -5081,7 +5081,7 @@ int packet_func::pacote073(packet& p, player *_session, std::multimap< int32_t/*
 
 		MAKE_MID_SPLIT_PACKET_MAP(sizeof(WarehouseItem));
 
-		MAKE_END_SPLIT_PACKET(0);	// not display on debug, por que quando tem muitos itens aumenta o tamanho do arquivo de log
+		MAKE_END_SPLIT_PACKET(0);	// not display on debug, because when there are many items the log file size increases
 	}
 
 	return 0;
@@ -5170,7 +5170,7 @@ int packet_func::pacote0AA(packet& p, player *_session, std::vector< stItem >& v
 	if (v_item.size() > 0) {
 		p.init_plain((unsigned short)0xAA);
 
-		p.addUint16((unsigned short)v_item.size());	// Count, ele só manda de 1 msm não manda todos, não sei por que
+		p.addUint16((unsigned short)v_item.size());	// Count, it only sends 1, does not send all, I do not know why
 
 		for (auto i = 0u; i < v_item.size(); ++i) {
 
@@ -5182,7 +5182,7 @@ int packet_func::pacote0AA(packet& p, player *_session, std::vector< stItem >& v
 			p.addBuffer(&v_item[i].date.date.sysDate[1], sizeof(SYSTEMTIME));
 			p.addBuffer(&v_item[i].ucc.IDX, sizeof(v_item[i].ucc.IDX));
 
-			// Aqui é a reflexão desse pacote, usa no ticket report
+			// Here is the reflection of this packet, used in the ticket report
 			if (v_item[i]._typeid == 0x1A000042) {
 				p.addUint16(v_item[i].STDA_C_ITEM_TICKET_REPORT_ID_HIGH);
 				p.addUint16(v_item[i].STDA_C_ITEM_TICKET_REPORT_ID_LOW);
@@ -5202,7 +5202,7 @@ int packet_func::pacote0B2(packet& p, player *_session, std::vector< MsgOffInfo 
 	
 	p.init_plain((unsigned short)0xB2);
 
-	p.addInt32(2);		// Não sei bem o que é, mas pode ser uma opção
+	p.addInt32(2);		// I do not know exactly what it is, but it may be an option
 
 	p.addInt32(option);
 
@@ -5524,7 +5524,7 @@ int packet_func::pacote15B(packet& p, player *_session, uint32_t _uid, unsigned 
 
 	p.addInt8(season);
 	p.addInt32(_uid);
-	p.addInt16(0);	// Aqui é o count de algum info do player que eu ainda não sei
+	p.addInt16(0);	// Here is the count of some player info that I do not know yet
 
 	return 0;
 };
@@ -5720,7 +5720,7 @@ int packet_func::pacote212(packet& p, player *_session, EmailInfo& ei, int error
 		p.addString(ei.from_id);
 		p.addString(ei.gift_date);
 		p.addString(ei.msg);
-		p.addInt8(ei.lida_yn); // Flag que mostra o item, 1 mostra, 0 não mostra
+		p.addInt8(ei.lida_yn); // Flag that shows the item, 1 shows, 0 does not show
 
 		p.addInt32((uint32_t)ei.itens.size());
 
@@ -5783,7 +5783,7 @@ int packet_func::pacote216(packet& p, player *_session, std::vector< stItem >& v
 				try {
 					p.addString(i->ucc.IDX);
 				}catch (exception& e) {
-					if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::PACKET && STDA_ERROR_DECODE(e.getCodeError()) == 3/*String Vazia*/)
+					if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::PACKET && STDA_ERROR_DECODE(e.getCodeError()) == 3/*Empty String*/)
 						p.addInt16(0);
 					else
 						throw;
@@ -5792,7 +5792,7 @@ int packet_func::pacote216(packet& p, player *_session, std::vector< stItem >& v
 				p.addInt32(i->ucc.status);
 				p.addInt32(i->ucc.seq);
 				//p.addBuffer(i->unknown2, sizeof(i->unknown2));
-				p.addZeroByte(5);	// É o Unknown de cima
+				p.addZeroByte(5);	// It is the Unknown above
 			}
 		}
 	}else
@@ -5861,7 +5861,7 @@ int packet_func::pacote21E(packet& p, player *_session, std::multimap< uint32_t,
 				if (ii->counter_item_id > 0 && (cii = i->second.findCounterItemById(ii->counter_item_id)) != nullptr) {
 					p.addInt32(cii->_typeid);
 					p.addInt32(cii->id);
-				}else // não tem o counter id e nem o typeid
+				}else // it has neither the counter id nor the typeid
 					p.addZeroByte(8);
 
 				p.addInt32(ii->clear_date_unix);
@@ -5896,7 +5896,7 @@ int packet_func::pacote21E(packet& p, player *_session, std::multimap< uint32_t,
 					if (ii->counter_item_id > 0 && (cii = map_i->second.findCounterItemById(ii->counter_item_id)) != nullptr) {
 						p.addInt32(cii->_typeid);
 						p.addInt32(cii->id);
-					}else // não tem o counter id e nem o typeid
+					}else // it has neither the counter id nor the typeid
 						p.addZeroByte(8);
 
 					p.addInt32(ii->clear_date_unix);
@@ -5918,7 +5918,7 @@ int packet_func::pacote225(packet& p, player *_session, DailyQuestInfoUser& _dq,
 	p.addInt32(option);
 
 	if (option == 0) {
-		//p.addInt32(_dq.now_date);		// Antigo, a quest atual fica no "current" e não no "now", deprecated member
+		//p.addInt32(_dq.now_date);		// Old, the current quest is kept in "current" and not in "now", deprecated member
 		//p.addInt32(_dq.current_date);
 		//p.addInt32(_dq.accept_date);
 		
@@ -5963,7 +5963,7 @@ int packet_func::pacote226(packet& p, player *_session, std::vector< Achievement
 					if (ii->counter_item_id > 0 && (cii = i->findCounterItemById(ii->counter_item_id)) != nullptr) {
 						p.addInt32(cii->_typeid);
 						p.addInt32(cii->id);
-					}else // não tem o counter id e nem o typeid
+					}else // it has neither the counter id nor the typeid
 						p.addZeroByte(8);
 
 					p.addInt32(ii->clear_date_unix);
@@ -6045,7 +6045,7 @@ int packet_func::pacote22D(packet& p, player *_session, std::multimap< uint32_t,
 
 				if (ii->counter_item_id > 0 && (cii = i->second.findCounterItemById(ii->counter_item_id)) != nullptr)
 					p.addInt32(cii->value);
-				else // não tem o counter id e nem o typeid
+				else // it has neither the counter id nor the typeid
 					p.addZeroByte(4);
 
 				p.addInt32(ii->clear_date_unix);
@@ -6077,7 +6077,7 @@ int packet_func::pacote22D(packet& p, player *_session, std::multimap< uint32_t,
 
 					if (ii->counter_item_id > 0 && (cii = map_i->second.findCounterItemById(ii->counter_item_id)) != nullptr)
 						p.addInt32(cii->value);
-					else // não tem o counter id e nem o typeid
+					else // it has neither the counter id nor the typeid
 						p.addZeroByte(4);
 
 					p.addInt32(ii->clear_date_unix);
@@ -6183,7 +6183,7 @@ int packet_func::principal(packet& p, PlayerInfo *pi, ServerInfoEx& _si) {
 	size_t st_i = 0;
 	SYSTEMTIME si = { 0 };
 
-	// Clinte Versao
+	// Client Version
 	p.addString(_si.version_client);
 
 	// member info
@@ -6194,7 +6194,7 @@ int packet_func::principal(packet& p, PlayerInfo *pi, ServerInfoEx& _si) {
 	p.addUint32(pi->uid);
 	p.addBuffer(&pi->ui, sizeof(UserInfo));
 
-	// Trofel Info
+	// Trophy Info
 	p.addBuffer(&pi->ti_current_season, sizeof(TrofelInfo));
 
 	// User Equip
@@ -6238,24 +6238,24 @@ int packet_func::principal(packet& p, PlayerInfo *pi, ServerInfoEx& _si) {
 	else
 		p.addZeroByte(sizeof(MascotInfo));
 
-	// Date Atual
+	// Current Date
 	translateDateLocal(0, &si);	// Local
 
 	p.addBuffer(&si, sizeof(si));
 
-	// Config do Server
-	//p.addInt16(pi->mi.state_flag.ucByte[1]);			// (STATE DO PLAYER COM SEXO, ICON COR E ETC) Não sei bem o que é, no JP nas vezes que loguei ele passa 2
-	p.addUint16(pi->mi.flag_login_time);				// Esse é o valor 2 que o JP passa, 1 primeira vez que loga, 2 ele já logou uma ou mais vezes
+	// Server Config
+	//p.addInt16(pi->mi.state_flag.ucByte[1]);			// (PLAYER STATE WITH GENDER, ICON COLOR AND ETC) I do not know exactly what it is, on JP the times I logged in it passes 2
+	p.addUint16(pi->mi.flag_login_time);				// This is the value 2 that JP passes, 1 the first time it logs in, 2 it has already logged in one or more times
 	p.addBuffer(&pi->mi.papel_shop, sizeof(pi->mi.papel_shop));
-	p.addInt32(0); // estava 2 aqui, mas com nova conta é 0 no JP							// Novo no JP, tbm não sei o que é
-	p.addUint64(/*_si.flag.ullFlag |*/ pi->block_flag.m_flag.ullFlag);			// Flag do server, de block os sistemas
-	p.addUint32(0);						// Aqui é a quantidade de vezes que logou
-	p.addInt32(_si.propriedade.ulProperty);	// Property do server
+	p.addInt32(0); // was 2 here, but with a new account it is 0 on JP							// New on JP, I also don't know what it is
+	p.addUint64(/*_si.flag.ullFlag |*/ pi->block_flag.m_flag.ullFlag);			// Server flag, to block the systems
+	p.addUint32(0);						// Here is the number of times logged in
+	p.addInt32(_si.propriedade.ulProperty);	// Server property
 
 	return 0;
 };
 
-// Metôdos de auxílio de criação de pacotes
+// Helper methods for packet creation
 void packet_func::channel_broadcast(channel& _channel, packet& p, unsigned char _debug) {
 	
 	std::vector< player* > channel_session = _channel.getSessions();	//gs->getSessionPool().getChannelSessions(s->m_channel);
@@ -6302,7 +6302,7 @@ void packet_func::lobby_broadcast(channel& _channel, packet& p, unsigned char _d
 	std::vector< player* > channel_session = _channel.getSessions();	//gs->getSessionPool().getChannelSessions(s->m_channel);
 
 	for (auto i = 0u; i < channel_session.size(); ++i) {
-		if (channel_session[i]->m_pi.mi.sala_numero == -1) {	// Apenas quem está na lobby, sem ser em uma sala
+		if (channel_session[i]->m_pi.mi.sala_numero == -1) {	// Only those in the lobby, not in a room
 			MAKE_SEND_BUFFER(p, channel_session[i]);
 
 			SHOW_DEBUG_PACKET(p, _debug);

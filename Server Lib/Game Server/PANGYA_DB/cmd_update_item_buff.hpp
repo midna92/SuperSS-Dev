@@ -1,6 +1,6 @@
-// Arquivo cmd_update_item_buff.hpp
-// Criado em 07/07/2018 as 22:03 por Acrisio
-// Defini��o da classe CmdUpdateItemBuff
+// File cmd_update_item_buff.hpp
+// Created on 07/07/2018 at 22:03 by Acrisio
+// Definition of class CmdUpdateItemBuff
 
 #pragma once
 #ifndef _STDA_UPDATE_ITEM_BUFF_HPP

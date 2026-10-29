@@ -1,6 +1,6 @@
-// Arquivo cmd_my_room_item.cpp
-// Criado em 22/03/2018 as 20:44 por Acrisio
-// Implementa��o da classe CmdMyRoomItem
+// File cmd_my_room_item.cpp
+// Created on 22/03/2018 at 20:44 by Acrisio
+// Implementation of the class CmdMyRoomItem
 
 #if defined(_WIN32)
 #pragma pack(1)

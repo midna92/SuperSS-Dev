@@ -1,6 +1,6 @@
-// Arquivo cmd_bot_gm_event_info.hpp
-// Criado em 03/11/2020 as 20:52 por Acrisio
-// Defini��o da classe CmdBotGMEventInfo
+// File cmd_bot_gm_event_info.hpp
+// Created on 03/11/2020 at 20:52 by Acrisio
+// Definition of the class CmdBotGMEventInfo
 
 #pragma once
 #ifndef _STDA_CMD_BOT_GM_EVENT_INFO_HPP

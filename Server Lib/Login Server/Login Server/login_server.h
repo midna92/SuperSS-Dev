@@ -1,6 +1,6 @@
-// Arquivo login_server.h
-// Criado em 18/12/2017 por Acrisio
-// Definição da classe login_server
+// File login_server.h
+// Created on 18/12/2017 by Acrisio
+// Definition of the login_server class
 
 #pragma once
 #ifndef _STDA_LOGIN_SERVER_H
@@ -23,11 +23,11 @@ namespace stdA {
 
 			bool canSameIDLogin();
 
-			// Request Cliente
+			// Client Request
 			void requestDownPlayerOnGameServer(player& _session, packet *_packet);
 
 		public:
-			// Auth Server Comandos
+			// Auth Server Commands
 			virtual void authCmdShutdown(int32_t _time) override;
 			virtual void authCmdBroadcastNotice(std::string _notice) override;
 			virtual void authCmdBroadcastTicker(std::string _nickname, std::string _msg) override;

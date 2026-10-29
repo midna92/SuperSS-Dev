@@ -1,6 +1,6 @@
-// Arquivo cmd_update_treasure_hunter_course_point.hpp
-// Criado em 22/09/2018 as 12:34 por Acrisio
-// Defini��o da classe CmdUpdateTreasureHunterCoursePoint
+// File cmd_update_treasure_hunter_course_point.hpp
+// Created on 22/09/2018 at 12:34 by Acrisio
+// Definition of class CmdUpdateTreasureHunterCoursePoint
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_TREASURE_HUNTER_COURSE_POINT_HPP

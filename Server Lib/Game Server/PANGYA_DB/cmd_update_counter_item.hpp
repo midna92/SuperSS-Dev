@@ -1,6 +1,6 @@
-// Arquivo cmd_update_counter_item.hpp
-// Criado em 15/04/2018 as 19:56 por Acrisio
-// Defini��o da classe CmdUpdateCounterItem
+// File cmd_update_counter_item.hpp
+// Created on 15/04/2018 at 19:56 by Acrisio
+// Definition of class CmdUpdateCounterItem
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_COUNTER_ITEM_HPP

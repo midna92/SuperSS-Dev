@@ -1,6 +1,6 @@
-// Arquivo cmd_guild_update_activity_info.cpp
-// Criado em 30/11/2019 as 16:25 por Acrisio
-// Implementa��o da classe CmdGuildUpdateActivityInfo
+// File cmd_guild_update_activity_info.cpp
+// Created on 30/11/2019 at 16:25 by Acrisio
+// Implementation of the class CmdGuildUpdateActivityInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -50,7 +50,7 @@ void CmdGuildUpdateActivityInfo::lineResult(result_set::ctx_res* _result, uint32
 		throw exception("[CmdGuildUpdateActivityInfo::lineResult][Error] owner_uid requisitado eh diferente do retornado pela consulta. QUERY_VALUES[OWNER_UID_REQ="
 				+ std::to_string(m_member_uid) + ", OWNER_UID_RET=" + std::to_string(guai.owner_uid) + "].", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 3, 0));
 
-	// Add para o vector
+	// Add to the vector
 	m_info.push_back(guai);
 }
 

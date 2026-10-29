@@ -1,6 +1,6 @@
-// Arquivo stda_error.h
-// Criado em 19/12/2017 por Acrisio
-// Definição dos erros
+// File stda_error.h
+// Created on 19/12/2017 by Acrisio
+// Definition of the errors
 
 #pragma once
 #ifndef _STDA_STDA_ERROR_H

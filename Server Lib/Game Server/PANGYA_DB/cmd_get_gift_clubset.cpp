@@ -1,6 +1,6 @@
-// Arquivo cmd_get_gift_clubset.cpp
-// Criado em 31/05/2018 as 20:19 por Acrisio
-// Implementa��o da classe CmdGetGiftClubSet
+// File cmd_get_gift_clubset.cpp
+// Created on 31/05/2018 at 20:19 by Acrisio
+// Implementation of the class CmdGetGiftClubSet
 
 #if defined(_WIN32)
 #pragma pack(1)

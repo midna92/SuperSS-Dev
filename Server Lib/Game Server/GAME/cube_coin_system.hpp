@@ -1,6 +1,6 @@
 // Arquivo cube_coin_system.hpp
-// Criado em 01/09/2018 as 17:57 por Acrisio
-// Definição da classe CubeCoinSystem
+// Created on 01/09/2018 at 17:57 by Acrisio
+// Definition of the CubeCoinSystem class
 
 #pragma once
 #ifndef _STDA_CUBE_COIN_SYSTEM_HPP
@@ -39,8 +39,8 @@ namespace stdA {
 						public:
 							void clear() { memset(this, 0, sizeof(Hole)); };
 							unsigned char numero;
-							uint32_t number_of_cube;		// Número de cubos no hole
-							uint32_t max_coin_and_cube;	// Número máximo de coin e cube que pode ter no hole
+							uint32_t number_of_cube;		// Number of cubes in the hole
+							uint32_t max_coin_and_cube;	// Maximum number of coins and cubes the hole can have
 							std::vector< CubeEx > v_cube;
 					};
 

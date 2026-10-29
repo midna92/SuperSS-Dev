@@ -1,6 +1,6 @@
-// Arquivo guild.hpp
-// Criado em 29/12/2019 as 11:47 por Acrisio
-// Definição da classe Guild
+// File guild.hpp
+// Created on 29/12/2019 at 11:47 by Acrisio
+// Definition of class Guild
 
 #pragma once
 #ifndef _STDA_GUILD_HPP
@@ -51,11 +51,11 @@ namespace stdA {
 		uint32_t numPlayers();
 
 	private:
-		eTEAM m_team;						// Time que a guild está na sala
-		uint32_t m_uid;				// UID da guild
-		unsigned short m_point;				// Pontos da guild
-		uint32_t m_pang_win;			// Pangs ganho no jogo
-		uint64_t m_pang;			// Pangs da guild
+		eTEAM m_team;						// Team the guild is in the room
+		uint32_t m_uid;				// Guild UID
+		unsigned short m_point;				// Guild points
+		uint32_t m_pang_win;			// Pangs earned in the game
+		uint64_t m_pang;			// Guild pangs
 
 		std::vector< player* > v_players;	// Players
 

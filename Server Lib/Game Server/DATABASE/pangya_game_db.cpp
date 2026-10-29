@@ -1,6 +1,6 @@
-// Arquivo pangya_game_db.h
-// Criado em 13/08/2017 por Acrisio
-// Implementação da classe pangya_db para o Game Server
+// File pangya_game_db.h
+// Created on 13/08/2017 by Acrisio
+// Implementation of the pangya_db class for the Game Server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -105,7 +105,7 @@ MemberInfoEx pangya_db::getMemberInfo(int32_t uid) {
 	mi.guild_uid = IFNULL(atoi, _result->data[12]);
 	mi.guild_pang = IFNULL(atoll, _result->data[13]);
 	mi.guild_point = IFNULL(atoi, _result->data[14]);
-	mi.guild_mark_img_no = 1;		// POR ENQUANTO ESTÁ VALOR ESTÁTICO DEPOIS VOU PEGAR DO DB QUANDO FIZER LÁ DIREITO
+	mi.guild_mark_img_no = 1;		// FOR NOW THIS VALUE IS STATIC, LATER I WILL GET IT FROM THE DB WHEN I DO IT PROPERLY
 	mi.event_1 = (unsigned char)IFNULL(atoi, _result->data[15]);
 	mi.event_2 = (unsigned char)IFNULL(atoi, _result->data[16]);
 	mi.limit_papel_shop = (unsigned char)IFNULL(atoi, _result->data[17]);
@@ -364,7 +364,7 @@ std::vector< CharacterInfo > pangya_db::getCharacterInfo(int32_t uid) {
 	for (i = 0; i < 5; i++)
 		ce.auxparts[i] = IFNULL(atoi, _result->data[59 + i]);				// 59 + 5
 	for (i = 0; i < 4; i++)
-		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in deveria guarda no db os outros 3 se for msm os 4 que penso q seja, é sim no JP USA os 4
+		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in should store the other 3 in the db if it really is the 4 I think it is, yes in JP USA the 4
 	ce.mastery = IFNULL(atoi, _result->data[68]);
 	for (i = 0; i < 4; i++)
 		ce.card_character[i] = IFNULL(atoi, _result->data[69 + i]);		// 69 + 4
@@ -407,7 +407,7 @@ CharacterInfo pangya_db::getCharacterInfoOne(int32_t uid, int32_t character_id) 
 	for (i = 0; i < 5; i++)
 		ce.auxparts[i] = IFNULL(atoi, _result->data[59 + i]);				// 59 + 5
 	for (i = 0; i < 4; i++)
-		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in deveria guarda no db os outros 3 se for msm os 4 que penso q seja
+		ce.cut_in[i] = IFNULL(atoi, _result->data[64 + i]);					// 64 + 4 Cut-in should store the other 3 in the db if it really is the 4 I think it is
 	ce.mastery = IFNULL(atoi, _result->data[68]);
 	for (i = 0; i < 4; i++)
 		ce.card_character[i] = IFNULL(atoi, _result->data[69 + i]);			// 69 + 4
@@ -1193,7 +1193,7 @@ EmailInfo pangya_db::getEmailInfo(int32_t uid, int32_t email_id) {
 
 	if (item._typeid != 0) {
 
-		item.id = IFNULL(atoi, _result->data[5]); // ID vem antes de typeid na consulta
+		item.id = IFNULL(atoi, _result->data[5]); // ID comes before typeid in the query
 
 		item.flag_time = (unsigned char)IFNULL(atoi, _result->data[7]);
 		item.qntd = IFNULL(atoi, _result->data[8]);
@@ -1250,9 +1250,9 @@ std::vector< stItem > pangya_db::getItemEmailAndAtt(int32_t uid, int32_t email_i
 	item.id = IFNULL(atoi, _result->data[0]);
 	item._typeid = IFNULL(atoi, _result->data[1]);
 	item.qntd = IFNULL(atoi, _result->data[2]);
-	// tem que ajeitar no banco de dados o tipo do tempo que vai add quando tiver
+	// the time type that will be added needs to be fixed in the database when we have it
 	//ip.tipo_unidade_add = (unsigned char)IFNULL(atoi, _result->data[3]);
-	// Tbm tem que ter o gift flag, para saber se foi presente de outro pessoa ou do sistema
+	// Also needs the gift flag, to know whether it was a gift from another person or from the system
 	item.STDA_C_ITEM_TIME = (short)IFNULL(atoi, _result->data[3]);
 
 	v_item.push_back(item);
@@ -1374,7 +1374,7 @@ Last5PlayersGame pangya_db::getLast5PlayersGame(int32_t uid) {
 	for (i = 0; i < 5; i++) {
 		l5pg.players[i]._friend = IFNULL(atoi, _result->data[i * 4]);
 		if (_result->data[i * 4 + 1] != nullptr)
-			strcpy_s(l5pg.players[i].nick, _result->data[i * 4 + 1]);	// Aqui de vez em quando da erro, deve ser aquele lá depois que loga os 2000 bot no release quando sai ele da erro
+			strcpy_s(l5pg.players[i].nick, _result->data[i * 4 + 1]);	// Here sometimes an error occurs, it must be the one there after logging in the 2000 bots in release when it exits it errors
 		if (_result->data[i * 4 + 2] != nullptr)
 			strcpy_s(l5pg.players[i].id, _result->data[i * 4 + 2]);
 		l5pg.players[i].uid = IFNULL(atoi, _result->data[i * 4 + 3]);
@@ -1437,7 +1437,7 @@ DailyQuest pangya_db::getDailyQuest(int32_t uid) {
 
 	dq.now_date = IFNULL(atoi, _result->data[0]);
 	dq.accept_date = IFNULL(atoi, _result->data[1]);
-	dq.count = 3;			// POR ENQUANTO O COUNT É ESTÁTICO EM 3, MAS DEPOIS VOU COLOCAR NO DB DIREITO
+	dq.count = 3;			// FOR NOW THE COUNT IS STATIC AT 3, BUT LATER I WILL PUT IT IN THE DB PROPERLY
 	for (i = 0; i < 3; i++)
 		dq._typeid[i] = IFNULL(atoi, _result->data[2 + i]);
 
@@ -1458,7 +1458,7 @@ GuildInfo pangya_db::getGuildInfo(int32_t uid, int option) {
 	gi.uid = IFNULL(atoi, _result->data[0]);
 	if (is_valid_c_string(_result->data[1]))
 		strcpy_s(gi.name, _result->data[1]);
-	gi.index_mark_emblem = 1;		// AQUI ESTÁ ESTÁTICO, MAS DEPOIS VOU AJEITAR ISSO NO BANCO DE DADOS
+	gi.index_mark_emblem = 1;		// HERE IT IS STATIC, BUT LATER I WILL FIX THIS IN THE DATABASE
 	gi.pang = IFNULL(atoi, _result->data[7]);
 	gi.point = IFNULL(atoi, _result->data[6]);
 
@@ -1653,7 +1653,7 @@ void pangya_db::updateMascotEquiped(int32_t _uid, int32_t _item_id) {
 };
 
 void pangya_db::updateCharacterCutinEquiped(int32_t _uid, CharacterInfo& _ci) {
-	// Tenho que ajeitar no DB para ele aceitar 4 ID de cutin que o character pode equipar ao mesmo tempo(ACHO)
+	// I have to fix the DB so it accepts 4 cutin IDs that the character can equip at the same time (I THINK)
 	exec_query query("pangya.USP_FLUSHCHARACTERCUTIN", std::to_string(_uid) + ", " + std::to_string(_ci.id) 
 		+ ", " + std::to_string(_ci.cut_in[0])
 		+ ", " + std::to_string(_ci.cut_in[1])
@@ -1711,7 +1711,7 @@ void pangya_db::updateCharacterAllPartEquiped(int32_t _uid, CharacterInfo& _ci) 
 	for (is = 0u; is < (sizeof(_ci.auxparts) / sizeof(_ci.auxparts[0])); ++is)
 		q += "|" + std::to_string(_ci.auxparts[is]);
 
-	// Depois o Cutin tem que colocar os 4, aqui só está 1 que era o antigo, que eu fiz
+	// Later the Cutin must set all 4, here there is only 1 which was the old one, that I made
 	for (is = 0u; is < (sizeof(_ci.cut_in) / sizeof(_ci.cut_in[0])); ++is)
 		q += "|" + std::to_string(_ci.cut_in[is]);
 

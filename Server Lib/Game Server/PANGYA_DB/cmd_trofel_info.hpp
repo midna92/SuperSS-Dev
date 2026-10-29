@@ -1,6 +1,6 @@
-// Arquivo cmd_trofel_info.hpp
-// Criado em 18/03/2018 as 16:13 por Acrisio
-// Definição da classe CmdTrofelInfo
+// File cmd_trofel_info.hpp
+// Created on 18/03/2018 at 16:13 by Acrisio
+// Definition of the class CmdTrofelInfo
 
 #pragma once
 #ifndef _STDA_CMD_TROFEL_INFO_HPP
@@ -13,12 +13,12 @@ namespace stdA {
     class CmdTrofelInfo : public pangya_db {
 		public:
 			enum TYPE_SEASON : unsigned char {
-				ALL,		// Todas SEASON
+				ALL,		// All SEASON
 				ONE,		// 1
 				TWO,		// 2
 				THREE,		// 3
 				FOUR,		// 4
-				CURRENT		// Atual
+				CURRENT		// Current
 			};
 
         public:

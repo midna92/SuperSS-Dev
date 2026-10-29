@@ -1,6 +1,6 @@
-// Arquivo exec_query.h
-// Criado em 11/08/2017 por Acrisio
-// Definição da classe exec_query
+// File exec_query.h
+// Created on 11/08/2017 by Acrisio
+// Definition of class exec_query
 
 #pragma once
 #ifndef _STDA_EXEC_QUERY_H
@@ -62,7 +62,7 @@ namespace stdA {
 			static int getSpinCount();
         
         protected:
-            std::wstring m_query;		// Aqui pode ser nome procedure, quanto query completa
+            std::wstring m_query;		// Here it can be a procedure name as well as a complete query
 			std::wstring m_params;
             response* m_res;
 

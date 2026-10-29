@@ -1,6 +1,6 @@
-// Arquivo cmd_list_mac_ban.hpp
-// Criado em 22/08/2019 as 10:13 por Acrisio
-// Definição da classe CmdListMacBan
+// File cmd_list_mac_ban.hpp
+// Created on 22/08/2019 at 10:13 by Acrisio
+// Definition of class CmdListMacBan
 
 #pragma once
 #ifndef _STDA_CMD_LIST_MAC_BAN_HPP

@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac_type.hpp
-// Criado em 23/06/2020 as 16:24 por Acrisio
-// Defini��o dos tipos usados no grand zodiac
+// File grand_zodiac_type.hpp
+// Created on 23/06/2020 at 16:24 by Acrisio
+// Definition of the types used in grand zodiac
 
 #pragma once
 #ifndef _STDA_GRAND_ZODIAC_TYPE_HPP
@@ -93,7 +93,7 @@ namespace stdA {
 #endif
 			};
 
-			void setState(eSYNC_SHOT_GRAND_ZODIAC_STATE _state) { // Com Thread Safe
+			void setState(eSYNC_SHOT_GRAND_ZODIAC_STATE _state) { // With Thread Safe
 
 				try {
 
@@ -123,7 +123,7 @@ namespace stdA {
 				}
 			};
 
-			bool checkAllState() { // Com Thread Safe
+			bool checkAllState() { // With Thread Safe
 
 				bool ret = false;
 
@@ -159,7 +159,7 @@ namespace stdA {
 				return ret;
 			}
 
-			void clearAllState() { // Com Thread Safe
+			void clearAllState() { // With Thread Safe
 
 				try {
 
@@ -231,13 +231,13 @@ namespace stdA {
 			};
 
 		protected:
-			void clear_all_state() {	// Sem Thread Safe
+			void clear_all_state() {	// Without Thread Safe
 
 				first_shot_init = 0u;
 				first_shot_sync = 0u;
 			};
 
-			void set_state(eSYNC_SHOT_GRAND_ZODIAC_STATE _state) { // Sem Thread Safe
+			void set_state(eSYNC_SHOT_GRAND_ZODIAC_STATE _state) { // Without Thread Safe
 
 				if (_state == eSYNC_SHOT_GRAND_ZODIAC_STATE::SSGZS_FIRST_SHOT_INIT)
 					first_shot_init = 1u;
@@ -245,7 +245,7 @@ namespace stdA {
 					first_shot_sync = 1u;
 			};
 
-			bool check_all_state() { // Sem Thread Safe
+			bool check_all_state() { // Without Thread Safe
 				return first_shot_init && first_shot_sync;
 			};
 
@@ -260,7 +260,7 @@ namespace stdA {
 #endif
 	};
 
-	// Polimorfirsmo da struct PlayerGameInfo
+	// Polymorphism of struct PlayerGameInfo
 	struct PlayerGrandZodiacInfo : public PlayerGameInfo {
 		public:
 			PlayerGrandZodiacInfo(uint32_t _ul = 0u) : PlayerGameInfo(_ul), 
@@ -285,13 +285,13 @@ namespace stdA {
 
 		public:
 			grand_zodiac_dados m_gz;
-			unsigned char init_first_hole_gz : 1;			// inicializou o Primeiro hole do Grand Zodiac
-			unsigned char end_game : 1;						// terminou o jogo, enviou o packet12C
+			unsigned char init_first_hole_gz : 1;			// started the First hole of the Grand Zodiac
+			unsigned char end_game : 1;						// finished the game, sent packet12C
 			
-			SyncShotGrandZodiac m_sync_shot_gz;				// Sincroniza os dois pacotes de inicializa��o  de tacada do player, j� que eu trato mais de um pacote do mesmo player ao mesmo tempo, a� pode da conflito
+			SyncShotGrandZodiac m_sync_shot_gz;				// Synchronizes the two shot initialization packets of the player, since I handle more than one packet from the same player at the same time, so there may be a conflict
 	};
 
-	// Usado no Grand Zodiac Event class
+	// Used in the Grand Zodiac Event class
 	struct range_time {
 		public:
 			enum eTYPE_MAKE_ROOM : unsigned char {
@@ -325,7 +325,7 @@ namespace stdA {
 
 			bool isBetweenTime(SYSTEMTIME& _st) {
 
-				// Garante que os dados da data est�o zerados, gera eles por preven��o
+				// Ensures the date data is zeroed, generates it as a precaution
 				_st.wDay = 0u;
 				_st.wDayOfWeek = 0u;
 				_st.wMonth = 0u;
@@ -363,7 +363,7 @@ namespace stdA {
 			SYSTEMTIME m_end;
 			eTYPE_MAKE_ROOM m_type;
 
-			bool m_sended_message;			// Flag que guarda se o intervalo j� enviou a mensagem
+			bool m_sended_message;			// Flag that stores whether the interval already sent the message
 	};
 }
 

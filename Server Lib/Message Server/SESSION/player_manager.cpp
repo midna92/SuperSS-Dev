@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 29/07/2018 as 13:50 por Acrisio
-// Implementa��o da classe player_manager
+// File player_manager.cpp
+// Created on 29/07/2018 at 13:50 by Acrisio
+// Implementation of class player_manager
 
 #if defined(_WIN32)
 #pragma once
@@ -76,7 +76,7 @@ std::vector< player* > player_manager::findAllGM() {
 #elif defined(__linux__)
 			el->m_sock.fd != INVALID_SOCKET 
 #endif
-		&& ((el->getCapability() & 4) || el->getCapability() & 128/*GM Player Normal*/))	// GM
+		&& ((el->getCapability() & 4) || el->getCapability() & 128/*Normal GM Player*/))	// GM
 			v_gm.push_back((player*)el);
 
 #if defined(_WIN32)
@@ -94,7 +94,7 @@ std::map< uint32_t, player* > player_manager::findAllFriend(std::vector< FriendI
 
 	player *p = nullptr;
 
-	// n�o add o Mesmo Player, no Map
+	// do not add the same Player to the Map
 	for (auto& el : _v_friend) {
 		if ((p = (player*)findSessionByUID(el->uid)) != nullptr) {
 
@@ -120,7 +120,7 @@ std::map< uint32_t, player* > player_manager::findAllGuildMember(uint32_t _guild
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// n�o add o Mesmo player no Map
+	// do not add the same player to the Map
 	for (auto& el : m_sessions) {
 
 		if ((p = ((player*)el)) != nullptr && p->m_pi.guild_uid > 0 && p->m_pi.guild_uid == _guild_uid) {

@@ -1,6 +1,6 @@
-// Arquivo room_grand_zodiac_event.cpp
-// Criado em 26/06/2020 as 16:35 por Acrisio
-// Implementa��o da classe RoomGrandZodiacEvent
+// File room_grand_zodiac_event.cpp
+// Created on 26/06/2020 at 16:35 by Acrisio
+// Implementation of the RoomGrandZodiacEvent class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -46,13 +46,13 @@ RoomGrandZodiacEvent::RoomGrandZodiacEvent(unsigned char _channel_owner, RoomInf
 #endif
 	m_timer_count_down(nullptr) {
 
-	// Coloca a inst�ncia da classe que acabou de criar no vector statico
+	// Puts the instance of the class that was just created in the static vector
 	push_instancia(this);
 
-	// Data que a sala foi criada
+	// Date the room was created
 	GetLocalTime(&m_create_room);
 
-	// Cria evento que vai para a thread wait time start
+	// Creates event that goes to the wait time start thread
 #if defined(_WIN32)
 	if ((m_hEvent_wait_start = CreateEvent(NULL, TRUE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[RoomGrandZodiacEvent::RoomGrandZodiacEvent][Error] ao criar evento wait time start.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_GRAND_ZODIAC_EVENT, 1050, GetLastError()));
@@ -70,7 +70,7 @@ RoomGrandZodiacEvent::RoomGrandZodiacEvent(unsigned char _channel_owner, RoomInf
 	}
 #endif
 
-	// Cria evento que vai pulsar a thread wait time start para ir mais r�pido quando um player entrar o sair da sala
+	// Creates event that will pulse the wait time start thread to go faster when a player enters or leaves the room
 #if defined(_WIN32)
 	if ((m_hEvent_wait_start_pulse = CreateEvent(NULL, FALSE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[RoomGrandZodiacEvent::RoomGrandZodiacEvent][Error] ao criar evento wait time start pulse.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_GRAND_ZODIAC_EVENT, 1050, GetLastError()));
@@ -88,7 +88,7 @@ RoomGrandZodiacEvent::RoomGrandZodiacEvent(unsigned char _channel_owner, RoomInf
 	}
 #endif
 
-	// Cria a thread que vai sincronizar o tempo de come�a o Grand Zodiac
+	// Creates the thread that will synchronize the time to start the Grand Zodiac
 	m_wait_time_start = new thread(1063/*Wait Time Start*/, RoomGrandZodiacEvent::_waitTimeStart, (LPVOID)this);
 }
 
@@ -99,7 +99,7 @@ RoomGrandZodiacEvent::~RoomGrandZodiacEvent() {
 	// Finish Thread Sync wait time start
 	finish_thread_sync_wait_time_start();
 
-	// Tira a inst�ncia da classe do vector statico, por que a sala vai ser destruida
+	// Removes the class instance from the static vector, because the room will be destroyed
 	pop_instancia(this);
 }
 
@@ -109,9 +109,9 @@ eROOM_CLASS_TYPE RoomGrandZodiacEvent::getClassType() {
 
 bool RoomGrandZodiacEvent::isAllReady() {
 
-	// é sempre true porque quem começa o jogo nessa sala é sempre o server
-	// O cliente da erro na hora de começar se tiver convidado na sala
-	// então verifica se não tem nenhum convidado na sala
+	// is always true because whoever starts the game in this room is always the server
+	// The client errors out when starting if there is a guest in the room
+	// so check that there is no guest in the room
 	return !_haveInvited();
 }
 
@@ -123,13 +123,13 @@ bool RoomGrandZodiacEvent::startGame() {
 
 	try {
 
-		// Verifica se j� tem um jogo inicializado e lan�a error se tiver, para o cliente receber uma resposta
+		// Checks if a game is already initialized and throws an error if so, so the client receives a response
 		if (m_pGame != nullptr)
 			throw exception("[RoomGrandZodiacEvent::startGame][Error] Server tentou comecar o jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "], mas ja tem um jogo inicializado. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_GRAND_ZODIAC_EVENT, 8, 0x5900202));
 
-		// Verifica se todos est�o prontos se n�o da erro
+		// Checks if everyone is ready, otherwise errors
 		if (!isAllReady())
 			throw exception("[RoomGrandZodiacEvent::startGame][Error] Server tentou comecar o jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + ", MASTER=" + std::to_string(m_ri.master) 
@@ -142,7 +142,7 @@ bool RoomGrandZodiacEvent::startGame() {
 
 				m_ri.course = RoomInfo::eCOURSE(0x80 | RoomInfo::eCOURSE::CHRONICLE_1_CHAOS/*SPECIAL SHUFFLE COURSE*/);
 
-			}else {	// Random normal
+			}else {	// Normal random
 
 				Lottery lottery((uint64_t)this);
 
@@ -173,7 +173,7 @@ bool RoomGrandZodiacEvent::startGame() {
 		rv.rain = sgs::gs::getInstance().getInfo().rate.chuva;
 		rv.treasure = sgs::gs::getInstance().getInfo().rate.treasure;
 
-		rv.persist_rain = 0u;	// Persist rain flag isso � feito na classe game
+		rv.persist_rain = 0u;	// Persist rain flag, this is done in the game class
 
 		switch (m_ri.tipo) {
 		case RoomInfo::TIPO::GRAND_ZODIAC_INT:
@@ -205,14 +205,14 @@ bool RoomGrandZodiacEvent::startGame() {
 
 		packet_func::room_broadcast(*this, p, 1);
 
-		// Coloca para o thread que cria o tempo sspera o jogo acabar
+		// Makes the thread that creates the timer wait for the game to end
 		m_state_rgze.setStateWithLock(eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_END_GAME);
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[RoomGrandZodiacEvent::startGame][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		ret = false;	// Error ao inicializar o Jogo
+		ret = false;	// Error initializing the Game
 	}
 
 	return ret;
@@ -254,11 +254,11 @@ void* RoomGrandZodiacEvent::waitTimeStart() {
 #if defined(_WIN32)
 		HANDLE wait_events[2] = { m_hEvent_wait_start, m_hEvent_wait_start_pulse };
 
-		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #elif defined(__linux__)
 		std::vector< Event* > wait_events = { m_hEvent_wait_start, m_hEvent_wait_start_pulse };
 
-		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #endif
 
 			try {
@@ -273,26 +273,26 @@ void* RoomGrandZodiacEvent::waitTimeStart() {
 
 							if ((getLocalTimeDiff(m_create_room) / STDA_10_MICRO_PER_MIN) >= 2 && v_sessions.size() > 0) {
 
-								count_down(10); // 10 segundos
+								count_down(10); // 10 seconds
 
 								m_state_rgze.setState(eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_10_SECONDS_START);
 
 							}else if (_getRealNumPlayersWithoutInvited() == m_ri.max_player) {
 
-								// A sala atingiu o n�mero m�ximo de player
-								// Come�a o Grand Zodiac Event em 10 segundos
+								// The room reached the maximum number of players
+								// Starts the Grand Zodiac Event in 10 seconds
 								packet p((unsigned short)0x40);
 
-								p.addUint8(12);	// Msg de o m�ximo de players na sala
+								p.addUint8(12);	// Msg that the room reached the maximum players
 
 								p.addUint16(0u);	// Nickname empty
 								p.addUint16(0u);	// Msg Empty
 
-								p.addUint32(10u);	// 10 segundos para come�ar o Grand Zodiac
+								p.addUint32(10u);	// 10 seconds to start the Grand Zodiac
 
 								packet_func::room_broadcast(*this, p, 1);
 
-								count_down(10); // 10 segundos
+								count_down(10); // 10 seconds
 
 								m_state_rgze.setState(eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_10_SECONDS_START);
 							}
@@ -302,7 +302,7 @@ void* RoomGrandZodiacEvent::waitTimeStart() {
 					}
 					case eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_10_SECONDS_START:
 					{
-						// Envia de novo para o de criar timer, que o player que estava na sala saiu
+						// Sends again to the timer creator, because the player who was in the room left
 						if (m_pGame == nullptr && v_sessions.size() == 0)
 							m_state_rgze.setState(eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_TIME_START);
 						
@@ -310,17 +310,17 @@ void* RoomGrandZodiacEvent::waitTimeStart() {
 					}
 					case eSTATE_ROOM_GRAND_ZODIAC_EVENT_SYNC::WAIT_END_GAME:
 					{
-						// Faz nada por enquanto
+						// Does nothing for now
 						break;
 					}
 				}
 
-				// Libera
+				// Release
 				m_state_rgze.unlock();
 
 			}catch (exception& e) {
 
-				// Libera
+				// Release
 				m_state_rgze.unlock();
 
 				_smp::message_pool::getInstance().push(new message("[RoomGrandZodiacEvent::waitTimeStart][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -370,20 +370,20 @@ void RoomGrandZodiacEvent::count_down(int64_t _sec_to_start) {
 
 	try {
 
-		// Bloquea a sala para n�o d� erro de conflito
+		// Locks the room to avoid a conflict error
 		lock();
 
-		if (_sec_to_start <= 0) {	// Começa o jogo
+		if (_sec_to_start <= 0) {	// Starts the game
 			
-			// excluí o timer se ele ainda existir
+			// deletes the timer if it still exists
 			clear_timer_count_down();
 
-			// Começa o jogo se tem pelo menos 1 jogador na sala
+			// Starts the game if there is at least 1 player in the room
 			if (v_sessions.size() >= 1 && startGame())
 				sgs::gs::getInstance().sendUpdateRoomInfo(this, 3);
 			else if (v_sessions.size() >= 1)
-				// Coloca para começar espera o tempo de começar o jogo de novo, por que não conseguiu criar a sala
-				// Pode ter convidado na sala, aí não pode iniciar o jogo por que o cliente trava
+				// Sets it to wait for the game start time again, because it could not create the room
+				// There may be a guest in the room, then the game cannot start because the client freezes
 				count_down(10);
 
 		}else {
@@ -396,56 +396,56 @@ void RoomGrandZodiacEvent::count_down(int64_t _sec_to_start) {
 			DWORD interval = 0u;
 			float diff = 0.f;
 
-			int32_t elapsed_sec = (m_timer_count_down != nullptr) ? (int)std::round(m_timer_count_down->getElapsed() / 1000.f)/*Mili para segundos*/ : 0;
+			int32_t elapsed_sec = (m_timer_count_down != nullptr) ? (int)std::round(m_timer_count_down->getElapsed() / 1000.f)/*Milli to seconds*/ : 0;
 
 			_sec_to_start -= elapsed_sec;
 
-			if ((diff = ((_sec_to_start - 10/*10 segundos*/) / 30.f/* 30 segundos*/)) >= 1.f) {	// Intervalo de 30 segundos
+			if ((diff = ((_sec_to_start - 10/*10 seconds*/) / 30.f/* 30 seconds*/)) >= 1.f) {	// Interval of 30 seconds
 
 				if ((_sec_to_start % 30) == 0) {
 					
-					// Intervalo
-					interval = 30 * 1000;	// 30 segundos
+					// Interval
+					interval = 30 * 1000;	// 30 seconds
 
-					wait = interval * (int)diff;	// 30 * diff minutos em milisegundos
+					wait = interval * (int)diff;	// 30 * diff minutes in milliseconds
 				
 				}else {
 
-					// Corrige o tempo para ficar no intervalo certo
+					// Corrects the time to stay in the right interval
 					wait = interval = (_sec_to_start % 30) * 1000;
 				
 				}
 
-			}else if ((diff = ((_sec_to_start - 1/*1 segundo*/) / 10.f/*10 segundos*/)) >= 1.f) {			// Intervalo de 10 segundos
+			}else if ((diff = ((_sec_to_start - 1/*1 second*/) / 10.f/*10 seconds*/)) >= 1.f) {			// Interval of 10 seconds
 			
 				if ((_sec_to_start % 10) == 0) {
 					
-					// Intervalo
-					interval = 10 * 1000;	// 10 segundos
+					// Interval
+					interval = 10 * 1000;	// 10 seconds
 
-					wait = interval * (int)diff;	// 10 * diff segundos em milisegundos
+					wait = interval * (int)diff;	// 10 * diff seconds in milliseconds
 				
 				}else {
 
-					// Corrige o tempo para ficar no intervalo certo
+					// Corrects the time to stay in the right interval
 					wait = interval = (_sec_to_start % 10) * 1000;
 				}
 
-			}else {		// Intervalo de 1 segundo
+			}else {		// Interval of 1 second
 
 				diff = std::round(_sec_to_start / 1.f);
 
-				// Intervalo
-				interval = 1000;	// 1 segundo
+				// Interval
+				interval = 1000;	// 1 second
 			
-				wait = interval * (int)diff;	// 1 * diff segundos em milesegundos
+				wait = interval * (int)diff;	// 1 * diff seconds in milliseconds
 
 			}
 
 			// UPDATE ON GAME
 			packet p((unsigned short)0x40);
 
-			p.addUint8(11);	// Temporizador Grand Prix e Grand Zodiac
+			p.addUint8(11);	// Grand Prix and Grand Zodiac Timer
 
 			p.addUint16(0u);	// Nick
 			p.addUint16(0u);	// Msg
@@ -461,7 +461,7 @@ void RoomGrandZodiacEvent::count_down(int64_t _sec_to_start) {
 				// Make Time
 				job _job(RoomGrandZodiacEvent::_count_down_time, this, (void*)_sec_to_start);
 
-				// Se o Shutdown Timer estiver criado descria e cria um novo
+				// If the Shutdown Timer is created, delete it and create a new one
 				if (m_timer_count_down != nullptr)
 					clear_timer_count_down();
 
@@ -469,12 +469,12 @@ void RoomGrandZodiacEvent::count_down(int64_t _sec_to_start) {
 			}
 		}
 
-		// Libera
+		// Release
 		unlock();
 
 	}catch (exception& e) {
 
-		// Libera
+		// Release
 		unlock();
 
 		_smp::message_pool::getInstance().push(new message("[RoomGrandZodiacEvent::count_down][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));

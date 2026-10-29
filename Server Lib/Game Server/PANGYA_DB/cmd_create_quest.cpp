@@ -1,6 +1,6 @@
-// Arquivo cmd_create_quest.cpp
-// Criado em 31/03/2018 as 22:58 por Acrisio
-// Implementa��o da classe CmdCreateQuest
+// File cmd_create_quest.cpp
+// Created on 31/03/2018 at 22:58 by Acrisio
+// Implementation of the class CmdCreateQuest
 
 #if defined(_WIN32)
 #pragma pack(1)

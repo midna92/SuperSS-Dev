@@ -1,6 +1,6 @@
-// Arquivo match.hpp
-// Criado em 02/11/2018 as 13:46 por Acrisio
-// Defini��o da classe Match
+// File match.hpp
+// Created on 02/11/2018 at 13:46 by Acrisio
+// Definition of the Match class
 
 #pragma once
 #ifndef _STDA_MATCH_HPP
@@ -37,7 +37,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestInitHole(player& _session, packet *_packet) override;
 
 			virtual void requestMoveBall(player& _session, packet *_packet) override;
@@ -52,7 +52,7 @@ namespace stdA {
 			// Smart Calculator Command
 			virtual stGameShotValue getGameShotValueToSmartCalculator(player& _session, unsigned char _club_index, unsigned char _power_shot_index) override;
 
-			// Tempo
+			// Time
 			virtual void startTime(void* _quem) override;
 			/*virtual void stopTime();
 			virtual void pauseTime();
@@ -60,7 +60,7 @@ namespace stdA {
 			virtual void timeIsOver(void* _quem) override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
 			virtual void requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) override;
@@ -102,7 +102,7 @@ namespace stdA {
 			virtual void sendReplyFinishLoadHole() override;
 			virtual void sendReplyFinishCharIntro() override;
 
-			// Verifica se � a ultima tacada do hole, para passar para o proximo hole
+			// Checks whether it is the last shot of the hole, to move on to the next hole
 			virtual int checkEndShotOfHole(player& _session) override;
 
 			virtual void changeTurn() override;
@@ -110,7 +110,7 @@ namespace stdA {
 			// Common Command GM Change Wind Versus
 			virtual void CCGChangeWind(player& _gm, unsigned char _wind, unsigned short _degree) override;
 
-			// Calcula Turnos
+			// Calculates Turns
 			virtual PlayerGameInfo* requestCalculePlayerTurn() override;
 			virtual Team* requestCalculeTeamTurn();
 
@@ -127,13 +127,13 @@ namespace stdA {
 		protected:
 			bool m_match_state;
 
-			unsigned char m_team_win;		// Team que ganhou o Match ou 2 para draw(empate)
+			unsigned char m_team_win;		// Team that won the Match or 2 for draw (tie)
 
 			Team* m_team_turn;
 
-			TreasureHunterVersusInfo m_thi_blue;		// Treasure Hunter Item point do team Azul, n�o gera itens mas soma os pontos
+			TreasureHunterVersusInfo m_thi_blue;		// Treasure Hunter Item point of the Blue team, does not generate items but adds the points
 
-			// Teans(times)
+			// Teams
 			std::vector< Team > m_teans;
 	};
 }

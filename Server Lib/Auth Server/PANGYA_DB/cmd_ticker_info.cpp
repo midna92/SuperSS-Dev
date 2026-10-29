@@ -1,6 +1,6 @@
-// Arquivo cmd_ticker_info.cpp
-// Criado em 03/12/2018 as 15:03 por Acrisio
-// Implementa��o da classe CmdTickerInfo
+// File cmd_ticker_info.cpp
+// Created on 03/12/2018 at 15:03 by Acrisio
+// Implementation of class CmdTickerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac_base.cpp
-// Criado em 23/06/2020 as 16:09 por Acrisio
-// Implementa��o da classe GrandZodiacBase
+// File grand_zodiac_base.cpp
+// Created on 23/06/2020 at 16:09 by Acrisio
+// Implementation of class GrandZodiacBase
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -27,7 +27,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[GrandZodiacBase::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC_BASE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) PlayerGrandZodiacInfo *pgi = reinterpret_cast< PlayerGrandZodiacInfo* >(getPlayerInfo((__session))); \
 	if (pgi == nullptr) \
 		throw exception("[GrandZodiacBase::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC_BASE, 1, 4)); \
@@ -66,12 +66,12 @@ GrandZodiacBase::GrandZodiacBase(std::vector< player* >& _players, RoomInfoEx& _
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
 	init_values_seed();
 
-	// Cria evento que vai para a thread sync hole
+	// Creates event that goes to the sync hole thread
 #if defined(_WIN32)
 	if ((m_hEvent_sync_hole = CreateEvent(NULL, TRUE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[GrandZodiacBase::GrandZodiacBase][Error] ao criar evento sync hole.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC_BASE, 1050, GetLastError()));
@@ -88,7 +88,7 @@ GrandZodiacBase::GrandZodiacBase(std::vector< player* >& _players, RoomInfoEx& _
 	}
 #endif
 
-	// Cria evento que vai pulsar a thread sync hole para ir mais r�pido quando um player tacar
+	// Creates event that will pulse the sync hole thread to go faster when a player shoots
 #if defined(_WIN32)
 	if ((m_hEvent_sync_hole_pulse = CreateEvent(NULL, FALSE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[GrandZodiacBase::GrandZodiacBase][Error] ao criar evento sync hole pulse.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_ZODIAC_BASE, 1050, GetLastError()));
@@ -105,7 +105,7 @@ GrandZodiacBase::GrandZodiacBase(std::vector< player* >& _players, RoomInfoEx& _
 	}
 #endif
 
-	// Cria a thread que vai sincronizar os player no hole
+	// Creates the thread that will synchronize the players on the hole
 	m_thread_sync_first_hole = new thread(1061/*sync first hole*/, GrandZodiacBase::_syncFirstHole, (LPVOID)this);
 }
 
@@ -125,7 +125,7 @@ GrandZodiacBase::~GrandZodiacBase() {
 		m_initial_values_seed.shrink_to_fit();
 	}
 
-	// Termina a thread sync first hole
+	// Ends the sync first hole thread
 	finish_thread_sync_first_hole();
 
 #if defined(_WIN32)
@@ -153,9 +153,9 @@ bool GrandZodiacBase::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left, Quit
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
@@ -163,27 +163,27 @@ bool GrandZodiacBase::deletePlayer(player* _session, int _option) {
 
 				auto sessions = getSessions(*it);
 
-				requestSaveInfo(*(*it), 1/*Saiu*/);
+				requestSaveInfo(*(*it), 1/*Left*/);
 
-				requestUpdateItemUsedGame(*(*it)); // Atualiza primeiro, por que o Grand Zodiac n�o atualiza, a cada hole, s� no final
+				requestUpdateItemUsedGame(*(*it)); // Updates first, because Grand Zodiac does not update at each hole, only at the end
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Grand Zodiac
+				requestFinishItemUsedGame(*(*it));	// Saves items used in Grand Zodiac
 
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Resposta Player saiu do jogo MSG
+				// Response Player left the game MSG
 				p.init_plain((unsigned short)0x40);
 
-				p.addUint8(2);	// Player Saiu Msg
+				p.addUint8(2);	// Player Left Msg
 
 				p.addString((*it)->m_pi.nickname);
 
-				p.addUint16(0);	// size Msg, n�o precisa de msg o pangya j� manda na opt 2
+				p.addUint16(0);	// size Msg, no msg needed, pangya already sends it in opt 2
 
 				packet_func::vector_send(p, sessions, 1);
 
 				if (AllCompleteGameAndClear())
-					ret = true;	// Termina o Grand Zodiac
+					ret = true;	// Ends Grand Zodiac
 			}
 
 			// Delete Player
@@ -202,7 +202,7 @@ bool GrandZodiacBase::deletePlayer(player* _session, int _option) {
 
 		_smp::message_pool::getInstance().push(new message("[GrandZodiacBase::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -224,18 +224,18 @@ void GrandZodiacBase::sendInitialData(player& _session) {
 
 	try {
 
-		// Envia aqui os valores do hole, size_cup
+		// Sends the hole values here, size_cup
 		packet p((unsigned short)0x1F9);
 
 		auto size_cup = _session.m_pi.getSizeCupGrandZodiac();
 
 		p.addUint32(size_cup);											// Start Hole Size Cup
-		p.addUint32(size_cup);											// Finish size cup (OU O tee acho que seja)
-		p.addUint32((uint32_t)_session.m_pi.grand_zodiac_pontos);	// Aqui acho que � os pangs que ele faz por cada hio, com rela��o ao size do cup (OU OS PONTOS DO GRAND ZODIAC)
+		p.addUint32(size_cup);											// Finish size cup (OR the tee, I think)
+		p.addUint32((uint32_t)_session.m_pi.grand_zodiac_pontos);	// Here I think these are the pangs he gets for each hio, relative to the cup size (OR THE GRAND ZODIAC POINTS)
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Send Initial Data, por�m ele tamb�m � sincronizado, s� envia os dados quando todos fizer o mesmo pedido
+		// Send Initial Data, but it is also synchronized, it only sends the data when everyone makes the same request
 		TourneyBase::sendInitialData(_session);
 
 	}catch (exception& e) {
@@ -296,33 +296,33 @@ void GrandZodiacBase::requestInitHole(player& _session, packet *_packet) {
 		pgi->location.x = ctx_hole.tee.x;
 		pgi->location.z = ctx_hole.tee.z;
 		
-		// N�mero do hole atual, que o player est� jogandp
+		// Current hole number the player is playing
 		pgi->hole = ctx_hole.numero;
 
-		// Flag que marca se o player j� inicializou o primeiro hole do jogo
+		// Flag that marks whether the player has already initialized the first hole of the game
 		if (!pgi->init_first_hole)
 			pgi->init_first_hole = 1u;
 
-		// Gera degree para o player ou pega o degree sem gerar que � do modo do hole repeat
+		// Generates degree for the player or gets the degree without generating it, which is for hole repeat mode
 		pgi->degree = (m_ri.modo == Hole::M_REPEAT) ? hole->getWind().degree.getDegree() : hole->getWind().degree.getShuffleDegree();
 
-		// Resposta de tempo do hole
+		// Hole time response
 		p.init_plain((unsigned short)0x9E);
 
 		p.addUint16(hole->getWeather());
-		p.addUint8(0);	// Option do tempo, sempre peguei zero aqui dos pacotes que vi
+		p.addUint8(0);	// Time option, I always saw zero here in the packets I looked at
 
 		packet_func::session_send(p, &_session, 1);
 
 		auto wind_flag = initCardWindPlayer(pgi, hole->getWind().wind);
 
-		// Resposta do vento do hole
+		// Hole wind response
 		p.init_plain((unsigned short)0x5B);
 
 		p.addUint8(hole->getWind().wind + wind_flag);
-		p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui � a qnd diminui o vento, 1 Vento azul
+		p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 		p.addUint16(pgi->degree);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+		p.addUint8(1/*Reset*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -351,8 +351,8 @@ bool GrandZodiacBase::requestFinishLoadHole(player& _session, packet *_packet) {
 
 		pgi->finish_load_hole = 1;
 
-		// Valores de double, aleat�rio que passar, pode ser s� da rota��o da camera
-		// Mas vou deixar o mesmo valor para todos, para fazer um teste
+		// Double values, random whatever is passed, may be just for the camera rotation
+		// But I will leave the same value for everyone, as a test
 		for (auto& el : m_initial_values_seed) {
 
 			p.init_plain((unsigned short)0x1EC);
@@ -362,7 +362,7 @@ bool GrandZodiacBase::requestFinishLoadHole(player& _session, packet *_packet) {
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Primeiro pacote dizendo que terminou de carregar o course GZ
+		// First packet saying the GZ course finished loading
 		p.init_plain((unsigned short)0x201);
 
 		packet_func::session_send(p, &_session, 1);
@@ -420,7 +420,7 @@ void GrandZodiacBase::requestInitShot(player& _session, packet *_packet) {
 
 		pgi->shot_data = sd;
 
-		// Aqui seta o state e verifica se � para mandar a resposta
+		// Here sets the state and checks whether the response should be sent
 		if (pgi->m_sync_shot_gz.setStateAndCheckAllAndClear(SyncShotGrandZodiac::eSYNC_SHOT_GRAND_ZODIAC_STATE::SSGZS_FIRST_SHOT_INIT))
 			sendReplyInitShotAndSyncShot(_session);
 
@@ -442,10 +442,10 @@ void GrandZodiacBase::requestActiveBooster(player& _session, packet *_packet) {
 
 	try {
 
-		// Grand Zodiac o Booster � gr�tis
+		// In Grand Zodiac the Booster is free
 		float velocidade = _packet->readFloat();
 
-		// Resposta para Active Booster
+		// Response for Active Booster
 		p.init_plain((unsigned short)0xC7);
 
 		p.addFloat(velocidade);
@@ -473,8 +473,8 @@ void GrandZodiacBase::requestActiveCutin(player& _session, packet *_packet) {
 		uint32_t uid;
 		uint32_t tipo;
 		unsigned short opt;
-		uint32_t char_typeid;	// Aqui pode ter o typeid do cutin tamb�m
-		unsigned char active;		// Active acho, sempre com valor 1 que peguei, 1 quando � id do character, 0 quando � o typeid do Cutin
+		uint32_t char_typeid;	// Here it can also be the cutin typeid
+		unsigned char active;		// Active I think, always value 1 in what I captured, 1 when it is the character id, 0 when it is the Cutin typeid
 	};
 
 #if defined(__linux__)
@@ -485,19 +485,19 @@ void GrandZodiacBase::requestActiveCutin(player& _session, packet *_packet) {
 
 		stActiveCutin ac{ 0 };
 
-		// Consome o buffer, mas grand zodiac responde com op��o 3, cuttin desativado
+		// Consumes the buffer, but grand zodiac responds with option 3, cutin disabled
 		_packet->readBuffer(&ac, sizeof(ac));
 
-		// Resposta para Active Cutin
+		// Response for Active Cutin
 		p.init_plain((unsigned short)0x18D);
 
 		p.addUint8(0u);	// OK
 
-		p.addUint16(3);	// Cuttin do Grand Zodiac, Cuttin desativado
+		p.addUint16(3);	// Grand Zodiac Cutin, Cutin disabled
 
 		packet_func::session_send(p, &_session, 1);
 
-		// No Modo GrandZodic, n�o envia Cutin, ent�o envia o pacote18D com option 0(Uint8), e valor 3(Uint16)
+		// In GrandZodiac Mode, does not send Cutin, so sends packet18D with option 0 (Uint8) and value 3 (Uint16)
 
 	}catch (exception& e) {
 
@@ -522,7 +522,7 @@ void GrandZodiacBase::requestStartFirstHoleGrandZodiac(player& _session, packet 
 
 		INIT_PLAYER_INFO("requestStartFirstHoleGrandZodiac", "tentou inicializar o primeiro hole do grand zodiac", &_session);
 		
-		// Aqui tem que sincronizar
+		// Must synchronize here
 		setInitFirstHole(pgi);
 
 	}catch (exception& e) {
@@ -579,12 +579,12 @@ void GrandZodiacBase::sendRemainTime(player& _session) {
 		auto remain_time = 0ull;
 
 		if (m_timer != nullptr)
-			remain_time = m_timer->getElapsed(); // Milli segundos
+			remain_time = m_timer->getElapsed(); // Milliseconds
 
-		// Resposta tempo percorrido do Tourney
+		// Tourney elapsed time response
 		packet p((unsigned short)0x8D);
 
-		p.addUint32((uint32_t)0u); // Grand Zodiac, passa o tempo decorrido no pacote200
+		p.addUint32((uint32_t)0u); // Grand Zodiac, passes the elapsed time in packet200
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -607,7 +607,7 @@ void GrandZodiacBase::requestFinishHole(player& _session, int option) {
 	char score_hole = 0;
 	uint32_t tacada_hole = 0u;
 
-	// Finish Hole Dados
+	// Finish Hole Data
 	if (option == 0) {
 
 		// Score Player
@@ -626,10 +626,10 @@ void GrandZodiacBase::requestFinishHole(player& _session, int option) {
 		// Update Values
 		pgi->data.total_tacada_num += pgi->data.tacada_num;
 
-		// Score do hole
+		// Hole score
 		score_hole = (char)pgi->data.score;
 
-		// Tacadas do hole
+		// Hole shots
 		tacada_hole = pgi->data.tacada_num;
 
 		pgi->m_gz.total_score += score_hole;
@@ -643,47 +643,47 @@ void GrandZodiacBase::requestFinishHole(player& _session, int option) {
 				+ std::to_string(pgi->data.total_tacada_num) + ", TOTAL_SCORE=" + std::to_string(pgi->data.score) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Zera dados
+		// Zeroes data
 		pgi->data.time_out = 0u;
 
 		pgi->data.tacada_num = 0u;
 
-		// Zera o score, que o Grand Zodiac usa o total_score
+		// Zeroes the score, since Grand Zodiac uses total_score
 		pgi->data.score = 0l;
 
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole
+		// Zeroes the hole penalties
 		pgi->data.penalidade = 0u;
 
-	}else if (option == 1) {	// N�o acabou o hole ent�o faz os calculos para o jogo todo
+	}else if (option == 1) {	// Did not finish the hole, so does the calculations for the whole game
 
-		// Zera dados
+		// Zeroes data
 		pgi->data.time_out = 0u;
 
 		pgi->data.tacada_num = 0u;
 
-		// Zera o score, que o Grand Zodiac usa o total_score
+		// Zeroes the score, since Grand Zodiac uses total_score
 		pgi->data.score = 0l;
 
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole do player
+		// Zeroes the player's hole penalties
 		pgi->data.penalidade = 0u;
 	}
 
-	// Aqui tem que atualiza o PGI direitinho com outros dados
+	// Here the PGI must be properly updated with other data
 	pgi->progress.hole = (short)m_course->findHoleSeq(pgi->hole);
 
-	// Dados Game Progress do Player
+	// Player's Game Progress Data
 	if (option == 0) {
 		
 		if (pgi->progress.hole > 0) {
 
 			if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole)
-				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Terminou o hole
+				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Finished the hole
 
 			pgi->progress.par_hole[pgi->progress.hole - 1] = hole->getPar().par;
 			pgi->progress.score[pgi->progress.hole - 1] = score_hole;
@@ -694,9 +694,9 @@ void GrandZodiacBase::requestFinishHole(player& _session, int option) {
 
 		auto pair = m_course->findRange(pgi->hole);
 
-		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it) {
+		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h or 18h he checks*/; ++it) {
 			
-			pgi->progress.finish_hole[it->first - 1] = 0;	// n�o terminou
+			pgi->progress.finish_hole[it->first - 1] = 0;	// did not finish
 
 			pgi->progress.par_hole[it->first - 1] = it->second.getPar().par;
 
@@ -713,19 +713,19 @@ void GrandZodiacBase::requestUpdateItemUsedGame(player& _session) {
 
 	auto& ui = pgi->used_item;
 
-	// Passive Item exceto Time Booster e Auto Command, que soma o contador por uso, o cliente passa o pacote, dizendo que usou o item
+	// Passive Item except Time Booster and Auto Command, which add to the counter per use, the client sends the packet saying it used the item
 	for (auto& el : ui.v_passive) {
 		
-		// Verica se � o ultimo hole, terminou o jogo, ai tira soma 1 ao count do pirulito que consome por jogo
+		// Checks whether it is the last hole, game finished, then adds 1 to the count of the lollipop that is consumed per game
 		if (CHECK_PASSIVE_ITEM(el.second._typeid) && el.second._typeid != TIME_BOOSTER_TYPEID/*Time Booster*/ && el.second._typeid != AUTO_COMMAND_TYPEID) {
 			
-			// Item de Exp Boost que s� consome 1 Por Jogo, s� soma no requestFinishItemUsedGame
+			// Exp Boost item that only consumes 1 per Game, only added in requestFinishItemUsedGame
 			if (std::find(passive_item_exp_1perGame, LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame), el.second._typeid) == LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame))
-				el.second.count = (pgi->data.total_tacada_num / 4); // Gasta 1 a cada 4 tacadas
+				el.second.count = (pgi->data.total_tacada_num / 4); // Uses 1 every 4 shots
 		
 		}else if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::BALL	/*Ball*/
-				|| sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::AUX_PART) /*AuxPart(Anel)*/
-			el.second.count = (pgi->data.total_tacada_num / 4); // uma comet e um anel por 4 tacadas
+				|| sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::AUX_PART) /*AuxPart(Ring)*/
+			el.second.count = (pgi->data.total_tacada_num / 4); // one comet and one ring per 4 shots
 	}
 }
 
@@ -750,7 +750,7 @@ void GrandZodiacBase::requestTranslateSyncShotData(player& _session, ShotSyncDat
 			// Last Location Player
 			auto last_location = pgi->location;
 
-			// Update Location Player, aqui no outro server, eu n�o setava a location do player
+			// Update Location Player, in the other server I did not set the player's location here
 			//pgi->location.x = _ssd.location.x;
 			//pgi->location.z = _ssd.location.z;
 
@@ -758,7 +758,7 @@ void GrandZodiacBase::requestTranslateSyncShotData(player& _session, ShotSyncDat
 			pgi->data.pang = _ssd.pang;
 			pgi->data.bonus_pang = _ssd.bonus_pang;
 
-			// J� s� na fun��o que come�a o tempo do player do turno
+			// Already only in the function that starts the player's turn time
 			pgi->data.tacada_num++;
 		}
 
@@ -778,14 +778,14 @@ void GrandZodiacBase::requestSaveInfo(player& _session, int option) {
 		_smp::message_pool::getInstance().push(new message("[GrandZodiacBase::requestSaveInfo][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] UserInfo[" + pgi->ui.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		if (option == 1) { // Saiu
+		if (option == 1) { // Left
 
-			// Zera os pangs ele saiu
+			// Zeroes the pangs, he left
 			pgi->data.pang = 0ull;
 			pgi->data.bonus_pang = 0ull;
 		}
 
-		// Limpa o User Info por que n�o add nada, s� o tempo e os pangs ganhos
+		// Clears the User Info because nothing is added, only the time and pangs earned
 		pgi->ui.clear();
 
 		auto diff = getLocalTimeDiff(m_start_time);
@@ -795,10 +795,10 @@ void GrandZodiacBase::requestSaveInfo(player& _session, int option) {
 
 		pgi->ui.tempo = (uint32_t)diff;
 
-		// Pode tirar pangs
+		// May remove pangs
 		int64_t total_pang = pgi->data.pang + pgi->data.bonus_pang;
 
-		// Adiciona o Jackpot, se ele ganhou
+		// Adds the Jackpot, if he won
 		if (option != 1 && pgi->m_gz.jackpot > 0ull)
 			total_pang += pgi->m_gz.jackpot;
 
@@ -808,7 +808,7 @@ void GrandZodiacBase::requestSaveInfo(player& _session, int option) {
 		if (total_pang > 0)
 			_session.m_pi.addPang(total_pang);				// add Pang
 		else if (total_pang < 0)
-			_session.m_pi.consomePang(total_pang * -1);		// consome Pangs
+			_session.m_pi.consomePang(total_pang * -1);		// consumes Pangs
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[GrandZodiacBase::requestSaveInfo][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
@@ -827,7 +827,7 @@ void GrandZodiacBase::requestCalculeRankPlace() {
 		m_player_order.clear();
 
 	for (auto& el : m_player_info)
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// except those who quit
 			m_player_order.push_back(el.second);
 
 	std::sort(m_player_order.begin(), m_player_order.end(), GrandZodiacBase::sort_grand_zodiac_rank_place);
@@ -837,7 +837,7 @@ void GrandZodiacBase::requestCalculeRankPlace() {
 
 	PlayerGrandZodiacInfo *pgzi = nullptr;
 
-	// Calcula posi��es, o Grand Zodiac tem player com a mesma posi��o se eles terminarem com o mesmo score
+	// Calculates positions, Grand Zodiac has players with the same position if they finish with the same score
 	for (auto& el : m_player_order) {
 
 		if (el->flag != PlayerGameInfo::eFLAG_GAME::QUIT && (pgzi = reinterpret_cast< PlayerGrandZodiacInfo* >(el)) != nullptr) {
@@ -866,10 +866,10 @@ void GrandZodiacBase::requestReplySyncShotData(player& _session) {
 		// Resposta Sync Shot
 		sendSyncShot(_session);
 
-		// Deixai assim por que o Original manda a msg depois, pelo que estava no outro server
+		// Leave it like this because the Original sends the msg afterwards, per what was in the other server
 		drawDropItem(_session);
 
-		// Aqui seta o state e verifica se � para mandar a resposta
+		// Here sets the state and checks whether the response should be sent
 		if (pgi->m_sync_shot_gz.setStateAndCheckAllAndClear(SyncShotGrandZodiac::eSYNC_SHOT_GRAND_ZODIAC_STATE::SSGZS_FIRST_SHOT_SYNC))
 			sendReplyInitShotAndSyncShot(_session);
 
@@ -887,7 +887,7 @@ void GrandZodiacBase::sendPlacar(player& _session) {
 
 		packet p((unsigned short)0x1F3);
 
-		p.addUint32((pgi->flag == PlayerGameInfo::eFLAG_GAME::FINISH) ? 1 : 2); // 1 Terminou, 2 Saiu
+		p.addUint32((pgi->flag == PlayerGameInfo::eFLAG_GAME::FINISH) ? 1 : 2); // 1 Finished, 2 Left
 
 		p.addUint32(getCountPlayersGame());
 
@@ -921,7 +921,7 @@ void GrandZodiacBase::sendPlacar(player& _session) {
 					}
 
 				}else
-					p.addUint32(0u); // N�o ganhou drop item
+					p.addUint32(0u); // Did not win a drop item
 			}
 		}
 
@@ -944,7 +944,7 @@ int GrandZodiacBase::checkEndShotOfHole(player& _session) {
 
 	try {
 
-		// Agora verifica o se ele acabou o hole e essas coisas
+		// Now checks whether he finished the hole and such
 		INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
@@ -955,9 +955,9 @@ int GrandZodiacBase::checkEndShotOfHole(player& _session) {
 			changeHole(_session);
 	
 		}else // Update Shot
-			updateFinishHole(_session, 0/*N�o fez hio*/);
+			updateFinishHole(_session, 0/*Did not make hio*/);
 
-		// Limpa, terminou a tacada
+		// Clears, shot finished
 		pgi->m_gz.m_score_shot.clear();
 
 	}catch (exception& e) {
@@ -997,7 +997,7 @@ void GrandZodiacBase::nextHole(player& _session) {
 
 		packet p((unsigned short)0x1F4);
 
-		p.addUint32(1u); // Inicializa o pr�ximo hole
+		p.addUint32(1u); // Initializes the next hole
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -1012,29 +1012,29 @@ void GrandZodiacBase::nextHole(player& _session) {
 
 		hole->setWind(wind);
 
-		// Gera degree para o player ou pega o degree sem gerar que � do modo do hole repeat
+		// Generates degree for the player or gets the degree without generating it, which is for hole repeat mode
 		pgi->degree = hole->getWind().degree.getShuffleDegree();
 
 		auto wind_flag = initCardWindPlayer(pgi, hole->getWind().wind);
 
-		// Resposta do vento do hole
+		// Hole wind response
 		p.init_plain((unsigned short)0x5B);
 
 		p.addUint8(hole->getWind().wind + wind_flag);
-		p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui � a qnd diminui o vento, 1 Vento azul
+		p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 		p.addUint16(pgi->degree);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+		p.addUint8(1/*Reset*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Remain Time em segundos
+		// Remain Time in seconds
 		auto remain_time = 0ull;
 
 		if (m_timer != nullptr)
 			remain_time = m_timer->getElapsed();
 
 		if (remain_time > 0)
-			remain_time /= 1000/*Milli por segundos*/;
+			remain_time /= 1000/*Milli per second*/;
 
 		p.init_plain((unsigned short)0x200);
 
@@ -1042,8 +1042,8 @@ void GrandZodiacBase::nextHole(player& _session) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Update, finaliza o hole
-		updateFinishHole(_session, 1/*Fez HIO*/);
+		// Update, finishes the hole
+		updateFinishHole(_session, 1/*Made HIO*/);
 
 	}catch (exception& e) {
 
@@ -1367,7 +1367,7 @@ void GrandZodiacBase::sendReplyInitShotAndSyncShot(player& _session) {
 
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 
-			// Set Player no golden beam map se j� estiver no tempo do golden beam e se ele n�o estiver no map
+			// Set Player in the golden beam map if it is already the golden beam time and he is not in the map
 #if defined(_WIN32)
 			if (InterlockedCompareExchange(&m_golden_beam_state, 1u, 1u) == 1u)
 #elif defined(__linux__)
@@ -1390,30 +1390,30 @@ void GrandZodiacBase::sendReplyInitShotAndSyncShot(player& _session) {
 				pgi->data.score++;
 			}
 
-			// Sem setas, se ele n�o mandou nenhum special shot ou spin ou curva ele n�o apertou setas, s� as apagadas essas n�o conta
-			if (pgi->shot_data.special_shot.ulSpecialShot == 0u /*N�o mandou, spin, curva, toma, cobra e spike*/) {
+			// No arrows, if he did not send any special shot or spin or curve he did not press arrows, only the erased ones, those do not count
+			if (pgi->shot_data.special_shot.ulSpecialShot == 0u /*Did not send spin, curve, tomahawk, cobra and spike*/) {
 
 				pgi->m_gz.m_score_shot.push_back(eGRAND_ZODIAC_TYPE_SHOT::GZTS_WITHOUT_COMMANDS);
 
 				pgi->data.score++;
 			}
 
-			if (pgi->shot_data.acerto_pangya_flag == 3/*Errou PangYa*/) {
+			if (pgi->shot_data.acerto_pangya_flag == 3/*Missed PangYa*/) {
 
 				pgi->m_gz.m_score_shot.push_back(eGRAND_ZODIAC_TYPE_SHOT::GZTS_MISS_PANGYA);
 
 				pgi->data.score += 3;
 			}
 
-			// O score que o player fez hio
+			// The score at which the player made hio
 			pgi->m_gz.m_score_shot.insert(pgi->m_gz.m_score_shot.begin(), eGRAND_ZODIAC_TYPE_SHOT::GZTS_HIO_SCORE);
 
-			pgi->data.score++; // Add +1 que � da tacada que ele deu, que ele fez hio
+			pgi->data.score++; // Add +1 for the shot he took, with which he made hio
 
-			// S� envia se tiver mais que 1
+			// Only sends if there is more than 1
 			if (pgi->m_gz.m_score_shot.size() > 1) {
 
-				// Send Scores para o player
+				// Send Scores to the player
 				packet p((unsigned short)0x1F5);
 
 				p.addUint32((uint32_t)pgi->m_gz.m_score_shot.size());
@@ -1439,7 +1439,7 @@ PlayerGameInfo* GrandZodiacBase::makePlayerInfoObject(player& _session) {
 
 		CHECK_SESSION_BEGIN("makePlayerInfoObject");
 
-		// Aqui se eu precisar inicializar algum valor
+		// Here in case I need to initialize some value
 
 	}catch (exception& e) {
 
@@ -1453,7 +1453,7 @@ void GrandZodiacBase::setPlayerGoldenBeam(player& _session) {
 
 	try {
 
-		// N�o tem o player no map add
+		// The player is not in the map, add
 		if (m_mp_golden_beam_player.find(&_session) == m_mp_golden_beam_player.end())
 			m_mp_golden_beam_player.insert(std::make_pair(&_session, true));
 
@@ -1493,11 +1493,11 @@ void* GrandZodiacBase::syncFirstHole() {
 #if defined(_WIN32)
 		HANDLE wait_events[2] = { m_hEvent_sync_hole, m_hEvent_sync_hole_pulse };
 
-		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #elif defined(__linux__)
 		std::vector< Event* > wait_events = { m_hEvent_sync_hole, m_hEvent_sync_hole_pulse };
 
-		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #endif
 
 			try {
@@ -1512,7 +1512,7 @@ void* GrandZodiacBase::syncFirstHole() {
 
 							clearInitFirstHole();
 
-							// Come�a o tempo do jogo
+							// Starts the game time
 							startTime();
 
 							for (auto& el : m_players) {
@@ -1521,17 +1521,17 @@ void* GrandZodiacBase::syncFirstHole() {
 
 									sendRemainTime(*el);
 
-									// Resposta passa o oid do player que vai come�a o Hole
+									// Response passes the oid of the player who will start the Hole
 									p.init_plain((unsigned short)0x53);
 
 									p.addUint32(el->m_oid);
 
 									packet_func::session_send(p, el, 1);
 
-									// Passa a localiza��o do player, esse � a primeira, vez ent�o passa os valores zerados
-									updateFinishHole(*el, 1/*Come�ou o hole*/);
+									// Passes the player's location, this is the first time, so passes zeroed values
+									updateFinishHole(*el, 1/*Started the hole*/);
 
-									// Come�a o Grand Zodiac
+									// Starts Grand Zodiac
 									p.init_plain((unsigned short)0x1F4);
 
 									p.addUint32(1u); // Start
@@ -1540,7 +1540,7 @@ void* GrandZodiacBase::syncFirstHole() {
 								}
 							}
 
-							// Verifica o tempo do start golden beam
+							// Checks the golden beam start time
 							m_state_gz.setState(eSTATE_GRAND_ZODIAC_SYNC::START_GOLDEN_BEAM);
 						}
 
@@ -1555,10 +1555,10 @@ void* GrandZodiacBase::syncFirstHole() {
 
 							if (elapsed >= (m_ri.time_30s - 60000)) {
 
-								// Come�a o tempo do golden beam time
+								// Starts the golden beam time
 								startGoldenBeam();
 
-								// Verifica o tempo do end golden beam
+								// Checks the golden beam end time
 								m_state_gz.setState(eSTATE_GRAND_ZODIAC_SYNC::END_GOLDEN_BEAM);
 							}
 						}
@@ -1573,7 +1573,7 @@ void* GrandZodiacBase::syncFirstHole() {
 
 							if (elapsed >= (m_ri.time_30s - 30000)) {
 
-								// Terminar o golden beam
+								// End the golden beam
 								endGoldenBeam();
 
 								m_state_gz.setState(eSTATE_GRAND_ZODIAC_SYNC::WAIT_END_GAME);
@@ -1584,15 +1584,15 @@ void* GrandZodiacBase::syncFirstHole() {
 					}
 					case eSTATE_GRAND_ZODIAC_SYNC::LOAD_HOLE:
 					{
-						break; // Faz nada por enquanto
+						break; // Does nothing for now
 					}
 					case eSTATE_GRAND_ZODIAC_SYNC::LOAD_CHAR_INTRO:
 					{
-						break; // Faz nada por enquanto
+						break; // Does nothing for now
 					}
 					case eSTATE_GRAND_ZODIAC_SYNC::END_SHOT:
 					{
-						break; // Faz nada por enquanto
+						break; // Does nothing for now
 					}
 					case eSTATE_GRAND_ZODIAC_SYNC::WAIT_END_GAME:
 					{
@@ -1609,7 +1609,7 @@ void* GrandZodiacBase::syncFirstHole() {
 					}
 				}
 
-				// Libera
+				// Release
 				m_state_gz.unlock();
 
 			}catch (exception& e) {

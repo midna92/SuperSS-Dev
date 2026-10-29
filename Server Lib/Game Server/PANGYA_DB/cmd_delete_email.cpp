@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_email.cpp
-// Criado em 24/03/2018 as 15:41 por Acrisio
-// Implementa��o da classe CmdDeleteEmail
+// File cmd_delete_email.cpp
+// Created on 24/03/2018 at 15:41 by Acrisio
+// Implementation of the class CmdDeleteEmail
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -46,8 +46,8 @@ CmdDeleteEmail::~CmdDeleteEmail() {
 }
 
 void CmdDeleteEmail::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
-	// UPDATE n�o usa o result
-	// mas caso algum dia eu queira usar o result, depois de deletar um email eu mexo aqui
+	// UPDATE does not use the result
+	// but if someday I want to use the result, after deleting an email I will change it here
 	return;
 }
 
@@ -100,7 +100,7 @@ void CmdDeleteEmail::setEmailID(int32_t *_email_id, uint32_t _count) {
 		return;
 	}
 
-	// realoca se for maior
+	// reallocate if larger
 	if (m_email_id != nullptr && _count > m_count) {
 
 		delete[] m_email_id;

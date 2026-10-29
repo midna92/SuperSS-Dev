@@ -1,6 +1,6 @@
-// Arquivo map.cpp
-// Criado em 21/09/2018 as 21:00 por Acrisio
-// Implementa��o da classe Map
+// File map.cpp
+// Created on 21/09/2018 at 21:00 by Acrisio
+// Implementation of the Map class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -55,7 +55,7 @@ Map::Map() : m_load(false), m_map{} {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initializes
 	initialize();
 }
 
@@ -171,14 +171,14 @@ void Map::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[Map::initialize][Log] Map Dados Estaticos carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Map Carregado com sucesso
+	// Map Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrows for the server to take measures
 	throw;
 
 	END_CHECK;
@@ -239,7 +239,7 @@ Map::stCtx* Map::getMap(unsigned char _course) {
 
 	auto it = m_map.end();
 
-	// Prote��o contra o Random Map, que usa o negatico do 'char'
+	// Protection against the Random Map, which uses the negative of the 'char'
 	if ((it = m_map.find(_course & 0x7F)) != m_map.end()) {
 		
 		LEAVE_CHECK;

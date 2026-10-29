@@ -1,6 +1,6 @@
-// Arquivo ConioPort.h
-// Criado em 11/06/2021 as 19:03 por Acrisio
-// Porte do kbhit para o linux
+// File ConioPort.h
+// Created on 11/06/2021 at 19:03 by Acrisio
+// Port of kbhit to Linux
 
 #ifndef CONIOPORT_H
 #define CONIOPORT_H

@@ -1,6 +1,6 @@
-// Arquivo card_system.hpp
-// Criado em 30/06/2018 as 16:47 por Acrisio
-// Defini��o da classe CardSystem
+// File card_system.hpp
+// Created on 30/06/2018 at 16:47 by Acrisio
+// Definition of class CardSystem
 
 #pragma once
 #ifndef _STDA_CARD_SYSTEM_HPP
@@ -43,9 +43,9 @@ namespace stdA {
 			/*static*/ void clear();
 
 		private:
-			/*static*/ std::vector< Card > m_card;							// Todos os Card
-			/*static*/ std::map< uint32_t, CardPack > m_card_pack;		// Todos os Card Pack
-			/*static*/ std::map< uint32_t, CardPack > m_box_card_pack;	// Todos os Box Card Pack
+			/*static*/ std::vector< Card > m_card;							// All the Cards
+			/*static*/ std::map< uint32_t, CardPack > m_card_pack;		// All the Card Packs
+			/*static*/ std::map< uint32_t, CardPack > m_box_card_pack;	// All the Box Card Packs
 
 			/*static*/ bool m_load;											// Load CardSystem
 

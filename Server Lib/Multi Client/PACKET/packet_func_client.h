@@ -1,6 +1,6 @@
-// Arquivo packet_func_client.h
-// Criado em 21/10/2017 por Acrisio
-// Defini��o da classe packet_func para o cliente(BOT)
+// File packet_func_client.h
+// Created on 21/10/2017 by Acrisio
+// Definition of class packet_func for the cliente(BOT)
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_CLIENT_H
@@ -57,7 +57,7 @@ namespace stdA {
 			static int packet1A9(void* _arg1, void* _arg2);
 			static int packet1AD(void* _arg1, void* _arg2);
 
-			// Packet Server - Está invertido por que aqui é o cliente
+			// Packet Server - It is inverted because here it is the client
 			static int packet_svFazNada(void* _arg1, void* _arg2);
 			static int packet_sv001(void* _arg1, void* _arg2);
 
@@ -76,11 +76,11 @@ namespace stdA {
 			static int pacote0F4(packet& p, player *_session);
 			static int pacote0FB(packet& p, player *_session);
 
-			// Metêdos de auxálio de criação de pacotes
+			// Helper methods for creating packets
 			static void session_send(packet& p, player *s, unsigned char _debug = 0);
 			static void session_send(std::vector< packet* > v_p, player *s, unsigned char _debug = 0);
 
-			// Funcionalidades do command
+			// Command functionality
 			static void abrirWeblink(player *_session, unsigned char who);
 			static void entraCanal(player *_session, unsigned char canal_id);
 
@@ -90,7 +90,7 @@ namespace stdA {
 			// Send TTL Time To Live (HeartBeat)
 			static int HeartBeat(void *_arg1, void *_arg2);
 
-			// Send mensage no chat
+			// Send message in chat
 			static void sendMessage(player *_session, std::string _nickname, std::string _msg);
 	};
 }

@@ -1,6 +1,6 @@
-// Arquivo cmd_email_info2.hpp
-// Criado em 14/01/2021 as 06:22 por Acrisio
-// Defini��o da classe CmdEmailInfo2
+// File cmd_email_info2.hpp
+// Created on 14/01/2021 at 06:22 by Acrisio
+// Definition of the class CmdEmailInfo2
 
 #pragma once
 #ifndef _STDA_CMD_EMAIL_INFO2_HPP

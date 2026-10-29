@@ -1,6 +1,6 @@
-// Arquivo cmd_command_info.cpp
-// Criado em 02/12/2018 as 22:44 por Acrisio
-// Implementa��o da classe CmdCommandInfo
+// File cmd_command_info.cpp
+// Created on 02/12/2018 at 22:44 by Acrisio
+// Implementation of class CmdCommandInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

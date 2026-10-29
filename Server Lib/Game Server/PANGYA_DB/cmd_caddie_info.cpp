@@ -1,6 +1,6 @@
-// Arquivo cmd_caddie_info.cpp
-// Criado em 18/03/2018 as 21:28 por Acrisio
-// Implementa��o da classe CmdCaddieInfo
+// File cmd_caddie_info.cpp
+// Created on 18/03/2018 at 21:28 by Acrisio
+// Implementation of the class CmdCaddieInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -66,7 +66,7 @@ void CmdCaddieInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 			return _el.second._typeid == ci._typeid;
 		});
 
-		// N�o tem um igual add um novo
+		// There is no identical one, add a new one
 		if (it == er.second/*End*/) {
 
 			v_ci.insert(std::make_pair(ci.id, ci));
@@ -74,11 +74,11 @@ void CmdCaddieInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 			_smp::message_pool::getInstance().push(new message("[CmdCaddieInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] adicionou Caddie[TYPEID=" 
 					+ std::to_string(ci._typeid) + ", ID=" + std::to_string(ci.id) + "], com mesmo id e typeid diferente de outro Caddie que tem no multimap", CL_FILE_LOG_AND_CONSOLE));
 		}else
-			// Tem um Caddie com o mesmo ID e TYPEID (DUPLICATA)
+			// There is a Caddie with the same ID and TYPEID (DUPLICATE)
 			_smp::message_pool::getInstance().push(new message("[CmdCaddieInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Caddie[TYPEID=" 
 					+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 
-	}else // Tem um Caddie com o mesmo ID e TYPEID (DUPLICATA)
+	}else // There is a Caddie with the same ID and TYPEID (DUPLICATE)
 		_smp::message_pool::getInstance().push(new message("[CmdCaddieInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um Caddie[TYPEID="
 				+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 }

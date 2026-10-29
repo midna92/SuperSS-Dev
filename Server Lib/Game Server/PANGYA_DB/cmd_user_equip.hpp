@@ -1,6 +1,6 @@
-// Arquivo cmd_user_equip.hpp
-// Criado em 18/03/2018 as 17:40 por Acrisio
-// Defini��o da classe CmdUserEquip
+// File cmd_user_equip.hpp
+// Created on 18/03/2018 at 17:40 by Acrisio
+// Definition of class CmdUserEquip
 
 #pragma once
 #ifndef _STDA_CMD_USER_EQUIP_HPP

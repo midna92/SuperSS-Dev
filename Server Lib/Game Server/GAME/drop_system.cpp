@@ -1,6 +1,6 @@
 // Arquivo drop_system.cpp
-// Criado em 07/09/218 as 13:39 por Acrisio
-// Implementa��o da classe DropSystem
+// Created on 07/09/218 at 13:39 by Acrisio
+// Implementation of the DropSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -75,11 +75,11 @@ using namespace stdA;
 #define CHECK_SESSION_AND_DROP(_method) CHECK_SESSION((_method)) CHECK_DROP((_method))
 
 #define ART_RAINBOW_MAGIC_HAT		0x1A0001BEul
-#define ART_WICKED_BROOMSTICK		0x1A0001B4u	// +500 pangs no Ultimo Hole do game de 18H
-#define ART_TEORITE_ORE				0x1A0001B6u	// +1000 pangs no Ultimo Hole do game de 18H
-#define ART_REDNOSE_WIZBERRY		0x1A0001B8u	// +1500 pangs no Ultimo Hole do game de 18H
-#define ART_MAGANI_FLOWER			0x1A0001BAu	// +3000 pangs no Ultimo Hole do game de 18H
-#define ART_ROGER_K_STEERING_WHEEL	0x1A0001BCu	// de 500 a 501000 pangs no Ultimo Hole do game de 18H
+#define ART_WICKED_BROOMSTICK		0x1A0001B4u	// +500 pangs on the Last Hole of the 18H game
+#define ART_TEORITE_ORE				0x1A0001B6u	// +1000 pangs on the Last Hole of the 18H game
+#define ART_REDNOSE_WIZBERRY		0x1A0001B8u	// +1500 pangs on the Last Hole of the 18H game
+#define ART_MAGANI_FLOWER			0x1A0001BAu	// +3000 pangs on the Last Hole of the 18H game
+#define ART_ROGER_K_STEERING_WHEEL	0x1A0001BCu	// from 500 to 501000 pangs on the Last Hole of the 18H game
 
 #ifndef PANG_POUCH_TYPEID
 #define PANG_POUCH_TYPEID			0x1A000010
@@ -152,14 +152,14 @@ void DropSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[DropSystem::initialize][Log] Drop System Carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -189,7 +189,7 @@ DropSystem::stDropCourse* DropSystem::findCourse(unsigned char _course) {
 
 	TRY_CHECK;
 
-	// Prote��o contra o Random Map, que usa o negatico do 'char'
+	// Protection against the Random Map, which uses the negative of 'char'
 	auto it = m_course.find(_course & 0x7F);
 
 	if (it != m_course.end()) {
@@ -328,12 +328,12 @@ std::vector< DropItem > DropSystem::drawCourse(stDropCourse& _dc, stCourseInfo& 
 				case DropSystem::stDropCourse::stDropItem::eTIPO::ALL_PROBABILITY:
 				case DropSystem::stDropCourse::stDropItem::eTIPO::SEQUENCE_DROP:
 				default:
-					// Aqui � item por item que sorteia, cada item tem sua chance no course
+					// Here it draws item by item, each item has its chance in the course
 					lottery.push(el.probabilidade[DropSystem::stDropCourse::stDropItem::ePROB_TIPO::_3HOLES_ALL], (size_t)&el);
 					break;
 				case DropSystem::stDropCourse::stDropItem::eTIPO::LAST_HOLE_PROBABILITY:
 				{
-					// Holes do jogo
+					// Game holes
 					if (_ci.qntd_hole == 3)
 						lottery.push(el.probabilidade[DropSystem::stDropCourse::stDropItem::ePROB_TIPO::_3HOLES_ALL], (size_t)&el);
 					else if (_ci.qntd_hole == 6)
@@ -347,7 +347,7 @@ std::vector< DropItem > DropSystem::drawCourse(stDropCourse& _dc, stCourseInfo& 
 				}
 			}
 
-			// S� coloca outro pra sortear se a probabilidade for menor que 1000(100%)
+			// Only puts another one to draw if the probability is less than 1000(100%)
 			if ((lottery.getLimitProbilidade() * rate) < 1000u)
 				lottery.push((uint32_t)(1000 - (lottery.getLimitProbilidade() * rate)), 0u);
 

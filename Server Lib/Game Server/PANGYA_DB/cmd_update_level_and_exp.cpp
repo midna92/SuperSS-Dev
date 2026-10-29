@@ -1,6 +1,6 @@
-// Arquivo cmd_update_level_and_exp.cpp
-// Criado em 06/07/0218 as 20:26 por Acrisio
-// Implementa��o da classe CmdUpdateLevelAndExp
+// File cmd_update_level_and_exp.cpp
+// Created on 06/07/0218 at 20:26 by Acrisio
+// Implementation of class CmdUpdateLevelAndExp
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateLevelAndExp::~CmdUpdateLevelAndExp() {
 
 void CmdUpdateLevelAndExp::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

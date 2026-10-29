@@ -1,6 +1,6 @@
-// Arquivo player.cpp
-// Criado em 07/03/2018 as 22:03 por Acrisio
-// Implementação da classe player Polimofismo
+// File player.cpp
+// Created on 07/03/2018 at 22:03 by Acrisio
+// Implementation of class player Polymorphism
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -130,7 +130,7 @@ void player::addExp(uint32_t _exp, bool _upt_on_game) {
 		
 		if ((ret = m_pi.addExp(_exp)) >= 0) {
 
-			if (ret > 0) {	// Player Upou de level
+			if (ret > 0) {	// Player leveled up
 
 				std::vector< stItem > v_item;
 				stItem item{ 0 };
@@ -140,7 +140,7 @@ void player::addExp(uint32_t _exp, bool _upt_on_game) {
 
 				for (auto i = (m_pi.mi.level - ret + 1); i <= m_pi.mi.level; ++i) {
 					
-					// Zera o vector de item que vai ser enviado por level UP! para o mail box do player
+					// Clears the item vector that will be sent to the player's mail box on level UP!
 					v_item.clear();
 					
 					auto it = level_prize.end();
@@ -160,7 +160,7 @@ void player::addExp(uint32_t _exp, bool _upt_on_game) {
 							bi.qntd = it->second.reward.qntd[ii];
 							bi.time = (unsigned short)it->second.reward.time[ii];
 
-							item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*não checar o level*/);
+							item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*do not check the level*/);
 
 							if (item._typeid == 0)
 								throw exception("[player::addExp][ErrorSystem] player[UID=" + std::to_string(m_pi.uid) + "] addExp, mas nao conseguiu inicializar o item[TYPEID="
@@ -172,24 +172,24 @@ void player::addExp(uint32_t _exp, bool _upt_on_game) {
 
 					auto msg = std::string("Level UP! Prize.");
 
-					// Envia Prêmio de Level UP! para o Mail Box do player
+					// Sends Level UP! reward to the player's Mail Box
 					MailBoxManager::sendMessageWithItem(0, m_pi.uid, msg, v_item);
 				}
 
-				// Mostra msg que o player Upou de level
+				// Shows message that the player leveled up
 				p.init_plain((unsigned short)0x10F);
 
 				p.addUint32(0);	// OK
 
-				p.addUint8((unsigned char)ret);				// Qntd de level(s) que ele upou
-				p.addUint8((unsigned char)m_pi.mi.level);	// Novo level que o player ficou
+				p.addUint8((unsigned char)ret);				// Number of level(s) gained
+				p.addUint8((unsigned char)m_pi.mi.level);	// New level the player reached
 
 				packet_func::session_send(p, this, 1);
 			}
 		}
 
-		// Att Level e Exp do player IN GAME
-		if (_upt_on_game) {	// Só att se for pegando do mail ou ticket report esses negocio, por que jogando vs/tourney, nao precisa desse pacote
+		// Update the player's Level and Exp IN GAME
+		if (_upt_on_game) {	// Only update when getting it from mail or ticket report and such, because when playing vs/tourney this packet is not needed
 			p.init_plain((unsigned short)0x1D9);
 
 			p.addUint32(m_pi.mi.level);
@@ -220,7 +220,7 @@ void player::addCaddieExp(uint32_t _exp) {
 #define CALC_CADDIE_EXP_LEVEL(_level) 520 + (160 * (_level))
 #define LIMIT_LEVEL_CADDIE 3
 
-	// Só add Exp se não estiver no ultimo level do Caddie
+	// Only add Exp if not at the Caddie's last level
 	if (m_pi.ei.cad_info->level < LIMIT_LEVEL_CADDIE) {
 
 		m_pi.ei.cad_info->exp += _exp;
@@ -260,11 +260,11 @@ void player::addMascotExp(uint32_t _exp) {
 		throw exception("[player::addMascotExp][Error] player[UID=" + std::to_string(m_pi.uid) + "] tentou adicionar mais exp[VALUE="
 			+ std::to_string(_exp) + "] ao mascot equipado, mas ele nao esta com nenhum mascot equipado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER, 401, 0));
 
-// Progressão aritmética de segunda ordem
+// Second-order arithmetic progression
 #define CALC_MASCOT_EXP_LEVEL(_level) 50/*Base*/ + ((20 + (20 + ((_level) - 1) * 10)) * (_level) / 2)
 #define LIMIT_LEVEL_MASCOT 9
 
-	// Só add Exp se não estiver no ultimo level do Mascot
+	// Only add Exp if not at the Mascot's last level
 	if (m_pi.ei.mascot_info->level < LIMIT_LEVEL_MASCOT) {
 
 		m_pi.ei.mascot_info->exp += _exp;
@@ -324,7 +324,7 @@ void player::addExp(uint32_t _uid, uint32_t _exp) {
 			// UPDATE ON GAME
 			p = new packet();
 
-			if (ret > 0) {	// Player Upou de level
+			if (ret > 0) {	// Player leveled up
 
 				std::vector< stItem > v_item;
 				stItem item{ 0 };
@@ -334,7 +334,7 @@ void player::addExp(uint32_t _uid, uint32_t _exp) {
 
 				for (auto i = (pi->mi.level - ret + 1); i <= pi->mi.level; ++i) {
 					
-					// Zera o vector de item que vai ser enviado por level UP! para o mail box do player
+					// Clears the item vector that will be sent to the player's mail box on level UP!
 					v_item.clear();
 					
 					auto it = level_prize.end();
@@ -354,7 +354,7 @@ void player::addExp(uint32_t _uid, uint32_t _exp) {
 							bi.qntd = it->second.reward.qntd[ii];
 							bi.time = (unsigned short)it->second.reward.time[ii];
 
-							item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*não checar o level*/);
+							item_manager::initItemFromBuyItem(*pi, item, bi, false, 0, 0, 1/*do not check the level*/);
 
 							if (item._typeid == 0)
 								throw exception("[player::addExp][ErrorSystem] player[UID=" + std::to_string(pi->uid) + "] addExp, mas nao conseguiu inicializar o item[TYPEID="
@@ -366,7 +366,7 @@ void player::addExp(uint32_t _uid, uint32_t _exp) {
 
 					auto msg = std::string("Level UP! Prize.");
 
-					// Envia Prêmio de Level UP! para o Mail Box do player
+					// Sends Level UP! reward to the player's Mail Box
 					MailBoxManager::sendMessageWithItem(0, pi->uid, msg, v_item);
 				}
 			}
@@ -499,9 +499,9 @@ void player::saveCPLog(CPLog& _cp_log) {
 			if ((_cp_log.getType() == CPLog::TYPE::BUY_SHOP || _cp_log.getType() == CPLog::TYPE::GIFT_SHOP)
 					&& _cp_log.getItemCount() > 0) {
 
-				// Tem item(ns), salva o log do(s) item(ns)
+				// Has item(s), saves the item(s) log
 				for (auto& el : _cp_log.getItens())
-					snmdb::NormalManagerDB::getInstance().add(3, new CmdInsertCPLogItem(m_pi.uid/*Para Log, não usa no Proc do DB*/, log_id, el), player::SQLDBResponse, this);
+					snmdb::NormalManagerDB::getInstance().add(3, new CmdInsertCPLogItem(m_pi.uid/*For Log, not used in the DB Proc*/, log_id, el), player::SQLDBResponse, this);
 			}
 		}
 	
@@ -540,9 +540,9 @@ void player::saveCPLog(uint32_t _uid, CPLog& _cp_log) {
 			if ((_cp_log.getType() == CPLog::TYPE::BUY_SHOP || _cp_log.getType() == CPLog::TYPE::GIFT_SHOP)
 					&& _cp_log.getItemCount() > 0) {
 
-				// Tem item(ns), salva o log do(s) item(ns)
+				// Has item(s), saves the item(s) log
 				for (auto& el : _cp_log.getItens())
-					snmdb::NormalManagerDB::getInstance().add(3, new CmdInsertCPLogItem(_uid/*Para Log, não usa no Proc do DB*/, log_id, el), player::SQLDBResponse, nullptr);
+					snmdb::NormalManagerDB::getInstance().add(3, new CmdInsertCPLogItem(_uid/*For Log, not used in the DB Proc*/, log_id, el), player::SQLDBResponse, nullptr);
 			}
 		}
 	
@@ -556,7 +556,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 
 	uint32_t def_part = 0u;
 
-	// Angel Part of character 3% quit rate para equipar o Normal angel wings
+	// Angel Part of character 3% quit rate to equip the Normal angel wings
 	auto angel_wings_typeid = std::find_if(angel_wings, LAST_ELEMENT_IN_ARRAY(angel_wings), [&](auto& el) {
 		return (sIff::getInstance().getItemCharIdentify(el) == (ci._typeid & 0x000000FF));
 	});
@@ -588,7 +588,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 #endif // _DEBUG
 						}else {
 
-							// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+							// Unequips the character part and puts the Default Character parts in its place
 							ci.unequipPart(part);
 
 							upt_on_db = true;
@@ -614,7 +614,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 
 							if (slot == -1) {
 
-								// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+								// Unequips the character part and puts the Default Character parts in its place
 								ci.unequipPart(part);
 
 								upt_on_db = true;
@@ -644,7 +644,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 #endif // _DEBUG
 									}else {
 
-										// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+										// Unequips the character part and puts the Default Character parts in its place
 										ci.unequipPart(part);
 
 										upt_on_db = true;
@@ -662,7 +662,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 								
 								}else {
 
-									// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+									// Unequips the character part and puts the Default Character parts in its place
 									ci.unequipPart(part);
 
 									upt_on_db = true;
@@ -683,7 +683,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 
 						}else {
 
-							// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+							// Unequips the character part and puts the Default Character parts in its place
 							ci.unequipPart(part);
 
 							upt_on_db = true;
@@ -702,7 +702,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 
 				}else {
 					
-					// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+					// Unequips the character part and puts the Default Character parts in its place
 					if (part != nullptr)
 						ci.unequipPart(part);
 					else {
@@ -729,7 +729,7 @@ bool player::checkCharacterEquipedPart(CharacterInfo& ci) {
 				
 				auto part = sIff::getInstance().findPart(ci.parts_typeid[i]);
 
-				// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+				// Unequips the character part and puts the Default Character parts in its place
 				if (part != nullptr)
 					ci.unequipPart(part);
 				else {
@@ -777,7 +777,7 @@ bool player::checkCharacterEquipedAuxPart(CharacterInfo& ci) {
 
 		if (ci.auxparts[i] != 0) {
 
-			// Esse AuxPartNumber é o 0x0 anel que consome(só mão direita), 0x1 mão direita, 0x21 mão esquerda
+			// This AuxPartNumber is 0x0 consumable ring (right hand only), 0x1 right hand, 0x21 left hand
 			if (sIff::getInstance().getItemGroupIdentify(ci.auxparts[i]) == iff::AUX_PART) {
 				
 				auto aux = sIff::getInstance().findAuxPart(ci.auxparts[i]);
@@ -799,7 +799,7 @@ bool player::checkCharacterEquipedAuxPart(CharacterInfo& ci) {
 #endif // _DEBUG
 						}else {
 
-							// Desequipa
+							// Unequip
 							ci.auxparts[i] = 0;
 
 							upt_on_db = true;
@@ -816,7 +816,7 @@ bool player::checkCharacterEquipedAuxPart(CharacterInfo& ci) {
 					
 					}else {
 
-						// Desequipa
+						// Unequip
 						ci.auxparts[i] = 0;
 
 						upt_on_db = true;
@@ -836,7 +836,7 @@ bool player::checkCharacterEquipedAuxPart(CharacterInfo& ci) {
 
 				}else {
 
-					// Desequipa
+					// Unequip
 					ci.auxparts[i] = 0;
 
 					upt_on_db = true;
@@ -854,7 +854,7 @@ bool player::checkCharacterEquipedAuxPart(CharacterInfo& ci) {
 
 			}else {
 
-				// Desequipa
+				// Unequip
 				ci.auxparts[i] = 0;
 
 				upt_on_db = true;
@@ -920,7 +920,7 @@ bool player::checkCharacterEquipedCutin(CharacterInfo& ci) {
 
 					upt_on_db = true;
 						
-					// Não tem o level necessário para equipar esse Cutin
+					// Does not have the level required to equip this Cutin
 					_smp::message_pool::getInstance().push(new message("[player::checkCharacterEquipedCutin][Error] player[UID=" + std::to_string(m_pi.uid) 
 							+ "] Character[TYPEID=" + std::to_string(ci._typeid)
 							+ ", ID=" + std::to_string(ci.id) + "] Cutin[TYPEID=" + std::to_string(pCutin->_typeid) + " ID=" + std::to_string(pCutin->id) + ", SLOT=" + std::to_string(i)
@@ -934,7 +934,7 @@ bool player::checkCharacterEquipedCutin(CharacterInfo& ci) {
 
 					upt_on_db = true;
 
-					// Não tem esse Cutin no IFF_STRUCT do server desequipa ele
+					// This Cutin is not in the server IFF_STRUCT, unequip it
 					_smp::message_pool::getInstance().push(new message("[player::checkCharacterEquipedCutin][Error] player[UID=" + std::to_string(m_pi.uid)
 							+ "] Character[TYPEID=" + std::to_string(ci._typeid)
 							+ ", ID=" + std::to_string(ci.id) + "] Not Have Cutin[TYPEID=" + std::to_string(pCutin->_typeid) + " ID=" + std::to_string(pCutin->id) + ", SLOT=" + std::to_string(i)
@@ -955,7 +955,7 @@ void player::checkCharacterAllItemEquiped(CharacterInfo& ci) {
 
 	ret |= checkCharacterEquipedCutin(ci);
 
-	// Atualiza os parts equipados do player no banco de dados, que tinha parts errados
+	// Updates the player's equipped parts in the database, which had wrong parts
 	if (ret)
 		snmdb::NormalManagerDB::getInstance().add(5, new CmdUpdateCharacterAllPartEquiped(m_pi.uid, ci), player::SQLDBResponse, this);
 }
@@ -973,7 +973,7 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 				
 			if (pSkin == nullptr) {
 
-				// Guarda para usar no Log
+				// Saved for use in the Log
 				tmp_typeid = _ue.skin_typeid[i];
 				tmp_id = _ue.skin_id[i];
 
@@ -991,7 +991,7 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 
 				auto skin = sIff::getInstance().findSkin(pSkin->_typeid);
 
-				// Aqui tem que verificar as condições dos Title, uns só com 3% de quit rate, % de acerto de pangya e etc
+				// Here the Title conditions must be checked, some only with 3% quit rate, pangya hit %, etc
 
 				if (skin != nullptr && !skin->level.goodLevel((unsigned char)m_pi.level)) {
 
@@ -1001,7 +1001,7 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 
 					upt_on_db = true;
 
-					// Não tem o level necessário para equipar esse Skin
+					// Does not have the level required to equip this Skin
 					_smp::message_pool::getInstance().push(new message("[player::checkSkinEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 							+ "] Skin[TYPEID=" + std::to_string(pSkin->_typeid) + " ID=" + std::to_string(pSkin->id) + ", SLOT=" + std::to_string(i)
 							+ "]  Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)skin->level.is_max)
@@ -1009,13 +1009,13 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 
 				}else if (skin != nullptr && sIff::getInstance().IsTitle(pSkin->_typeid)) {
 
-					// Verifica se o title tem condição e atualiza se tiver
+					// Checks if the title has a condition and updates if it does
 					uint32_t title_num = sIff::getInstance().getItemTitleNum(pSkin->_typeid);
 
 					auto check_title = m_pi.getTitleCallBack(title_num);
 
-					// check_title == nullptr, title não tem condição
-					if (check_title != nullptr/*Tem Condição*/ && check_title->exec() == 0/*Não passou na condição*/) {
+					// check_title == nullptr, title has no condition
+					if (check_title != nullptr/*Has Condition*/ && check_title->exec() == 0/*Did not pass the condition*/) {
 
 						// Zera (Desequipa)
 						_ue.skin_id[i] = 0;
@@ -1023,7 +1023,7 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 
 						upt_on_db = true;
 
-						// Não passa na condição do title, desequipa ele
+						// Does not pass the title condition, unequip it
 						_smp::message_pool::getInstance().push(new message("[player::checkSkinEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 								+ "] Skin[TYPEID=" + std::to_string(pSkin->_typeid) + " ID=" + std::to_string(pSkin->id) + ", SLOT=" + std::to_string(i)
 								+ "] nao passou na condition TITLE[NUM=" + std::to_string(title_num) + "], para equipar esse item. Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
@@ -1037,7 +1037,7 @@ bool player::checkSkinEquiped(UserEquip& _ue) {
 
 					upt_on_db = true;
 
-					// Não tem o Skin no IFF_STRUCT do server desequipa ele
+					// This Skin is not in the server IFF_STRUCT, unequip it
 					_smp::message_pool::getInstance().push(new message("[player::checkSkinEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 							+ "] Not Have Skin[TYPEID=" + std::to_string(pSkin->_typeid) + ", ID=" + std::to_string(pSkin->id)
 							+ ", SLOT=" + std::to_string(i) + "] in IFF_STRUCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1062,7 +1062,7 @@ bool player::checkPosterEquiped(UserEquip& _ue) {
 			
 			if (pPoster == nullptr) {
 
-				// Guarda para enviar no log
+				// Saved to send in the log
 				tmp_typeid = _ue.poster[i];
 
 				// Zera (Desequipa)
@@ -1085,7 +1085,7 @@ bool player::checkPosterEquiped(UserEquip& _ue) {
 
 					upt_on_db = true;
 
-					// Não tem o level necessário para equipar esse Poster
+					// Does not have the level required to equip this Poster
 					_smp::message_pool::getInstance().push(new message("[player::checkPosterEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 							+ "] Poster[TYPEID=" + std::to_string(pPoster->_typeid) + " ID=" + std::to_string(pPoster->id) + ", SLOT=" + std::to_string(i)
 							+ "]  Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)poster->level.is_max)
@@ -1098,7 +1098,7 @@ bool player::checkPosterEquiped(UserEquip& _ue) {
 
 					upt_on_db = true;
 				
-					// Não tem esse Poster no IFF_STRUCT do Server desequipa ele
+					// This Poster is not in the Server IFF_STRUCT, unequip it
 					_smp::message_pool::getInstance().push(new message("[player::checkPosterEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 							+ "] Not Have Poster[TYPEID=" + std::to_string(pPoster->_typeid) + ", ID=" + std::to_string(pPoster->id) 
 							+ ", SLOT=" + std::to_string(i) + "] in IFF_STRUCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1119,12 +1119,12 @@ bool player::checkCharacterEquiped(UserEquip& _ue) {
 
 		if (m_pi.findCharacterById(_ue.character_id) == nullptr) {
 
-			// Guarda para usar no Log
+			// Saved for use in the Log
 			tmp_id = _ue.character_id;
 
 			try {
 
-				// Equipa Character Padrão
+				// Equip Default Character
 				equipDefaultCharacter(_ue);
 
 			}catch (exception& e) {
@@ -1137,13 +1137,13 @@ bool player::checkCharacterEquiped(UserEquip& _ue) {
 			_smp::message_pool::getInstance().push(new message("[player::checkCharacterEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 					+ "] Not Have Character[ID=" + std::to_string(tmp_id) + "], but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 		
-		}//else Character não tem tempo ou level para equipar, então não precisa verificar o character se o player tiver ele
+		}//else Character has no time or level to equip, so there is no need to check the character if the player has it
 
 	}else {
 		
 		try {
 
-			// Equipa Character Padrão
+			// Equip Default Character
 			equipDefaultCharacter(_ue);
 
 		}catch (exception& e) {
@@ -1153,7 +1153,7 @@ bool player::checkCharacterEquiped(UserEquip& _ue) {
 
 		upt_on_db = true;
 		
-		// Não tem nenhum character normal ou padrão equipado, equipado o character padrão
+		// No normal or default character equipped, equip the default character
 		_smp::message_pool::getInstance().push(new message("[player::checkCharacterEquiped][Error][WARNING] player[UID=" + std::to_string(m_pi.uid)
 				+ "] nao tem um character equipado. Bug", CL_FILE_LOG_AND_CONSOLE));
 	}
@@ -1172,7 +1172,7 @@ bool player::checkCaddieEquiped(UserEquip& _ue) {
 		
 		if (pCaddie == nullptr) {
 
-			// Guarda para usar no Log
+			// Saved for use in the Log
 			tmp_id = _ue.caddie_id;
 
 			// Zera (Desequipa)
@@ -1196,7 +1196,7 @@ bool player::checkCaddieEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// Não tem o level necessário para equipar esse caddie
+				// Does not have the level required to equip this caddie
 				_smp::message_pool::getInstance().push(new message("[player::checkCaddieEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Caddie[TYPEID=" + std::to_string(pCaddie->_typeid) + " ID=" + std::to_string(pCaddie->id) 
 						+ " Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)caddie->level.is_max)
@@ -1210,7 +1210,7 @@ bool player::checkCaddieEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// Caddie está de ferias não pode equipar esse caddie
+				// Caddie is on vacation, cannot equip this caddie
 				_smp::message_pool::getInstance().push(new message("[player::checkCaddieEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Caddie[TYPEID=" + std::to_string(pCaddie->_typeid) + " ID=" + std::to_string(pCaddie->id)
 						+ ", END_DATE=" + _formatDate(pCaddie->end_date) + "] esta de ferias, nao pode equipar esse caddie. Hacker ou bug.", 
@@ -1224,7 +1224,7 @@ bool player::checkCaddieEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// Não tem esse caddie no IFF_STRUCT do server, desequipa ele
+				// This caddie is not in the server IFF_STRUCT, unequip it
 				_smp::message_pool::getInstance().push(new message("[player::checkCaddieEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Not Have Caddie[TYPEID=" + std::to_string(pCaddie->_typeid) + ", ID=" + std::to_string(pCaddie->id) 
 						+ "] in IFF_STRUCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1246,7 +1246,7 @@ bool player::checkMascotEquiped(UserEquip& _ue) {
 		
 		if (pMascot == nullptr) {
 
-			// Guarda para usar no Log
+			// Saved for use in the Log
 			tmp_id = _ue.mascot_id;
 
 			// Zera (Desequipa)
@@ -1270,7 +1270,7 @@ bool player::checkMascotEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// Não tem o level necessário para equipar esse mascot, desequipa
+				// Does not have the level required to equip this mascot, unequip
 				_smp::message_pool::getInstance().push(new message("[player::checkMascotEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Mascot[TYPEID=" + std::to_string(pMascot->_typeid) + " ID=" + std::to_string(pMascot->id)
 						+ " Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)mascot->level.is_max)
@@ -1284,7 +1284,7 @@ bool player::checkMascotEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// O tempo do mascot acabou, desequipa
+				// The mascot time ran out, unequip
 				_smp::message_pool::getInstance().push(new message("[player::checkMascotEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Caddie[TYPEID=" + std::to_string(pMascot->_typeid) + " ID=" + std::to_string(pMascot->id)
 						+ ", END_DATE=" + _formatDate(pMascot->data) + "] acabou o tempo do mascot, nao pode equipar esse mascot. Hacker ou bug.",
@@ -1298,7 +1298,7 @@ bool player::checkMascotEquiped(UserEquip& _ue) {
 
 				upt_on_db = true;
 
-				// Não tem esse mascot no IFF_STRUCT do server, desequipa
+				// This mascot is not in the server IFF_STRUCT, unequip
 				_smp::message_pool::getInstance().push(new message("[player::checkMascotEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Not Have Mascot[TYPEID=" + std::to_string(pMascot->_typeid) + ", ID=" + std::to_string(pMascot->id) 
 						+ "] in IFF_STRCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1320,12 +1320,12 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 		
 		if (pClubSet == nullptr) {
 
-			// Guarda para usar no Log
+			// Saved for use in the Log
 			auto tmp_id = _ue.clubset_id;
 
 			try {
 
-				// Equipa ClubSet Padrão
+				// Equip default ClubSet
 				equipDefaultClubSet(_ue);
 
 			}catch (exception& e) {
@@ -1346,7 +1346,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 
 				try {
 
-					// Equipa ClubSet Padrão
+					// Equip default ClubSet
 					equipDefaultClubSet(_ue);
 
 				}catch (exception& e) {
@@ -1356,7 +1356,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 
 				upt_on_db = true;
 
-				// Não tem o level necessário para equipar esse clubset, equipa o clubset padrão
+				// Does not have the level required to equip this clubset, equip the default clubset
 				_smp::message_pool::getInstance().push(new message("[player::checkClubSetEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] ClubSet[TYPEID=" + std::to_string(pClubSet->_typeid) + " ID=" + std::to_string(pClubSet->id)
 						+ " Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)clubset->level.is_max)
@@ -1367,7 +1367,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 
 				try {
 
-					// Equipa ClubSet Padrão
+					// Equip default ClubSet
 					equipDefaultClubSet(_ue);
 
 				}catch (exception& e) {
@@ -1377,7 +1377,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 
 				upt_on_db = true;
 
-				// Não tem esse clubset no IFF_STRUCT do server, equipa clubset padrão
+				// This clubset is not in the server IFF_STRUCT, equip default clubset
 				_smp::message_pool::getInstance().push(new message("[player::checkClubSetEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Not Have ClubSet[TYPEID=" + std::to_string(pClubSet->_typeid) + ", ID=" + std::to_string(pClubSet->id) 
 						+ "] in IFF_STRUCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1388,7 +1388,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 		
 		try {
 
-			// Equipa ClubSet Padrão
+			// Equip default ClubSet
 			equipDefaultClubSet(_ue);
 
 		}catch (exception& e) {
@@ -1398,7 +1398,7 @@ bool player::checkClubSetEquiped(UserEquip& _ue){
 
 		upt_on_db = true;
 		
-		// Não está com um clubset normal ou padrão equipado, equipa o clubset padrão
+		// Does not have a normal or default clubset equipped, equip the default clubset
 		_smp::message_pool::getInstance().push(new message("[player::checkClubSetEquiped][Error][WARNING] player[UID=" + std::to_string(m_pi.uid)
 				+ "] nao esta com um ClubSet equipado. Bug", CL_FILE_LOG_AND_CONSOLE));
 	}
@@ -1417,12 +1417,12 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 		
 		if (pBall == nullptr) {
 
-			// Guarda para usar no Log
+			// Saved for use in the Log
 			auto tmp_typeid = _ue.ball_typeid;
 
 			try {
 
-				// Equipa Ball padrão
+				// Equip default Ball
 				equipDefaultBall(_ue);
 
 			}catch (exception& e) {
@@ -1443,7 +1443,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 
 				try {
 
-					// Equipa Ball padrão
+					// Equip default Ball
 					equipDefaultBall(_ue);
 
 				}catch (exception& e) {
@@ -1453,7 +1453,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 			
 				upt_on_db = true;
 
-				// Não tem o level necessário para equipar a bola
+				// Does not have the level required to equip the ball
 				_smp::message_pool::getInstance().push(new message("[player::checkBallEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Ball[TYPEID=" + std::to_string(pBall->_typeid) + " ID=" + std::to_string(pBall->id)
 						+ " Player[Lv=" + std::to_string(m_pi.level) + "] nao tem o level[is_max=" + std::to_string((unsigned short)ball->level.is_max)
@@ -1463,7 +1463,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 			
 				try {
 
-					// Equipa Ball padrão
+					// Equip default Ball
 					equipDefaultBall(_ue);
 
 				}catch (exception& e) {
@@ -1473,7 +1473,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 			
 				upt_on_db = true;
 
-				// Não tem essa bola no IFF_STRUCT do server, equipa a bola padrão
+				// This ball is not in the server IFF_STRUCT, equip the default ball
 				_smp::message_pool::getInstance().push(new message("[player::checkBallEquiped][Error] player[UID=" + std::to_string(m_pi.uid)
 						+ "] Not Have Ball[TYPEID=" + std::to_string(pBall->_typeid) + ", ID=" + std::to_string(pBall->id) 
 						+ "] in IFF_STRUCT of server, but it is equiped. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1484,7 +1484,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 		
 		try {
 
-			// Equipa Ball padrão
+			// Equip default Ball
 			equipDefaultBall(_ue);
 
 		}catch (exception& e) {
@@ -1494,7 +1494,7 @@ bool player::checkBallEquiped(UserEquip& _ue) {
 			
 		upt_on_db = true;
 
-		// Não está com nenhuma bola normal ou padrão equipada, equipa a bola padrão
+		// Does not have any normal or default ball equipped, equip the default ball
 		_smp::message_pool::getInstance().push(new message("[player::checkBallEquiped][Error][WARNING] player[UID=" + std::to_string(m_pi.uid)
 				+ "] nao esta com uma Ball equipada. Bug", CL_FILE_LOG_AND_CONSOLE));
 	}
@@ -1518,10 +1518,10 @@ bool player::checkItemEquiped(UserEquip& _ue) {
 
 			if (!sIff::getInstance().ItemEquipavel(_ue.item_slot[i])) {
 
-				// Guarda para usar no Log
+				// Saved for use in the Log
 				tmp_typeid = _ue.item_slot[i];
 
-				// Zera
+				// Zero out
 				_ue.item_slot[i] = 0;
 
 				upt_on_db = true;
@@ -1545,12 +1545,12 @@ bool player::checkItemEquiped(UserEquip& _ue) {
 					
 					if (std::find(active_item_cant_have_2_inveroty, LAST_ELEMENT_IN_ARRAY(active_item_cant_have_2_inveroty), pWi->_typeid) != LAST_ELEMENT_IN_ARRAY(active_item_cant_have_2_inveroty)) {
 					
-						// Não pode equipa 2 item Ex:[ Corta com (Toma ou Safety) ] no inventory
+						// Cannot equip 2 items Ex:[ Cut with (Toma or Safety) ] in the inventory
 
-						// Guarda para usar no Log
+						// Saved for use in the Log
 						tmp_typeid = _ue.item_slot[i];
 
-						// Zera
+						// Zero out
 						_ue.item_slot[i] = 0;
 
 						upt_on_db = true;
@@ -1561,12 +1561,12 @@ bool player::checkItemEquiped(UserEquip& _ue) {
 
 					}else if (pWi->STDA_C_ITEM_QNTD < (int)(it->second + 1)/*Count*/) {
 
-						// Not Have AMOUNT Suficiente
+						// Does Not Have Enough AMOUNT
 
-						// Guarda para usar no Log
+						// Saved for use in the Log
 						tmp_typeid = _ue.item_slot[i];
 
-						// Zera
+						// Zero out
 						_ue.item_slot[i] = 0;
 
 						upt_on_db = true;
@@ -1580,13 +1580,13 @@ bool player::checkItemEquiped(UserEquip& _ue) {
 
 				}else {	// Insert New Item Equiped Count
 
-					// check Not Have AMOUNT Suficiente
+					// check Does Not Have Enough AMOUNT
 					if (pWi->STDA_C_ITEM_QNTD < 1/*Count*/) {
 
-						// Guarda para usar no Log
+						// Saved for use in the Log
 						tmp_typeid = _ue.item_slot[i];
 
-						// Zera
+						// Zero out
 						_ue.item_slot[i] = 0;
 
 						upt_on_db = true;
@@ -1635,7 +1635,7 @@ void player::checkAllItemEquiped(UserEquip& _ue) {
 
 void player::equipDefaultCharacter(UserEquip& _ue) {
 
-	// Valor padrão caso o adicionar Character de error
+	// Default value in case adding the Character gives an error
 	auto tmp_id = _ue.character_id;
 
 	_ue.character_id = 0;
@@ -1664,12 +1664,12 @@ void player::equipDefaultCharacter(UserEquip& _ue) {
 		bi._typeid = iff::CHARACTER << 26;	// Nuri
 		bi.qntd = 1;
 				
-		item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+		item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 		if (item._typeid != 0) {
 
-			// Add Item já atualiza o Character equipado
-			if ((item_id = item_manager::addItem(item, *this, 2/*Padrão Item*/, 0)) == item_manager::RetAddItem::T_ERROR)
+			// Add Item already updates the equipped Character
+			if ((item_id = item_manager::addItem(item, *this, 2/*Default Item*/, 0)) == item_manager::RetAddItem::T_ERROR)
 				throw exception("[player::equipDefaultCharacter][Log][WARNING] player[UID=" + std::to_string(m_pi.uid) 
 						+ "] nao conseguiu adicionar o Character[TYPEID=" + std::to_string(item._typeid) + "] padrao para ele. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER, 2500, 2));
 
@@ -1681,10 +1681,10 @@ void player::equipDefaultCharacter(UserEquip& _ue) {
 
 void player::equipDefaultClubSet(UserEquip& _ue) {
 
-	// Guarda para usar no Log
+	// Saved for use in the Log
 	auto tmp_id = _ue.clubset_id;
 
-	// Valor padrão caso de erro no add ClubSet Padrão
+	// Default value in case of error adding the default ClubSet
 	_ue.clubset_id = 0;
 	m_pi.ei.clubset = nullptr;
 	m_pi.ei.csi.clear();
@@ -1693,7 +1693,7 @@ void player::equipDefaultClubSet(UserEquip& _ue) {
 			+ "] tentou verificar o Clubset[ID=" + std::to_string(tmp_id) 
 			+ "] equipado, mas ClubSet Not exists on IFF structure. Equipa o ClubSet padrao. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
-	// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+	// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 	auto pWi = m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 	if (pWi != nullptr) {
@@ -1702,8 +1702,8 @@ void player::equipDefaultClubSet(UserEquip& _ue) {
 				+ "] tentou verificar o ClubSet[ID=" + std::to_string(tmp_id) + "], mas acabou o tempo do ClubSet[ID=" 
 				+ std::to_string(tmp_id) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				
-		// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-		// que no original fica no warehouse msm, eu só confundi quando fiz
+		// This C of the WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+		// which in the original stays in the warehouse itself, I just got confused when I made it
 		m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 		IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -1729,19 +1729,19 @@ void player::equipDefaultClubSet(UserEquip& _ue) {
 		bi._typeid = AIR_KNIGHT_SET;
 		bi.qntd = 1;
 				
-		item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+		item_manager::initItemFromBuyItem(m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 		if (item._typeid != 0) {
 
-			if ((item_id = item_manager::addItem(item, *this, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+			if ((item_id = item_manager::addItem(item, *this, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-				// Equipa o ClubSet CV1
+				// Equip the ClubSet CV1
 				pWi = m_pi.findWarehouseItemById(item_id);
 
 				if (pWi != nullptr) {
 
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of the WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+					// which in the original stays in the warehouse itself, I just got confused when I made it
 					m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -1772,15 +1772,15 @@ void player::equipDefaultClubSet(UserEquip& _ue) {
 
 void player::equipDefaultBall(UserEquip& _ue) {
 
-	// Verifica se o player é um premium user
+	// Checks if the player is a premium user
 	try {
 		
 		if (m_pi.m_cap.stBit.premium_user) {
 
-			// Equipa a Ball Premium User Padrão
+			// Equip the default Premium User Ball
 			equipDefaultBallPremiumUser(_ue);
 
-			return;	// Equipou a bola premium user com sucesso
+			return;	// Equipped the premium user ball successfully
 		}
 
 	}catch (exception& e){
@@ -1788,10 +1788,10 @@ void player::equipDefaultBall(UserEquip& _ue) {
 			_smp::message_pool::getInstance().push(new message("[player::equipDefaultBall][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Guarda para usar no Log
+	// Saved for use in the Log
 	auto tmp_typeid = _ue.ball_typeid;
 
-	// Valor padrão caso de erro no adicionar a Ball padrão
+	// Default value in case of error adding the default Ball
 	_ue.ball_typeid = DEFAULT_COMET_TYPEID;
 	m_pi.ei.comet = nullptr;
 
@@ -1824,9 +1824,9 @@ void player::equipDefaultBall(UserEquip& _ue) {
 
 		if (item._typeid != 0) {
 
-			if ((item_id = item_manager::addItem(item, *this, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+			if ((item_id = item_manager::addItem(item, *this, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-				// Equipa a Ball padrao
+				// Equip the default Ball
 				pWi = m_pi.findWarehouseItemById(item_id);
 
 				if (pWi != nullptr) {
@@ -1854,10 +1854,10 @@ void player::equipDefaultBall(UserEquip& _ue) {
 
 void player::equipDefaultBallPremiumUser(UserEquip& _ue) {
 
-	// Guarda para usar no Log
+	// Saved for use in the Log
 	auto tmp_typeid = _ue.ball_typeid;
 
-	// Valor padrão caso de erro no adicionar a Ball Premium User padrão
+	// Default value in case of error adding the default Premium User Ball
 	_ue.ball_typeid = sPremiumSystem::getInstance().getPremiumBallByTicket(m_pi.pt._typeid);
 	m_pi.ei.comet = nullptr;
 
@@ -1897,7 +1897,7 @@ std::vector< CharacterInfo* > player::isAuxPartEquiped(uint32_t _typeid) {
 
 	std::for_each(m_pi.mp_ce.begin(), m_pi.mp_ce.end(), [&](auto& _el) {
 		
-		// O AuxPart está equipado nesse character
+		// The AuxPart is equipped on this character
 		if (_el.second.isAuxPartEquiped(_typeid))
 			v_ci.push_back(&_el.second);
 	});
@@ -1921,13 +1921,13 @@ void player::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) 
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, I will add other handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[player:SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
 	}
 
-	// isso aqui depois pode mudar para o Item_manager, que vou tirar de ser uma classe static e usar ela como objeto(instancia)
+	// this may later change to Item_manager, which I will stop making a static class and use as an object (instance)
 	auto _session = reinterpret_cast< player* >(_arg);
 
 	switch (_msg_id) {

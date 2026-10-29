@@ -1,7 +1,7 @@
-// Arquivo blowfish.cpp
-// Criado em 25/03/2022 as 22:52 por Acrisio
-// Implementação do algoritimo de encriptação blowfish
-// Cópia com pequenas modificações do código fonte em c do Bruce Schneier
+// File blowfish.cpp
+// Created on 25/03/2022 at 22:52 by Acrisio
+// Implementation of the blowfish encryption algorithm
+// Copy with small modifications of Bruce Schneier's C source code
 // fonte: https://www.schneier.com/academic/blowfish/
 
 #ifdef little_endian   /* Eg: Intel */

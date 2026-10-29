@@ -1,6 +1,6 @@
-// Arquivo cmd_treasure_hunter_item.cpp
-// Criado em 06/09/2018 as 20:30 por Acrisio
-// Implementa��o da classe CmdTreasureHunterItem
+// File cmd_treasure_hunter_item.cpp
+// Created on 06/09/2018 at 20:30 by Acrisio
+// Implementation of the class CmdTreasureHunterItem
 
 #if defined(_WIN32)
 #pragma pack(1)

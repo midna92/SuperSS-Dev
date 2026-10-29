@@ -1,6 +1,6 @@
-// Arquivo bot_gm_event_type.hpp
-// Criado em 03/11/2020 as 20:18 por Acrisio
-// Defini��o dos tipos usados no Bot GM Event
+// File bot_gm_event_type.hpp
+// Created on 03/11/2020 at 20:18 by Acrisio
+// Definition of the types used in Bot GM Event
 
 #pragma once
 #ifndef _STDA_BOT_GM_EVENT_TYPE_HPP
@@ -40,7 +40,7 @@ namespace stdA {
 
 			bool isBetweenTime(SYSTEMTIME& _st) {
 
-				// Garante que os dados da data est�o zerados, gera eles por preven��o
+				// Ensures the date data is zeroed, generates it as a precaution
 				_st.wDay = 0u;
 				_st.wDayOfWeek = 0u;
 				_st.wMonth = 0u;
@@ -78,7 +78,7 @@ namespace stdA {
 			SYSTEMTIME m_end;
 			unsigned char m_channel_id;
 
-			bool m_sended_message;			// Flag que guarda se o intervalo j� enviou a mensagem
+			bool m_sended_message;			// Flag that stores whether the interval already sent the message
 	};
 
 	// Reward

@@ -1,14 +1,14 @@
-// Arquivo set_se_with_mini_dump.h
-// Criado em 09/12/2019 as 02:32 por Acrisio
-// Definição da função amba que set a função que captura os SE_EXCEPTION
-// Gera o arquivo de dump e lança a exception com o endereço onde ocorreu a exception e o código da exception
+// File set_se_with_mini_dump.h
+// Created on 09/12/2019 at 02:32 by Acrisio
+// Definition of the function amba that sets the function that captures SE_EXCEPTION
+// Generate the dump file and throw the exception with the address where the exception occurred and the exception code
 
 #ifndef _STDA_SET_SE_EXCEPTION_WITH_MINI_DUMP_H
 #define _STDA_SET_SE_EXCEPTION_WITH_MINI_DUMP_H
 
 #include "../UTIL/hex_util.h"
 
-// Definição do macro que define a função amba
+// Definition of the macro that defines the function amba
 #define STDA_SET_SE_EXCEPTION ::_set_se_translator([](unsigned int u, EXCEPTION_POINTERS *pExp) { \
 \
 								std::wstring datetime = L""; \
@@ -18,7 +18,7 @@
 								tm ti{ 0 }; \
 								time_t day_time; \
 \
-								/* Pega o time atual para construir o nome do arquivo de dump */ \
+								/* Get the current time to build the dump file name */ \
 								std::time(&day_time); \
 \
 								/* exception dump file name with Time */ \

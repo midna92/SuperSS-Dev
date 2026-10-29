@@ -1,7 +1,7 @@
-// Arquivo blowfish.h
-// Criado em 25/03/2022 as 22:51 por Acrisio
-// Definição do algoritimo de encriptação blowfish
-// Cópia com pequenas modificações do código fonte em c do Bruce Schneier
+// File blowfish.h
+// Created on 25/03/2022 at 22:51 by Acrisio
+// Definition of the blowfish encryption algorithm
+// Copy with small modifications of Bruce Schneier's C source code
 // fonte: https://www.schneier.com/academic/blowfish/
 
 #pragma once
@@ -16,7 +16,7 @@
 #define KEYBYTES		8
 
 #if defined(_WIN32)
-// Pack padr�o
+// Default pack
 #pragma pack(push, ggsrv)
 #pragma pack( )
 #endif
@@ -29,7 +29,7 @@ struct _BLOWFISH_CTX {
 };
 
 #if defined(_WIN32)
-// Pop Pack padr�o
+// Pop default pack
 #pragma pack(pop, ggsrv)
 #endif
 

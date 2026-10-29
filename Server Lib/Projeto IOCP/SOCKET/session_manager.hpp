@@ -1,6 +1,6 @@
-// Arquivo session_manager.hpp
-// Criado em 17/03/2018 as 11:18 por Acrisio
-// Definição da classe abstrata session_manager
+// File session_manager.hpp
+// Created on 17/03/2018 at 11:18 by Acrisio
+// Definition of abstract class session_manager
 
 #pragma once
 #ifndef _STDA_SESSION_MANAGER_HPP
@@ -53,7 +53,7 @@ namespace stdA {
         protected:
 			virtual void config_init();
 
-            // Sem proteção de sincronização, chamar ela em uma função thread safe(thread com seguranção de sincronização)
+            // No synchronization protection, call it from a thread-safe function (thread with synchronization safety)
             virtual int32_t findSessionFree();
 
 		protected:
@@ -63,7 +63,7 @@ namespace stdA {
 
 			threadpool& m_threadpool;
 
-			list_async<session*> m_session_del;	// Session para deletar
+			list_async<session*> m_session_del;	// Session to delete
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;

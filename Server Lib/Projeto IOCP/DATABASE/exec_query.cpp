@@ -1,6 +1,6 @@
-// Arquivo exec_query.cpp
-// Criado em 11/08/2017 por Acrisio
-// Implementação da classe exec_query
+// File exec_query.cpp
+// Created on 11/08/2017 by Acrisio
+// Implementation of class exec_query
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -31,7 +31,7 @@ exec_query::exec_query() :
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
 
-	if ((m_hEvent = CreateEvent(NULL, TRUE/*se true usa manual event*/, FALSE/*initial state do event*/, NULL)) == INVALID_HANDLE_VALUE)
+	if ((m_hEvent = CreateEvent(NULL, TRUE/*if true uses manual event*/, FALSE/*initial state of the event*/, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("Erro nao conseguiu criar o evento. exec_query::exec_query()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::EXEC_QUERY, 1, GetLastError()));
 #elif defined(__linux__)
 	INIT_PTHREAD_MUTEXATTR_RECURSIVE;
@@ -64,7 +64,7 @@ exec_query::exec_query(std::string _query, unsigned char _type) : m_type(_type)
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
 
-	if ((m_hEvent = CreateEvent(NULL, TRUE/*se true usa manual event*/, FALSE/*initial state do event*/, NULL)) == INVALID_HANDLE_VALUE)
+	if ((m_hEvent = CreateEvent(NULL, TRUE/*if true uses manual event*/, FALSE/*initial state of the event*/, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("Erro nao conseguiu criar o evento. exec_query::exec_query()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::EXEC_QUERY, 2, GetLastError()));
 #elif defined(__linux__)
 	INIT_PTHREAD_MUTEXATTR_RECURSIVE;
@@ -95,7 +95,7 @@ exec_query::exec_query(std::wstring _query, unsigned char _tipo) : m_query(_quer
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
 
-	if ((m_hEvent = CreateEvent(NULL, TRUE/*se true usa manual event*/, FALSE/*initial state do event*/, NULL)) == INVALID_HANDLE_VALUE)
+	if ((m_hEvent = CreateEvent(NULL, TRUE/*if true uses manual event*/, FALSE/*initial state of the event*/, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("Erro nao conseguiu criar o evento. exec_query::exec_query()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::EXEC_QUERY, 2, GetLastError()));
 #elif defined(__linux__)
 	INIT_PTHREAD_MUTEXATTR_RECURSIVE;
@@ -130,7 +130,7 @@ exec_query::exec_query(std::string _name_proc, std::string _params_proc, unsigne
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
 
-	if ((m_hEvent = CreateEvent(NULL, TRUE/*se true usa manual event*/, FALSE/*initial state do event*/, NULL)) == INVALID_HANDLE_VALUE)
+	if ((m_hEvent = CreateEvent(NULL, TRUE/*if true uses manual event*/, FALSE/*initial state of the event*/, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("Erro nao conseguiu criar o evento. exec_query::exec_query()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::EXEC_QUERY, 2, GetLastError()));
 #elif defined(__linux__)
 	INIT_PTHREAD_MUTEXATTR_RECURSIVE;
@@ -163,7 +163,7 @@ exec_query::exec_query(std::wstring _name_proc, std::wstring _params_proc, unsig
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
 
-	if ((m_hEvent = CreateEvent(NULL, TRUE/*se true usa manual event*/, FALSE/*initial state do event*/, NULL)) == INVALID_HANDLE_VALUE)
+	if ((m_hEvent = CreateEvent(NULL, TRUE/*if true uses manual event*/, FALSE/*initial state of the event*/, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("Erro nao conseguiu criar o evento. exec_query::exec_query()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::EXEC_QUERY, 2, GetLastError()));
 #elif defined(__linux__)
 	INIT_PTHREAD_MUTEXATTR_RECURSIVE;

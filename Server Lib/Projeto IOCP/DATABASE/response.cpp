@@ -1,6 +1,6 @@
-// Arquivo response.cpp
-// Criado em 28/01/2018 as 16:28 por Acrisio
-// Implementação da classe response
+// File response.cpp
+// Created on 28/01/2018 at 16:28 by Acrisio
+// Implementation of class response
 
 #if defined(_WIN32)
 #pragma pack(1)

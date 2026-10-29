@@ -1,6 +1,6 @@
-// Arquivo cmd_add_warehouse_item.cpp
-// Criado em 25/03/2018 as 19:30 por Acrisio
-// Implementa��o da classe CmdAddWarehouseItem
+// File cmd_add_warehouse_item.cpp
+// Created on 25/03/2018 at 19:30 by Acrisio
+// Implementation of the class CmdAddWarehouseItem
 
 #if defined(_WIN32)
 #pragma pack(1)

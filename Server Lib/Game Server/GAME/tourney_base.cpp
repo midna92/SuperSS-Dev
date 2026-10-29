@@ -1,6 +1,6 @@
-// Arquivo tourney_base.cpp
-// Criado em 18/08/2018 as 15:14 por Acrisio
-// Implementa��o da classe TourneyBase
+// File tourney_base.cpp
+// Created on 18/08/2018 at 15:14 by Acrisio
+// Implementation of the TourneyBase class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -41,7 +41,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[TourneyBase::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[TourneyBase::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 1, 4)); \
@@ -73,7 +73,7 @@ void TourneyBase::sendInitialData(player& _session) {
 		if (__atomic_add_fetch(&m_sync_send_init_data, 1u, __ATOMIC_RELAXED) == m_players.size()) {
 #endif
 
-			// Zera Variavel Volatile(atomic)
+			// Zeroes Volatile (atomic) Variable
 #if defined(_WIN32)
 			InterlockedExchange(&m_sync_send_init_data, 0u);
 #elif defined(__linux__)
@@ -197,38 +197,38 @@ void TourneyBase::requestInitHole(player& _session, packet *_packet) {
 		pgi->location.x = ctx_hole.tee.x;
 		pgi->location.z = ctx_hole.tee.z;
 		
-		// Número do hole atual, que o player está jogandp
+		// Current hole number, which the player is playing
 		pgi->hole = ctx_hole.numero;
 
-		// Flag que marca se o player já inicializou o primeiro hole do jogo
+		// Flag that marks whether the player has already initialized the first hole of the game
 		if (!pgi->init_first_hole)
 			pgi->init_first_hole = 1u;
 
-		// Gera degree para o player ou pega o degree sem gerar que é do modo do hole repeat
+		// Generates degree for the player or gets the degree without generating, which is from hole repeat mode
 		pgi->degree = (m_ri.modo == Hole::M_REPEAT) ? hole->getWind().degree.getDegree() : hole->getWind().degree.getShuffleDegree();
 
-		// Resposta de tempo do hole
+		// Hole time response
 		p.init_plain((unsigned short)0x9E);
 
 		p.addUint16(hole->getWeather());
-		p.addUint8(0);	// Option do tempo, sempre peguei zero aqui dos pacotes que vi
+		p.addUint8(0);	// Time option, I always got zero here from the packets I saw
 
 		packet_func::session_send(p, &_session, 1);
 
 		auto wind_flag = initCardWindPlayer(pgi, hole->getWind().wind);
 
-		// Resposta do vento do hole
+		// Hole wind response
 		p.init_plain((unsigned short)0x5B);
 
 		p.addUint8(hole->getWind().wind + wind_flag);
-		p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui é a qnd diminui o vento, 1 Vento azul
+		p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 		p.addUint16(pgi->degree);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+		p.addUint8(1/*Reset*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 		packet_func::session_send(p, &_session, 1);
 
-		// envia tempo decorrido do Tourney
-		// Resposta tempo percorrido do Tourney
+		// sends elapsed time of the Tourney
+		// Response elapsed time of the Tourney
 		sendRemainTime(_session);
 
 	}catch (exception& e) {
@@ -244,8 +244,8 @@ bool TourneyBase::requestFinishLoadHole(player& _session, packet *_packet) {
 
 	packet p;
 
-	// Esse aqui é para Trocar Info da Sala
-	// para colocar a sala no modo que pode entrar depois de ter começado
+	// This one is to Change Room Info
+	// to put the room in the mode where players can enter after it has started
 	bool ret = false;
 
 	try {
@@ -267,7 +267,7 @@ bool TourneyBase::requestFinishLoadHole(player& _session, packet *_packet) {
 			packet_func::game_broadcast(*this, p, 1);
 		}
 
-		// Resposta passa o oid do player que vai começa o Hole
+		// Response passes the oid of the player who will start the Hole
 		p.init_plain((unsigned short)0x53);
 
 		p.addUint32(_session.m_oid);
@@ -293,7 +293,7 @@ void TourneyBase::requestFinishCharIntro(player& _session, packet *_packet) {
 
 		pgi->finish_char_intro = 1;
 
-		// Zera todas as tacada num dos players se for camp normal se for short game coloca o n�mero de tacadas inicial
+		// Zeroes all the strokes of one of the players if it is a normal camp, if it is short game sets the initial number of strokes
 		if (m_ri.natural.stBit.short_game/* & 2*/) {	// Short Game
 			
 			auto hole = m_course->findHole(pgi->hole);
@@ -336,25 +336,25 @@ void TourneyBase::requestFinishHoleData(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&ui, sizeof(UserInfo));
 
-		// aqui o cliente passa mad_conduta com o hole_in, trocados, mad_conduto <-> hole_in
+		// here the client passes mad_conduta with hole_in, swapped, mad_conduto <-> hole_in
 
 		INIT_PLAYER_INFO("requestFinishHoleData", "tentou finalizar hole dados no jogo", &_session);
 
 		pgi->ui = ui;
 
-		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole) {	// Terminou o Hole sem acerta ele, Give Up
+		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole) {	// Finished the Hole without hitting it, Give Up
 
-			// Ainda não colocara o give up, o outro pacote, coloca nesse(muito difícil, n�o colocar só se estiver com bug)
+			// Has not set the give up yet, the other packet, set it in this one (very difficult, do not set unless there is a bug)
 			if (!pgi->data.giveup) {
 				pgi->data.giveup = 1;
 
-				// Incrementa o Bad Condute
+				// Increments the Bad Conduct
 				pgi->data.bad_condute++;
 			}
 		}
 
-		// Aqui Salva os dados do Pgi, os best Chipin, Long putt e best drive(max distância)
-		// Não sei se precisa de salvar aqui, já que estou salvando no pgi User Info
+		// Here saves the Pgi data, the best Chipin, Long putt and best drive (max distance)
+		// I do not know if it needs to be saved here, since I am saving it in the pgi User Info
 		pgi->progress.best_chipin = ui.best_chip_in;
 		pgi->progress.best_long_puttin = ui.best_long_putt;
 		pgi->progress.best_drive = ui.best_drive;
@@ -391,7 +391,7 @@ void TourneyBase::requestInitShot(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("Log Shot Data Ex:\n\r" + sd.toString(), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Aqui não manda resposta no TourneyBase ou Practice, mas outro modos(VS, MATCH) manda e outros também não(TOURNEY)
+		// Here it does not send a response in TourneyBase or Practice, but other modes (VS, MATCH) send it and others do not either (TOURNEY)
 
 	}catch (exception& e) {
 
@@ -412,10 +412,10 @@ void TourneyBase::requestSyncShot(player& _session, packet *_packet) {
 		Game::requestReadSyncShotData(_session, _packet, ssd);
 
 		// Request Calcule Shot Spinning Cube
-		requestCalculeShotSpinningCube(_session, ssd); // esse não precisa verificar o usuário, por que em tourney só o próprio player que envia
+		requestCalculeShotSpinningCube(_session, ssd); // this one does not need to check the user, because in tourney only the player himself sends it
 
 		// Request Calcule Shot Coin
-		requestCalculeShotCoin(_session, ssd); // esse não precisa verificar o usuário, por que em tourney só o próprio player que envia
+		requestCalculeShotCoin(_session, ssd); // this one does not need to check the user, because in tourney only the player himself sends it
 
 		requestTranslateSyncShotData(_session, ssd);
 
@@ -444,7 +444,7 @@ void TourneyBase::requestInitShotArrowSeq(player& _session, packet *_packet) {
 			unsigned char baixo : 1;
 			unsigned char esquerda : 1;
 			unsigned char direita : 1;
-			unsigned char azul_claro : 1;		// Seta Ativada, o Power Spin ou Power Curve
+			unsigned char azul_claro : 1;		// Sets Activated, the Power Spin or Power Curve
 			unsigned char _bit6_a_13 : 8;
 			unsigned char _bit14_a_21 : 8;
 			unsigned char _bit22_a_29 : 8, : 0;
@@ -482,9 +482,9 @@ void TourneyBase::requestShotEndData(player& _session, packet *_packet) {
 
 	try {
 
-		// ----------------- LEMBRETE --------------
-		// Aqui vou usar para as tacadas do spinning cube que gera no course
-		// --- Já estou usando o pacote no sync, por que preciso verificar uns valores lá ---
+		// ----------------- REMINDER --------------
+		// Here I will use it for the spinning cube shots generated on the course
+		// --- I am already using the packet in sync, because I need to check some values there ---
 
 		ShotEndLocationData seld{ 0 };
 
@@ -498,7 +498,7 @@ void TourneyBase::requestShotEndData(player& _session, packet *_packet) {
 
 		pgi->shot_data_for_cube = seld;
 
-		// Resposta para Shot End Data
+		// Response for Shot End Data
 		p.init_plain((unsigned short)0x1F7);
 
 		p.addUint32(pgi->oid);
@@ -538,7 +538,7 @@ RetFinishShot TourneyBase::requestFinishShot(player& _session, packet *_packet) 
 		// Request Init Cube Coin
 		auto cube = requestInitCubeCoin(_session, _packet);
 
-		// Resposta para Finish Shot
+		// Response for Finish Shot
 		sendEndShot(_session, cube);
 
 		ret.ret = checkEndShotOfHole(_session);
@@ -548,7 +548,7 @@ RetFinishShot TourneyBase::requestFinishShot(player& _session, packet *_packet) 
 
 		INIT_PLAYER_INFO("requestFinishShot", "tentou finalizar a tacada", &_session);
 
-		// Limpa dados que usa para cada tacada
+		// Clears data used for each shot
 		clearDataEndShot(pgi);
 
 #if defined(_WIN32)
@@ -589,7 +589,7 @@ void TourneyBase::requestChangeMira(player& _session, packet *_packet) {
 
 		pgi->location.r = mira;
 
-		// Resposta para o Change mira
+		// Response for the Change aim
 		p.init_plain((unsigned short)0x56);
 
 		p.addUint32(pgi->oid);
@@ -620,9 +620,9 @@ void TourneyBase::requestChangeStateBarSpace(player& _session, packet *_packet) 
 					+ std::to_string((unsigned short)state) + " POINT=" + std::to_string(point) + "] no jogo, mas o estado eh desconhecido, Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 5, 0));
 
 		if (state == 3) {
-			pgi->bar_space.setState(0);	// Volta para 1 depois que taca, era esse meu comentário no antigo
+			pgi->bar_space.setState(0);	// Goes back to 1 after the shot, that was my comment in the old one
 
-			pgi->tempo = 0;	// Reseta o tempo
+			pgi->tempo = 0;	// Resets the time
 		}
 
 	}catch (exception& e) {
@@ -644,7 +644,7 @@ void TourneyBase::requestActivePowerShot(player& _session, packet *_packet) {
 
 		pgi->power_shot = ps;
 
-		// Resposta para Active Power Shot
+		// Response for Active Power Shot
 		p.init_plain((unsigned short)0x58);
 
 		p.addUint32(_session.m_oid);
@@ -671,7 +671,7 @@ void TourneyBase::requestChangeClub(player& _session, packet *_packet) {
 
 		pgi->club = club;
 
-		// Resposta para Change Club
+		// Response for Change Club
 		p.init_plain((unsigned short)0x59);
 
 		p.addUint32(_session.m_oid);
@@ -710,15 +710,15 @@ void TourneyBase::requestUseActiveItem(player& _session, packet *_packet) {
 			throw exception("[TourneyBase::requestActiveItem][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar active item[TYPEID="
 					+ std::to_string(item_typeid) + "] no jogo, mas o item nao eh equipavel(usar). Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 78, 0));
 		
-		// Verifica se tem algum card de tempo equipado com efeito de mulligan rose
+		// Checks if there is any time card equipped with the mulligan rose effect
 		if (item_typeid == MULLIGAN_ROSE_TYPEID) {
 			
-			// Card Special - Efeito mulligan rose == 32
+			// Card Special - Mulligan rose effect == 32
 			if (std::count_if(_session.m_pi.v_cei.begin(), _session.m_pi.v_cei.end(), [](auto& _el) {
 				return (_el.parts_id == 0 && _el.parts_typeid == 0 && sIff::getInstance().getItemSubGroupIdentify22(_el._typeid) == 2/*Special*/ && _el.efeito == 32/*Mulligan Rose*/);
 			}) > 0) {
 				
-				// Resposta para o Use Active Item
+				// Response for Use Active Item
 				p.init_plain((unsigned short)0x5A);
 				
 				p.addUint32(item_typeid);
@@ -727,14 +727,14 @@ void TourneyBase::requestUseActiveItem(player& _session, packet *_packet) {
 				
 				packet_func::game_broadcast(*this, p, 1);
 				
-				// Sai
+				// Exit
 				return;
 				
 			}
 			
 		}
 		
-		// Verifica se o player tem o item para usar
+		// Checks if the player has the item to use
 		auto pWi = _session.m_pi.findWarehouseItemByTypeid(item_typeid);
 
 		if (pWi == nullptr)
@@ -751,13 +751,13 @@ void TourneyBase::requestUseActiveItem(player& _session, packet *_packet) {
 			throw exception("[TourneyBase::requestActiveItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar active item[TYPEID="
 					+ std::to_string(item_typeid) + "] no jogo, mas ele ja usou todos os item desse que ele equipou. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 10, 0));
 
-		// Add +1 ou countador
+		// Add +1 or counter
 		it->second.count++;
 
-		// item que foi usado na tacada
+		// item that was used in the shot
 		pgi->item_active_used_shot = pWi->_typeid;
 
-		// Resposta para o Use Active Item
+		// Response for Use Active Item
 		p.init_plain((unsigned short)0x5A);
 
 		p.addUint32(pWi->_typeid);
@@ -785,7 +785,7 @@ void TourneyBase::requestChangeStateTypeing(player& _session, packet *_packet) {
 
 		pgi->typeing = typeing;
 
-		// Resposta para Change State Typeing /*Escrevendo*/
+		// Response for Change State Typing /*Typing*/
 		p.init_plain((unsigned short)0x5D);
 
 		p.addUint32(_session.m_oid);
@@ -816,10 +816,10 @@ void TourneyBase::requestMoveBall(player& _session, packet *_packet) {
 		pgi->location.y = y;
 		pgi->location.z = z;
 
-		// Add + 1 a tacada, já que ele recolocou em vez de tacar
+		// Add +1 to the stroke, since he replaced it instead of hitting
 		pgi->data.tacada_num++;
 
-		// Resposta para Move Ball
+		// Response for Move Ball
 		p.init_plain((unsigned short)0x60);
 
 		p.addFloat(pgi->location.x);
@@ -847,7 +847,7 @@ void TourneyBase::requestChangeStateChatBlock(player& _session, packet *_packet)
 
 		pgi->chat_block = chat_block;
 
-		// Resposta para Chat Block
+		// Response for Chat Block
 		p.init_plain((unsigned short)0xAC);
 
 		p.addUint32(_session.m_oid);
@@ -872,7 +872,7 @@ void TourneyBase::requestActiveBooster(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestActiveBooster", "tentou ativar Time Booster no jogo", &_session);
 
-		if ((_session.m_pi.m_cap.stBit.premium_user/* & (1 << 14)/*0x00004000/*PREMIUM USER*/) == 0) { // (não é)!PREMIUM USER
+		if ((_session.m_pi.m_cap.stBit.premium_user/* & (1 << 14)/*0x00004000/*PREMIUM USER*/) == 0) { // (is not)!PREMIUM USER
 
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(TIME_BOOSTER_TYPEID);
 
@@ -894,17 +894,17 @@ void TourneyBase::requestActiveBooster(player& _session, packet *_packet) {
 				throw exception("[TourneyBase::requestActiveBooster][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar time booster, mas ele ja usou todos os time booster. Hacker ou Bug", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 14, 0));
 
-			// Add +1 ao item passive usado
+			// Add +1 to the passive item used
 			it->second.count++;
 
-		}else { // Soma +1 no contador de counter item do booster do player e passive item
+		}else { // Adds +1 to the counter item counter of the player's booster and passive item
 
 			pgi->sys_achieve.incrementCounter(0x6C400075u/*Passive Item*/);
 
 			pgi->sys_achieve.incrementCounter(0x6C400050u);
 		}
 
-		// Resposta para Active Booster
+		// Response for Active Booster
 		p.init_plain((unsigned short)0xC7);
 
 		p.addFloat(velocidade);
@@ -962,7 +962,7 @@ void TourneyBase::requestActiveReplay(player& _session, packet *_packet) {
 #endif // _DEBUG
 
 		// UPDATE ON GAME
-		// Resposta para o Active Replay
+		// Response for the Active Replay
 		p.init_plain((unsigned short)0xA4);
 
 		p.addUint16((unsigned short)item.stat.qntd_dep);
@@ -989,8 +989,8 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 		uint32_t uid;
 		uint32_t tipo;
 		unsigned short opt;
-		uint32_t char_typeid;	// Aqui pode ter o typeid do cutin também
-		unsigned char active;		// Active acho, sempre com valor 1 que peguei, 1 quando é id do character, 0 quando é o typeid do Cutin
+		uint32_t char_typeid;	// The cutin typeid can also be here
+		unsigned char active;		// Active I think, always with value 1 in what I got, 1 when it is the character id, 0 when it is the Cutin typeid
 	};
 
 #if defined(__linux__)
@@ -1017,7 +1017,7 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 
 		IFF::CutinInfomation *pCutin = nullptr;
 
-		// Cutin Padrão que o player equipa, quando o cliente envia o cutin type é que é efeito por roupas equipadas
+		// Default Cutin that the player equips, when the client sends the cutin type it is the effect from equipped clothes
 		if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::CHARACTER && ac.active) {
 
 			if (s->m_pi.ei.char_info->_typeid != ac.char_typeid)
@@ -1052,9 +1052,9 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 				}
 			}
 
-		}else if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::SKIN/*Cutin é uma Skin*/ && ac.active == 0) {
+		}else if (sIff::getInstance().getItemGroupIdentify(ac.char_typeid) == iff::SKIN/*Cutin is a Skin*/ && ac.active == 0) {
 
-			// Verificar se ele tem os itens para ativar esse Cutin
+			// Check if he has the items to activate this Cutin
 
 			if ((pCutin = sIff::getInstance().findCutinInfomation(ac.char_typeid)) == nullptr)
 				throw exception("[TourneyBase::requestActiveCutin][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou activar cutin[CHAR_TYPEID="
@@ -1062,7 +1062,7 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 						+ std::to_string(ac.uid) + "], mas o jogador nao tem esse cutin[TYPEID="
 						+ std::to_string(ac.char_typeid) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 3, 0x5200103));
 
-			// Esses que passa o cutin typeid, pode ativar com tipo 1 e 2, 1 PS e 2 PS
+			// Those that pass the cutin typeid can be activated with type 1 and 2, 1 PS and 2 PS
 			/*if (pCutin->tipo != ac.tipo)
 				throw exception("[TourneyBase::requestActiveCutin][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou activar cutin[CHAR_TYPEID="
 						+ std::to_string(ac.char_typeid) + ", TIPO=" + std::to_string(ac.tipo) + ", OPT=" + std::to_string(ac.opt) + ",  ACTIVE=" + std::to_string(ac.active) + "] de um player[UID="
@@ -1076,7 +1076,7 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 					+ std::to_string(ac.uid) + "], mas o cution nao foi encontrado[TYPEID="
 					+ std::to_string(ac.char_typeid) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 4, 0x5200104));
 
-		// Resposta para Active Cutin
+		// Response for Active Cutin
 		p.init_plain((unsigned short)0x18D);
 
 		p.addUint8(1u);	// OK
@@ -1099,7 +1099,7 @@ void TourneyBase::requestActiveCutin(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// No Modo GrandZodic, não envia Cutin, então envia o pacote18D com option 0(Uint8), e valor 3(Uint16)
+		// In GrandZodiac Mode, it does not send Cutin, so it sends packet18D with option 0(Uint8), and value 3(Uint16)
 
 	}catch (exception& e) {
 
@@ -1127,7 +1127,7 @@ void TourneyBase::requestActiveRing(player& _session, packet *_packet) {
 	struct stRing {
 		void clear() { memset(this, 0, sizeof(stRing)); };
 		uint32_t _typeid;
-		uint32_t effect_value;		// valor do efeito
+		uint32_t effect_value;		// effect value
 		unsigned char efeito;
 	};
 
@@ -1159,10 +1159,10 @@ void TourneyBase::requestActiveRing(player& _session, packet *_packet) {
 			throw exception("[TourneyBase::requestActiveRing][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Anel[TYPEID="
 					+ std::to_string(r._typeid) + "], mas ele nao esta equipado com o anel. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 33, 0x330004));
 
-		// Adiciona o efeito que foi ativado
+		// Adds the effect that was activated
 		checkEffectItemAndSet(_session, r._typeid);
 
-		// Resposta para o cliente
+		// Response to the client
 		p.init_plain((unsigned short)0x237);
 
 		p.addUint32(0);	// OK
@@ -1178,7 +1178,7 @@ void TourneyBase::requestActiveRing(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveRing][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x237);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::TOURNEY_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x330000);
@@ -1202,7 +1202,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 			return (ring[0] != 0 && ring[1] != 0);
 		};
 		uint32_t efeito;
-		uint32_t ring[2];	// 2 Anel, "Set"(Conjunto)
+		uint32_t ring[2];	// 2 Rings, "Set" (Combination)
 		uint32_t option;
 	};
 
@@ -1216,7 +1216,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&rg, sizeof(rg));
 
-		// Log para saber qual é o efeito 31(0x1F)
+		// Log to know which effect 31(0x1F) is
 		if (IFF::Ability::eEFFECT_TYPE(rg.efeito) == IFF::Ability::eEFFECT_TYPE::UNKNOWN_31)
 			_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveRingGround][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] ativou o efeito 0x1F(31) com os itens[TYPEID_1=" + std::to_string(rg.ring[0])
@@ -1232,7 +1232,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 					+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 					+ std::to_string(rg.option) + "], mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 51, 0x340002));
 
-		if (sIff::getInstance().getItemGroupIdentify(rg.ring[0]) == iff::AUX_PART) {	// Anel
+		if (sIff::getInstance().getItemGroupIdentify(rg.ring[0]) == iff::AUX_PART) {	// Ring
 
 			auto pRing = _session.m_pi.findWarehouseItemByTypeid(rg.ring[0]);
 
@@ -1246,7 +1246,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao esta com o Anel[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 53, 0x340003));
 
-			if (rg.ring[0] != rg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) {	// Activated Ability in combination of 2 rings
 
 				auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -1275,7 +1275,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao esta com o Part[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 53, 0x340003));
 
-			if (rg.ring[0] != rg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) {	// Activated Ability in combination of 2 rings
 
 				auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -1299,7 +1299,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 						+ std::to_string(rg.efeito) + ", RING[0]=" + std::to_string(rg.ring[0]) + ", RING[1]=" + std::to_string(rg.ring[1]) + ", OPTION="
 						+ std::to_string(rg.option) + "], mas ele nao tem o Mascot[0]. hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 52, 0x340002));
 
-			if (rg.ring[0] != rg.ring[1]) { // Ativou Habilidade em conjunto 2 aneis
+			if (rg.ring[0] != rg.ring[1]) { // Activated Ability in combination of 2 rings
 
 				auto pPart2 = _session.m_pi.findWarehouseItemByTypeid(rg.ring[1]);
 
@@ -1315,11 +1315,11 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 			}
 		}
 
-		// Adiciona o efeito que foi ativado
+		// Adds the effect that was activated
 		//checkEffectItemAndSet(_session, rg.ring[0]);
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE(rg.efeito)));
 
-		// Resposta para o Active Ring Terreno
+		// Response for the Active Ring Terrain
 		p.init_plain((unsigned short)0x266);
 
 		p.addUint32(0);	// OK
@@ -1334,7 +1334,7 @@ void TourneyBase::requestActiveRingGround(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveRingGround][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x266);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::TOURNEY_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x340000);
@@ -1350,10 +1350,10 @@ void TourneyBase::requestActiveRingPawsRainbowJP(player& _session, packet *_pack
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou
+		// Paw effect does not pass the TYPEID of the item that activated it
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_ACCUMULATE));
 
-		// Resposta para o Active Ring Paws Rainbow JP
+		// Response for the Active Ring Paws Rainbow JP
 		p.init_plain((unsigned short)0x27E);
 
 		p.addUint32(_session.m_pi.uid);
@@ -1373,10 +1373,10 @@ void TourneyBase::requestActiveRingPawsRingSetJP(player& _session, packet *_pack
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou
+		// Paw effect does not pass the TYPEID of the item that activated it
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_NOT_ACCUMULATE));
 
-		// Resposta para o Active Ring Paws Ring Set JP
+		// Response for the Active Ring Paws Ring Set JP
  		p.init_plain((unsigned short)0x281);
 
 		p.addUint32(_session.m_pi.uid);
@@ -1404,7 +1404,7 @@ void TourneyBase::requestActiveRingPowerGagueJP(player& _session, packet *_packe
 			return (ring[0] != 0 && ring[1] != 0);
 		};
 		uint32_t efeito;
-		uint32_t ring[2];	// 2 Ring é Conjuntos de Aneis
+		uint32_t ring[2];	// 2 Rings is Ring Sets
 		uint32_t option;
 	};
 
@@ -1440,7 +1440,7 @@ void TourneyBase::requestActiveRingPowerGagueJP(player& _session, packet *_packe
 					+ std::to_string(rpg.efeito) + ", RING[0]=" + std::to_string(rpg.ring[0]) + ", RING[1]=" + std::to_string(rpg.ring[1]) + ", OPTION="
 					+ std::to_string(rpg.option) + "], mas ele nao esta com o Anel[0] equipado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 153, 0x390003));
 
-		if (rpg.ring[0] != rpg.ring[1]) {	// Ativou Habilidade em conjunto 2 aneis
+		if (rpg.ring[0] != rpg.ring[1]) {	// Activated Ability in combination of 2 rings
 
 			auto pRing2 = _session.m_pi.findWarehouseItemByTypeid(rpg.ring[1]);
 
@@ -1458,7 +1458,7 @@ void TourneyBase::requestActiveRingPowerGagueJP(player& _session, packet *_packe
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::POWER_GAUGE_FREE));
 
-		// Resposta para o Active Ring Power Gague JP
+		// Response for the Active Ring Power Gauge JP
 		p.init_plain((unsigned short)0x27F);
 
 		p.addUint32(_session.m_pi.uid);
@@ -1494,7 +1494,7 @@ void TourneyBase::requestActiveRingMiracleSignJP(player& _session, packet *_pack
 			throw exception("[TourneyBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
 					+ std::to_string(_typeid) + "] Olho Magico JP, mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 72, 0x350003));
 
-		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Anel
+		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Ring
 			
 			if (std::find(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts))
 				throw exception("[TourneyBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
@@ -1506,12 +1506,12 @@ void TourneyBase::requestActiveRingMiracleSignJP(player& _session, packet *_pack
 				throw exception("[TourneyBase::requestActiveRingMiracleSignJP][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar 'Anel'[TYPEID="
 						+ std::to_string(_typeid) + "] Olho Magico JP, mas ele nao esta com a Part equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 74, 0x350005));
 
-		}	// else Item Passive, o item do assist, mas acho que ele n�o chame esse, ele chama o proprio pacote dele
+		}	// else Passive Item, the assist item, but I think it does not call this one, it calls its own packet
 
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::MIRACLE_SIGN_RANDOM));
 
-		// Resposta para o Active Ring Miracle Sign JP
+		// Response for the Active Ring Miracle Sign JP
 		p.init_plain((unsigned short)0x280);
 
 		p.addUint32(0);	// OK;
@@ -1525,7 +1525,7 @@ void TourneyBase::requestActiveRingMiracleSignJP(player& _session, packet *_pack
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveRingMiracleSign][ErroSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x280);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::TOURNEY_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x350000);
@@ -1561,10 +1561,10 @@ void TourneyBase::requestActiveWing(player& _session, packet *_packet) {
 			throw exception("[TourneyBase::ActiveWing][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Asa[TYPEID="
 					+ std::to_string(_typeid) + "], mas ele nao esta com o item 'Asa' equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 93, 0x360004));
 
-		// Adiciona o efeito que foi ativado
+		// Adds the effect that was activated
 		checkEffectItemAndSet(_session, _typeid);
 
-		// Resposta para o Active Wing
+		// Response for the Active Wing
 		p.init_plain((unsigned short)0x203);
 
 		p.addUint32(_session.m_pi.uid);
@@ -1586,10 +1586,10 @@ void TourneyBase::requestActivePaws(player& _session, packet *_packet) {
 
 	try {
 
-		// Efeito patinha não passa o TYPEID do item que ativou, Animal Ring(Anel) ou Patinha
+		// Paw effect does not pass the TYPEID of the item that activated it, Animal Ring or Paw
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::PAWS_NOT_ACCUMULATE));
 
-		// Resposta para o Active Paws
+		// Response for the Active Paws
 		p.init_plain((unsigned short)0x236);
 
 		p.addUint32(_session.m_pi.uid);
@@ -1625,23 +1625,23 @@ void TourneyBase::requestActiveGlove(player& _session, packet *_packet) {
 			throw exception("[TourneyBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 					+ std::to_string(_typeid) + "], mas ele nao esta com um Character equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 112, 0x370003));
 
-		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::PART) {	// Luva
+		if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::PART) {	// Glove
 
 			if (std::find(_session.m_pi.ei.char_info->parts_typeid, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->parts_typeid), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->parts_typeid))
 				throw exception("[TourneyBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 						+ std::to_string(_typeid) + "], mas ele nao tem a Luva equipada. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 113, 0x370004));
 
-		}else if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Anel
+		}else if (sIff::getInstance().getItemGroupIdentify(_typeid) == iff::AUX_PART) {	// Ring
 
 			if (std::find(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), _typeid) == LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts))
 				throw exception("[TourneyBase::requestActiveGlove][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Luva[TYPEID="
 						+ std::to_string(_typeid) + "], mas ele nao tem o Anel equipado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 114, 0x370005));
 		}
 
-		// Adiciona o efeito que foi ativado
+		// Adds the effect that was activated
 		checkEffectItemAndSet(_session, _typeid);
 
-		// Resposta para o Active Glove
+		// Response for the Active Glove
 		p.init_plain((unsigned short)0x265);
 
 		p.addUint32(0);	// OK
@@ -1656,7 +1656,7 @@ void TourneyBase::requestActiveGlove(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveGlove][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x265);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::TOURNEY_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x370000);
@@ -1677,7 +1677,7 @@ void TourneyBase::requestActiveEarcuff(player& _session, packet *_packet) {
 	struct stEarcuff {
 		void clear() { memset(this, 0, sizeof(stEarcuff)); };
 		uint32_t _typeid;
-		unsigned char angle;	// Sentido do angulo, back(Angel) ou front(Devil)
+		unsigned char angle;	// Direction of the angle, back(Angel) or front(Devil)
 		float x_point_angle;
 	};
 
@@ -1741,7 +1741,7 @@ void TourneyBase::requestActiveEarcuff(player& _session, packet *_packet) {
 		// Effect
 		setEffectActiveInShot(_session, enumToBitValue<IFF::Ability::eEFFECT_TYPE, uint64_t>(IFF::Ability::eEFFECT_TYPE::EARCUFF_DIRECTION_WIND));
 
-		// Radianos do angulo que foi trocado a direção
+		// Radians of the angle whose direction was changed
 		pgi->earcuff_wind_angle_shot = (float)(ec.x_point_angle < 0.f
 			? (2 * 
 #if defined(_WIN32)
@@ -1753,7 +1753,7 @@ void TourneyBase::requestActiveEarcuff(player& _session, packet *_packet) {
 			: ec.x_point_angle
 		);
 
-		// Resposta para o Active Earcuff
+		// Response for the Active Earcuff
 		p.init_plain((unsigned short)0x24C);
 
 		p.addUint32(0);	// OK
@@ -1772,7 +1772,7 @@ void TourneyBase::requestActiveEarcuff(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestActiveEarcuff][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error Response
 		p.init_plain((unsigned short)0x24C);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::TOURNEY_BASE) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x380000);
@@ -1792,7 +1792,7 @@ void TourneyBase::requestUpdateTrofel() {
 
 	uint32_t new_trofel = STDA_MAKE_TROFEL(soma, (uint32_t)m_player_info.size());
 
-	// Check se o trofeu anterior era o GM e se o novo não é mais, aí tira a flag de GM da sala
+	// Check if the previous trophy was the GM's and the new one is not anymore, then remove the GM flag from the room
 	if (m_ri.trofel == TROFEL_GM_EVENT_TYPEID && new_trofel != TROFEL_GM_EVENT_TYPEID)
 		m_ri.flag_gm = 0;
 
@@ -1834,7 +1834,7 @@ void TourneyBase::requestSendTimeGame(player& _session) {
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestSendTimeGame][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -1886,7 +1886,7 @@ void TourneyBase::requestUpdateEnterAfterStartedInfo(player& _session, EnterAfte
 
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::requestUpdateEnterAfterStartedInfo][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -1911,7 +1911,7 @@ bool TourneyBase::requestFinishGame(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&ui, sizeof(UserInfo));
 
-		// aqui o cliente passa mad_conduta com o hole_in, trocados, mad_conduto <-> hole_in
+		// here the client passes mad_conduta with hole_in, swapped, mad_conduto <-> hole_in
 
 		INIT_PLAYER_INFO("requestFinishGame", "tentou terminar o jogo", &_session);
 
@@ -1928,17 +1928,17 @@ bool TourneyBase::requestFinishGame(player& _session, packet *_packet) {
 	return ret;
 }
 
-// Usa o Padrão delas
+// Uses their Default
 void TourneyBase::startTime() {
 	
-	// Para Tempo se já estiver 1 timer
+	// Stops Time if there is already 1 timer
 	if (m_timer != nullptr)
 		stopTime();
 
 	job j(TourneyBase::end_time, this, nullptr);
 
 	//if (sgs::gs != nullptr)
-		m_timer = sgs::gs::getInstance().makeTime(m_ri.time_30s/*milliseconds*/, j);	// já está em minutos milliseconds
+		m_timer = sgs::gs::getInstance().makeTime(m_ri.time_30s/*milliseconds*/, j);	// it is already in minutes milliseconds
 	/*else
 		_smp::message_pool::getInstance().push(new message("[TourneyBase::startTime][Error] tentou inicializar um timer, mas a variavel global estatica do Server eh invalida.", CL_FILE_LOG_AND_CONSOLE));*/
 
@@ -1976,7 +1976,7 @@ void TourneyBase::requestTranslateSyncShotData(player& _session, ShotSyncData& _
 			pgi->data.pang = _ssd.pang;
 			pgi->data.bonus_pang = _ssd.bonus_pang;
 
-			// Já só na função que come�a o tempo do player do turno
+			// Already only in the function that starts the time of the turn player
 			pgi->data.tacada_num++;
 
 			if (_ssd.state == ShotSyncData::OUT_OF_BOUNDS || _ssd.state == ShotSyncData::UNPLAYABLE_AREA)
@@ -1988,20 +1988,20 @@ void TourneyBase::requestTranslateSyncShotData(player& _session, ShotSyncData& _
 				throw exception("[TourneyBase::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada no hole[NUMERO="
 						+ std::to_string((unsigned short)pgi->hole) + "], mas o numero do hole is invalid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 12, 0));
 
-			// Conta já a próxima tacada, no give up
+			// Already counts the next stroke, on give up
 			if (!_ssd.state_shot.display.stDisplay.acerto_hole && hole->getPar().total_shot <= (pgi->data.tacada_num + 1)) {
 
-				// +1 que é giveup, só add se n�o passou o número de tacadas
+				// +1 which is giveup, only add if the number of strokes was not exceeded
 				if (pgi->data.tacada_num < hole->getPar().total_shot)
 					pgi->data.tacada_num++;
 
 				pgi->data.giveup = 1;
 
-				// Soma +1 no Bad Condute
+				// Adds +1 to the Bad Conduct
   				pgi->data.bad_condute++;
 			}
 
-			// aqui os achievement de power shot int32_t putt beam impact e etc
+			// here the power shot, int32_t putt, beam impact, etc achievements
 			update_sync_shot_achievement(_session, last_location);
 		}
 
@@ -2018,7 +2018,7 @@ void TourneyBase::requestReplySyncShotData(player& _session) {
 
 		drawDropItem(_session);
 
-		// Resposta Sync Shot
+		// Response Sync Shot
 		sendSyncShot(_session);
 
 	}catch (exception& e) {
@@ -2034,7 +2034,7 @@ void TourneyBase::sendRemainTime(player& _session) {
 	if (remain_time > 0)
 		remain_time /= STDA_10_MICRO_PER_MILLI;
 
-	// Resposta tempo percorrido do Tourney
+	// Response elapsed time of the Tourney
 	packet p((unsigned short)0x8D);
 
 	p.addUint32((const uint32_t)remain_time);
@@ -2058,7 +2058,7 @@ void TourneyBase::updateFinishHole(player& _session, int _option) {
 	p.addInt32(pgi->data.score);
 	p.addUint64(pgi->data.pang);
 	p.addUint64(pgi->data.bonus_pang);
-	p.addUint8((unsigned char)_option);	// 1 - Terminou o Hole, 0 - N�o terminou o Hole
+	p.addUint8((unsigned char)_option);	// 1 - Finished the Hole, 0 - Did not finish the Hole
 
 	packet_func::game_broadcast(*this, p, 1);
 }
@@ -2078,7 +2078,7 @@ void TourneyBase::updateTreasureHunterPoint(player& _session) {
 		throw exception("[TourneyBase::updateTreasureHunterPoint][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou atualizar os pontos do Treasure Hunter no hole[NUMERO="
 				+ std::to_string((unsigned short)pgi->hole) + "], mas o hole nao existe. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 30, 0));
 
-	// Calcule Treasure Pontos
+	// Calculate Treasure Points
 	if (m_ri.tipo == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE)
 		/*pgi->thi.treasure_point += TreasureHunterSystem::calcPointSSC(pgi->data.tacada_num, hole->getPar().par) + pgi->thi.getPoint(pgi->data.tacada_num, hole->getPar().par);*/
 		pgi->thi.treasure_point += sTreasureHunterSystem::getInstance().calcPointSSC(pgi->data.tacada_num, hole->getPar().par) + pgi->thi.getPoint(pgi->data.tacada_num, hole->getPar().par);
@@ -2086,19 +2086,19 @@ void TourneyBase::updateTreasureHunterPoint(player& _session) {
 		/*pgi->thi.treasure_point += TreasureHunterSystem::calcPointNormal(pgi->data.tacada_num, hole->getPar().par) + pgi->thi.getPoint(pgi->data.tacada_num, hole->getPar().par);*/
 		pgi->thi.treasure_point += sTreasureHunterSystem::getInstance().calcPointNormal(pgi->data.tacada_num, hole->getPar().par) + pgi->thi.getPoint(pgi->data.tacada_num, hole->getPar().par);
 
-	// Mostra score board
+	// Shows score board
 	packet p((unsigned short)0x132);
 
 	p.addUint32(pgi->thi.treasure_point);
 
-	// No Modo Match passa outro valor tbm
+	// In Match Mode it also passes another value
 
 	packet_func::session_send(p, &_session, 1);
 }
 
 void TourneyBase::requestDrawTreasureHunterItem(player& _session) {
 
-	// Sorteia os itens ganho do Treasure ponto do player
+	// Draws the items won from the player's Treasure points
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
@@ -2106,7 +2106,7 @@ void TourneyBase::requestDrawTreasureHunterItem(player& _session) {
 
 	INIT_PLAYER_INFO("requestDrawTreasureHunterItem", "tentou sortear os item(ns) do Treasure Hunter do jogo", &_session);
 
-	// Guarda os item(ns) ganho no treasure hunter system, no Player Game Info, para poder consultar ele depois
+	// Stores the item(s) won in the treasure hunter system, in the Player Game Info, to be able to query it later
 	/*pgi->thi.v_item = TreasureHunterSystem::drawItem(pgi->thi.treasure_point, m_ri.course & 0x7F);*/
 	pgi->thi.v_item = sTreasureHunterSystem::getInstance().drawItem(pgi->thi.treasure_point, m_ri.course & 0x7F);
 
@@ -2130,7 +2130,7 @@ void TourneyBase::sendSyncShot(player& _session) {
 
 	p.addUint32(pgi->shot_sync.state_shot.shot.ulState);
 
-	// No Modo de jogo Approach aqui tem mais 2 uint32_t, com tempo da tacada e a dist�ncia do hole
+	// In Approach game Mode there are 2 more uint32_t here, with the shot time and the distance to the hole
 
 	p.addUint16(pgi->shot_sync.tempo_shot);
 
@@ -2150,7 +2150,7 @@ void TourneyBase::sendEndShot(player& _session, DropItemRet& _cube) {
 		for (auto& el : _cube.v_drop)
 			p.addBuffer(&el, sizeof(el));
 
-		// Aqui o server passa 128 itens de drop, os que dropou e o resto vazio
+		// Here the server passes 128 drop items, those that dropped and the rest empty
 		if (_cube.v_drop.size() < 128)
 			p.addZeroByte((128 - _cube.v_drop.size()) * 16);
 	}
@@ -2164,7 +2164,7 @@ void TourneyBase::sendUpdateState(player& _session, int _option) {
 
 	p.addUint32(_session.m_oid);
 
-	p.addUint8((unsigned char)_option);	// 2 Terminou, 3 Saiu
+	p.addUint8((unsigned char)_option);	// 2 Finished, 3 Left
 
 	packet_func::game_broadcast(*this, p, 1);
 }
@@ -2195,14 +2195,14 @@ void TourneyBase::sendPlacar(player& _session) {
 
 	p.addUint32(m_ri.trofel);
 
-	p.addUint8(pgi->trofel);	// Trofel Que o Player Ganhou
-	p.addUint8(pgi->team);	// Team Win, 0 - vermelho, 1 - Azul, 2 nenhum
+	p.addUint8(pgi->trofel);	// Trophy that the Player Won
+	p.addUint8(pgi->team);	// Team Win, 0 - red, 1 - Blue, 2 none
 
-	// Medalhas
+	// Medals
 	for (auto i = 0u; i < (sizeof(m_medal) / sizeof(m_medal[0])); ++i)
 		p.addBuffer(&m_medal[i], sizeof(Medal));
 
-	// N�o sei se � a geral ou se � s� a do Tourney, (DEIXEI A GERAL) todas as medalhas que ele tem
+	// I do not know if it is the general one or only the Tourney one, (I LEFT THE GENERAL ONE) all the medals he has
 	p.addBuffer(&_session.m_pi.ui.medal, sizeof(stMedal));
 
 	packet_func::session_send(p, &_session, 1);
@@ -2216,12 +2216,12 @@ void TourneyBase::sendTreasureHunterItemDrawGUI(player& _session) {
 
 	p.addUint8((unsigned char)pgi->thi.v_item.size());
 
-	// No VS aqui os itens s�o dividido entres os players do versus
+	// In VS here the items are divided among the versus players
 	for (auto& el : pgi->thi.v_item) {
-		p.addUint32(pgi->uid);	// UID do player que ganhou o item
+		p.addUint32(pgi->uid);	// UID of the player who won the item
 		p.addUint32(el._typeid);
 		p.addUint16((unsigned short)el.qntd);
-		p.addUint8(0);	// Acho que sej� op��o ou dizendo que acabou o struct de Treasure Hunter Item Draw
+		p.addUint8(0);	// I think it is an option or saying that the Treasure Hunter Item Draw struct ended
 	}
 
 	packet_func::session_send(p, &_session, 1);
@@ -2236,27 +2236,27 @@ void TourneyBase::sendTimeIsOver(player& _session) {
 
 int TourneyBase::checkEndShotOfHole(player& _session) {
 
-	// Agora verifica o se ele acabou o hole e essas coisas
+	// Now checks whether he finished the hole and these things
 	INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 
 	if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 
-		if (pgi->data.bad_condute >= 3) {	// Kika player deu 3 give up
+		if (pgi->data.bad_condute >= 3) {	// Kick player gave 3 give ups
 
 			// !!@@@
-			// Tira o player da sala
+			// Removes the player from the room
 			return 2;
 		}
 
-		// Verifica se o player terminou jogo, fez o ultimo hole
+		// Checks if the player finished the game, did the last hole
 		if (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole) {
 
-			// Resposta para o player que terminou o ultimo hole do Game
+			// Response to the player who finished the last hole of the Game
 			packet p((unsigned short)0x199);
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+			// Did the Last Hole, Calculates Clear Bonus for the player
 			if (pgi->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 				if (!sMap::getInstance().isLoad())
@@ -2300,7 +2300,7 @@ void TourneyBase::drawDropItem(player& _session) {
 				for (auto& el : drop.v_drop)
 					p.addBuffer(&el, sizeof(el));
 
-				// Aqui o server passa 128 itens de drop, os que dropou e o resto vazio
+				// Here the server passes 128 drop items, those that dropped and the rest empty
 				if (drop.v_drop.size() < 128)
 					p.addZeroByte((128 - drop.v_drop.size()) * 16);
 			}
@@ -2324,7 +2324,7 @@ void TourneyBase::achievement_top_3_1st(player& _session) {
 			pgi->sys_achieve.incrementCounter(0x6C4000B6u/*Top 3*/);
 
 			if (rank == 0u)
-				pgi->sys_achieve.incrementCounter(0x6C4000AFu/*1st(Primeiro)*/);
+				pgi->sys_achieve.incrementCounter(0x6C4000AFu/*1st(First)*/);
 		}
 	}
 }
@@ -2342,13 +2342,13 @@ void TourneyBase::calcule_shot_to_spinning_cube(player& _session, ShotSyncData& 
 			return;
 
 		if (_ssd.state != ShotSyncData::SHOT_STATE::PLAYABLE_AREA && _ssd.state != ShotSyncData::SHOT_STATE::INTO_HOLE)
-			return; // Sai
+			return; // Exit
 
-		// Bogey+ ou errou pangya ou bunker não calcula
-		if (pgi->data.tacada_num > hole->getPar().par || pgi->shot_data.acerto_pangya_flag != 4/*Acertou PangYa*/ || _ssd.bunker_flag != 0)
-			return; // Sai, tacada bogey não calcula spinning cube
+		// Bogey+ or missed pangya or bunker does not calculate
+		if (pgi->data.tacada_num > hole->getPar().par || pgi->shot_data.acerto_pangya_flag != 4/*Hit PangYa*/ || _ssd.bunker_flag != 0)
+			return; // Exit, bogey shot does not calculate spinning cube
 
-		// Calcule Shot Cube
+		// Calculate Shot Cube
 		sCoinCubeLocationUpdateSystem::getInstance().pushOrderToCalcule(CalculeCoinCubeUpdateOrder{
 			CalculeCoinCubeUpdateOrder::CUBE,
 			_session.m_pi.uid,
@@ -2380,20 +2380,20 @@ void TourneyBase::calcule_shot_to_coin(player& _session, ShotSyncData& _ssd) {
 			return;
 
 		if (_ssd.state != ShotSyncData::SHOT_STATE::PLAYABLE_AREA && _ssd.state != ShotSyncData::SHOT_STATE::INTO_HOLE)
-			return; // Sai
+			return; // Exit
 
-		// Bogey+ ou errou pangya ou bunker não calcula
-		if (pgi->data.tacada_num > hole->getPar().par || pgi->shot_data.acerto_pangya_flag != 4/*Acertou PangYa*/ || _ssd.bunker_flag != 0)
-			return; // Sai, tacada bogey não calcula coin
+		// Bogey+ or missed pangya or bunker does not calculate
+		if (pgi->data.tacada_num > hole->getPar().par || pgi->shot_data.acerto_pangya_flag != 4/*Hit PangYa*/ || _ssd.bunker_flag != 0)
+			return; // Exit, bogey shot does not calculate coin
 
 		if (std::abs(hole->getPinLocation().diffXZ(*(Location*)&_ssd.location)) <= MIN_DISTANCE_TO_HOLE_TO_SPAWN_COIN)
-			return; // Sai, muito perto do hole para spawnar uma coin
+			return; // Exit, too close to the hole to spawn a coin
 
-		// Calcule Shot Coin
+		// Calculate Shot Coin
 		sCoinCubeLocationUpdateSystem::getInstance().pushOrderToCalcule(CalculeCoinCubeUpdateOrder{
 			CalculeCoinCubeUpdateOrder::eTYPE::COIN,
 			_session.m_pi.uid,
-			*(Location*)&_ssd.location, // Aqui é onde o player caiu
+			*(Location*)&_ssd.location, // This is where the player landed
 			hole->getPinLocation(),
 			pgi->shot_data_for_cube,
 			(unsigned char)(m_ri.course & 0x7Fu),
@@ -2410,14 +2410,14 @@ void TourneyBase::requestCalculeShotSpinningCube(player& _session, ShotSyncData&
 	UNREFERENCED_PARAMETER(_session);
 	UNREFERENCED_PARAMETER(_ssd);
 
-	// o Calculo da tacada do spinning cube só é calculado no Tourney(normal) e no Grand Prix(Normal)
+	// the spinning cube shot calculation is only calculated in Tourney(normal) and in Grand Prix(Normal)
 }
 
 void TourneyBase::requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) {
 	UNREFERENCED_PARAMETER(_session);
 	UNREFERENCED_PARAMETER(_ssd);
 
-	// o Calculo da tacada da coin só é calculado no Tourney(normal) e no Grand Prix(Normal)
+	// the coin shot calculation is only calculated in Tourney(normal) and in Grand Prix(Normal)
 }
 
 int TourneyBase::end_time(void* _arg1, void* _arg2) {
@@ -2427,7 +2427,7 @@ int TourneyBase::end_time(void* _arg1, void* _arg2) {
 
 	try {
 		
-		// Tempo Acabou
+		// Time Is Up
 		game->timeIsOver();
 
 	}catch (exception& e) {

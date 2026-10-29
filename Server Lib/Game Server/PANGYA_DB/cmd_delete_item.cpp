@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_item.cpp
-// Criado em 31/05/2018 as 18:35 por Acrisio
-// Implementa��o da classe CmdDeleteItem
+// File cmd_delete_item.cpp
+// Created on 31/05/2018 at 18:35 by Acrisio
+// Implementation of the class CmdDeleteItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteItem::~CmdDeleteItem() {
 
 void CmdDeleteItem::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

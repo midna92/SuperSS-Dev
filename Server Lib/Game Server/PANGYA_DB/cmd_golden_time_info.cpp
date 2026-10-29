@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_info.cpp
-// Criado em 24/10/2020 as 02:22 por Acrisio
-// Implementa��o da classe CmdGoldenTimeInfo
+// File cmd_golden_time_info.cpp
+// Created on 24/10/2020 at 02:22 by Acrisio
+// Implementation of the class CmdGoldenTimeInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

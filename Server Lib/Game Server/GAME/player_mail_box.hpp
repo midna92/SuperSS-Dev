@@ -1,6 +1,6 @@
-// Arquivo player_mail_box.hpp
-// Criado em 13/01/2021 as 09:52 por Acrisio
-// Defini��o da classe PlayerMailBox
+// File player_mail_box.hpp
+// Created on 13/01/2021 at 09:52 by Acrisio
+// Definition of the PlayerMailBox class
 
 #pragma once
 #ifndef _STDA_PLAYER_MAIL_BOX_HPP
@@ -21,9 +21,9 @@
 
 namespace stdA {
 
-	constexpr uint64_t EXPIRES_CACHE_TIME = 3 * 1000ull;	// 3 Segundos
-	constexpr uint32_t NUM_OF_EMAIL_PER_PAGE	= 20u;			// 20 Emails por p�gina
-	constexpr uint32_t LIMIT_OF_UNREAD_EMAIL	= 300u;		// 300 Emails n�o lidos que pode enviar para o player
+	constexpr uint64_t EXPIRES_CACHE_TIME = 3 * 1000ull;	// 3 Seconds
+	constexpr uint32_t NUM_OF_EMAIL_PER_PAGE	= 20u;			// 20 Emails per page
+	constexpr uint32_t LIMIT_OF_UNREAD_EMAIL	= 300u;		// 300 unread Emails that can be sent to the player
 
 	class PlayerMailBox {
 		public:
@@ -42,10 +42,10 @@ namespace stdA {
 
 			EmailInfo getEmailInfo(int32_t _id, bool _ler = true);
 
-			// Deleta todos os itens quem tem no email, eles j� foram tirados do email pelo player
+			// Deletes all items that are in the email, they were already taken out of the email by the player
 			void leftItensFromEmail(int32_t _id);
 
-			// Deleta 1 ou mais emails de uma vez
+			// Deletes 1 or more emails at once
 			void deleteEmail(int32_t* _a_id, uint32_t _count);
 
 		protected:

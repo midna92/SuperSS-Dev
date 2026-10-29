@@ -1,6 +1,6 @@
-// Arquivo client_info.h
-// Criado em 01/04/2018 as 23:19 por Acrisio
-// Definição da classe ClientInfo
+// File client_info.h
+// Created on 01/04/2018 at 23:19 by Acrisio
+// Definition of class ClientInfo
 
 #pragma once
 #ifndef _STDA_CLIENT_INFO_H
@@ -18,7 +18,7 @@ namespace stdA {
 			void clear();
 
 		public:
-			timer *m_timer_ttl;				// Timer para chamar a função TTL
+			timer *m_timer_ttl;				// Timer to call the TTL function
 			timer *m_timer_msg_lobby;		// timer for msg to lobby
 
 			ServerInfo m_login_server;		// Login Server Info

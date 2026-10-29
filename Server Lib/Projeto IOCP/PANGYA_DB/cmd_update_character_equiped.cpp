@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_equiped.cpp
-// Criado em 25/03/2018 as 11:31 por Acrisio
-// Implementa��o da classe CmdUpdateCharacterEquiped
+// File cmd_update_character_equiped.cpp
+// Created on 25/03/2018 at 11:31 by Acrisio
+// Implementation of class CmdUpdateCharacterEquiped
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCharacterEquiped::~CmdUpdateCharacterEquiped() {
 
 void CmdUpdateCharacterEquiped::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it's an UPDATE
 	return;
 }
 

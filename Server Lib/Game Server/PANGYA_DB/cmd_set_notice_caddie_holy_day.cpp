@@ -1,6 +1,6 @@
-// Arquivo cmd_set_notice_caddie_holy_day.cpp
-// Criado em 15/07/2018 as 19:30 por Acrisio
-// Implementa��o  da classe CmdSetNoticeCaddieHolyDay
+// File cmd_set_notice_caddie_holy_day.cpp
+// Created on 15/07/2018 at 19:30 by Acrisio
+// Implementation  of the class CmdSetNoticeCaddieHolyDay
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdSetNoticeCaddieHolyDay::~CmdSetNoticeCaddieHolyDay() {
 
 void CmdSetNoticeCaddieHolyDay::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

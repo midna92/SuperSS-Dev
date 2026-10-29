@@ -1,6 +1,6 @@
-// Arquivo WinPort.h
-// Criado em 10/03/2021 as 09:56 por Acrisio
-// Porte dos utilies do Windows para Linux
+// File WinPort.h
+// Created on 10/03/2021 at 09:56 by Acrisio
+// Port of the Windows utilities to Linux
 
 #pragma once
 #ifndef _STDA_WIN_PORT_H

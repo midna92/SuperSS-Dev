@@ -1,6 +1,6 @@
-// Arquivo cmd_update_poster_equiped.cpp
-// Criado em 25/03/2018 as 13:01 por Acrisio
-// Implementa��o da classe CmdUpdatePosterEquiped
+// File cmd_update_poster_equiped.cpp
+// Created on 25/03/2018 at 13:01 by Acrisio
+// Implementation of class CmdUpdatePosterEquiped
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdatePosterEquiped::~CmdUpdatePosterEquiped() {
 
 void CmdUpdatePosterEquiped::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa aqui por que � UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

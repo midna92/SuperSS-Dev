@@ -1,6 +1,6 @@
-// Arquivo cmd_update_lagacy_tiki_shop_point.cpp
-// Criado em 26/10/2020 as 15:33 por Acrisio
-// Implementa��o da classe CmdUpdateLegacyTikiShopPoint
+// File cmd_update_lagacy_tiki_shop_point.cpp
+// Created on 26/10/2020 at 15:33 by Acrisio
+// Implementation of class CmdUpdateLegacyTikiShopPoint
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdUpdateLegacyTikiShopPoint::~CmdUpdateLegacyTikiShopPoint() {
 
 void CmdUpdateLegacyTikiShopPoint::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo random_gen.cpp
-// Criado em 15/08/2019 as 07:45 por Acrisio
-// Implementação da classe RandomGen
+// File random_gen.cpp
+// Created on 15/08/2019 at 07:45 by Acrisio
+// Implementation of the class RandomGen
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -61,7 +61,7 @@ bool RandomGen::init() {
 		if (m_ibe_mt19937_64 == nullptr)
 			m_ibe_mt19937_64 = new std::independent_bits_engine< std::mt19937_64, 64, std::uint_fast64_t >();
 
-		// Inicializou com sucesso
+		// Initialized successfully
 		m_state = true;
 
 #if defined(_WIN32)
@@ -72,7 +72,7 @@ bool RandomGen::init() {
 
 	}catch (exception& e) {
 
-		// Falha ao inicializar
+		// Failed to initialize
 		m_state = false;
 
 #if defined(_WIN32)
@@ -85,7 +85,7 @@ bool RandomGen::init() {
 	
 	}catch (std::exception& e) {
 
-		// Falha ao inicializar
+		// Failed to initialize
 		m_state = false;
 
 #if defined(_WIN32)
@@ -120,7 +120,7 @@ void RandomGen::destroy() {
 
 		m_ibe_mt19937_64 = nullptr;
 
-		// Destruiu os dados com sucesso
+		// Data destroyed successfully
 		m_state = false;
 
 #if defined(_WIN32)
@@ -131,7 +131,7 @@ void RandomGen::destroy() {
 	
 	}catch (exception& e) {
 
-		// Destruiu os dados com sucesso
+		// Data destroyed successfully
 		m_state = false;
 
 #if defined(_WIN32)
@@ -144,7 +144,7 @@ void RandomGen::destroy() {
 	
 	}catch (std::exception& e) {
 
-		// Destruiu os dados com sucesso
+		// Data destroyed successfully
 		m_state = false;
 
 #if defined(_WIN32)
@@ -512,7 +512,7 @@ uint64_t RandomGen::rDevice() {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rDevice][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Conseguiu com o device
+	// Succeeded with the device
 	if (ok)
 		return dice;
 
@@ -531,11 +531,11 @@ uint64_t RandomGen::rDevice() {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rDevice][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o device e nem o chronos
+	// Failed with both the device and chrono
 	if (!ok)
 		return (uint64_t)std::rand();
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }
 
@@ -559,11 +559,11 @@ uint64_t RandomGen::rIbeMt19937_64_chrono() {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_chrono][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o chronos
+	// Failed with chrono
 	if (!ok)
 		return (uint64_t)std::rand();
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }
 
@@ -587,7 +587,7 @@ uint64_t RandomGen::rIbeMt19937_64_rdevice() {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_rdevice][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Conseguiu com o device
+	// Succeeded with the device
 	if (ok)
 		return dice;
 
@@ -606,11 +606,11 @@ uint64_t RandomGen::rIbeMt19937_64_rdevice() {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_rdevice][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o device e nem o chronos
+	// Failed with both the device and chrono
 	if (!ok)
 		return (uint64_t)std::rand();
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }
 
@@ -634,7 +634,7 @@ uint64_t RandomGen::rDeviceRange(uint64_t _min, uint64_t _max) {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rDeviceRange][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Conseguiu com o device
+	// Succeeded with the device
 	if (ok)
 		return dice;
 
@@ -653,11 +653,11 @@ uint64_t RandomGen::rDeviceRange(uint64_t _min, uint64_t _max) {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rDeviceRange][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o device e nem o chronos
+	// Failed with both the device and chrono
 	if (!ok)
 		return (uint64_t)(_min + (std::rand() % (_max - _min)));
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }
 
@@ -681,11 +681,11 @@ uint64_t RandomGen::rIbeMt19937_64_chronoRange(uint64_t _min, uint64_t _max) {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_chronoRange][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o chronos
+	// Failed with chrono
 	if (!ok)
 		return (uint64_t)(_min + (std::rand() % (_max - _min)));
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }
 
@@ -709,7 +709,7 @@ uint64_t RandomGen::rIbeMt19937_64_rdeviceRange(uint64_t _min, uint64_t _max) {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_rdeviceRange][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Conseguiu com o device
+	// Succeeded with the device
 	if (ok)
 		return dice;
 
@@ -728,10 +728,10 @@ uint64_t RandomGen::rIbeMt19937_64_rdeviceRange(uint64_t _min, uint64_t _max) {
 		_smp::message_pool::getInstance().push(new message("[RandomGen::rIbeMt19937_64_rdeviceRange][ErrorSystem][Std] " + std::string(e.what()), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Não conseguiu com o device e nem o chronos
+	// Failed with both the device and chrono
 	if (!ok)
 		return (uint64_t)(_min + (std::rand() % (_max - _min)));
 
-	// Conseguiu com o chronos
+	// Succeeded with chrono
 	return dice;
 }

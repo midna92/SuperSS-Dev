@@ -1,6 +1,6 @@
-// Arquivo friend_manager.hpp
-// Criado em 04/08/2018 as 19:44 por Acrisio
-// Defini��o da classe FriendManager
+// File friend_manager.hpp
+// Created on 04/08/2018 at 19:44 by Acrisio
+// Definition of the FriendManager class
 
 #pragma once
 #ifndef _STDA_FRIEND_MANAGER_HPP
@@ -65,7 +65,7 @@ namespace stdA {
 
 		protected:
 			std::map< uint32_t, FriendInfoEx > m_friend;
-			player_info m_pi;									// Owner[Dono] do FriendManager
+			player_info m_pi;									// Owner of the FriendManager
 
 			static void SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg);
 
@@ -76,7 +76,7 @@ namespace stdA {
 			pthread_mutex_t m_cs;
 #endif
 
-			bool m_state;				// Estado
+			bool m_state;				// State
 	};
 }
 

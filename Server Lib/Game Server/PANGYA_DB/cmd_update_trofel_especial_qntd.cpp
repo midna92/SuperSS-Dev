@@ -1,6 +1,6 @@
-// Arquivo cmd_update_trofel_especial_qntd.cpp
-// Criado em 21/06/2019 as 18:59 por Acrisio
-// Implementa��o da classe CmdUpdateTrofelEspecialQntd
+// File cmd_update_trofel_especial_qntd.cpp
+// Created on 21/06/2019 at 18:59 by Acrisio
+// Implementation of class CmdUpdateTrofelEspecialQntd
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateTrofelEspecialQntd::~CmdUpdateTrofelEspecialQntd() {
 
 void CmdUpdateTrofelEspecialQntd::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

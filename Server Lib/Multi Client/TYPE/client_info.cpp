@@ -1,6 +1,6 @@
-// Arquivo client_info.cpp
-// Criado em 01/04/2018 as 23:24
-// Implementação da classe ClientInfo
+// File client_info.cpp
+// Created on 01/04/2018 at 23:24
+// Implementation of class ClientInfo
 
 #pragma pack(1)
 

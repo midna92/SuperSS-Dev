@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_ticker.cpp
-// Criado em 04/12/2018 as 01:52 por Acrisio
-// Implementa��o da classe CmdInsertTicker
+// File cmd_insert_ticker.cpp
+// Created on 04/12/2018 at 01:52 by Acrisio
+// Implementation of the class CmdInsertTicker
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdInsertTicker::~CmdInsertTicker() {
 
 void CmdInsertTicker::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

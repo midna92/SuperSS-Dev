@@ -1,6 +1,6 @@
-// Arquivo tourney_base.hpp
-// Criado em 18/08/2018 as 15:00 por Acrisio
-// Defini��o da classe TourneyBase
+// File tourney_base.hpp
+// Created on 18/08/2018 at 15:00 by Acrisio
+// Definition of the TourneyBase class
 
 #pragma once
 #ifndef _STDA_TOURNEY_BASE_HPP
@@ -18,7 +18,7 @@ namespace stdA {
 			virtual void sendInitialData(player& _session) override;
 			virtual void sendInitialDataAfter(player& _session) override;
 
-			// Met�dos do Game->Course->Hole
+			// Game->Course->Hole methods
 			virtual void requestInitHole(player& _session, packet *_packet) override;
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) override;
@@ -38,14 +38,14 @@ namespace stdA {
 			virtual void requestActivePowerShot(player& _session, packet *_packet) override;
 			virtual void requestChangeClub(player& _session, packet  *_packet) override;
 			virtual void requestUseActiveItem(player& _session, packet *_packet) override;
-			virtual void requestChangeStateTypeing(player& _session, packet *_packet) override;	// Escrevendo
+			virtual void requestChangeStateTypeing(player& _session, packet *_packet) override;	// Typing
 			virtual void requestMoveBall(player& _session, packet *_packet) override;
 			virtual void requestChangeStateChatBlock(player& _session, packet *_packet) override;
 			virtual void requestActiveBooster(player& _session, packet *_packet) override;
 			virtual void requestActiveReplay(player& _session, packet *_packet) override;
 			virtual void requestActiveCutin(player& _session, packet *_packet) override;
 
-			// Hability Item
+			// Ability Item
 			virtual void requestActiveRing(player& _session, packet *_packet) override;
 			virtual void requestActiveRingGround(player& _session, packet *_packet) override;
 			virtual void requestActiveRingPawsRainbowJP(player& _session, packet *_packet) override;
@@ -59,14 +59,14 @@ namespace stdA {
 
 			virtual void requestUpdateTrofel() override;
 
-			// Exclusivo do Modo Tourney
+			// Exclusive to Tourney Mode
 			virtual void requestSendTimeGame(player& _session) override;
 			virtual void requestUpdateEnterAfterStartedInfo(player& _session, EnterAfterStartInfo& _easi) override;
 
 			// Game
 			virtual bool requestFinishGame(player& _session, packet *_packet) override;
 
-			// Tempo
+			// Time
 			virtual void startTime();
 			/*virtual bool stopTime();
 			virtual bool pauseTime();
@@ -74,7 +74,7 @@ namespace stdA {
 			virtual void timeIsOver() = 0;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finish Game
 			virtual bool init_game() override = 0;
 
 			// Request Trate Shot Sync Data
@@ -83,44 +83,44 @@ namespace stdA {
 
 			virtual void sendRemainTime(player& _session);
 
-			// Terminou Hole Update on Game
-			// Opt 0 N�o terminou o hole, 1 Terminou o Hole
+			// Finished Hole Update on Game
+			// Opt 0 Did not finish the hole, 1 Finished the Hole
 			virtual void updateFinishHole(player& _session, int _option);
 
-			// Atuliza o Treasure Hunter Point no Jogo
+			// Updates the Treasure Hunter Point in the Game
 			virtual void updateTreasureHunterPoint(player& _session);
 
-			// Sorteia o Treasure Hunter Item do Player
+			// Draws the Player's Treasure Hunter Item
 			virtual void requestDrawTreasureHunterItem(player& _session);
 
 			// Sync Shot Player
 			virtual void sendSyncShot(player& _session);
 
-			// Envia o pacote que finaliza a tacada,
-			// e se tiver item capturado como coin e spinning cube, manda nesse pacote
+			// Sends the packet that finishes the shot,
+			// and if there is a captured item such as coin and spinning cube, sends it in this packet
 			virtual void sendEndShot(player& _session, DropItemRet& _cube);
 
-			// Envia resposta que o player terminou o jogou o saiu
-			// Atualizar o Score Board do player
-			// Opt 2 Terminou, 3 Saiu
+			// Sends response that the player finished the game or left
+			// Update the player's Score Board
+			// Opt 2 Finished, 3 Left
 			virtual void sendUpdateState(player& _session, int _option);
 
-			// Envia Drop Item que o player ganhou no Tourney
+			// Sends Drop Item that the player won in the Tourney
 			virtual void sendDropItem(player& _session);
 
-			// Envia o Placar do Jogo, Os Scores Finais, pang e experi�ncia e etc
+			// Sends the Game Scoreboard, the Final Scores, pang and experience, etc
 			virtual void sendPlacar(player& _session);
 
-			// Envia o Treasure Hunter Item sorteado s� a interface(Visual)
+			// Sends the drawn Treasure Hunter Item, interface only (Visual)
 			virtual void sendTreasureHunterItemDrawGUI(player& _session);
 
-			// Envia para o jogador, que o tempo do Tourney Acabou
+			// Sends to the player that the Tourney time is over
 			virtual void sendTimeIsOver(player& _session);
 
-			// Verifica se � a ultima tacada do hole, para passar para o proximo hole
+			// Checks if it is the last shot of the hole, to move on to the next hole
 			virtual int checkEndShotOfHole(player& _session);
 
-			// Sortea Item Drop do Hole, pode dropar ou n�o
+			// Draws Item Drop of the Hole, may or may not drop
 			virtual void drawDropItem(player& _session);
 
 			// Achievement Top 3 player achievement
@@ -132,10 +132,10 @@ namespace stdA {
 			// Calcula Shot to Coin
 			virtual void calcule_shot_to_coin(player& _session, ShotSyncData& _ssd);
 
-			// request calcule shot spinning cube - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot spinning cube - It is implemented in the classes that will use it
 			virtual void requestCalculeShotSpinningCube(player& _session, ShotSyncData& _ssd);
 
-			// request calcule shot coin - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot coin - It is implemented in the classes that will use it
 			virtual void requestCalculeShotCoin(player& _session, ShotSyncData& _ssd);
 
 		public:

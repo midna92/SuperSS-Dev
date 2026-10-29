@@ -1,6 +1,6 @@
-// Arquivo stadium_calculator_type.hpp
-// Criado em 25/11/2020 as 09:45 por Acrisio
-// Defini��o dos tipos usados no Stadium Calculator
+// File stadium_calculator_type.hpp
+// Created on 25/11/2020 at 09:45 by Acrisio
+// Definition of the types used in the Stadium Calculator
 
 #pragma once
 #ifndef _STDA_STADIUM_CALCULATOR_TYPE_HPP

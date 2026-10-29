@@ -1,6 +1,6 @@
-// Arquivo cmd_add_msg_mail.hpp
-// Criado em 26/05/2018 as 15:06 por Acrisio
-// Definie��o da classe CmdAddMsgMail
+// File cmd_add_msg_mail.hpp
+// Created on 26/05/2018 at 15:06 by Acrisio
+// Definition of the class CmdAddMsgMail
 
 #pragma once
 #ifndef _STDA_CMD_ADD_MSG_MAIL_HPP

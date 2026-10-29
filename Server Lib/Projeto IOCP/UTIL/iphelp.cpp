@@ -1,6 +1,6 @@
-// Arquivo iphelp.cpp
-// Criado em 21/10/2017 por Acrisio
-// Implementa��o da classe ip_help
+// File iphelp.cpp
+// Created on 21/10/2017 by Acrisio
+// Implementation of the class ip_help
 
 #include <Windows.h>
 #include "iphelp.h"

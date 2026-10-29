@@ -1,6 +1,6 @@
-// Arquivo cmd_update_email.cpp
-// Criado em 14/01/2021 as 09:05 por Acrisio
-// Implemeneta��o da classe CmdUpdateEmail
+// File cmd_update_email.cpp
+// Created on 14/01/2021 at 09:05 by Acrisio
+// Implementation of class CmdUpdateEmail
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateEmail::~CmdUpdateEmail() {
 
 void CmdUpdateEmail::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

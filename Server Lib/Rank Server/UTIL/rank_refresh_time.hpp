@@ -1,6 +1,6 @@
-// Arquivo rank_refresh_time.hpp
-// Criado em 18/06/2020 as 22:04 por Acrisio
-// Defini��o da classe rank_refresh_time
+// File rank_refresh_time.hpp
+// Created on 18/06/2020 at 22:04 by Acrisio
+// Definition of the class rank_refresh_time
 
 #pragma once
 #ifndef _STDA_RANK_REFRESH_TIME_HPP
@@ -25,7 +25,7 @@ namespace stdA {
 
 			void clear();
 
-			// Passou da data, venceu, pode atualize os registro do Rank
+			// Past the date, expired, can update the Rank records
 			bool isOutDated();
 
 			std::string toString();
@@ -44,10 +44,10 @@ namespace stdA {
 			void setLastRefreshDate(FILETIME& _ft);
 
 		protected:
-			uint32_t m_interval_refresh;			// Intervalo em horas
+			uint32_t m_interval_refresh;			// Interval in hours
 
-			SYSTEMTIME m_st_last_date;					// System Time - Ultima data que atualizou o rank registros
-			FILETIME m_ft_last_date;					// File Time - Ultima data que atualizou o rank registros
+			SYSTEMTIME m_st_last_date;					// System Time - Last date the rank records were updated
+			FILETIME m_ft_last_date;					// File Time - Last date the rank records were updated
 
 	};
 }

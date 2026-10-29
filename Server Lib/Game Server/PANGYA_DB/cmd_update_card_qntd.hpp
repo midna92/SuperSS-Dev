@@ -1,6 +1,6 @@
-// Arquivo cmd_update_card_qntd.hpp
-// Criado em 31/05/2018 as 09:54 por Acrisio
-// Defini��o da classe CmdUpdateCardQntd
+// File cmd_update_card_qntd.hpp
+// Created on 31/05/2018 at 09:54 by Acrisio
+// Definition of class CmdUpdateCardQntd
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CARD_QNTD_HPP

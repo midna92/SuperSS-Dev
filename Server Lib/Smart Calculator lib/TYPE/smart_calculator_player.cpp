@@ -1,6 +1,6 @@
-// Arquivo smart_calculator_player.cpp
-// Criado em 21/11/2020 as 09:11 por Acrisio
-// Implementa��o da classe SmartCalculatorPlayer
+// File smart_calculator_player.cpp
+// Created on 21/11/2020 at 09:11 by Acrisio
+// Implementation of the class SmartCalculatorPlayer
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -107,7 +107,7 @@ const char* SHOT_TYPE_ENUM[4]{
 
 using namespace stdA;
 
-// Implementa��o da classe SmartCalculatorPlayer
+// Implementation of the class SmartCalculatorPlayer
 SmartCalculatorPlayer::SmartCalculatorPlayer(uint32_t _id) 
 	: ISmartCalculatorPlayer(_id), CalculatorPlayer(), m_special_slope_flag(false), m_special_slope_break{ 0.f }
 {
@@ -314,7 +314,7 @@ void SmartCalculatorPlayer::clear() {
 	// Smart Calculator
 	m_power = 0u;
 
-	// Pode ser negativo esses
+	// These can be negative
 	m_auxpart_pwr = 0;
 	m_mascot_pwr = 0;
 	m_card_pwr = 0;
@@ -333,7 +333,7 @@ void SmartCalculatorPlayer::clear() {
 	m_curve = 0.f;
 	m_slope_break = 0.f;
 
-	// Quebra especial que manda 3 valores, Qbra x, �ngulo, Qbra Z
+	// Special break that sends 3 values, Break x, Angle, Break Z
 	m_special_slope_flag = false;
 	memset(m_special_slope_break, 0, sizeof m_special_slope_break);
 
@@ -645,13 +645,13 @@ void SmartCalculatorPlayer::setGameShotValue(stGameShotValue& _gsv) {
 		m_card_pwr = m_game_shot_value.card_pwr;
 		m_ps_card_pwr = m_game_shot_value.ps_card_pwr;
 
-		// Só deixa o ground 100% se não tiver chuvendo
+		// Only leaves the ground at 100% if it is not raining
 		if (m_game_shot_value.ground && !m_game_shot_value.rain)
 			m_ground = 100.f;
 
 		if (m_game_shot_value.safety) {
 			
-			// Só deixa o ground 100% se não tiver chovendo
+			// Only leaves the ground at 100% if it is not raining
 			if (!m_game_shot_value.rain)
 				m_ground = 100.f;
 
@@ -794,7 +794,7 @@ void SmartCalculatorPlayer::calcule(const char* _args) {
 		p << m_spin;
 		p << m_curve;
 
-		// Option Quebra
+		// Option Break
 		p << (unsigned char)(m_special_slope_flag ? 1u : 0u);
 
 		if (!m_special_slope_flag)
@@ -843,12 +843,12 @@ void SmartCalculatorPlayer::macro(const char* _args) {
 		p << m_degree;
 		p << m_ground;
 
-		// Option Quebra
+		// Option Break
 		if (!m_special_slope_flag)
 			p << m_slope_break;
 		else {
 
-			// Calcula slope
+			// Calculate slope
 			float rad = (float)(m_special_slope_break[1] * 
 #if defined(_WIN32)
 				std::_Pi
@@ -857,7 +857,7 @@ void SmartCalculatorPlayer::macro(const char* _args) {
 #endif
 				/ 180.f);
 
-			float slope = (float)(/*Nega*/-((cosf(rad) * m_special_slope_break[0]) - (-sinf(rad) * m_special_slope_break[2])));
+			float slope = (float)(/*Negate*/-((cosf(rad) * m_special_slope_break[0]) - (-sinf(rad) * m_special_slope_break[2])));
 
 			p << slope;
 		}
@@ -869,7 +869,7 @@ void SmartCalculatorPlayer::macro(const char* _args) {
 		// Result
 		stResult copy = m_last_result;
 
-		copy.percent *= 0.01f; // divede por 100, que o macro usar
+		copy.percent *= 0.01f; // divide by 100, which the macro uses
 
 		p.write(&copy, sizeof(stResult));
 
@@ -1001,7 +1001,7 @@ void SmartCalculatorPlayer::mycella_degree(const char* _args) {
 
 		if (slope_breaks == 0.f) {
 
-			// S� altera o �ngulo se for GM
+			// Only changes the angle if GM
 			if (m_game_shot_value.gm)
 				m_degree = degree_shot;
 
@@ -1009,7 +1009,7 @@ void SmartCalculatorPlayer::mycella_degree(const char* _args) {
 		
 		}else {
 
-			// Lambda degree to radianos
+			// Lambda degree to radians
 			constexpr auto degreeToRad = [](float _degree) -> float {
 				return float(
 #if defined(_WIN32)
@@ -1022,18 +1022,18 @@ void SmartCalculatorPlayer::mycella_degree(const char* _args) {
 
 			float slope_real = fabsf(cosf(fabsf(degreeToRad(degree_shot - degree_align)))) * slope_breaks;
 
-			// S� altera o �ngulo se for GM
+			// Only changes the angle if GM
 			if (m_game_shot_value.gm)
 				m_degree = degree_shot;
 
 			m_slope_break = slope_real / getSlopeByResolution(m_resolution, m_auto_fit);
 		}
 
-		// Zera slope special
+		// Zero special slope
 		m_special_slope_flag = false;
 		memset(m_special_slope_break, 0, sizeof m_special_slope_break);
 
-		// Resposta
+		// Response
 		std::string reply = "Slope Real: " + toFixed(m_slope_break, 2);
 
 		sLogger::getInstance().Response(m_id, eTYPE_CALCULATOR_CMD::SMART_CALCULATOR, reply, eTYPE_RESPONSE::PLAYER_RESPONSE);
@@ -1052,7 +1052,7 @@ void SmartCalculatorPlayer::club(const char* _args) {
 		if (v_args.empty())
 			return;
 
-		// Verifica se � o nome do club
+		// Check whether it is the club name
 		if (isNaN(v_args[0])) {
 
 			for (auto i = 0u; i < (sizeof(CLUB_INFO_ENUM) / sizeof(CLUB_INFO_ENUM[0])); i++) {
@@ -1072,7 +1072,7 @@ void SmartCalculatorPlayer::club(const char* _args) {
 			return;
 		}
 
-		// Index do club
+		// Club index
 		unsigned char index = (unsigned char)(int)(float)std::atof(v_args[0].c_str());
 
 		if (index >= getClubTypeLength()) {
@@ -1098,7 +1098,7 @@ void SmartCalculatorPlayer::shot(const char* _args) {
 		if (v_args.empty())
 			return;
 
-		// Verifica se � o nome da tacada(shot)
+		// Check whether it is the shot name
 		if (isNaN(v_args[0])) {
 
 			for (auto i = 0u; i < (sizeof(SHOT_TYPE_ENUM) / sizeof(SHOT_TYPE_ENUM[0])); i++) {
@@ -1118,7 +1118,7 @@ void SmartCalculatorPlayer::shot(const char* _args) {
 			return;
 		}
 
-		// Index da tacada(shot)
+		// Shot index
 		unsigned char index = (unsigned char)(int)(float)std::atof(v_args[0].c_str());
 
 		if (index >= (sizeof(SHOT_TYPE_ENUM) / sizeof(SHOT_TYPE_ENUM[0]))) {
@@ -1165,7 +1165,7 @@ void SmartCalculatorPlayer::power(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1183,7 +1183,7 @@ void SmartCalculatorPlayer::ring(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1201,7 +1201,7 @@ void SmartCalculatorPlayer::mascot(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1219,7 +1219,7 @@ void SmartCalculatorPlayer::card(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1237,7 +1237,7 @@ void SmartCalculatorPlayer::card_power_shot(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1255,7 +1255,7 @@ void SmartCalculatorPlayer::distance(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1288,7 +1288,7 @@ void SmartCalculatorPlayer::wind(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1306,7 +1306,7 @@ void SmartCalculatorPlayer::degree(const char* _args) {
 
 	try {
 
-		// Verifica se � GM para usar esse comando
+		// Check whether it is a GM to use this command
 		CHECK_ALLOW_COMMAND;
 
 		CHECK_INPUT_VALUE;
@@ -1376,7 +1376,7 @@ void SmartCalculatorPlayer::slope_break(const char* _args) {
 
 		SET_VALUE_INPUT_FROM_STRING(m_slope_break);
 
-		// Update Qbra pela resolu��o e auto fit
+		// Update Break by resolution and auto fit
 		m_slope_break /= getSlopeByResolution(m_resolution, m_auto_fit);
 
 		m_special_slope_flag = false;
@@ -1396,15 +1396,15 @@ void SmartCalculatorPlayer::make_slope_break(const char* _args) {
 		if (v_args.empty())
 			return;
 
-		if (v_args.size() == 2) { // Qbra x, Qbra z
+		if (v_args.size() == 2) { // Break x, Break z
 			
 			CHECK_VALUE_IS_NUMBER(v_args[0]);
 			CHECK_VALUE_IS_NUMBER(v_args[1]);
 
 			auto scala = getSlopeByResolution(m_resolution, m_auto_fit);
 
-			m_special_slope_break[0] = ((float)std::atof(v_args[0].c_str())) / scala * -1/*Inverte a slope*/;
-			m_special_slope_break[2] = ((float)std::atof(v_args[1].c_str())) / scala * -1/*Inverte a slope*/;
+			m_special_slope_break[0] = ((float)std::atof(v_args[0].c_str())) / scala * -1/*Invert the slope*/;
+			m_special_slope_break[2] = ((float)std::atof(v_args[1].c_str())) / scala * -1/*Invert the slope*/;
 
 			m_special_slope_break[1] = float(m_game_shot_value.mira_rad * 180 / 
 #if defined(_WIN32)
@@ -1418,7 +1418,7 @@ void SmartCalculatorPlayer::make_slope_break(const char* _args) {
 
 			m_slope_break = 0.f;
 
-		}else if (v_args.size() == 3) { // Qbra x, �ngulo, Qbra Z
+		}else if (v_args.size() == 3) { // Break x, Angle, Break Z
 
 			CHECK_VALUE_IS_NUMBER(v_args[0]);
 			CHECK_VALUE_IS_NUMBER(v_args[1]);
@@ -1426,9 +1426,9 @@ void SmartCalculatorPlayer::make_slope_break(const char* _args) {
 
 			auto scala = getSlopeByResolution(m_resolution, m_auto_fit);
 
-			m_special_slope_break[0] = ((float)std::atof(v_args[0].c_str())) / scala * -1/*Inverte a slope*/;
+			m_special_slope_break[0] = ((float)std::atof(v_args[0].c_str())) / scala * -1/*Invert the slope*/;
 			m_special_slope_break[1] = (float)std::atof(v_args[1].c_str());
-			m_special_slope_break[2] = ((float)std::atof(v_args[2].c_str())) / scala * -1/*Inverte a slope*/;
+			m_special_slope_break[2] = ((float)std::atof(v_args[2].c_str())) / scala * -1/*Invert the slope*/;
 
 			m_special_slope_flag = true;
 
@@ -1446,7 +1446,7 @@ void SmartCalculatorPlayer::aim_degree(const char* _args) {
 
 	try {
 
-		// �ngulo mira
+		// Aim angle
 		float aim_degree = float(m_game_shot_value.mira_rad * 180.f / 
 #if defined(_WIN32)
 			std::_Pi

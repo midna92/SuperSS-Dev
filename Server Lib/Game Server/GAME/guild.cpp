@@ -1,6 +1,6 @@
-// Arquivo guild.cpp
-// Criado em 29/12/2019 as 11:51 por Acrisio
-// Implementa��o da classe Guild
+// File guild.cpp
+// Created on 29/12/2019 at 11:51 by Acrisio
+// Implementation of class Guild
 
 #if defined(_WIN32)
 #pragma pack(1)

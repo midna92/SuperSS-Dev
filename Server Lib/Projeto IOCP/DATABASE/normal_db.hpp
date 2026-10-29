@@ -1,6 +1,6 @@
-// Arquivo normal_db.hpp
-// Criado em 01/05/2018 as 10:17 por Acrisio
-// Definição da classe NormalDB
+// File normal_db.hpp
+// Created on 01/05/2018 at 10:17 by Acrisio
+// Definition of class NormalDB
 
 #pragma once
 #ifndef _STDA_NORMAL_DB_HPP
@@ -32,7 +32,7 @@ namespace stdA {
 				};
 				~msg_t() {	// Destrutor
 
-					// Libera memória allocada no pangya_db, se for para desalocar ela mesmo aqui
+					// Free memory allocated in pangya_db, if it is to be deallocated here itself
 					if (_pangya_db != nullptr && !_pangya_db->isWaitable())
 						delete _pangya_db;
 
@@ -68,10 +68,10 @@ namespace stdA {
 
 					_pangya_db->wakeupWaiter();
 
-					// Quando é Waitable, quem chamou não destroí a msg, quem libera a memóra da msg é o db manager.
-					// Aqui coloca o _pangya_db como nullptr, por que o waitable é uma referência que libera a memória do _pangya_db e quem criou a msg
-					// Quando vai liberar a memória no destrutor da msg ele verifica o _pangya_db, mas como o Waitable, quem criou que libera a memória ele pode pegar um _pangya_db com acesso de memório inválida.
-					// Colocando nullptr ele vai pular isso e não vai da accesso de memória inválida.
+					// When it is Waitable, the caller does not destroy the msg, the db manager frees the msg memory.
+					// Here set _pangya_db to nullptr, because the waitable is a reference that frees the _pangya_db memory and whoever created the msg
+					// When the msg destructor is about to free the memory it checks _pangya_db, but since it is Waitable and whoever created it frees the memory, it could get a _pangya_db with invalid memory access.
+					// Setting it to nullptr it will skip this and will not cause an invalid memory access.
 					_pangya_db = nullptr;
 				};
 				bool isWaitable() {
@@ -88,7 +88,7 @@ namespace stdA {
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::NORMAL_DB, 0, 10000));
 				};
             protected:
-				uint32_t id;		// ID da msg
+				uint32_t id;		// msg ID
                 pangya_db* _pangya_db;
                 callback_response func;
                 void* arg;

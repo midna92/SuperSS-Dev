@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_workshop.hpp
-// Criado em 23/06/2018 as 18:41 por Acrisio
-// Defini��o da classe CmdUpdateClubSetWorkshop
+// File cmd_update_clubset_workshop.hpp
+// Created on 23/06/2018 at 18:41 by Acrisio
+// Definition of class CmdUpdateClubSetWorkshop
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CLUBSET_WORKSHOP_HPP

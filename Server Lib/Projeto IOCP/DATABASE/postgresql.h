@@ -1,6 +1,6 @@
-// Arquivo postgresql.h
-// Criado em 16/07/2021 as 09:23 por Acrisio
-// Definição da classe postgresql
+// File postgresql.h
+// Created on 16/07/2021 at 09:23 by Acrisio
+// Definition of class postgresql
 
 #pragma once
 #ifndef _STDA_POSTGRESQL_H
@@ -19,7 +19,7 @@
 
 #include "response.h"
 
-// define SHOW_SUCCESS_INGO_MSG para mostrar as msg que o postgresql server retorno mesmo com sucesso
+// define SHOW_SUCCESS_INGO_MSG to show the messages the postgresql server returns even on success
 //#define SHOW_SUCCESS_INFO_MSG
 
 namespace stdA {

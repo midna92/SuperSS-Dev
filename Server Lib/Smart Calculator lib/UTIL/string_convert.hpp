@@ -1,6 +1,6 @@
-// Arquivo string_convert.hpp
-// Criado em 21/11/2020 as 10:41 por Acrisio
-// Defini��o e Implementa��o de conversores de string
+// File string_convert.hpp
+// Created on 21/11/2020 at 10:41 by Acrisio
+// Definition and implementation of string converters
 
 #pragma once
 #ifndef _STDA_STRING_CONVERT_HPP

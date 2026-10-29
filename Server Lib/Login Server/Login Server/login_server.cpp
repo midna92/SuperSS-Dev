@@ -1,6 +1,6 @@
-// Arquivo login_server.cpp
-// Criado em 18/12/2017 por Acrisio
-// Implementa��o da classe login_server
+// File login_server.cpp
+// Created on 18/12/2017 by Acrisio
+// Implementation of the login_server class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -69,8 +69,8 @@
 		packet_func::succes_login((__arg1), (_session)); \
 	}
 
-// Verifica se session está autorizada para executar esse ação, 
-// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+// Checks if the session is authorized to perform this action, 
+// if it did not log in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[login_server::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1, 0x5000501)); \
@@ -124,13 +124,13 @@ login_server::login_server() : server(m_player_manager, 2, 8, 4), m_player_manag
 
 		m_state = FAILURE;
 
-		// não posso lança exception para fora do contrutor que eles nao chama o destrutor dele antes
+		// cannot throw exception out of the constructor because they do not call its destructor beforehand
 	}
 };
 
 login_server::~login_server() {
 
-	// Crucial esse aqui para terminar o server sem crashs
+	// Crucial for shutting down the server without crashes
 	waitAllThreadFinish(INFINITE);
 
 };
@@ -154,12 +154,12 @@ void login_server::requestDownPlayerOnGameServer(player& _session, packet *_pack
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks if the session is authorized to perform this action, 
+		// if it did not log in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("DownPlayerOnGameServer");
 
-		// Derruba o player que está logado no game server
-		// Se o Auth Server Estiver ligado manda por ele, se não tira pelo banco de dados mesmo
+		// Drops the player that is logged in on the game server
+		// If the Auth Server is on, sends through it, otherwise removes through the database itself
 		if (m_unit_connect->isLive()) {
 
 			// [Auth Server] -> Game Server UID = _session.m_pi.m_server_uid;
@@ -167,8 +167,8 @@ void login_server::requestDownPlayerOnGameServer(player& _session, packet *_pack
 
 		}else {
 			
-			// Auth Server não está online, resolver por aqui mesmo
-			CmdRegisterLogon cmd_rl(_session.m_pi.uid, 1/*Option 1 desloga no banco de dados*/, true/*Waiter*/);
+			// Auth Server is not online, handle it here itself
+			CmdRegisterLogon cmd_rl(_session.m_pi.uid, 1/*Option 1 logs out in the database*/, true/*Waiter*/);
 
 			snmdb::NormalManagerDB::getInstance().add(0, &cmd_rl, nullptr, nullptr);
 
@@ -177,7 +177,7 @@ void login_server::requestDownPlayerOnGameServer(player& _session, packet *_pack
 			if (cmd_rl.getException().getCodeError() != 0)
 				throw cmd_rl.getException();
 
-			// Loga com sucesso
+			// Logs in successfully
 			packet_func::succes_login(this, &_session);
 
 			_smp::message_pool::getInstance().push(new message("[login_server::requestDownPlayerOnGameServer][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
@@ -200,7 +200,7 @@ void login_server::authCmdShutdown(int32_t _time_sec) {
 
 	try {
 
-		// Shut down com tempo
+		// Shut down with time
 		if (m_shutdown == nullptr) {
 
 			// Log
@@ -220,23 +220,23 @@ void login_server::authCmdShutdown(int32_t _time_sec) {
 };
 
 void login_server::authCmdBroadcastNotice(std::string /*_notice*/) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 };
 
 void login_server::authCmdBroadcastTicker(std::string /*_nickname*/, std::string /*_msg*/) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 };
 
 void login_server::authCmdBroadcastCubeWinRare(std::string /*_msg*/, uint32_t /*_option*/) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 };
 
 void login_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _player_uid, unsigned char _force) {
 	
-	// Aqui no Login Server Ainda não usa o force, ele desconecta o player do mesmo jeito
+	// Here in the Login Server the force is not used yet, it disconnects the player the same way
 	UNREFERENCED_PARAMETER(_force);
 
 	try {
@@ -249,7 +249,7 @@ void login_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _p
 			_smp::message_pool::getInstance().push(new message("[login_server::authCmdDisconnectPlayer][log] Comando do Auth Server, Server[UID=" + std::to_string(_req_server_uid)
 					+ "] pediu para desconectar o Player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Deconecta o Player
+			// Disconnects the Player
 			DisconnectSession(s);
 
 			// UPDATE ON Auth Server
@@ -273,7 +273,7 @@ void login_server::authCmdConfirmDisconnectPlayer(uint32_t _player_uid) {
 
 		if (s != nullptr) {
 
-			// Loga com sucesso
+			// Logs in successfully
 			packet_func::succes_login(this, s);
 
 			_smp::message_pool::getInstance().push(new message("[login_server::authCmdConfirmDisconnectPlayer][Log] Player[UID=" + std::to_string(s->m_pi.uid)
@@ -291,23 +291,23 @@ void login_server::authCmdConfirmDisconnectPlayer(uint32_t _player_uid) {
 };
 
 void login_server::authCmdNewMailArrivedMailBox(uint32_t /*_player_uid*/, uint32_t /*_mail_id*/) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 };
 
 void login_server::authCmdNewRate(uint32_t /*_tipo*/, uint32_t /*_qntd*/) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 };
 
 void login_server::authCmdReloadGlobalSystem(uint32_t _tipo) {
-	// Login Server não usa esse Comando
+	// Login Server does not use this Command
 	return;
 }
 
 void login_server::authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi) {
 
-	// Login Server ainda não usa esse funcionalidade de pedir o info do player que está conectado em outro server
+	// Login Server does not use this functionality yet of requesting the info of the player connected on another server
 	UNREFERENCED_PARAMETER(_req_server_uid);
 
 	try {
@@ -331,12 +331,12 @@ void login_server::authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, 
 void login_server::requestLogin(player& _session, packet *_packet) {
 	REQUEST_BEGIN("Login");
 
-	/// Pacote01 Option 0x0F(15) é manutenção
+	/// Packet01 Option 0x0F(15) is maintenance
 	packet p;
 
 	try {
 
-		// Ler dados do packet de login
+		// Reads data from the login packet
 		std::string id = _packet->readString();
 		std::string password = _packet->readString();
 		
@@ -369,7 +369,7 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 			_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-			// Relança
+			// Rethrows
 			throw;
 		}
 
@@ -396,11 +396,11 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("Mac Address : " + mac_address, CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-		// Termina a parte de ler o dados do packet de login
+		// Finishes reading the data from the login packet
 
 		_session.m_tick_bot = std::clock();
 
-		if (!haveBanList(_session.m_ip, mac_address)) {	// Verifica se está na list de ips banidos
+		if (!haveBanList(_session.m_ip, mac_address)) {	// Checks if it is in the banned ips list
 
 			CmdVerifyID cmd_verifyId(id, true/*Waiter*/); // ID
 
@@ -411,7 +411,7 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 			if (cmd_verifyId.getException().getCodeError() != 0)
 				throw cmd_verifyId.getException();
 
-			if (cmd_verifyId.getUID() > 0) {	// Verifica se o ID existe
+			if (cmd_verifyId.getUID() > 0) {	// Checks if the ID exists
 
 				CmdVerifyPass cmd_verifyPass(cmd_verifyId.getUID(), pass_md5, true/*Waiter*/); // PASSWORD
 
@@ -422,7 +422,7 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 				if (cmd_verifyPass.getException().getCodeError() != 0)
 					throw cmd_verifyPass.getException();
 
-				if (cmd_verifyPass.getLastVerify()) {	// Verifica se a senha bate com a do banco de dados
+				if (cmd_verifyPass.getLastVerify()) {	// Checks if the password matches the one in the database
 
 					CmdPlayerInfo cmd_pi(cmd_verifyId.getUID(), true/*Waiter*/);
 
@@ -459,10 +459,10 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 					if (cmd_fsc.getException().getCodeError() != 0)
 						throw cmd_fsc.getException();
 
-					// Verifica se tem o mesmo player logado com outro socket
+					// Checks if the same player is logged in with another socket
 					session *player_logado = HasLoggedWithOuterSocket(_session);
 
-					if (!canSameIDLogin() && player_logado != nullptr) {	// Verifica se ja nao esta logado
+					if (!canSameIDLogin() && player_logado != nullptr) {	// Checks if it is not already logged in
 
 						p.init_plain((unsigned short)0x01);
 
@@ -482,16 +482,16 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 								+ std::to_string(pi.uid) + ", ID=" + std::string(pi.id) + ", IP=" + _session.getIP() + "] ja tem outro Player conectado[UID=" + std::to_string(player_logado->getUID())
 								+ ", OID=" + std::to_string(player_logado->m_oid) + ", IP=" + player_logado->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-					}else if (pi.m_state) {	// Verifica se já pediu para logar
+					}else if (pi.m_state) {	// Checks if it has already asked to log in
 
 						p.init_plain((unsigned short)0x01);
 
 						p.addUint8(0xE2);
-						p.addInt32(500010);	// Já esta logado, ja enviei o pacote de logar
+						p.addInt32(500010);	// Already logged in, I already sent the login packet
 
 						packet_func::session_send(p, &_session, 0);
 
-						if (pi.m_state++ >= 3)	// Ataque, derruba a conexão maliciosa
+						if (pi.m_state++ >= 3)	// Attack, drops the malicious connection
 #if defined(_WIN32)
 							::shutdown(_session.m_sock, SD_RECEIVE);
 #elif defined(__linux__)
@@ -512,12 +512,12 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 						if (cmd_vi.getException().getCodeError() != 0)
 							throw cmd_vi.getException();
 
-						if (!(pi.m_cap & 4) && getAccessFlag() && !cmd_vi.getLastVerify()) {	// Verifica se tem permição para acessar
+						if (!(pi.m_cap & 4) && getAccessFlag() && !cmd_vi.getLastVerify()) {	// Checks if it has permission to access
 
 							p.init_plain((unsigned short)0x01);
 
 							p.addUint8(0xE2);
-							p.addInt32(500015);	// Acesso restrito
+							p.addInt32(500015);	// Restricted access
 
 							packet_func::session_send(p, &_session, 0);
 
@@ -531,18 +531,18 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 							_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] acesso restrito para o player [UID=" + std::to_string(pi.uid)
 									+ ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						}else if (pi.block_flag.m_id_state.id_state.ull_IDState != 0) {	// Verifica se está bloqueado
+						}else if (pi.block_flag.m_id_state.id_state.ull_IDState != 0) {	// Checks if it is blocked
 
 							if (pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_TEMPORARY && (pi.block_flag.m_id_state.block_time == -1 || pi.block_flag.m_id_state.block_time > 0)) {
 
-								auto tempo = pi.block_flag.m_id_state.block_time / 60 / 60/*Hora*/; // Hora
+								auto tempo = pi.block_flag.m_id_state.block_time / 60 / 60/*Hour*/; // Hour
 
 								p.init_plain((unsigned short)0x01);
 
 								p.addUint8(7);
-								p.addInt32(pi.block_flag.m_id_state.block_time == -1 || tempo == 0 ? 1/*Menos de uma hora*/ : tempo);	// Block Por Tempo
+								p.addInt32(pi.block_flag.m_id_state.block_time == -1 || tempo == 0 ? 1/*Less than an hour*/ : tempo);	// Block By Time
 
-								// Aqui pode ter uma string com mensagem que o pangya exibe
+								// Here there may be a string with a message that pangya displays
 								//p.addString("ola");
 
 								packet_func::session_send(p, &_session, 0);
@@ -563,8 +563,8 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 								p.init_plain((unsigned short)0x01);
 
-								p.addUint8(0x0c);		// Acho que seja block permanente, que fala de email
-								//p->addInt32(500012);	// Block Permanente
+								p.addUint8(0x0c);		// I think it is a permanent block, which talks about email
+								//p->addInt32(500012);	// Permanent Block
 
 								packet_func::session_send(p, &_session, 0);
 
@@ -580,16 +580,16 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 							}else if (pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_ALL_IP) {
 
-								// Bloquea todos os IP que o player logar e da error de que a area dele foi bloqueada
+								// Blocks all the IPs the player logs in from and gives an error saying their area was blocked
 
-								// Add o ip do player para a lista de ip banidos
+								// Adds the player's ip to the banned ips list
 								snmdb::NormalManagerDB::getInstance().add(1, new CmdInsertBlockIP(_session.m_ip, "255.255.255.255"), login_server::SQLDBResponse, this);
 
-								// Resposta
+								// Response
 								p.init_plain((unsigned short)0x01);
 
 								p.addUint8(16);
-								p.addInt32(500012);		// Ban por Região;
+								p.addInt32(500012);		// Ban by Region;
 
 								packet_func::session_send(p, &_session, 0);
 
@@ -605,16 +605,16 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 							}else if (pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_MAC_ADDRESS) {
 
-								// Bloquea o MAC Address que o player logar e da error de que a area dele foi bloqueada
+								// Blocks the MAC Address the player logs in from and gives an error saying their area was blocked
 
-								// Add o MAC Address do player para a lista de MAC Address banidos
+								// Adds the player's MAC Address to the banned MAC Address list
 								snmdb::NormalManagerDB::getInstance().add(2, new CmdInsertBlockMAC(mac_address), login_server::SQLDBResponse, this);
 
-								// Resposta
+								// Response
 								p.init_plain((unsigned short)0x01);
 
 								p.addUint8(16);
-								p.addInt32(500012);		// Ban por Região;
+								p.addInt32(500012);		// Ban by Region;
 
 								packet_func::session_send(p, &_session, 0);
 
@@ -628,9 +628,9 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 								_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 										+ ", IP=" + std::string(_session.m_ip) + ", MAC=" + mac_address + "] Block MAC Address que o player fizer login.", CL_FILE_LOG_AND_CONSOLE));
 
-							}else if (!cmd_flc.getLastCheck()) {	// Verifica se fez o primeiro login
+							}else if (!cmd_flc.getLastCheck()) {	// Checks if the first login was done
 							
-								// Authorized a ficar online no server por tempo indeterminado
+								// Authorized to stay online on the server indefinitely
 								_session.m_is_authorized = 1u;
 
 								FIRST_LOGIN(&_session);
@@ -638,9 +638,9 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 								_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Primeira vez que o player loga. player[UID=" + std::to_string(pi.uid)
 										+ ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-							}else if (!cmd_fsc.getLastCheck()) {	// Verifica se fez o primeiro set do character
+							}else if (!cmd_fsc.getLastCheck()) {	// Checks if the first character set was done
 							
-								// Authorized a ficar online no server por tempo indeterminado
+								// Authorized to stay online on the server indefinitely
 								_session.m_is_authorized = 1u;
 
 								FIRST_SET(&_session);
@@ -648,13 +648,13 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 								_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Primeira vez que o player escolhe um character padrao. player[UID="
 										+ std::to_string(pi.uid) + ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-							}else if (cmd_lc.getLastCheck()) {	// Verifica se já esta logado no game server
+							}else if (cmd_lc.getLastCheck()) {	// Checks if already logged in on the game server
 						
-								// Pega o Server UID para usar depois no packet004, para derrubar do server
+								// Gets the Server UID to use later in packet004, to drop it from the server
 								_session.m_pi.m_server_uid = cmd_lc.getServerUID();
 
-								// Já está autorizado a ficar online, o login server só vai derrubar o outro que está online no game server
-								// Authorized a ficar online no server por tempo indeterminado
+								// Already authorized to stay online, the login server will only drop the other one that is online on the game server
+								// Authorized to stay online on the server indefinitely
 								_session.m_is_authorized = 1u;
 
 								p.init_plain((unsigned short)0x01);
@@ -666,9 +666,9 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 								_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Player ja esta logado no game server. player[UID="
 										+ std::to_string(pi.uid) + ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-							}else if (pi.m_cap & 4) {	// Acesso permtido
+							}else if (pi.m_cap & 4) {	// Access allowed
 						
-								// Authorized a ficar online no server por tempo indeterminado
+								// Authorized to stay online on the server indefinitely
 								_session.m_is_authorized = 1u;
 
 								SUCCESS_LOGIN("requestLogin", this, &_session);
@@ -678,15 +678,15 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 							}else {
 								
-								// Authorized a ficar online no server por tempo indeterminado
+								// Authorized to stay online on the server indefinitely
 								_session.m_is_authorized = 1u;
 
 								SUCCESS_LOGIN("requestLogin", this, &_session);
 							}
 
-						}else if (!cmd_flc.getLastCheck()) {	// Verifica se fez o primeiro login
+						}else if (!cmd_flc.getLastCheck()) {	// Checks if the first login was done
 							
-							// Authorized a ficar online no server por tempo indeterminado
+							// Authorized to stay online on the server indefinitely
 							_session.m_is_authorized = 1u;
 							
 							FIRST_LOGIN(&_session);
@@ -694,9 +694,9 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 							_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Primeira vez que o player loga. player[UID=" + std::to_string(pi.uid)
 									+ ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						}else if (!cmd_fsc.getLastCheck()) {	// Verifica se fez o primeiro set do character
+						}else if (!cmd_fsc.getLastCheck()) {	// Checks if the first character set was done
 							
-							// Authorized a ficar online no server por tempo indeterminado
+							// Authorized to stay online on the server indefinitely
 							_session.m_is_authorized = 1u;
 
 							FIRST_SET(&_session);
@@ -704,13 +704,13 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 							_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Primeira vez que o player escolhe um character padrao. player[UID="
 									+ std::to_string(pi.uid) + ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						}else if (cmd_lc.getLastCheck()) {	// Verifica se já esta logado no game server
+						}else if (cmd_lc.getLastCheck()) {	// Checks if already logged in on the game server
 
-							// Pega o Server UID para usar depois no packet004, para derrubar do server
+							// Gets the Server UID to use later in packet004, to drop it from the server
 							_session.m_pi.m_server_uid = cmd_lc.getServerUID();
 
-							// Já está autorizado a ficar online, o login server só vai derrubar o outro que está online no game server
-							// Authorized a ficar online no server por tempo indeterminado
+							// Already authorized to stay online, the login server will only drop the other one that is online on the game server
+							// Authorized to stay online on the server indefinitely
 							_session.m_is_authorized = 1u;
 
 							p.init_plain((unsigned short)0x01);
@@ -722,9 +722,9 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 							_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Player ja esta logado no game server. player[UID="
 									+ std::to_string(pi.uid) + ", ID=" + std::string(pi.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						}else if (pi.m_cap & 4) {	// Acesso permtido
+						}else if (pi.m_cap & 4) {	// Access allowed
 						
-							// Authorized a ficar online no server por tempo indeterminado
+							// Authorized to stay online on the server indefinitely
 							_session.m_is_authorized = 1u;
 
 							SUCCESS_LOGIN("requestLogin", this, &_session);
@@ -734,7 +734,7 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 						}else {
 
-							// Authorized a ficar online no server por tempo indeterminado
+							// Authorized to stay online on the server indefinitely
 							_session.m_is_authorized = 1u;
 
 							SUCCESS_LOGIN("requestLogin", this, &_session);
@@ -743,8 +743,8 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 				}else {
 
-					packet_func::pacote001(p, &_session, 6/* ID ou PW errado*/);
-					packet_func::session_send(p, &_session, 1);	// Erro pass
+					packet_func::pacote001(p, &_session, 6/* Wrong ID or PW*/);
+					packet_func::session_send(p, &_session, 1);	// Pass error
 
 					// Disconnect
 #if defined(_WIN32)
@@ -759,7 +759,7 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 			}else if (!getAccessFlag() && getCreateUserFlag()) {
 
-				// Authorized a ficar online no server por tempo indeterminado
+				// Authorized to stay online on the server indefinitely
 				_session.m_is_authorized = 1u;
 
 				_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] Criando um novo usuario[ID=" + cmd_verifyId.getID()
@@ -799,8 +799,8 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 
 			}else {
 
-				packet_func::pacote001(p, &_session, 6/*ID é 2, 6 é o ID ou pw errado*/);
-				packet_func::session_send(p, &_session, 1);	// Erro login
+				packet_func::pacote001(p, &_session, 6/*ID is 2, 6 is wrong ID or pw*/);
+				packet_func::session_send(p, &_session, 1);	// Login error
 
 				// Disconnect
 #if defined(_WIN32)
@@ -812,12 +812,12 @@ void login_server::requestLogin(player& _session, packet *_packet) {
 				_smp::message_pool::getInstance().push(new message("[login_server::requestLogin][Log] ID nao existe, ID: " + cmd_verifyId.getID(), CL_FILE_LOG_AND_CONSOLE));
 			}
 
-		}else {	// Ban IP/MAC por região
+		}else {	// Ban IP/MAC by region
 
 			p.init_plain((unsigned short)0x01);
 
 			p.addUint8(16);
-			p.addInt32(500012);		// Ban por Região;
+			p.addInt32(500012);		// Ban by Region;
 
 			packet_func::session_send(p, &_session, 0);
 
@@ -891,7 +891,7 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 		if (cmd_verifyId.getException().getCodeError() != 0)
 			throw cmd_verifyId.getException();
 
-		if (cmd_verifyId.getUID() <= 0)	// Verifica se o ID existe
+		if (cmd_verifyId.getUID() <= 0)	// Checks if the ID exists
 			throw exception("[login_server::requestReLogin][Error] Player[ID=" + id + "] not found. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1035, 0));
 
 		CmdPlayerInfo cmd_pi(cmd_verifyId.getUID(), true/*Waiter*/);
@@ -925,8 +925,8 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 					+ std::to_string(_session.m_pi.uid) + "] AuthKeyLogin: " + std::string(akli.key) + " != " 
 					+ auth_key_login, STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1026, 0));
 
-		// Verifica se ele pode logar de novo, verifica as flag do login server
-		if (haveBanList(_session.m_ip, "", false/*Não verifica o MAC Address*/))	// Verifica se está na list de ips banidos
+		// Checks if it can log in again, checks the login server flags
+		if (haveBanList(_session.m_ip, "", false/*Does not check the MAC Address*/))	// Checks if it is in the banned ips list
 			throw exception("[login_server::requestReLogin][Error] auth login server, o player[UID=" 
 					+ std::to_string(_session.m_pi.uid) + "] esta na lista de ip banidos.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1027, 0));
 		
@@ -939,12 +939,12 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 		if (cmd_vi.getException().getCodeError() != 0)
 			throw cmd_vi.getException();
 
-		if (!(_session.m_pi.m_cap & 4) && getAccessFlag() && !cmd_vi.getLastVerify()) {	// Verifica se tem permição para acessar
+		if (!(_session.m_pi.m_cap & 4) && getAccessFlag() && !cmd_vi.getLastVerify()) {	// Checks if it has permission to access
 
 			throw exception("[login_server::requestReLogin][Log] acesso restrito para o player [UID=" + std::to_string(_session.m_pi.uid)
 					+ ", ID=" + std::string(_session.m_pi.id) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1028, 0));
 
-		}else if (_session.m_pi.block_flag.m_id_state.id_state.ull_IDState != 0) {	// Verifica se está bloqueado
+		}else if (_session.m_pi.block_flag.m_id_state.id_state.ull_IDState != 0) {	// Checks if it is blocked
 
 			if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_TEMPORARY && (_session.m_pi.block_flag.m_id_state.block_time == -1 || _session.m_pi.block_flag.m_id_state.block_time > 0)) {
 
@@ -960,20 +960,20 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 
 			}else if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_ALL_IP) {
 
-				// Bloquea todos os IP que o player logar e da error de que a area dele foi bloqueada
+				// Blocks all the IPs the player logs in from and gives an error saying their area was blocked
 
-				// Add o ip do player para a lista de ip banidos
+				// Adds the player's ip to the banned ips list
 				snmdb::NormalManagerDB::getInstance().add(1, new CmdInsertBlockIP(_session.m_ip, "255.255.255.255"), login_server::SQLDBResponse, this);
 
-				// Resposta
+				// Response
 				throw exception("[login_server::requestReLogin][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ ", IP=" + std::string(_session.m_ip) + "] Block ALL IP que o player fizer login.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1031, 0));
 
 			}else if (_session.m_pi.block_flag.m_id_state.id_state.st_IDState.L_BLOCK_MAC_ADDRESS) {
 
-				// Bloquea o MAC Address que o player logar e da error de que a area dele foi bloqueada
+				// Blocks the MAC Address the player logs in from and gives an error saying their area was blocked
 
-				// Aqui só da error por que não tem como bloquear o MAC Address por que o cliente não fornece o MAC Address nesse pacote
+				// Here it only gives an error because it is not possible to block the MAC Address since the client does not provide the MAC Address in this packet
 				throw exception("[login_server::requestReLogin][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 						+ ", IP=" + std::string(_session.m_ip) + ", MAC=UNKNOWN] (Esse pacote o cliente nao fornece o MAC Address) Block MAC Address que o player fizer login.", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::LOGIN_SERVER, 1032, 0));
@@ -982,22 +982,22 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 
 		}
 
-		// Passou da verificação com sucesso
+		// Passed the check successfully
 		_smp::message_pool::getInstance().push(new message("[login_server::requestReLogin][Log] player[UID=" + std::to_string(_session.m_pi.uid) + ", ID="
 				+ std::string(_session.m_pi.id) + "] relogou com sucesso", CL_FILE_LOG_AND_CONSOLE));
 
-		// Authorized a ficar online no server por tempo indeterminado
+		// Authorized to stay online on the server indefinitely
 		_session.m_is_authorized = 1u;
 
-		packet_func::succes_login(this, &_session, 1/*só passa auth Key Login, Server List, Msn Server List*/);
+		packet_func::succes_login(this, &_session, 1/*only passes auth Key Login, Server List, Msn Server List*/);
 
 	}catch (exception& e) {
 
-		// Erro do sistema
+		// System error
 		packet_func::pacote00E(p, &_session, L"", 12, 500052);
 		packet_func::session_send(p, &_session, 1);
 
-		// Disconnect o player
+		// Disconnects the player
 #if defined(_WIN32)
 		::shutdown(_session.m_sock, SD_RECEIVE);
 #elif defined(__linux__)
@@ -1010,16 +1010,16 @@ void login_server::requestReLogin(player& _session, packet *_packet) {
 
 void login_server::shutdown_time(int32_t _time_sec) {
 
-	if (_time_sec <= 0)	// Desliga o Server Imediatemente
+	if (_time_sec <= 0)	// Shuts down the Server Immediately
 		shutdown();
 	else {
 
 		job _job(server::end_time_shutdown, this, (void*)0);
 
-		// Se o Shutdown Timer estiver criado descria e cria um novo
+		// If the Shutdown Timer is created, destroys it and creates a new one
 		if (m_shutdown != nullptr) {
 
-			// Para o Tempo se ele não estiver parado
+			// Stops the Time if it is not stopped
 			if (m_shutdown->getState() != timer::STOPPED)
 				m_shutdown->stop();
 
@@ -1042,7 +1042,7 @@ void login_server::onAcceptCompleted(session* _session) {
 	if (!_session->isConnected())
 		throw exception("[login_server::onAcceptCompleted][Error] session is not connected", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 62, 0));
 
-	packet _packet((unsigned short)0x0);	// Tipo Packet Login Server initial packet no compress e no crypt
+	packet _packet((unsigned short)0x0);	// Login Server initial packet Type, no compress and no crypt
 
 	_packet.addInt32((int)_session->m_key);	// key
 	_packet.addInt32(m_si.uid);					// Server UID
@@ -1067,18 +1067,18 @@ void login_server::onDisconnected(session *_session) {
 
 	_smp::message_pool::getInstance().push(new message("[login_server::onDisconnected][Log] Player Desconectou. ID: " + std::string(_player->m_pi.id) + "  UID: " + std::to_string(_player->m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
-	// Aqui não faz nada, no login server por enquanto
+	// Does nothing here, in the login server for now
 };
 
 void login_server::onHeartBeat() {
 
 	try {
 
-		// Server ainda não está totalmente iniciado
+		// Server is not fully started yet
 		if (m_state != INITIALIZED)
 			return;
 
-		// Tirei o list IP/MAC block daqui e coloquei no monitor no server, por que agora eles são da classe server
+		// Removed the IP/MAC block list from here and put it in the server monitor, because now they belong to the server class
 
 	}catch (exception& e) {
 
@@ -1090,7 +1090,7 @@ void login_server::onStart() {
 
 	try {
 
-		// Não faz nada por enquanto
+		// Does nothing for now
 
 	}catch (exception& e) {
 
@@ -1105,7 +1105,7 @@ bool login_server::checkCommand(std::stringstream& _command) {
 	_command >> s;
 
 	if (!s.empty() && s.compare("exit") == 0)
-		return true;	// Sai
+		return true;	// Exits
 	else if (!s.empty() && s.compare("reload_files") == 0) {
 
 		reload_files();
@@ -1114,7 +1114,7 @@ bool login_server::checkCommand(std::stringstream& _command) {
 	
 	}else if (!s.empty() && s.compare("reload_socket_config") == 0) {
 
-		// Ler novamento o arquivo de configuração do socket
+		// Reads the socket configuration file again
 		if (m_accept_sock != nullptr)
 			m_accept_sock->reload_config_file();
 		else
@@ -1175,10 +1175,10 @@ bool login_server::checkCommand(std::stringstream& _command) {
 
 bool login_server::checkPacket(session& _session, packet *_packet) {
 	
-	///--------------- INICIO CHECK PACKET SESSION
-	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Dentro do Interval */
-		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Mesmo pacote */
-		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* deu o limit de count DERRUBA a session */
+	///--------------- START CHECK PACKET SESSION
+	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Within the Interval */
+		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Same packet */
+		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* count limit reached, DROPS the session */
 		_session.m_check_packet.checkPacketId(_packet->getTipo()) && _session.m_check_packet.incrementCount() >= CHK_PCKT_COUNT_LIMIT) {
 
 		_smp::message_pool::getInstance().push(new message("[WARNING] Tentativa de DDoS ataque com pacote ID: (0x" + hex_util::lltoaToHex(_packet->getTipo()) + ") " + std::to_string(_packet->getTipo()) + ". IP=" + std::string(_session.m_ip), CL_FILE_LOG_AND_CONSOLE));
@@ -1187,14 +1187,14 @@ bool login_server::checkPacket(session& _session, packet *_packet) {
 
 		return false;
 	}
-	///--------------- FIM CHECK PACKET SESSION
+	///--------------- END CHECK PACKET SESSION
 
 	return true;
 };
 
 void login_server::config_init() {
 
-	// Server Tipo
+	// Server Type
 	m_si.tipo = 0/*Login Server*/;
 
 	m_access_flag = m_reader_ini.readInt("OPTION", "ACCESSFLAG");
@@ -1203,7 +1203,7 @@ void login_server::config_init() {
 	try {
 		m_same_id_login_flag = m_reader_ini.readInt("OPTION", "SAME_ID_LOGIN");
 	}catch (exception& e) {
-		// Não precisa printar mensagem por que essa opção é de desenvolvimento
+		// No need to print a message because this option is for development
 		UNREFERENCED_PARAMETER(e);
 	}
 
@@ -1224,7 +1224,7 @@ void login_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[login_server::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

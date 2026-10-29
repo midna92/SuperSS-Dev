@@ -1,6 +1,6 @@
-// Arquivo cmd_update_quest_user.hpp
-// Criado em 14/04/2018 as 15:57 por Acrisio
-// Defini��o da classe CmdUpdateQuestUser
+// File cmd_update_quest_user.hpp
+// Created on 14/04/2018 at 15:57 by Acrisio
+// Definition of class CmdUpdateQuestUser
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_QUEST_USER_HPP

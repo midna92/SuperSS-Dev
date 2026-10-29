@@ -1,6 +1,6 @@
-// Arquivo unit_auth_server_connect.hpp
-// Criado em 02/02/2021 as 23:39 por Acrisio
-// Definição da classe unit_auth_server_connect
+// File unit_auth_server_connect.hpp
+// Created on 02/02/2021 at 23:39 by Acrisio
+// Definition of the class unit_auth_server_connect
 
 #pragma once
 #ifndef _STDA_UNIT_AUTH_SERVER_CONNECT_HPP

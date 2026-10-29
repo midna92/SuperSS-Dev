@@ -1,6 +1,6 @@
-// Arquivo login_reward_type.hpp
-// Criado em 27/10/2020 as 14:48 por Acrisio
-// Defini��o dos tipos usados no Login Reward System
+// File login_reward_type.hpp
+// Created on 27/10/2020 at 14:48 by Acrisio
+// Definition of the types used in the Login Reward System
 
 #pragma once
 #ifndef _STDA_LOGIN_REWARD_TYPE_HPP
@@ -47,8 +47,8 @@ namespace stdA {
 		public:
 			uint64_t id;		// index
 			uint32_t uid;
-			uint32_t count_days;		// Quantos dias j� logou no evento
-			uint32_t count_seq;		// Quantas vezes j� repediu esse evento
+			uint32_t count_days;		// How many days he has already logged in during the event
+			uint32_t count_seq;		// How many times he has already repeated this event
 			SYSTEMTIME update_date;
 
 			bool is_clear;
@@ -79,8 +79,8 @@ namespace stdA {
 
 		public:
 			enum class eTYPE : unsigned char {
-				N_TIME,		// Executa N Times, 1, 2, 3, 4, 5, 6, 7 e etc
-				FOREVER,	// Enquanto ele estiver ativo ele executa sempre
+				N_TIME,		// Executes N Times, 1, 2, 3, 4, 5, 6, 7 etc
+				FOREVER,	// While it is active it always executes
 			};
 
 		public:

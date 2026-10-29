@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_block_mac.cpp
-// Criado em 22/08/2019 as 11:51 por Acrisio
-// Implementação da classe CmdInsertBlockMAC
+// File cmd_insert_block_mac.cpp
+// Created on 22/08/2019 at 11:51 by Acrisio
+// Implementation of class CmdInsertBlockMAC
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdInsertBlockMAC::~CmdInsertBlockMAC() {
 
 void CmdInsertBlockMAC::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// Não usa por que é um INSERT
+	// Not used because it is an INSERT
 	return;
 }
 

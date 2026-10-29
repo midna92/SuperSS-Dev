@@ -1,6 +1,6 @@
-// Arquivo cmd_find_ucc.cpp
-// Criado em 15/07/2018 as 00:29 por Acrisio
-// Implementa��o da classe CmdFindUCC
+// File cmd_find_ucc.cpp
+// Created on 15/07/2018 at 00:29 by Acrisio
+// Implementation of the class CmdFindUCC
 
 #if defined(_WIN32)
 #pragma pack(1)

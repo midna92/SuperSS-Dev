@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_achievement.hpp
-// Criado em 11/11/2018 as 14:26 por Acrisio
-// Defini��o da classe CmdDeleteAchievement
+// File cmd_delete_achievement.hpp
+// Created on 11/11/2018 at 14:26 by Acrisio
+// Definition of the class CmdDeleteAchievement
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_ACHIEVEMENT_HPP

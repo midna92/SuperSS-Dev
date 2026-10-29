@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_id.hpp
-// Criado em 17/03/2018 as 20:10 por Acrisio
-// Definição da classe CmdVerifyID
+// File cmd_verify_id.hpp
+// Created on 17/03/2018 at 20:10 by Acrisio
+// Definition of class CmdVerifyID
 
 #pragma once
 #ifndef _STDA_CMD_VERIFY_ID_HPP

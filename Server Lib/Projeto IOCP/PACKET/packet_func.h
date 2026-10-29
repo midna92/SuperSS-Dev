@@ -1,7 +1,7 @@
-// Arquivo packet_func.h
-// Criado em 05/12/2017 por Acrisio
-// Definição da classe packet_func_base
-// e das macros e funções de helper
+// File packet_func.h
+// Created on 05/12/2017 by Acrisio
+// Definition of class packet_func_base
+// and the helper macros and functions
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_H
@@ -83,7 +83,7 @@ namespace stdA {
 
 		public:
 			static func_arr funcs;		// Cliente
-            static func_arr funcs_sv;	// Server (Retorno)
+            static func_arr funcs_sv;	// Server (Return)
 			static func_arr funcs_as;	// Auth Server
     };
 }

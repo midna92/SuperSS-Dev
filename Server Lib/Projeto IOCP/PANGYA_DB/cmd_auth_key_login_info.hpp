@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_key_login_info.hpp
-// Criado em 01/04/2018 as 19:49 por Acrisio
-// Definição da classe CmdAuthKeyLoginInfo
+// File cmd_auth_key_login_info.hpp
+// Created on 01/04/2018 at 19:49 by Acrisio
+// Definition of class CmdAuthKeyLoginInfo
 
 #pragma once
 #ifndef _STDA_CMD_KEY_LOGIN_INFO_HPP

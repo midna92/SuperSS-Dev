@@ -1,6 +1,6 @@
-// Arquivo cmd_find_dolfini_locker_item.hpp
-// Criado em 24/05/2019 as 00:09 por Acrisio
-// Definição da classe CmdFindDolfiniLockerItem
+// File cmd_find_dolfini_locker_item.hpp
+// Created on 24/05/2019 at 00:09 by Acrisio
+// Definition of the class CmdFindDolfiniLockerItem
 
 #pragma once
 #ifndef _STDA_CMD_FIND_DOLFINI_LOCKER_ITEM_HPP

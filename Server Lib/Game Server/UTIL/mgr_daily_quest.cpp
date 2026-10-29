@@ -1,6 +1,6 @@
-// Arquivo mgr_daily_quest.cpp
-// Criado em 13/04/2018 as 15:16 por Acrisio
-// Implementa��o da classe MgrDailyQuest
+// File mgr_daily_quest.cpp
+// Created on 13/04/2018 at 15:16 by Acrisio
+// Implementation of the MgrDailyQuest class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -60,11 +60,11 @@ void MgrDailyQuest::requestCheckAndSendDailyQuest(player& _session, packet *_pac
 	try {
 
 		/*if (sgs::gs == nullptr)
-			throw exception("[MgrDailyQuest::checkAndSendDailyQuest][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] pediu o Daily Quest, mas a variavel static global do server is invalid(nullptr). Bug", 
+			throw exception("[MgrDailyQuest::checkAndSendDailyQuest][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] requested the Daily Quest, but the server static global variable is invalid(nullptr). Bug", 
 				STDA_MAKE_ERROR(STDA_ERROR_TYPE::MGR_DAILY_QUEST, 5000, 0));*/
 
 		if (MgrDailyQuest::checkCurrentQuestUser(sgs::gs::getInstance().getDailyQuestInfo(), _session)) {
-			// Get Old Quest do player
+			// Get player's Old Quest
 			auto old_quest = MgrDailyQuest::getOldQuestUser(_session);
 
 			for (auto& el : old_quest) {
@@ -75,7 +75,7 @@ void MgrDailyQuest::requestCheckAndSendDailyQuest(player& _session, packet *_pac
 						+ std::to_string(el.id) + "]", CL_FILE_LOG_AND_CONSOLE));
 			}
 
-			// Add nova quest para o player
+			// Add new quest to the player
 			auto v_ai = MgrDailyQuest::addQuestUser(sgs::gs::getInstance().getDailyQuestInfo(), _session);
 
 			packet p((unsigned short)0x216);
@@ -92,8 +92,8 @@ void MgrDailyQuest::requestCheckAndSendDailyQuest(player& _session, packet *_pac
 					p.addInt32(el._typeid);
 					p.addInt32(el.id);
 					p.addUint32(0);		// flag
-					p.addInt32(0);		// Qntd antes
-					p.addInt32(1);		// Qntd depois
+					p.addInt32(0);		// Quantity before
+					p.addInt32(1);		// Quantity after
 					p.addInt32(1);		// add value
 					p.addZeroByte(25);
 				}
@@ -166,9 +166,9 @@ void MgrDailyQuest::requestLeaveQuest(player& _session, packet *_packet) {
 				p.addInt32(el.second._typeid);
 				p.addInt32(el.second.id);
 				p.addUint32(0);	// flag
-				p.addInt32(el.second.value);	// Qntd antes
-				p.addInt32(0);	// Qntd depois
-				p.addInt32(el.second.value	 * -1);	// add quantos, tipo de add tinha 0(antes) + 3(qntd) = 3(depois)
+				p.addInt32(el.second.value);	// Quantity before
+				p.addInt32(0);	// Quantity after
+				p.addInt32(el.second.value	 * -1);	// how many to add, e.g. add had 0(before) + 3(quantity) = 3(after)
 				p.addZeroByte(25);
 			}
 
@@ -242,9 +242,9 @@ void MgrDailyQuest::requestAcceptQuest(player& _session, packet *_packet) {
 				p.addInt32(el.second._typeid);
 				p.addInt32(el.second.id);
 				p.addUint32(0);	// flag
-				p.addInt32(0);	// Qntd antes
-				p.addInt32(0);	// Qntd depois
-				p.addInt32(0);	// add quantos, tipo de add tinha 0(antes) + 3(qntd) = 3(depois)
+				p.addInt32(0);	// Quantity before
+				p.addInt32(0);	// Quantity after
+				p.addInt32(0);	// how many to add, e.g. add had 0(before) + 3(quantity) = 3(after)
 				p.addZeroByte(25);
 			}
 		}else
@@ -297,13 +297,13 @@ void MgrDailyQuest::requestTakeRewardQuest(player& _session, packet *_packet) {
 		std::vector< stItem > v_item;
 		stItem item{ 0 };
 
-		// UPADATE Achievement ON SERVER, DB and GAME
+		// UPDATE Achievement ON SERVER, DB and GAME
 		SysAchievement sys_achievement;
 
-		// Add Reward Item do player
+		// Add player's Reward Item
 		for (auto& el : v_quest) {
 
-			// Item Reward, d� para o player
+			// Item Reward, give to the player
 			if ((qi = sIff::getInstance().findQuestItem(el._typeid)) != nullptr) {
 
 				for (auto i = 0u; i < (sizeof(qi->reward._typeid) / sizeof(qi->reward._typeid[0])); ++i) {
@@ -319,7 +319,7 @@ void MgrDailyQuest::requestTakeRewardQuest(player& _session, packet *_packet) {
 						item.STDA_C_ITEM_QNTD = (short)item.qntd;
 						item.STDA_C_ITEM_TIME = (short)qi->reward.time[i];
 						
-						// Add Item no db e no player
+						// Add Item in the db and to the player
 						auto rt = item_manager::RetAddItem::T_INIT_VALUE;
 
 						if ((rt = item_manager::addItem(item, _session, 0, 0)) < 0)
@@ -336,13 +336,13 @@ void MgrDailyQuest::requestTakeRewardQuest(player& _session, packet *_packet) {
 					}
 				}
 
-				// S� add o contador de clear quest pega recompensa nas quest normais, a box de 10 clear quest n�o add ao contador
+				// Only adds the clear quest counter for rewards from normal quests, the 10 clear quest box does not add to the counter
 				if (el._typeid != CLEAR_10_DAILY_QUEST_TYPEID)
-					sys_achievement.incrementCounter(0x6C40009F/*Pega Recompessa de clear quest*/);
+					sys_achievement.incrementCounter(0x6C40009F/*Gets clear quest Reward*/);
 			}
 		}
 
-		// Add os Counter Item Excluido do player
+		// Add the player's Deleted Counter Items
 		for (auto& el : v_quest) {
 
 			if (!el.map_counter_item.empty()) {
@@ -377,7 +377,7 @@ void MgrDailyQuest::requestTakeRewardQuest(player& _session, packet *_packet) {
 		for (auto& el : v_item) {
 			p.addUint8(el.type);
 			p.addUint32(el._typeid);
-			p.addInt32(el.id);	// id do item no banco de dados
+			p.addInt32(el.id);	// item id in the database
 			p.addUint32(el.flag_time);	// flag
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addInt32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
@@ -390,7 +390,7 @@ void MgrDailyQuest::requestTakeRewardQuest(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// UPADATE Achievement ON SERVER, DB and GAME
+		// UPDATE Achievement ON SERVER, DB and GAME
 		sys_achievement.finish_and_update(_session);
 
 		if (quest_id != nullptr)
@@ -450,7 +450,7 @@ std::vector< RemoveDailyQuestUser > MgrDailyQuest::getOldQuestUser(player& _sess
 
 	std::for_each(map_ai.begin(), map_ai.end(), [&](auto& el) { if (el.second.status == AchievementInfo::PENDENTING/*PENDENTING*/) v_old_quest.push_back({ el.second.id, el.second._typeid }); });
 
-	if (v_old_quest.empty()) {	// Se n�o achou no que estava no server procura no banco de dados
+	if (v_old_quest.empty()) {	// If it was not found in what was on the server, searches the database
 
 		CmdOldDailyQuestInfo cmd_odqi(_session.m_pi.uid, true);
 
@@ -482,7 +482,7 @@ std::vector< AchievementInfoEx > MgrDailyQuest::addQuestUser(DailyQuestInfo& _dq
 		// Add New Quest to player
 		_session.m_pi.dqiu._typeid[i] = _dqi._typeid[i];
 
-		// Clear(Limpa) Estruturas, temporarias
+		// Clear temporary structures
 		ai.clear();
 		qsi.clear();
 		cii.clear();
@@ -500,7 +500,7 @@ std::vector< AchievementInfoEx > MgrDailyQuest::addQuestUser(DailyQuestInfo& _dq
 		}
 	}
 
-	// Seta no banco de dados a data que o player add a nova quest
+	// Sets in the database the date the player added the new quest
 	_session.m_pi.dqiu.current_date = (uint32_t)GetLocalTimeAsUnix();
 
 	snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateDailyQuestUser(_session.m_pi.uid, _session.m_pi.dqiu), MgrDailyQuest::SQLDBResponse, nullptr);
@@ -540,10 +540,10 @@ std::vector< AchievementInfoEx > MgrDailyQuest::leaveQuestUser(player& _session,
 			id = it->second.id;
 			_typeid = it->second._typeid;
 
-			// Verifica se � o daily quest 10 Clear, se for Atualizar ela(Resta para os valores iniciais)
+			// Checks if it is the daily quest 10 Clear, if so Update it (Reset to the initial values)
 			if (_typeid == CLEAR_10_DAILY_QUEST_TYPEID) {
 
-				// Reseta Achievement
+				// Resets Achievement
 				_session.m_pi.mgr_achievement.resetAchievement(it);
 
 				_smp::message_pool::getInstance().push(new message("[MgrDailyQuest::leaveQuestUser][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] Resetou a Quest 10 Clear[TYPEID=" 
@@ -602,7 +602,7 @@ std::vector< AchievementInfoEx > MgrDailyQuest::acceptQuestUser(player& _session
 				// Add Counter To Counter Item Map of Achievement
 				it->second.map_counter_item.insert(std::make_pair(cii.id, cii));
 
-				// Atualiza o counter id da quest no banco de dados
+				// Updates the quest counter id in the database
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateQuestUser(_session.m_pi.uid, el), MgrDailyQuest::SQLDBResponse, nullptr);
 			}
 			
@@ -633,7 +633,7 @@ int32_t MgrDailyQuest::addCounterItemUser(player& _session, CounterItemInfo& _ci
 		throw exception("[MgrDailyQuest::addCounterItemUser][Error] _counter_item_typeid is invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MGR_DAILY_QUEST, 4, 0));
 
 	// Add Counter Item
-	CmdAddCounterItem cmd_aci(_session.m_pi.uid, _cii._typeid, _cii.value/*Value inicial do counter item*/, true);	// waitable
+	CmdAddCounterItem cmd_aci(_session.m_pi.uid, _cii._typeid, _cii.value/*Initial value of the counter item*/, true);	// waitable
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_aci, nullptr, nullptr);
 
@@ -656,16 +656,16 @@ void MgrDailyQuest::updateDailyQuest(DailyQuestInfo& _dqi) {
 	std::vector< uint32_t > a, b, c;
 
 	std::for_each(map_qi.begin(), map_qi.end(), [&](auto& el) {
-		if (((el.second._typeid & 0x00FFFFFF) >> 16) < 0x40) {	// 0x40 e 0x80, 0x78400001 n�o � daily quest, � a quest de completar daily quest
+		if (((el.second._typeid & 0x00FFFFFF) >> 16) < 0x40) {	// 0x40 and 0x80, 0x78400001 is not a daily quest, it is the complete daily quest quest
 			switch (el.second.type) {
-			case 1:	// F�cil
+			case 1:	// Easy
 			default:
 				a.push_back(el.second._typeid);
 				break;
-			case 2:	// M�dio
+			case 2:	// Medium
 				b.push_back(el.second._typeid);
 				break;
-			case 3:	// Dif�cil
+			case 3:	// Hard
 				c.push_back(el.second._typeid);
 				break;
 			}
@@ -675,14 +675,14 @@ void MgrDailyQuest::updateDailyQuest(DailyQuestInfo& _dqi) {
 	for (auto i = 0u; i < 3u; ++i) {
 
 		switch (i + 1) {
-		case 1:	// F�cil
+		case 1:	// Easy
 		default:
 			_dqi._typeid[i] = a[(sRandomGen::getInstance().rIbeMt19937_64_chrono() % a.size())];
 			break;
-		case 2:	// M�dio
+		case 2:	// Medium
 			_dqi._typeid[i] = b[(sRandomGen::getInstance().rIbeMt19937_64_chrono() % b.size())];
 			break;
-		case 3:	// Dif�cil
+		case 3:	// Hard
 			_dqi._typeid[i] = c[(sRandomGen::getInstance().rIbeMt19937_64_chrono() % c.size())];
 			break;
 		}
@@ -701,10 +701,10 @@ void MgrDailyQuest::updateDailyQuest(DailyQuestInfo& _dqi) {
 		
 		_smp::message_pool::getInstance().push(new message("[MgrDailyQuest::updateDailyQuest][ErrorSystem] " + cmd_udq.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		return;		// Error sai da fun��o
+		return;		// Error, exits the function
 	}
 
-	// Update Aqui por que outro sistema conseguiu atualizar primeiro no banco de dados
+	// Update Here because another system managed to update the database first
 	if (cmd_udq.isUpdated())
 		_smp::message_pool::getInstance().push(new message("[MgrDailyQuest::updateDailyQuest][Log] Daily Quest[" + cmd_udq.getInfo().toString() 
 				+ "] Atualizada com sucesso.", CL_FILE_LOG_AND_CONSOLE));
@@ -721,13 +721,13 @@ void MgrDailyQuest::updateDailyQuest(DailyQuestInfo& _dqi) {
 void MgrDailyQuest::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 
 #ifdef _DEBUG
-	// Classe estatica n�o pode passar o ponteiro dela, por ser est�tica, ent�o passa nullptr
+	// Static class cannot pass its pointer, because it is static, so passes nullptr
 	if (_arg == nullptr)
 		// Static class
 		_smp::message_pool::getInstance().push(new message("[MgrDailyQuest::SQLDBResponse][WARNING] _arg is nullptr", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[MgrDailyQuest::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -742,7 +742,7 @@ void MgrDailyQuest::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void*
 			_smp::message_pool::getInstance().push(new message("[MgrDailyQuest][Log] Daily Quest[" + cmd_dqi->getInfo().toString() + "] Atualizada com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 		else {
 
-			// N�o conseguiu atualizar primeiro que outro sistema, ent�o pega a atualiza��o do outro sistema
+			// Could not update before another system, so takes the other system's update
 			//if (sgs::gs != nullptr)
 				sgs::gs::getInstance().updateDailyQuest(cmd_dqi->getInfo());
 

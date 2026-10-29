@@ -1,6 +1,6 @@
-// Arquivo cmd_drop_course_config.hpp
-// Criado em 07/09/2018 as 15:04 por Acrisio
-// Defini��o da classe CmdDropCourseConfig
+// File cmd_drop_course_config.hpp
+// Created on 07/09/2018 at 15:04 by Acrisio
+// Definition of the class CmdDropCourseConfig
 
 #pragma once
 #ifndef _STDA_CMD_DROP_COURSE_CONFIG_HPP

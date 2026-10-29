@@ -1,6 +1,6 @@
-// Arquivo sys_achievement.hpp
-// Criado em 15/04/2018 as 17:17 por Acrisio
-// Definição da classe SysAchievement
+// File sys_achievement.hpp
+// Created on 15/04/2018 at 17:17 by Acrisio
+// Definition of the SysAchievement class
 
 #pragma once
 #ifndef _STDA_SYS_ACHIEVEMENT_HPP
@@ -30,7 +30,7 @@ namespace stdA {
 			int32_t increase_value;
 		};
 
-		// Guarda o typeid do achievement e o typeid da ques concluída do player
+		// Stores the achievement typeid and the typeid of the player's completed quest
 		struct QuestClear {
 			void clear() { memset(this, 0, sizeof(QuestClear)); };
 			uint32_t achievement_typeid;
@@ -63,32 +63,32 @@ namespace stdA {
 			void finish_and_update(player& _session);
 
 			/**
-			* O segundo argumento força a pegar todos countadores, mesmos das quests concluída
+			* The second argument forces getting all counters, even those of completed quests
 			*/
 			inline static std::vector< CounterItemInfo > getCounterItemInfo(std::vector< AchievementInfoEx >& _v_ai, bool _all_force);
 
-			// get Typeid do Counter Item do Character TypeId
+			// get Typeid of the Counter Item of the Character TypeId
 			static uint32_t getCharacterCounterTypeId(uint32_t _character_typeid);
 
-			// get Typeid do Counter Item do Caddie TypeId
+			// get Typeid of the Counter Item of the Caddie TypeId
 			static uint32_t getCaddieCounterTypeId(uint32_t _caddie_typeid);
 
-			// get Typeid do Counter Item do Mascot TypeId
+			// get Typeid of the Counter Item of the Mascot TypeId
 			static uint32_t getMascotCounterTypeId(uint32_t _mascot_typeid);
 
-			// get Typeid do Counter Item do Course TypeId
+			// get Typeid of the Counter Item of the Course TypeId
 			static uint32_t getCourseCounterTypeId(uint32_t _course_typeid);
 
-			// get Typeid do Counter Item do Número de Holes do Jogo
+			// get Typeid of the Counter Item of the Number of Holes of the Game
 			static uint32_t getQntdHoleCounterTypeId(uint32_t _qntd_hole);
 
-			// get Typeid do Counter Item do Score do Hole
+			// get Typeid of the Counter Item of the Hole Score
 			static uint32_t getScoreCounterTypeId(uint32_t _tacada_num, uint32_t _par_hole);
 
-			// get Typeid do Counter Item do Active Item TypeId
+			// get Typeid of the Counter Item of the Active Item TypeId
 			static uint32_t getActiveItemCounterTypeId(uint32_t _active_item_typeid);
 
-			// get Typeid do Counter Item do Passive Item TypeId
+			// get Typeid of the Counter Item of the Passive Item TypeId
 			static uint32_t getPassiveItemCounterTypeId(uint32_t _passive_item_typeid);
 
 			// get score num 0 HIO, 1 Alba, 2 Eagle, 3 Birdie, 4 Par, 5 Bogey, 6 Double Bogey

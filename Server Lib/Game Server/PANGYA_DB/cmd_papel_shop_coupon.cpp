@@ -1,6 +1,6 @@
-// Arquivo cmd_papel_shop_coupon.cpp
-// Criado em 09/07/2018 as 20:16 por Acrisio
-// Implementa��o da classe CmdPapelShopCoupon
+// File cmd_papel_shop_coupon.cpp
+// Created on 09/07/2018 at 20:16 by Acrisio
+// Implementation of the class CmdPapelShopCoupon
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -30,9 +30,9 @@ void CmdPapelShopCoupon::lineResult(result_set::ctx_res* _result, uint32_t /*_in
 
 	auto it = m_ctx_psc.find(ctx_psc._typeid);
 
-	if (it == m_ctx_psc.end())	// N�o tem add um novo coupon
+	if (it == m_ctx_psc.end())	// Does not exist, add a new coupon
 		m_ctx_psc[ctx_psc._typeid] = ctx_psc;
-	else	// J� tem um coupon no map, est� duplicado no banco de dados
+	else	// There is already a coupon in the map, it is duplicated in the database
 		_smp::message_pool::getInstance().push(new message("[CmdPapelShopCoupon::lineResult][WARNING] tem Papel Shop Coupon[TYPEID=" + std::to_string(ctx_psc._typeid) + "] duplicado no banco de dados.", CL_FILE_LOG_AND_CONSOLE));
 }
 

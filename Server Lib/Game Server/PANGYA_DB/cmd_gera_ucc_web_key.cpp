@@ -1,6 +1,6 @@
-// Arquivo cmd_gera_ucc_web_key.cpp
-// Criado em 14/07/2018 as 18:46 por Acrisio
-// Implementa��o da classe CmdGeraUCCWebkey
+// File cmd_gera_ucc_web_key.cpp
+// Created on 14/07/2018 at 18:46 by Acrisio
+// Implementation of the class CmdGeraUCCWebkey
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_old_daily_quest_info.hpp
-// Criado em 24/03/2018 as 20:50 por Acrisio
-// Defini��o da classe CmdOldDailyQuestInfo
+// File cmd_old_daily_quest_info.hpp
+// Created on 24/03/2018 at 20:50 by Acrisio
+// Definition of the class CmdOldDailyQuestInfo
 
 #pragma once
 #ifndef _STDA_CMD_OLD_DAILY_QUEST_INFO_HPP

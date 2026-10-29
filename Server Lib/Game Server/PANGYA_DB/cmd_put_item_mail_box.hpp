@@ -1,6 +1,6 @@
-// Arquivo cmd_put_item_mail_box.hpp
-// Criado em 26/05/2018 as 15:31 por Acrisio
-// Defini��o da classe CmdPutItemMailBox
+// File cmd_put_item_mail_box.hpp
+// Created on 26/05/2018 at 15:31 by Acrisio
+// Definition of the class CmdPutItemMailBox
 
 #pragma once
 #ifndef _STDA_CMD_PUT_ITEM_MAIL_BOX_HPP

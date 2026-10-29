@@ -1,6 +1,6 @@
-// Arquivo gg_auth_server.cpp
-// Criado em 02/02/2021 as 16:54 por Acrisio
-// Implementa��o da classe gg_auth_server
+// File gg_auth_server.cpp
+// Created on 02/02/2021 at 16:54 by Acrisio
+// Implementation of class gg_auth_server
 
 #pragma pack(1)
 #include <WinSock2.h>
@@ -18,7 +18,7 @@
 								if (_packet == nullptr) \
 									throw exception("[gg_auth_server::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GG_AUTH_SERVER, 6, 0)); \
 
-// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+// if it has not logged in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[gg_auth_server::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GG_AUTH_SERVER, 1, 0x7000501)); \
@@ -35,13 +35,13 @@ gg_auth_server::gg_auth_server() : unit(m_player_manager, 2/*DB Instance*/, 2/*T
 
 	try {
 
-		// Inicializa o Unit_Connect, que conecta com o Auth Server
+		// Initialize the Unit_Connect, which connects to the Auth Server
 		m_unit_connect = new unit_auth_server_connect(*this, m_si);
 
 		config_init();
 
 		// Game Guard
-		m_game_guard = new GGAuth(m_si.max_user * 2000/*Limit de player por server*/);
+		m_game_guard = new GGAuth(m_si.max_user * 2000/*Player limit per server*/);
 
 		packet_func::funcs.addPacketCall(0x01, packet_func::packet001, this);
 		packet_func::funcs.addPacketCall(0x02, packet_func::packet002, this);
@@ -73,19 +73,19 @@ gg_auth_server::gg_auth_server() : unit(m_player_manager, 2/*DB Instance*/, 2/*T
 
 		m_state = FAILURE;
 
-		// n�o posso lan�a exception para fora do contrutor que eles nao chama o destrutor dele antes
+		// cannot throw an exception out of the constructor because the destructor is not called before it
 	}
 }
 
 gg_auth_server::~gg_auth_server() {
 
-	// Destroy o Unit Connect que conecta com o Auth Server
+	// Destroy the Unit Connect that connects to the Auth Server
 	destroy_unit();
 
 	if (m_game_guard != nullptr)
 		delete m_game_guard;
 
-	// Crucial esse aqui para terminar o server sem crashs
+	// Crucial for shutting down the server without crashes
 	waitAllThreadFinish(INFINITE);
 }
 
@@ -106,8 +106,8 @@ void gg_auth_server::requestLoginFirstStep(player& _session, packet *_packet) {
 		_session.m_pi.uid = uid;
 		_session.m_pi.auth_key = (unsigned long)(std::clock() + std::rand());
 
-		// Send Key Para o Auth Server Enviar para o Server que quer logar com o Game Guard Auth Server
-		// Para o Auth Server
+		// Send Key to the Auth Server to send to the Server that wants to log in with the Game Guard Auth Server
+		// To the Auth Server
 		packet p((unsigned short)0x01);
 
 		p.addUint32(_session.m_pi.auth_key);
@@ -145,7 +145,7 @@ void gg_auth_server::requestLoginSecondStep(player& _session, packet *_packet) {
 
 			_smp::message_pool::getInstance().push(new message("[gg_auth_server::requestLoginSecondStep][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-			// Relan�a
+			// Rethrow
 			throw;
 		}
 
@@ -155,13 +155,13 @@ void gg_auth_server::requestLoginSecondStep(player& _session, packet *_packet) {
 					+ check_key  + ", PUBLIC=" + key + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GG_AUTH_SERVER, 10, 0));
 		
 		// Sucesso Login
-		_session.m_is_authorized = 1u;	// Autorizado a ficar connectado, por bastante tempo
+		_session.m_is_authorized = 1u;	// Authorized to stay connected for a long time
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[gg_auth_server::requestLoginSecondStep][Log] Server[UID=" 
 				+ std::to_string(_session.m_pi.uid) + "] Logou com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Para o Player
+		// To the Player
 		packet p((unsigned short)0x01);
 
 		p.addUint32(_session.m_oid);
@@ -181,8 +181,8 @@ void gg_auth_server::requestAddPlayerGameGuardCtx(player& _session, packet *_pac
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("AddPlayerGameGuardCtx");
 
 		unsigned long uid = _packet->readUint32();
@@ -209,8 +209,8 @@ void gg_auth_server::requestDeletePlayerGameGuardCtx(player& _session, packet *_
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("DeletePlayerGameGuardCtx");
 
 		unsigned long uid = _packet->readUint32();
@@ -237,8 +237,8 @@ void gg_auth_server::requestGetAuthQueryPlayer(player& _session, packet *_packet
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("GetAuthQueryPlayer");
 
 		p.init_plain((unsigned short)0x02);
@@ -292,8 +292,8 @@ void gg_auth_server::requestCheckAuthAnswerPlayer(player& _session, packet *_pac
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("requestCheckAuthAnswerPlayer");
 
 		GG_AUTH_DATA data;
@@ -355,7 +355,7 @@ void gg_auth_server::onAcceptCompleted(session* _session) {
 	if (!_session->isConnected())
 		throw exception("[gg_auth_server::onAcceptCompleted][Error] session is not connected", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 62, 0));
 
-	packet _packet((unsigned short)0x00);	// Tipo Packet Game Guard Auth Server initial packet no compress e no crypt
+	packet _packet((unsigned short)0x00);	// Packet type: Game Guard Auth Server initial packet, no compress and no crypt
 
 	_packet.addInt32((long)_session->m_key);	// key
 	_packet.addInt32(m_si.uid);					// Server UID
@@ -380,12 +380,12 @@ void gg_auth_server::onDisconnected(session* _session) {
 
 	_smp::message_pool::getInstance().push(new message("[gg_auth_server::onDisconnected][Log] Player Desconectou. ID: " + std::string(_player->m_pi.id) + "  UID: " + std::to_string(_player->m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
-	// Aqui n�o faz nada, no login server por enquanto
+	// Does nothing here, in the login server for now
 }
 
 void gg_auth_server::onHeartBeat() {
 	
-	// Faz nada por enquanto
+	// Does nothing for now
 }
 
 void gg_auth_server::onStart() {
@@ -415,7 +415,7 @@ bool gg_auth_server::checkCommand(std::stringstream& _command) {
 		_smp::message_pool::getInstance().push(new message("Game Guard Auth Server files has been reloaded.", CL_FILE_LOG_AND_CONSOLE));
 	}else if (!s.empty() && s.compare("reload_socket_config") == 0) {
 
-		// Ler novamento o arquivo de configura��o do socket
+		// Re-read the socket configuration file
 		if (m_accept_sock != nullptr)
 			m_accept_sock->reload_config_file();
 		else
@@ -442,9 +442,9 @@ bool gg_auth_server::checkCommand(std::stringstream& _command) {
 bool gg_auth_server::checkPacket(session& _session, packet* _packet) {
 	
 	///--------------- INICIO CHECK PACKET SESSION
-	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Dentro do Interval */
+	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Within the interval */
 		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Mesmo pacote */
-		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* deu o limit de count DERRUBA a session */
+		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* reached the count limit, DROP the session */
 		_session.m_check_packet.checkPacketId(_packet->getTipo()) && _session.m_check_packet.incrementCount() >= CHK_PCKT_COUNT_LIMIT) {
 
 		_smp::message_pool::getInstance().push(new message("[WARNING] Tentativa de DDoS ataque com pacote ID: (0x" + hex_util::lltoaToHex(_packet->getTipo()) + ") " + std::to_string(_packet->getTipo()) + ". IP=" + std::string(_session.m_ip), CL_FILE_LOG_AND_CONSOLE));
@@ -460,16 +460,16 @@ bool gg_auth_server::checkPacket(session& _session, packet* _packet) {
 
 void gg_auth_server::shutdown_time(int32_t _time_sec) {
 
-	if (_time_sec <= 0)	// Desliga o Server Imediatemente
+	if (_time_sec <= 0)	// Shut down the Server immediately
 		shutdown();
 	else {
 
 		job _job(unit::end_time_shutdown, this, (void*)0);
 
-		// Se o Shutdown Timer estiver criado descria e cria um novo
+		// If the Shutdown Timer is created, destroy it and create a new one
 		if (m_shutdown != nullptr) {
 
-			// Para o Tempo se ele n�o estiver parado
+			// Stop the timer if it is not stopped
 			if (m_shutdown->getState() != timer::STOPPED)
 				m_shutdown->stop();
 
@@ -485,7 +485,7 @@ void gg_auth_server::shutdown_time(int32_t _time_sec) {
 
 void gg_auth_server::config_init() {
 
-	// Server Tipo
+	// Server Type
 	m_si.tipo = 6/*Game Guard Auth Server*/;
 }
 
@@ -507,7 +507,7 @@ void gg_auth_server::authCmdShutdown(int32_t _time_sec) {
 
 	try {
 
-		// Shut down com tempo
+		// Shut down with time
 		if (m_shutdown == nullptr) {
 
 			// Log
@@ -527,23 +527,23 @@ void gg_auth_server::authCmdShutdown(int32_t _time_sec) {
 }
 
 void gg_auth_server::authCmdBroadcastNotice(std::string /*_notice*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdBroadcastTicker(std::string /*_nickname*/, std::string /*_msg*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdBroadcastCubeWinRare(std::string /*_msg*/, uint32_t /*_option*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _player_uid, unsigned char _force) {
 
-	// Aqui no Login Server Ainda n�o usa o force, ele desconecta o player do mesmo jeito
+	// Here in the Login Server the force is not used yet, it disconnects the player the same way
 	UNREFERENCED_PARAMETER(_force);
 
 	try {
@@ -556,7 +556,7 @@ void gg_auth_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t 
 			_smp::message_pool::getInstance().push(new message("[gg_auth_server::authCmdDisconnectPlayer][log] Comando do Auth Server, Server[UID=" + std::to_string(_req_server_uid)
 					+ "] pediu para desconectar o Player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Deconecta o Player
+			// Disconnect the Player
 			DisconnectSession(s);
 
 			// UPDATE ON Auth Server
@@ -573,22 +573,22 @@ void gg_auth_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t 
 }
 
 void gg_auth_server::authCmdConfirmDisconnectPlayer(uint32_t /*_player_uid*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdNewMailArrivedMailBox(uint32_t /*_player_uid*/, uint32_t /*_mail_id*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdNewRate(uint32_t /*_tipo*/, uint32_t /*_qntd*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
 void gg_auth_server::authCmdReloadGlobalSystem(uint32_t /*_tipo*/) {
-	// Game Guard Auth n�o usa esse Comando
+	// Game Guard Auth does not use this Command
 	return;
 }
 
@@ -630,7 +630,7 @@ void gg_auth_server::authCmdInfoPlayerOnline(uint32_t _req_server_uid, uint32_t 
 
 void gg_auth_server::authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi) {
 
-	// Game Guard Auth Server ainda n�o usa esse funcionalidade de pedir o info do player que est� conectado em outro server
+	// Game Guard Auth Server does not use this feature yet, of requesting the info of a player connected to another server
 	UNREFERENCED_PARAMETER(_req_server_uid);
 
 	try {
@@ -670,7 +670,7 @@ void gg_auth_server::authCmdSendCommandToOtherServer(packet& _packet) {
 	
 		}catch (exception& e) {
 
-			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 			
 				_smp::message_pool::getInstance().push(new message("[gg_auth_server::authCmdSendCommandToOtherServer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -710,7 +710,7 @@ void gg_auth_server::authCmdSendReplyToOtherServer(packet& _packet) {
 	
 		}catch (exception& e) {
 
-			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+			if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc*/) {
 			
 				_smp::message_pool::getInstance().push(new message("[gg_auth_server::authCmdSendReplyToOtherServer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -735,7 +735,7 @@ void gg_auth_server::sendCommandToOtherServerWithAuthServer(packet& _packet, uin
 
 	try {
 
-		// Envia o comando para o outro server com o Auth Server
+		// Sends the command to the other server through the Auth Server
 		m_unit_connect->sendCommandToOtherServer(_send_server_uid_or_type, _packet);
 
 	}catch (exception& e) {
@@ -748,7 +748,7 @@ void gg_auth_server::sendReplyToOtherServerWithAuthServer(packet& _packet, uint3
 
 	try {
 
-		// Envia a resposta para o outro server com o Auth Server
+		// Sends the reply to the other server through the Auth Server
 		m_unit_connect->sendReplyToOtherServer(_send_server_uid_or_type, _packet);
 
 	}catch (exception& e) {

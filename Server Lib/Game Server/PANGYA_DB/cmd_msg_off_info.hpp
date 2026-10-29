@@ -1,6 +1,6 @@
-// Arquivo cmd_msg_off_info.hpp
-// Criado em 24/03/2018 as 17:55 por Acrisio
-// Defini��o da classe CmdMsgOffInfo
+// File cmd_msg_off_info.hpp
+// Created on 24/03/2018 at 17:55 by Acrisio
+// Definition of the class CmdMsgOffInfo
 
 #pragma once
 #ifndef _STDA_CMD_MSG_OFF_INFO_HPP

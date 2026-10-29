@@ -1,6 +1,6 @@
-// Arquivo lottery.hpp
-// Criado em 24/06/2018 as 11:53 por Acrisio
-// Definição da classe Lottery
+// File lottery.hpp
+// Created on 24/06/2018 at 11:53 by Acrisio
+// Definition of the Lottery class
 
 #pragma once
 #ifndef _STDA_LOTTERY_HPP
@@ -22,10 +22,10 @@ namespace stdA {
 		public:
 			struct LotteryCtx {
 				void clear() { memset(this, 0, sizeof(LotteryCtx)); };
-				uint32_t prob;	// Probabilidade
+				uint32_t prob;	// Probability
 				size_t value;
 				uint64_t offset[2];	// 0 start, 1 end
-				unsigned char active : 1, : 0;	// 0 ou 1 ativo
+				unsigned char active : 1, : 0;	// 0 or 1 active
 			};
 
 		public:
@@ -39,10 +39,10 @@ namespace stdA {
 
 			uint64_t getLimitProbilidade();
 
-			// Retorna a quantidade de itens que tem para sortear
+			// Returns the number of items available to draw
 			uint32_t getCountItem();
 
-			// Deleta o Item Sorteado, para não sair ele de novo, se for passado true
+			// Deletes the Drawn Item, so that it does not come out again, if true is passed
 			LotteryCtx* spinRoleta(bool _remove_item_draw = false);
 
 		protected:

@@ -1,6 +1,6 @@
-// Arquivo login_reward_system.cpp
-// Criado em 27/10/2020 as 12:25 por Acrisio
-// Implementa��o da classe LoginRewardSystem
+// File login_reward_system.cpp
+// Created on 27/10/2020 at 12:25 by Acrisio
+// Implementation of the LoginRewardSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -80,7 +80,7 @@ LoginRewardSystem::LoginRewardSystem() : m_events() {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initializes
 	initialize();
 }
 
@@ -99,7 +99,7 @@ void LoginRewardSystem::initialize() {
 
 	TRY_CHECK;
 
-	// Carrega a lista de eventos
+	// Loads the event list
 	CmdLoginRewardInfo cmd_lri(true); // Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_lri, nullptr, nullptr);
@@ -113,12 +113,12 @@ void LoginRewardSystem::initialize() {
 
 	for (auto& el_e : m_events) {
 
-		// Verifica se j� venceu
+		// Checks if it has already expired
 		if (!isEmpty(el_e.end_date) && getLocalTimeDiff(el_e.end_date) > 0ll) {
 
 			el_e.is_end = true;
 
-			// Atualiza aqui no banco de dados o evento
+			// Updates the event in the database here
 			snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateLoginReward(el_e.id, el_e.is_end), LoginRewardSystem::SQLDBResponse, this);
 		}
 	}
@@ -137,14 +137,14 @@ void LoginRewardSystem::initialize() {
 		//_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::initialize][Log] Login Reward System carregado com sucesso!", CL_ONLY_FILE_LOG));
 	//#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrows so the server can take action
 	throw;
 
 	END_CHECK;
@@ -194,7 +194,7 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 
 	TRY_CHECK;
 
-	// Carrega lista de player do evento
+	// Loads the event player list
 	CmdLoginRewardPlayerInfo cmd_lrpi(_session.m_pi.uid, true); // Waiter
 
 	// Check All Event Enabled
@@ -203,19 +203,19 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 		if (el_e.is_end)
 			continue;
 
-		// Se tiver data e passou dela, encerra esse evento
+		// If it has a date and it has passed, ends this event
 		if (!isEmpty(el_e.end_date) && getLocalTimeDiff(el_e.end_date) > 0ll) {
 
 			el_e.is_end = true;
 
-			// Atualiza aqui no banco de dados o evento
+			// Updates the event in the database here
 			snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateLoginReward(el_e.id, el_e.is_end), LoginRewardSystem::SQLDBResponse, this);
 
-			// Continua
+			// Continues
 			continue;
 		}
 
-		// Pega info do player no banco de dados
+		// Gets the player info from the database
 		cmd_lrpi.setId(el_e.id);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_lrpi, nullptr, nullptr);
@@ -227,34 +227,34 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 			// Log
 			_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::checkRewardLoginAndSend][Error][WARNING] " + cmd_lrpi.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-			// Continua
+			// Continues
 			continue;
 		}
 
 		auto p = cmd_lrpi.getInfo();
 		// ---- end get player info event
 
-		if (p.id == 0ull && p.uid == 0u) { // N�o tem, cria um novo
+		if (p.id == 0ull && p.uid == 0u) { // Does not have one, creates a new one
 
 			p = stPlayerState{ 0ull, _session.m_pi.uid, 1u, 0u, { 0u } };
 
 			if (isEmpty(p.update_date))
 				GetLocalTime(&p.update_date);
 
-			// Add o player ao banco de dados aqui
+			// Adds the player to the database here
 			CmdAddLoginRewardPlayer cmd_alrp(el_e.id, p, true); // Waiter
 
 			snmdb::NormalManagerDB::getInstance().add(0, &cmd_alrp, nullptr, nullptr);
 
 			cmd_alrp.waitEvent();
 
-			// Error ao adicionar o player no banco de dados
+			// Error adding the player to the database
 			if (cmd_alrp.getException().getCodeError() != 0) {
 
 				// Log
 				_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::checkRewardLoginAndSend][Error][WARNING] " + cmd_alrp.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Continua
+				// Continues
 				continue;
 			}
 
@@ -264,11 +264,11 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 				_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::checkRewardLoginAndSend][Error][WARINIG] nao conseguiu adicionar o Player[UID=" 
 						+ std::to_string(_session.m_pi.uid) + "] no Login Reward[ID=" + std::to_string(el_e.id) + "] no banco de dados, nao retornou o id do player criado.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Continua
+				// Continues
 				continue;
 			}
 
-			// Pega o Id que foi gerado quando adicionou no banco de dados
+			// Gets the Id that was generated when it was added to the database
 			p = cmd_alrp.getPlayerState();
 
 			// Log
@@ -277,11 +277,11 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 
 		}else {
 
-			// Continua o player j� terminou esse evento
+			// Continues, the player has already finished this event
 			if (p.is_clear)
 				continue;
 
-			// Ainda n�o � outro dia
+			// It is not another day yet
 			if (getLocalDateDiff(p.update_date) <= 0ll)
 				continue;
 			
@@ -290,13 +290,13 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 			// Update time
 			GetLocalTime(&p.update_date);
 
-			// Atualiza aqui o state do player no banco de dados
+			// Updates the player's state in the database here
 			snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateLoginRewardPlayer(p), LoginRewardSystem::SQLDBResponse, this);
 		}
 
-		// Verifica quantas vezes tem que logar para receber o pr�mio
+		// Checks how many times the player has to log in to receive the prize
 
-		// Player n�o tem o n�mero de login's necess�rios
+		// Player does not have the required number of logins
 		if (p.count_days < el_e.days_to_gift)
 			continue;
 
@@ -312,7 +312,7 @@ void LoginRewardSystem::checkRewardLoginAndSend(player& _session) {
 		}else if (el_e.type == stLoginReward::eTYPE::FOREVER)
 			p.count_days = 0u;
 
-		// Atualiza aqui o state do plauer no banco de dados
+		// Updates the player's state in the database here
 		snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateLoginRewardPlayer(p), LoginRewardSystem::SQLDBResponse, this);
 
 		// Log
@@ -342,7 +342,7 @@ void LoginRewardSystem::updateLoginReward() {
 
 			el_e.is_end = true;
 
-			// Atualiza aqui no banco de dados o evento
+			// Updates the event in the database here
 			snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateLoginReward(el_e.id, el_e.is_end), LoginRewardSystem::SQLDBResponse, this);
 		}
 	}
@@ -373,7 +373,7 @@ void LoginRewardSystem::sendGiftToPlayer(player& _session, stLoginReward& _lr) {
 		stItem item{ 0 };
 		BuyItem bi{ 0 };
 
-		// Limpa
+		// Clears
 		bi.clear();
 		item.clear();
 
@@ -383,7 +383,7 @@ void LoginRewardSystem::sendGiftToPlayer(player& _session, stLoginReward& _lr) {
 		bi.qntd = _lr.item_reward.qntd;
 		bi.time = (unsigned short)_lr.item_reward.qntd_time;
 
-		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*~does not Check Level*/);
 
 		if (item._typeid == 0)
 			_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::sendGiftToPlayer][Error][WARNING] tentou enviar o reward para o player[UID="
@@ -411,7 +411,7 @@ void LoginRewardSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, v
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[LoginRewardSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

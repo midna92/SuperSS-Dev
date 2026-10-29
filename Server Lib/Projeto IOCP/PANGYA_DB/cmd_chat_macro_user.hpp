@@ -1,6 +1,6 @@
-// Arquivo cmd_chat_macro_user.hpp
-// Criado em 18/03/2018 as 11:15 por Acrisio
-// Definição da classe CmdChatMacroUser
+// File cmd_chat_macro_user.hpp
+// Created on 18/03/2018 at 11:15 by Acrisio
+// Definition of class CmdChatMacroUser
 
 #pragma once
 #ifndef _STDA_CMD_CHAT_MACRO_USER_HPP

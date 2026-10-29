@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_counter_item.cpp
-// Criado em 14/04/2018 as 14:19 por Acrisio
-// Implementa��o da classe CmdDeleteCounterItem
+// File cmd_delete_counter_item.cpp
+// Created on 14/04/2018 at 14:19 by Acrisio
+// Implementation of the class CmdDeleteCounterItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -35,7 +35,7 @@ CmdDeleteCounterItem::~CmdDeleteCounterItem() {
 
 void CmdDeleteCounterItem::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um DELETE
+	// Not used here because it is a DELETE
 	return;
 }
 

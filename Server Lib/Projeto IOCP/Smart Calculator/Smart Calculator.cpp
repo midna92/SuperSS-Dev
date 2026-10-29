@@ -1,6 +1,6 @@
-// Arquivo Smart Calculator.cpp
-// Criado em 15/11/2020 as 17:32 por Acrisio
-// Implementa��o da classe SmartCalculator
+// File Smart Calculator.cpp
+// Created on 15/11/2020 at 17:32 by Acrisio
+// Implementation of class SmartCalculator
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -73,7 +73,7 @@
 
 #define END_CHECK			 } \
 
-// Verifica se a Lib est� carregada
+// Check whether the Lib is loaded
 #define CHECK_LIB if (!isLoad()) \
 						throw exception("[" + std::string(__FUNCTION__) + "][Error] lib is not loaded.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SMART_CALCULATOR, 3, 0));
 
@@ -127,7 +127,7 @@ SmartCalculator::SmartCalculator() : m_commands(), m_ptr_lib{ 0u }, m_hDll(NULL)
 		DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-		// Inicializa os Commandos
+		// Initialize the Commands
 		initCommand();
 
 		// Initialize Smart Calculator Lib
@@ -150,7 +150,7 @@ SmartCalculator::~SmartCalculator() {
 	if (!m_commands.empty())
 		m_commands.clear();
 
-	// Flag que segura requisi��o externa de recarga
+	// Flag that holds back an external reload request
 	m_stopped = false;
 
 	LEAVE_CHECK;
@@ -270,12 +270,12 @@ void SmartCalculator::initDllResource() {
 	if (ssv::sv != nullptr)
 		server_uid = ssv::sv->getUID();
 
-	// Initialize Smart Calculator Lib | UID do server
+	// Initialize Smart Calculator Lib | server UID
 	m_ptr_lib.initSmartCalculatorLib(server_uid);
 
 	m_load = true;
 
-	// Flag stopped, coloca para false, por que acabou de carregar
+	// Flag stopped, set to false, because it has just loaded
 	m_stopped = false;
 
 	// Log
@@ -283,7 +283,7 @@ void SmartCalculator::initDllResource() {
 
 	LEAVE_CHECK;
 	CATCH_CHECK;
-		throw; // Relan�a
+		throw; // Rethrow
 	END_CHECK;
 }
 
@@ -452,7 +452,7 @@ void SmartCalculator::translateCommand(const uint32_t _uid, const std::string& _
 
 void SmartCalculator::initCommand() {
 
-	// Inicializa os Commandos
+	// Initialize the Commands
 
 	m_commands.insert({
 		{
@@ -944,7 +944,7 @@ void SmartCalculator::responseCallBackServer(const uint32_t _uid, const std::str
 			if (notice.empty())
 				return;		// Empty notice
 
-			// Envia a notice para todos do server
+			// Send the notice to everyone on the server
 			if (ssv::sv != nullptr)
 				ssv::sv->sendNoticeGMFromDiscordCmd(notice);
 		}

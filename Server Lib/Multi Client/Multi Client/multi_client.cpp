@@ -1,6 +1,6 @@
-// Arquivo mu/lti_client.cpp
-// Criado em 19/12/2017 por Acrisio
-// Implementação da classe multi_client
+// File mu/lti_client.cpp
+// Created on 19/12/2017 by Acrisio
+// Implementation of class multi_client
 
 #pragma pack(1)
 
@@ -89,7 +89,7 @@ multi_client::multi_client(unsigned long num_connection) :
 		packet_func::funcs_sv.addPacketCall(0x0F4, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x0FB, packet_func::packet_svFazNada, this);
 
-		// Ponteiro da classe Multi client
+		// Pointer to the Multi client class
 		smc::mc = this;
 
 		m_state = GOOD;
@@ -123,17 +123,17 @@ void multi_client::start() {
 			}catch (exception& e) {
 				_smp::message_pool::getInstance().push(new message(e.getFullMessageError() + "\r\nmulti_client::start()"));
 
-				// ID temporario para verificar se connectou com sucesso ou deu erro
+				// Temporary ID to check whether it connected successfully or failed
 				//_cliente->m_uid = ~0;
 			}catch (std::exception& e) {
 				_smp::message_pool::getInstance().push(new message(std::string(e.what()) + "\r\nmulti_client::start()"));
 
-				// ID temporario para verificar se connectou com sucesso ou deu erro
+				// Temporary ID to check whether it connected successfully or failed
 				//_cliente->m_uid = ~0;
 			}catch (...) {
 				_smp::message_pool::getInstance().push(new message("Erro desconhecido. multi_client::start()"));
 
-				// ID temporario para verificar se connectou com sucesso ou deu erro
+				// Temporary ID to check whether it connected successfully or failed
 				//_cliente->m_uid = ~0;
 			}
 		}
@@ -171,7 +171,7 @@ void multi_client::DisconnectSession(session *_session) {
 };
 
 void multi_client::accept_completed(SOCKET *_listener, DWORD dwIOsize, myOver *lpBuffer, DWORD _operation) {
-	// Faz nada nesse que é cliente, só conecta
+	// Does nothing here since this is the client, it only connects
 	return;
 };
 
@@ -218,7 +218,7 @@ void multi_client::ConnectAndAssoc(std::string _host, short _port, ClientInfo& _
 
 		m_cliente_manager.deleteSession(_session);
 
-		// Relança
+		// Rethrow
 		throw;
 	}
 
@@ -278,7 +278,7 @@ DWORD multi_client::send_msg_lobby() {
 					break;
 			}
 
-			// Sai já criou o time para todos
+			// Exit, the timer was already created for everyone
 			break;
 		}
 
@@ -324,7 +324,7 @@ void multi_client::commandScan() {
 				if (_timer != nullptr)
 					m_timer_mgr.deleteTimer(_timer);
 	
-				return;	// Sai
+				return;	// Exit
 			}else if (!s.empty() && s.compare("timer") == 0) {
 				s = "";
 	

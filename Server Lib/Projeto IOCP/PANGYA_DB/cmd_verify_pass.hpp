@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_pass.hpp
-// Criado em 17/03/2018 as 20:49 por Acrisio
-// Definição da classe CmdVerifyPass
+// File cmd_verify_pass.hpp
+// Created on 17/03/2018 at 20:49 by Acrisio
+// Definition of class CmdVerifyPass
 
 #pragma once
 #ifndef _STDA_CMD_VERIFY_PASS_HPP

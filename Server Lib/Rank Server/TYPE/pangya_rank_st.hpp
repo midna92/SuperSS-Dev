@@ -1,6 +1,6 @@
-// Arquivo pangya_rank_st.hpp
-// Criado em 15/06/2020 as 15:03 por Acrisio
-// Defini��o dos tipos usados no Rank Server
+// File pangya_rank_st.hpp
+// Created on 15/06/2020 at 15:03 by Acrisio
+// Definition of the types used in the Rank Server
 
 #pragma once
 #ifndef _STDA_PANGYA_RANK_ST_HPP
@@ -13,8 +13,8 @@
 namespace stdA {
 
 // Macro enum operator++
-// __type � o nome do enum(type)
-// _element � a vari�vel(obbject) do enum
+// __type is the name of the enum (type)
+// _element is the variable (object) of the enum
 #define ENUM_OPERATOR_PLUS_PLUS(__type, _element) (_element) = __type(static_cast< std::underlying_type< __type >::type >((_element)) + 1)
 
 #if defined(__linux__)
@@ -89,12 +89,12 @@ namespace stdA {
 	};
 
 	enum ePLAYER_POSITION_RANK_TYPE : unsigned char {
-		PPRT_IN_TOP_RANK,		// Tem registro e est� no top rank
-		PPRT_NOT_RANK,			// N�o tem registro
-		PPRT_NOT_TOP_RANK,		// Tem registro mas n�o est� no top rank
+		PPRT_IN_TOP_RANK,		// Has a record and is in the top rank
+		PPRT_NOT_RANK,			// Has no record
+		PPRT_NOT_TOP_RANK,		// Has a record but is not in the top rank
 	};
 
-	// Rank Pesquisa dados
+	// Rank Search data
 	struct search_dados {
 		public:
 			search_dados(unsigned int  _ul = 0u)
@@ -118,12 +118,12 @@ namespace stdA {
 		public:
 			eRANK_MENU rank_menu;
 			unsigned char rank_menu_item;
-			unsigned char term_s5_type;			// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
-			unsigned char class_type;			// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+			unsigned char term_s5_type;			// Options discontinued in Fresh UP!, but it still keeps them in the packets
+			unsigned char class_type;			// Options discontinued in Fresh UP!, but it still keeps them in the packets
 			unsigned int  page;
 	};
 
-	// Rank Pesquisa dados Ex
+	// Rank Search data Ex
 	struct search_dados_ex : public search_dados {
 		public:
 			search_dados_ex(unsigned int  _ul = 0u) : search_dados(_ul), active(0u) {
@@ -168,7 +168,7 @@ namespace stdA {
 
 			inline bool operator <(const key_menu& _km) const {
 
-				// Classifica primeiro pelo menu depois pelo item
+				// Sort first by menu, then by item
 				if (m_menu != _km.m_menu)
 					return m_menu < _km.m_menu;
 				else
@@ -207,7 +207,7 @@ namespace stdA {
 
 			inline bool operator <(const key_position& _kp) const {
 
-				// Classifica primeiro pela position depois pelo uid
+				// Sort first by position, then by uid
 				if (m_position != _kp.m_position)
 					return m_position < _kp.m_position;
 				else

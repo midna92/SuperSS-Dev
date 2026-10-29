@@ -1,6 +1,6 @@
-// Arquivo cmd_server_list.cpp
-// Criado em 17/03/2018 as 22:56 por Acrisio
-// Implementação da classe CmdServerList
+// File cmd_server_list.cpp
+// Created on 17/03/2018 at 22:56 by Acrisio
+// Implementation of class CmdServerList
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -39,7 +39,7 @@ void CmdServerList::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 	si.event_map = (short)IFNULL(atoi, _result->data[9]);
 	si.img_no = (short)IFNULL(atoi, _result->data[10]);
 	si.app_rate = (short)IFNULL(atoi, _result->data[11]);
-	si.unknown = (short)IFNULL(atoi, _result->data[12]);	// Estava o rate_scratchy mas realoquei ele para o ServerInfoEx::Rate
+	si.unknown = (short)IFNULL(atoi, _result->data[12]);	// The rate_scratchy was here but I relocated it to ServerInfoEx::Rate
 
 	v_server_list.push_back(si);
 };

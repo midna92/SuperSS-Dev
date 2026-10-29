@@ -1,6 +1,6 @@
-// Arquivo cmd_register_server.hpp
-// Criado em 25/03/2018 as 21:20 por Acrisio
-// Definição da classe CmdRegisterServer
+// File cmd_register_server.hpp
+// Created on 25/03/2018 at 21:20 by Acrisio
+// Definition of class CmdRegisterServer
 
 #pragma once
 #ifndef _STDA_CMD_REGISTER_SERVER_HPP

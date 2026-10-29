@@ -1,6 +1,6 @@
-// Arquivo cmd_item_left_from_email.hpp
-// Criado em 24/03/2018 as 17:23 por Acrisio
-// Defini��o da classe CmdItemLeftFromEmail
+// File cmd_item_left_from_email.hpp
+// Created on 24/03/2018 at 17:23 by Acrisio
+// Definition of the class CmdItemLeftFromEmail
 
 #pragma once
 #ifndef _STDA_CMD_ITEM_LEFT_FROM_EMAIL

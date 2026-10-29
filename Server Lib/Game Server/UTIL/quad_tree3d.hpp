@@ -1,6 +1,6 @@
-// Arquivo quad_tree3d.hpp
-// Criado em 03/10/2020 as 16:25 por Acrisio
-// Definição da classe QuadTree3D
+// File quad_tree3d.hpp
+// Created on 03/10/2020 at 16:25 by Acrisio
+// Definition of the QuadTree3D class
 
 #pragma once
 #ifndef _STDA_QUAD_TREE3D_HPP
@@ -41,8 +41,8 @@ namespace stdA {
 		private:
 			float m_gravity_factor;
 
-			Vector3D m_second_influ; // Não sei bem qual é essa segunda influ, pode ser wind hill ou natural
-			Vector3D m_slope_influ; // Aqui é sempre: 0.f, 0.f, 1.f
+			Vector3D m_second_influ; // I don't really know what this second influ is, it may be wind hill or natural
+			Vector3D m_slope_influ; // Here it is always: 0.f, 0.f, 1.f
 
 			Ball3D *m_ball;
 			Club3D *m_club;

@@ -1,6 +1,6 @@
-// Arquivo cmd_server_list.hpp
-// Criado em 17/03/2018 as 22:45 por Acrisio
-// Definição da classe CmdServerList
+// File cmd_server_list.hpp
+// Created on 17/03/2018 at 22:45 by Acrisio
+// Definition of class CmdServerList
 
 #pragma once
 #ifndef _STDA_CMD_SERVER_LIST_HPP

@@ -1,6 +1,6 @@
-// Arquivo player.cpp
-// Criado em 22/10/2017 por Acrisio
-// Implementação da classe player
+// File player.cpp
+// Created on 22/10/2017 by Acrisio
+// Implementation of class player
 
 #include <WinSock2.h>
 #include <Windows.h>
@@ -18,7 +18,7 @@ player::~player() {
 };
 
 unsigned char player::getStateLogged() {
-	return 0;	// não uso aqui, so no login e game server
+	return 0;	// not used here, only in the login and game server
 };
 
 unsigned long player::getUID() {

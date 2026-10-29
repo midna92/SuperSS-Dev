@@ -1,6 +1,6 @@
-// Arquivo cmd_update_tutorial.hpp
-// Criado em 28/06/2018 as 22:27 por Acrisio
-// Defini��o da classe CmdUpdateTutorial
+// File cmd_update_tutorial.hpp
+// Created on 28/06/2018 at 22:27 by Acrisio
+// Definition of class CmdUpdateTutorial
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_TUTORIAL_HPP

@@ -1,7 +1,7 @@
 #ifndef _GG_AUTH_SERVER_H_
 #define _GG_AUTH_SERVER_H_
 
-// Pack padr�o
+// Default pack
 #pragma pack(push, ggsrv)
 #pragma pack( )
 
@@ -230,7 +230,7 @@ GGAUTHS_EXPORT UINT32	 __CDECL GGAuthGetUserValue(LPGGAUTH pGGAuth, int type);
 
 #endif // MY_CSAuth2 == TRUE
 
-// Pop Pack padr�o
+// Pop default pack
 #pragma pack(pop, ggsrv)
 
 #endif

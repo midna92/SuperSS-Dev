@@ -1,6 +1,6 @@
-// Arquivo hole_type.hpp
-// Criado em 12/08/2018 as 11:02 por Acrisio
-// Definição dos tipos usados na classe Hole
+// File hole_type.hpp
+// Created on 12/08/2018 at 11:02 by Acrisio
+// Definition of the types used in class Hole
 
 #pragma once
 #ifndef _STDA_HOLE_TYPE_HPP
@@ -77,9 +77,9 @@ namespace stdA {
 		unsigned char ucFlag[2];
 		struct {
 			unsigned char type : 2, : 0;
-			unsigned char enable : 1;				// Ativa Coin e Cube no Hole
-			unsigned char enable_cube : 1;			// Ativa Cube
-			unsigned char enable_coin : 1, : 0;		// Ativa Coin
+			unsigned char enable : 1;				// Enables Coin and Cube on the Hole
+			unsigned char enable_cube : 1;			// Enable Cube
+			unsigned char enable_coin : 1, : 0;		// Enable Coin
 		}stFlag;
 	};
 
@@ -117,7 +117,7 @@ namespace stdA {
 			uint32_t id;
 			eTYPE tipo;
 			uint32_t flag_unknown;
-			eFLAG_LOCATION flag_location;		// Borda Green = 0, Carpet = 1 , Ar = 2, Chão = 3
+			eFLAG_LOCATION flag_location;		// Green Edge = 0, Carpet = 1 , Air = 2, Ground = 3
 	};
 
 	struct CubeEx : public Cube {
@@ -135,7 +135,7 @@ namespace stdA {
 			};
 
 		public:
-			uint32_t rate; // Aqui é quantas vezes o cube ou coin caiu no mesmo lugar
+			uint32_t rate; // Here is how many times the cube or coin fell in the same place
 	};
 
 #if defined(__linux__)

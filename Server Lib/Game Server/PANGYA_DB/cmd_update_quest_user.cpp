@@ -1,6 +1,6 @@
-// Arquivo cmd_update_quest_user.cpp
-// Criado em 14/04/2018 as 16:03 por Acrisio
-// Implementa��o da classe CmdUpdateQuestUser
+// File cmd_update_quest_user.cpp
+// Created on 14/04/2018 at 16:03 by Acrisio
+// Implementation of class CmdUpdateQuestUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdUpdateQuestUser::~CmdUpdateQuestUser() {
 
 void CmdUpdateQuestUser::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

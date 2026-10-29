@@ -1,6 +1,6 @@
-// Arquivo practice.cpp
-// Criado em 18/08/2018 as 15:28 por Acrisio
-// Implementa��o da classe Practice
+// File practice.cpp
+// Created on 18/08/2018 at 15:28 by Acrisio
+// Implementation of the Practice class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[Practice::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PRACTICE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[Practice::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PRACTICE, 1, 4)); \
@@ -38,7 +38,7 @@ using namespace stdA;
 Practice::Practice(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie)
 	: TourneyBase(_players, _ri, _rv, _channel_rookie), m_practice_state(false) {
 
-	// Aqui tem que inicializar os players info
+	// Here the players info has to be initialized
 	initAllPlayerInfo();
 
 	m_state = init_game();
@@ -53,7 +53,7 @@ Practice::~Practice() {
 #endif // _DEBUG
 }
 
-// Met�dos do Game->Course->Hole
+// Methods of Game->Course->Hole
 void Practice::changeHole(player& _session) {
 
 	updateTreasureHunterPoint(_session);
@@ -61,7 +61,7 @@ void Practice::changeHole(player& _session) {
 	if (checkEndGame(_session))
 		finish_practice(_session, 0);
 	else
-		// Resposta terminou o hole
+		// Response finished the hole
 		updateFinishHole(_session, 1);
 }
 
@@ -82,7 +82,7 @@ void Practice::requestInitHole(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestInitHole", "tentou inicializar o hole do jogo", &_session);
 
-		// Update Counter Hole do Achievement do player
+		// Update the player's Achievement Hole Counter
 		pgi->sys_achieve.incrementCounter(0x6C400005u/*Hole Count*/);
 
 	}catch (exception& e) {
@@ -98,8 +98,8 @@ void Practice::requestCalculePang(player& _session) {
 	INIT_PLAYER_INFO("requestCalculePang", "tentou calcular o pang do player no jogo", &_session);
 	
 	// Practice
-	// Hole Repeat ganha 1/6 dos pang(s) feito
-	// Course Practice ganha 1/3 dos pang(s) feito
+	// Hole Repeat earns 1/6 of the pang(s) made
+	// Course Practice earns 1/3 of the pang(s) made
 
 	if (m_ri.modo == RoomInfo::MODO::M_REPEAT) { // Hole Repeat
 
@@ -121,21 +121,21 @@ void Practice::finish_practice(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player won
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if he has assist on, and is above beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response finished the hole
 				updateFinishHole(_session, 1);
 
-				// Resposta Terminou o Jogo, ou Saiu
+				// Response Finished the Game, or Left
 				sendUpdateState(_session, 2);
 
 				// Achievement Counter
@@ -149,7 +149,7 @@ void Practice::finish_practice(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game Ex: 0xCE, 0x79 etc
 	}
 
 }
@@ -182,7 +182,7 @@ void Practice::timeIsOver() {
 
 		if (m_game_init_state == 1 && m_players.size() > 0) {
 
-			m_game_init_state = 2;	// Acabou
+			m_game_init_state = 2;	// Finished
 
 			packet p;
 
@@ -194,18 +194,18 @@ void Practice::timeIsOver() {
 
 			sendFinishMessage(*s);
 
-			// Resposta terminou o hole
+			// Response finished the hole
 			updateFinishHole(*s, 0);
 
-			requestFinishHole(*s, 1);	// N�o terminou o hole
+			requestFinishHole(*s, 1);	// Did not finish the hole
 
-			// ------ O Original n�o soma as tacadas do resto dos holes que o player n�o jogou, quando o tempo acaba -------
+			// ------ The Original does not add the shots of the rest of the holes the player did not play, when the time runs out -------
 			//pgi->ui.tacada = pgi->data.total_tacada_num;
 
-			// Resposta para o termina Game por tempo
+			// Response for the end of the game by time
 			sendTimeIsOver(*s);
 
-			// Termina jogo
+			// Ends game
 			finish();
 
 	#ifdef _DEBUG
@@ -214,7 +214,7 @@ void Practice::timeIsOver() {
 
 		}
 
-		// Libera
+		// Releases
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs_sync_finish_game);
 #elif defined(__linux__)
@@ -223,7 +223,7 @@ void Practice::timeIsOver() {
 
 	}catch (exception& e) {
 
-		// Libera
+		// Releases
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs_sync_finish_game);
 #elif defined(__linux__)
@@ -238,15 +238,15 @@ bool Practice::init_game() {
 
 	if (m_players.size() > 0) {
 
-		// Cria o timer do practice
+		// Creates the practice timer
 		startTime();
 
-		// variavel que salva a data local do sistema
+		// variable that saves the local system date
 		initGameTime();
 
-		m_game_init_state = 1;		// Come�ou Game
+		m_game_init_state = 1;		// Game Started
 
-		m_practice_state = true;	// Come�ou Practice
+		m_practice_state = true;	// Practice Started
 	}
 
 	return true;
@@ -257,7 +257,7 @@ void Practice::requestReplySyncShotData(player& _session) {
 
 	try {
 
-		// Resposta Sync Shot
+		// Response Sync Shot
 		sendSyncShot(_session);
 
 	}catch (exception& e) {
@@ -270,7 +270,7 @@ void Practice::requestSavePang(player& _session) {
 
 	INIT_PLAYER_INFO("requestSavePang", "tentou salvar os pang ganho no jogo", &_session);
 
-	if (pgi->data.pang > 0 || pgi->data.bonus_pang > 0)	// S� add se for maior que 0
+	if (pgi->data.pang > 0 || pgi->data.bonus_pang > 0)	// Only add if greater than 0
 		_session.m_pi.addPang(pgi->data.pang + pgi->data.bonus_pang);
 }
 
@@ -278,7 +278,7 @@ void Practice::requestFinishExpGame() {
 
 	if (m_players.size() > 0) {
 
-		// Practine n�o conta estrela ele da 1 de exp por hole jogados
+		// Practice does not count stars, it gives 1 exp per hole played
 		float stars = m_course->getStar();
 
 		auto hole_seq = 0l;
@@ -289,11 +289,11 @@ void Practice::requestFinishExpGame() {
 
 			hole_seq = (int)m_course->findHoleSeq(pgi->hole);
 
-			// Ele est� no primeiro hole e n�o acertou ele, s� da experi�ncia se ele tiver acertado o hole
+			// He is on the first hole and did not hit it, only gives experience if he hit the hole
 			if (hole_seq == 1 && !pgi->shot_sync.state_shot.display.stDisplay.acerto_hole)
 				hole_seq = 0;
 
-			if (el->m_pi.level < 70/*Ultimo level n�o ganha exp*/)
+			if (el->m_pi.level < 70/*Last level does not gain exp*/)
 				pgi->data.exp = (uint32_t)((hole_seq > 0 ? hole_seq : 0) * TRANSF_SERVER_RATE_VALUE(m_rv.exp) * TRANSF_SERVER_RATE_VALUE(pgi->used_item.rate.exp));
 
 			_smp::message_pool::getInstance().push(new message("[Practice::requestFinishExpGame][Log] player[UID=" + std::to_string(el->m_pi.uid) + "] ganhou " + std::to_string(pgi->data.exp) + " de experience.", CL_FILE_LOG_AND_CONSOLE));
@@ -304,7 +304,7 @@ void Practice::requestFinishExpGame() {
 
 void Practice::finish() {
 
-	m_game_init_state = 2;	// Acabou o Jogo
+	m_game_init_state = 2;	// Game Finished
 
 	requestCalculeRankPlace();
 
@@ -327,29 +327,29 @@ void Practice::requestFinishData(player& _session) {
 
 	INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 }
 
 int Practice::checkEndShotOfHole(player& _session) {
 	
-	// Agora verifica o se ele acabou o hole e essas coisas
+	// Now checks whether he finished the hole and these things
 	INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 
 	if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 
-		// Verifica se o player terminou jogo, fez o ultimo hole
+		// Checks whether the player finished the game, made the last hole
 		if (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole) {
 
-			// Resposta para o player que terminou o ultimo hole do Game
+			// Response for the player who finished the last hole of the Game
 			packet p((unsigned short)0x199);
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+			// Made the Last Hole, Calculates Clear Bonus for the player
 			if (pgi->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 				if (!sMap::getInstance().isLoad())
@@ -379,7 +379,7 @@ void Practice::requestCalculeShotSpinningCube(player& _session, ShotSyncData& _s
 	try {
 
 #ifdef _DEBUG
-		// S� calcula em modo debug, por que practice n�o pode contar
+		// Only calculates in debug mode, because practice cannot count
 		calcule_shot_to_spinning_cube(_session, _ssd);
 #endif // _DEBUG
 
@@ -395,7 +395,7 @@ void Practice::requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) {
 	try {
 
 #ifdef _DEBUG
-		// S� calcule em modo debug, por que practice n�o pode contar
+		// Only calculates in debug mode, because practice cannot count
 		calcule_shot_to_coin(_session, _ssd);
 #endif // _DEBUG
 
@@ -415,37 +415,37 @@ bool Practice::finish_game(player& _session, int option) {
 #endif 
 	&& _session.getState() && _session.isConnected() && m_players.size() > 0) {
 
-		if (option == 6/*packet06 pacote que termina o game*/) {
+		if (option == 6/*packet06 packet that ends the game*/) {
 
 			packet p;
 
 			if (m_practice_state)
-				finish_practice(_session, 1);	// Termina sem ter acabado de jogar
+				finish_practice(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
-			// Practice n�o salva info, s� pang, exp, e itens used and dropped. Ex: Active Item, Spinning Cube e Coin
+			// Practice does not save info, only pang, exp, and items used and dropped. Ex: Active Item, Spinning Cube and Coin
 			requestSavePang(_session);
 
-			// Practice ganha exp, mas nao d� para o caddie, o caddie n�o ganha exp no practice
-			if (pgi->data.exp > 0)	// s� add exp se for maior que 0
-				_session.addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+			// Practice earns exp, but does not give it to the caddie, the caddie does not earn exp in practice
+			if (pgi->data.exp > 0)	// only add exp if greater than 0
+				_session.addExp(pgi->data.exp, false/*No packet needed to change level*/);
 			
-			// PRACTICE N�O DA EXP PARA CADDIE E NEM MASCOT
-			// Depois tem que add nos outros modos de jogo o add _session.addCaddieExp
+			// PRACTICE DOES NOT GIVE EXP TO CADDIE OR MASCOT
+			// Later _session.addCaddieExp has to be added in the other game modes
 			
-			// Depois tem que add nos outros modos de jogo o add _session.addMascotExp
+			// Later _session.addMascotExp has to be added in the other game modes
 
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Resposta Treasure Hunter Item
+			// Response Treasure Hunter Item
 			requestSendTreasureHunterItem(_session);
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
@@ -454,11 +454,11 @@ bool Practice::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means he finished the camp
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
-			m_game_init_state = 2;	// ACABOU
+			// Flag of the game that finished
+			m_game_init_state = 2;	// FINISHED
 		}
 	}
 	

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_cookie.hpp
-// Criado em 13/05/2018 as 11:14 por Acrisio
-// Defini��o da classe CmdUpdateCookie
+// File cmd_update_cookie.hpp
+// Created on 13/05/2018 at 11:14 by Acrisio
+// Definition of class CmdUpdateCookie
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_COOKIE_HPP

@@ -1,6 +1,6 @@
-// Arquivo unit_gg_auth_server_connect.hpp
-// Criado em 02/02/2021 as 23:44 por Acrisio
-// Definição da classe unit_gg_auth_server_connect
+// File unit_gg_auth_server_connect.hpp
+// Created on 02/02/2021 at 23:44 by Acrisio
+// Definition of the unit_gg_auth_server_connect class
 
 #pragma once
 #ifndef _STDA_UNIT_GG_AUTH_SERVER_CONNECT_HPP

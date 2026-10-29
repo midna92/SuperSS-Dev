@@ -1,6 +1,6 @@
 // Arquivo chip_in_practice.hpp
-// Criado em 23/06/2020 as 17:42 por Acrisio
-// Definição da classe ChipInPractice
+// Created on 23/06/2020 at 17:42 by Acrisio
+// Definition of the ChipInPractice class
 
 #pragma once
 #ifndef _STDA_CHIP_IN_PRACTICE_HPP
@@ -30,13 +30,13 @@ namespace stdA {
 
 			virtual void finish(int option) override;
 
-			// Sortea Item Drop do Hole, pode dropar ou não
+			// Draw the Hole Item Drop, it may or may not drop
 			virtual void drawDropItem(player& _session) override;
 
 			virtual void requestFinishData(player& _session, int option) override;
 
 			// Terminou Hole Update on Game
-			// Opt 0 Não terminou o hole, 1 Terminou o Hole
+			// Opt 0 Did not finish the hole, 1 Finished the Hole
 			virtual void updateFinishHole(player& _session, int _option) override;
 
 			virtual void requestMakeTrofel() override;

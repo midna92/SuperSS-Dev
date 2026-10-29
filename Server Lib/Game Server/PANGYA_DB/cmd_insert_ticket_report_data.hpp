@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_ticket_report_data.hpp
-// Criado em 22/09/2018 as 17:14 por Acrisio
-// Defini��o da classe CmdInsertTicketReportData
+// File cmd_insert_ticket_report_data.hpp
+// Created on 22/09/2018 at 17:14 by Acrisio
+// Definition of the class CmdInsertTicketReportData
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_TICKET_REPORT_DATA_HPP

@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac_event.hpp
-// Criado em 26/06/2020 as 13:09 por Acrisio
-// Defini��o da classe GrandZodiacEvent
+// File grand_zodiac_event.hpp
+// Created on 26/06/2020 at 13:09 by Acrisio
+// Definition of class GrandZodiacEvent
 
 #pragma once
 #ifndef _STDA_GRAND_ZODIAC_EVENT_HPP
@@ -32,10 +32,10 @@ namespace stdA {
 
 			/*static */bool checkTimeToMakeRoom();
 
-			// Verifica se a mensagem do intervalo de tempo atual j� foi enviada 
+			// Checks whether the message of the current time interval has already been sent 
 			/*static*/bool messageSended();
 
-			// Zera todas os intervalos que n�o est� na hora, e o intervalo que est� na hora seta ele
+			// Zeroes all intervals that are not due, and sets the interval that is due
 			/*static*/void setSendedMessage();
 
 			/*static*/range_time* getInterval();
@@ -50,7 +50,7 @@ namespace stdA {
 
 			/*static */bool m_load;
 
-			SYSTEMTIME m_st;							// Usando para n�o ficar criando direto na fun��o de check
+			SYSTEMTIME m_st;							// Used to avoid creating it directly in the check function
 			
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;

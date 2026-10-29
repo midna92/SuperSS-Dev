@@ -1,6 +1,6 @@
-// Arquivo cmd_tuto_event_clear.cpp
-// Criado em 28/06/2018 as 22:03 por Acrisio
-// Implementa��o da classe CmdTutoEventClear
+// File cmd_tuto_event_clear.cpp
+// Created on 28/06/2018 at 22:03 by Acrisio
+// Implementation of the class CmdTutoEventClear
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdTutoEventClear::~CmdTutoEventClear() {
 
 void CmdTutoEventClear::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UDPATE
+	// Not used here because it is a UDPATE
 	return;
 }
 

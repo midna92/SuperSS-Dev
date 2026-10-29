@@ -1,6 +1,6 @@
-// Arquivo stadium_calculator_player.cpp
-// Criado em 21/11/2020 as 11:55 por Acrisio
-// Implement���o da classe StadiumCalculatorPlayer
+// File stadium_calculator_player.cpp
+// Created on 21/11/2020 at 11:55 by Acrisio
+// Implementation of the class StadiumCalculatorPlayer
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -1208,7 +1208,7 @@ void StadiumCalculatorPlayer::macro(const char* _args) {
 		// Result
 		stResult copy = m_last_result;
 
-		copy.percent *= 0.01f; // divede por 100, que o macro usar
+		copy.percent *= 0.01f; // divide by 100, which the macro uses
 
 		p.write(&copy, sizeof(stResult));
 
@@ -1345,7 +1345,7 @@ void StadiumCalculatorPlayer::mycella_degree(const char* _args) {
 		
 		}else {
 
-			// Lambda degree to radianos
+			// Lambda degree to radians
 			constexpr auto degreeToRad = [](float _degree) -> float {
 				return float(
 #if defined(_WIN32)
@@ -1525,7 +1525,7 @@ void StadiumCalculatorPlayer::slope_break(const char* _args) {
 
 		SET_VALUE_INPUT_FROM_STRING(m_slope_break);
 
-		// Update Qbra pela resolu��o e auto fit
+		// Update Break by resolution and auto fit
 		m_slope_break /= getSlopeByResolution(m_resolution, m_auto_fit);
 
 	}catch (exception& e) {

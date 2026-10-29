@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_box_rare_win_log.hpp
-// Criado em 18/07/2018 as 22:06 por Acrisio
-// Defini��o da classe CmdInsertBoxRareWinLog
+// File cmd_insert_box_rare_win_log.hpp
+// Created on 18/07/2018 at 22:06 by Acrisio
+// Definition of the class CmdInsertBoxRareWinLog
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_BOX_RARE_WIN_LOG_HPP

@@ -1,6 +1,6 @@
-// Arquivo approach_mission_system.cpp
-// Criado em 14/06/2020 as 17:33 por Acrisio
-// Implementa��o da classe ApproachMissionSystem
+// File approach_mission_system.cpp
+// Created on 14/06/2020 at 17:33 by Acrisio
+// Implementation of class ApproachMissionSystem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -62,7 +62,7 @@ ApproachMissionSystem::ApproachMissionSystem() : m_mad() {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initialize
 	initialize();
 }
 
@@ -101,14 +101,14 @@ void ApproachMissionSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[ApproachMissionSystem::initialize][Log] Approach Mission System carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -122,8 +122,8 @@ void ApproachMissionSystem::clear() {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// Limpa a lista de itens do Approach Mission System
-	// n�o faz o shrink_to_fit por que pode preencher ela novamente
+	// Clears the Approach Mission System item list
+	// does not do shrink_to_fit because it may be filled again
 	if (!m_mad.empty())
 		m_mad.clear();
 
@@ -177,7 +177,7 @@ mission_approach_ex ApproachMissionSystem::drawMission(uint32_t _num_players) {
 
 	std::srand((uint32_t)std::clock() * 7777 * (uint32_t)(uint64_t)&ma);
 
-	if (((std::rand() % 1000) / 10) <= 50) { // 50% de chance de sair mission
+	if (((std::rand() % 1000) / 10) <= 50) { // 50% chance of a mission appearing
 
 		auto index = std::rand() % m_mad.size();
 
@@ -203,7 +203,7 @@ mission_approach_ex ApproachMissionSystem::drawMission(uint32_t _num_players) {
 			{
 				ma.condition[0] = std::rand() % m_mad[index].flag.bits.condition1 + 1;
 
-				// Box, aumenta se for menos dist�ncia
+				// Box, increases if the distance is shorter
 				if (ma.condition[0] <= 1)
 					ma.box_qntd = 3;
 				else if (ma.condition[0] <= 3)
@@ -264,7 +264,7 @@ void ApproachMissionSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_d
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[ApproachMissionSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

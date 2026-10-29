@@ -1,6 +1,6 @@
-// Arquivo thread.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe thread
+// File thread.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of class thread
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -75,7 +75,7 @@ void thread::init_thread() {
 
 	if ((int32_t)m_flag_priority != THREAD_PRIORITY_NORMAL) {
 
-		// !@ Teste
+		// !@ Test
 		if ((int32_t)m_flag_priority == THREAD_PRIORITY_IDLE) {
 
 			// Change to IDLE policy
@@ -101,7 +101,7 @@ void thread::init_thread() {
 			if ((error = pthread_attr_setschedpolicy(&attr, SCHED_RR)) != 0)
 				throw exception("[thread::init_thread][Error] ao setar o schedule policy do pthread attr.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREAD, 82, error));
 
-			// set priority com 
+			// set priority with 
 			_sched_param.sched_priority = ((int32_t)m_flag_priority < sp_min ? sp_min : ((int32_t)m_flag_priority > sp_max ? sp_max : (int32_t)m_flag_priority));
 			
 			if ((error = pthread_attr_setschedparam(&attr, &_sched_param)) != 0)
@@ -140,7 +140,7 @@ void thread::pause_thread() {
 #if defined(_WIN32)
 	SuspendThread(m_thread);
 #elif defined(__linux__)
-	// !@ Não tem o Suspend no pthread linux
+	// !@ There is no Suspend in linux pthread
 	throw exception("[thread::pause_thread][WARNING] nao tem suspend thread no pthread linux.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREAD, 12, 0));
 #endif
 
@@ -154,7 +154,7 @@ void thread::resume_thread() {
 #if defined(_WIN32)
 	while (ResumeThread(m_thread) > 0);
 #elif defined(__linux__)
-	// !@ Não tem o Resume no pthread linux
+	// !@ There is no Resume in linux pthread
 	throw exception("[thread::resume_thread][WARNING] nao tem resume thread no pthread linux.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREAD, 12, 0));
 #endif
 
@@ -169,7 +169,7 @@ void thread::exit_thread() {
 #if defined(_WIN32)
 	pause_thread();
 #elif defined(__linux__)
-	// Linux no pthread não tem o pause(Suspend) thread
+	// Linux pthread does not have pause (Suspend) thread
 #endif
 	
 #if defined(_WIN32)

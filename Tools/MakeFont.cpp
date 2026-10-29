@@ -1,6 +1,6 @@
-// Arquivo MakeFont.cpp
-// Criado em 30/05/2021 as 02:31 por Acrisio
-// Cria arquivo de font de mono bit map para o PangYa com base no código do HL
+// File MakeFont.cpp
+// Created on 30/05/2021 at 02:31 by Acrisio
+// Creates a monochrome bitmap font file for PangYa based on the HL code
 
 #include <windows.h>
 
@@ -23,7 +23,7 @@
 // Timeapi
 #pragma comment (lib,"Winmm.lib")
 
-constexpr unsigned long ANTIALIASING_WORK_FONT_SIZE = 22ul; // 21 é o mínino, mas vou deixar número par
+constexpr unsigned long ANTIALIASING_WORK_FONT_SIZE = 22ul; // 21 is the minimum, but I will leave an even number
 constexpr unsigned long MIN_FONT_SIZE = 4ul; // 11
 constexpr unsigned long START_LETTER_CODE_POINT = 0x20ul;
 
@@ -41,7 +41,7 @@ int			paddingLeft = 0;
 
 WCHAR		start_letter = START_LETTER_CODE_POINT;
 
-// Teste, gera um bitmap do primeiro caracter
+// Test, generates a bitmap of the first character
 BOOL		bOneLetter = FALSE;
 
 // GDI+
@@ -290,7 +290,7 @@ unsigned char* makeMyFont(const wchar_t* _font_family, unsigned long _size, floa
 
 			mono = mono->Clone(rc, PixelFormat4bppIndexed);
 
-			// Não conseguiu clonar
+			// Could not clone
 			if (mono == nullptr)
 				break;
 		}
@@ -347,10 +347,10 @@ unsigned char* makeMyFont(const wchar_t* _font_family, unsigned long _size, floa
 
 		status = mono->UnlockBits(&btd);
 
-		// Uma letra teste
+		// A test letter
 		if (_one_letter) {
 
-			// Teste
+			// Test
 			if (mono != nullptr) {
 				CLSID clsid_bmp;
 				GetEncoderClsid(L"image/bmp", &clsid_bmp);

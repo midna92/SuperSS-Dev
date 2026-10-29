@@ -1,6 +1,6 @@
-// Arquivo cmd_find_furniture.hpp
-// Criado em 26/05/2018 as 13:55 por Acrisio
-// Defini��o da classe CmdFindFurniture
+// File cmd_find_furniture.hpp
+// Created on 26/05/2018 at 13:55 by Acrisio
+// Definition of the class CmdFindFurniture
 
 #pragma once
 #ifndef _STDA_CMD_FIND_FURNITURE_HPP

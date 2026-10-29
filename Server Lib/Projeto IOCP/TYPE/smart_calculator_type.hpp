@@ -1,6 +1,6 @@
-// Arquivo smart_calculator_type.hpp
-// Criado em 17/11/2020 as 12:29 por Acrisio
-// Defini��o dos tipos usandos no Smart Calculator System
+// File smart_calculator_type.hpp
+// Created on 17/11/2020 at 12:29 by Acrisio
+// Definition of the types used in the Smart Calculator System
 
 #pragma once
 #ifndef _STDA_SMART_CALCULATOR_TYPE_HPP

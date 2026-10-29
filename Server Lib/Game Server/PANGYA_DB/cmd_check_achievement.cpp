@@ -1,6 +1,6 @@
-// Arquivo cmd_check_achievement.cpp
-// Criado em 07/04/2018 as 19:08 por Acrisio
-// Implementa��o da classe CmdCheckAchievement
+// File cmd_check_achievement.cpp
+// Created on 07/04/2018 at 19:08 by Acrisio
+// Implementation of the class CmdCheckAchievement
 
 #if defined(_WIN32)
 #pragma pack(1)

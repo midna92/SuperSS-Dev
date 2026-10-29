@@ -1,6 +1,6 @@
-// Arquivo cmd_msg_off_info.cpp
-// Criado em 24/03/2018 as 17:59 por Acrisio
-// Implementa��o da classe CmdMsgOffInfo
+// File cmd_msg_off_info.cpp
+// Created on 24/03/2018 at 17:59 by Acrisio
+// Implementation of the class CmdMsgOffInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -40,7 +40,7 @@ void CmdMsgOffInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 			// Translate Msg From Encoded Char not printed
 			auto msg = verifyAndTranslate(_result->data[3], 2/*fixed size*/);
 
-			// !@ possivel erro de viola��o de acesso
+			// !@ possible access violation error
 			if (msg.empty())
 #if defined(_WIN32)
 				memcpy_s(moi.msg, sizeof(moi.msg), _result->data[3], (strlen(_result->data[3]) > sizeof(moi.msg) ? sizeof(moi.msg) : strlen(_result->data[3])));

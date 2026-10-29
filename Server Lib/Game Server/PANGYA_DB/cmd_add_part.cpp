@@ -1,6 +1,6 @@
-// Arquivo cmd_add_part.cpp
-// Criado em 31/05/2018 as 11:15 por Acrisio
-// Implementa��o da classe CmdAddPart
+// File cmd_add_part.cpp
+// Created on 31/05/2018 at 11:15 by Acrisio
+// Implementation of the class CmdAddPart
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -34,7 +34,7 @@ void CmdAddPart::lineResult(result_set::ctx_res* _result, uint32_t _index_result
 		
 		m_wi.id = IFNULL(atoi, _result->data[0]);
 	}else
-		checkColumnNumber(1, (uint32_t)_result->cols);	// S� para lan�a a exception, por que eu verificou em cima o n�mero das colunas retornadas
+		checkColumnNumber(1, (uint32_t)_result->cols);	// Only to throw the exception, because I checked the number of returned columns above
 }
 
 response* CmdAddPart::prepareConsulta(database& _db) {

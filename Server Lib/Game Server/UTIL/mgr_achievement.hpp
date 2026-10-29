@@ -1,6 +1,6 @@
-// Arquivo mgr_achievement.hpp
-// Criado em 08/04/2018 as 23:43 por Acrisio
-// Definição da classe MgrAchievement
+// File mgr_achievement.hpp
+// Created on 08/04/2018 at 23:43 by Acrisio
+// Definition of the MgrAchievement class
 
 #pragma once
 #ifndef _STDA_MGR_ACHIEVEMENT_HPP
@@ -34,7 +34,7 @@ namespace stdA {
 
 			// Sets
 
-			// Reset Achievement para os valores iniciais
+			// Reset Achievement to the initial values
 			virtual void resetAchievement(int32_t _id);
 			virtual void resetAchievement(std::multimap< uint32_t, AchievementInfoEx >::iterator _it);
 
@@ -53,7 +53,7 @@ namespace stdA {
 			// Increasers
 			void incrementPoint(uint32_t _increase = 1u);
 
-			// Auxíliar
+			// Auxiliary
 			CounterItemInfo* findCounterItemById(int32_t _id);
 			CounterItemInfo* findCounterItemByTypeid(uint32_t _typeid);
 
@@ -75,9 +75,9 @@ namespace stdA {
 		protected:
 			std::multimap< uint32_t, AchievementInfoEx > map_ai;
 			
-			uint32_t m_uid;				// Owner(dono)
+			uint32_t m_uid;				// Owner
 
-			uint32_t m_pontos;				// Todos os pontos do achievement
+			uint32_t m_pontos;				// All the achievement points
 
 			bool m_state;
     };

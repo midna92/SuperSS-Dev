@@ -1,6 +1,6 @@
-// Arquivo thread.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe thread
+// File thread.h
+// Created on 21/05/2017 by Acrisio
+// Definition of class thread
 
 #pragma once
 #ifndef _STDA_THREAD_H
@@ -47,7 +47,7 @@ namespace stdA {
 			LPTHREAD_START_ROUTINE m_routine;
 			LPVOID m_parameter;
 			DWORD m_flag_priority;
-			DWORD m_mask_affinity;		// Afinidade mask com o CPU/Core
+			DWORD m_mask_affinity;		// Affinity mask with the CPU/Core
 
 			DWORD m_tipo;
     };

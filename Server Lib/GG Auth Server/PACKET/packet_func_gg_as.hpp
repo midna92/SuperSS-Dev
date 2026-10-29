@@ -1,6 +1,6 @@
-// Arquivo packet_func_gg_as.hpp
-// Criado em 02/02/2021 as 17:49 por Acrisio
-// Definição da classe packet_func
+// File packet_func_gg_as.hpp
+// Created on 02/02/2021 at 17:49 by Acrisio
+// Definition of class packet_func
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_GG_AS_HPP
@@ -28,8 +28,8 @@ namespace stdA {
 	class packet_func : public packet_func_base {
 		public:
 			// Cliente
-			static int packet001(void* _arg1, void* _arg2);		// request::Autenticação primeira fase
-			static int packet002(void* _arg1, void* _arg2);		// request::Autenticação segunda fase
+			static int packet001(void* _arg1, void* _arg2);		// request::Authentication first phase
+			static int packet002(void* _arg1, void* _arg2);		// request::Authentication second phase
 			static int packet003(void* _arg1, void* _arg2);		// request::Add Player Game Guard Ctx
 			static int packet004(void* _arg1, void* _arg2);		// request::Delete Player Game Guard Ctx
 			static int packet005(void* _arg1, void* _arg2);		// request::Get Auth Query

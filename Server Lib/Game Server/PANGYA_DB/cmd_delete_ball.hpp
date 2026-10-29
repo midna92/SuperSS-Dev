@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_ball.hpp
-// Criado em 31/05/2018 as 21:09 por Acrisio
-// Defini��o da classe CmdDeleteBall
+// File cmd_delete_ball.hpp
+// Created on 31/05/2018 at 21:09 by Acrisio
+// Definition of the class CmdDeleteBall
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_BALL_HPP

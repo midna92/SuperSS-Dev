@@ -1,6 +1,6 @@
-// Arquivo GGAuth.cpp
-// Criado em 11/03/2020 as 19:17 por Acrisio
-// Implemeneta��o da classe GGAuth
+// File GGAuth.cpp
+// Created on 11/03/2020 at 19:17 by Acrisio
+// Implementation of class GGAuth
 
 #pragma pack(1)
 
@@ -102,10 +102,10 @@ GGAuth::~GGAuth() {
 		// Termina thread
 		if (m_quit_update_timer != INVALID_HANDLE_VALUE && m_quit_update_timer != NULL) {
 
-			// Termina thread pelo event
+			// Terminate thread via event
 			SetEvent(m_quit_update_timer);
 		
-		}else // Termina for�ado
+		}else // Forced termination
 			TerminateThread(m_thread_update_timer, -32);
 
 		if (WaitForSingleObject(m_thread_update_timer, INFINITE) != WAIT_OBJECT_0)

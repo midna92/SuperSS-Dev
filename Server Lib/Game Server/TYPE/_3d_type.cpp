@@ -1,6 +1,6 @@
-// Arquivo _3d_type.cpp
-// Criado em 03/10/2020 as 14:44 por Acrisio
-// Implemta��o dos tipos usados no calculos 3D
+// File _3d_type.cpp
+// Created on 03/10/2020 at 14:44 by Acrisio
+// Implementation of the types used in 3D calculations
 
 #if defined(_WIN32)
 #include <WinSock2.h>

@@ -1,6 +1,6 @@
-// Arquivo treasure_hunter_system.hpp
-// Criado em 06/09/2018 as 18:17 por Acrisio
-// Defini��o da classe TreasureHunterSystem
+// File treasure_hunter_system.hpp
+// Created on 06/09/2018 at 18:17 by Acrisio
+// Definition of the TreasureHunterSystem class
 
 #pragma once
 #ifndef _STDA_TREASURE_HUNTER_SYSTEM_HPP

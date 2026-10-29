@@ -1,6 +1,6 @@
-// Arquivo cmd_tutorial_info.cpp
-// Criado em 18/03/2018 as 22:23 por Acrisio
-// Implementa��o da classe CmdTutorialInfo
+// File cmd_tutorial_info.cpp
+// Created on 18/03/2018 at 22:23 by Acrisio
+// Implementation of the class CmdTutorialInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

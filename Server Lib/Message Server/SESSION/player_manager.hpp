@@ -1,6 +1,6 @@
-// Arquivo player_manager.hpp
-// Criado em 29/07/2018 as 13:44 por Acrisio
-// Defini��o da classe player_manager
+// File player_manager.hpp
+// Created on 29/07/2018 at 13:44 by Acrisio
+// Definition of class player_manager
 
 #pragma once
 #ifndef _STDA_PLAYER_MANAGER_HPP
@@ -25,7 +25,7 @@ namespace stdA {
 
 			virtual std::map< uint32_t, player* > findAllFriend(std::vector< FriendInfoEx* > _v_friend);
 
-			// Procura todos players online pelo Guild UID
+			// Find all online players by Guild UID
 			virtual std::map< uint32_t, player* > findAllGuildMember(uint32_t _guild_uid);
 	};
 }

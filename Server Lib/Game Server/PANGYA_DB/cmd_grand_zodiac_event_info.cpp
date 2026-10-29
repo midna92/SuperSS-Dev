@@ -1,6 +1,6 @@
-// Arquivo cmd_grand_zodiac_event_info.cpp
-// Criado em 26/06/2020 as 13:37 por Acrisio
-// Implementa��o da classe CmdGrandZodiacEventInfo
+// File cmd_grand_zodiac_event_info.cpp
+// Created on 26/06/2020 at 13:37 by Acrisio
+// Implementation of the class CmdGrandZodiacEventInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

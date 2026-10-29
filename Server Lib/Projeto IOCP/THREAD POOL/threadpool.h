@@ -1,6 +1,6 @@
-// Arquivo threadpool.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe threadpool
+// File threadpool.h
+// Created on 21/05/2017 by Acrisio
+// Definition of class threadpool
 
 #pragma once
 #ifndef _STDA_THREADPOOL_H
@@ -82,13 +82,13 @@
 \
 														_session->_set_func(nullptr); \
 \
-														/* trata */ \
+														/* handle */ \
 														postIoOperationL(_session, (Buffer*)_packet, (STDA_OT)); \
 \
 														_packet = nullptr; \
 													} \
 												}else { \
-													if (dwIOsize >= (_sz_ph)) {	/* >= o certo, vou colocar so ">" para testar os exceptions */ \
+													if (dwIOsize >= (_sz_ph)) {	/* >= is the correct one, I will put only ">" to test the exceptions */ \
 														lpBuffer->peek(&(_ph), (_sz_ph)); \
 \
 														if (((_ph).size + (_sz_ph)) <= dwIOsize) { \
@@ -100,7 +100,7 @@
 
 #define END_LOOP_TRANSLATE_BUFFER_TO_PACKET(_ph, _sz_ph, STDA_OT, _get_func, _set_func) _packet->init_maked(); \
 \
-															/* trata */ \
+															/* handle */ \
 															postIoOperationL(_session, (Buffer*)_packet, (STDA_OT)); \
 \
 															_packet = nullptr; \

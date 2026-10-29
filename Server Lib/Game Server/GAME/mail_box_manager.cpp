@@ -1,6 +1,6 @@
-// Arquivo mail_box_manager.cpp
-// Criado em 26/05/2018 as 14:47 por Acrisio
-// Implementa��o da classe MailBoxManager
+// File mail_box_manager.cpp
+// Created on 26/05/2018 at 14:47 by Acrisio
+// Implementation of the MailBoxManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -107,7 +107,7 @@ inline int32_t MailBoxManager::_sendMessage(uint32_t _from_uid, uint32_t _to_uid
 	if (_msg.empty())
 		throw exception("[MailBoxManager::_sendMessage][Error] _msg is empty", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MAIL_BOX_MANAGER, 2, 0));
 
-	// Trata mensagem para n�o da erro no MSSQL, tipo aspas em nome, tipo Arin's gift box
+	// Handles the message to avoid an MSSQL error, e.g. quotes in a name, like Arin's gift box
 	auto index = _msg.find('\'');
 
 	if (index != std::string::npos) {
@@ -123,7 +123,7 @@ inline int32_t MailBoxManager::_sendMessage(uint32_t _from_uid, uint32_t _to_uid
 	_smp::message_pool::getInstance().push(new message("[MailBoxManager::_sendMessage][Log] Encode Message: " + _msg, CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-	// cmd coloca msg no gift table
+	// cmd puts the msg in the gift table
 	CmdAddMsgMail cmd_amm(_from_uid, _to_uid, _msg, true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_amm, nullptr, nullptr);
@@ -154,7 +154,7 @@ void MailBoxManager::putItemInMail(uint32_t _from_uid, uint32_t _to_uid, int32_t
 		try {
 			putItemInMail(_from_uid, _to_uid, _mail_id, el);
 		}catch (exception& e) {
-			// Se n�o for erro de item invalid, relan�a a exception
+			// If it is not an invalid item error, rethrows the exception
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::MAIL_BOX_MANAGER, 6))
 				throw;
 		}
@@ -179,7 +179,7 @@ inline void MailBoxManager::putItemInMail(uint32_t _from_uid, uint32_t _to_uid, 
 	if (cmd_pimb.getException().getCodeError() != 0)
 		throw cmd_pimb.getException();
 
-	// Pronto j� colocou o item no mail do player
+	// Done, the item has been put in the player's mail
 #ifdef _DEBUG
 	_smp::message_pool::getInstance().push(new message("[MailBoxManager::putItemInMail][Log] player[UID=" + std::to_string(_from_uid) + "] colocou item[TYPEID=" + 
 				std::to_string(_item._typeid) + ", ID=" + std::to_string(_item.id) + ", QNTD=" + std::to_string(_item.qntd > 0xFFu ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "] no mail[ID=" + std::to_string(_mail_id) + "] do player[UID=" + std::to_string(_to_uid) + "]", CL_FILE_LOG_AND_CONSOLE));
@@ -204,7 +204,7 @@ void MailBoxManager::putItemInMail(uint32_t _from_uid, uint32_t _to_uid, int32_t
 		try {
 			putItemInMail(_from_uid, _to_uid, _mail_id, _pItem[i]);
 		}catch (exception& e) {
-			// Se n�o for erro de item invalid, relan�a a exception
+			// If it is not an invalid item error, rethrows the exception
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::MAIL_BOX_MANAGER, 6))
 				throw;
 		}
@@ -229,7 +229,7 @@ inline void MailBoxManager::putItemInMail(uint32_t _from_uid, uint32_t _to_uid, 
 	if (cmd_pimb.getException().getCodeError() != 0)
 		throw cmd_pimb.getException();
 
-	// Pronto j� colocou o item no mail do player
+	// Done, the item has been put in the player's mail
 #ifdef _DEBUG
 	_smp::message_pool::getInstance().push(new message("[MailBoxManager::putItemInMail][Log] player[UID=" + std::to_string(_from_uid) + "] colocou item[TYPEID=" +
 		std::to_string(_item._typeid) + ", ID=" + std::to_string(_item.id) + ", QNTD=" + std::to_string(_item.qntd) + "] no mail[ID=" + std::to_string(_mail_id) + "] do player[UID=" + std::to_string(_to_uid) + "]", CL_FILE_LOG_AND_CONSOLE));
@@ -256,7 +256,7 @@ inline void MailBoxManager::putCommandNewMail(uint32_t _to_uid, int32_t _mail_id
 	
 	ci.valid = 1;
 	
-	ci.target = 1;	// Todos os game server
+	ci.target = 1;	// All game servers
 
 	snmdb::NormalManagerDB::getInstance().add(1, new CmdInsertCommand(ci), MailBoxManager::SQLDBResponse, nullptr);
 
@@ -272,13 +272,13 @@ void MailBoxManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[MailBoxManager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
 	}
 
-	// isso aqui depois pode mudar para o MailBoxManager, que vou tirar de ser uma classe static e usar ela como objeto(instancia)
+	// this can later be changed to MailBoxManager, which I will stop making a static class and use as an object (instance)
 	auto _session = reinterpret_cast< player* >(_arg);
 
 	switch (_msg_id) {

@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_mascot.hpp
-// Criado em 16/06/2018 as 13:39 por Acrisio
-// Defini��o da classe CmdDeleteMascot
+// File cmd_delete_mascot.hpp
+// Created on 16/06/2018 at 13:39 by Acrisio
+// Definition of the class CmdDeleteMascot
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_MASCOT_HPP

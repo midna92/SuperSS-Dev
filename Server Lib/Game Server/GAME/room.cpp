@@ -1,6 +1,6 @@
-// Arquivo room.cpp
-// Criado em 24/12/2017 por Acrisio
-// Implementação da classe room
+// File room.cpp
+// Created on 24/12/2017 by Acrisio
+// Implementation of the room class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -83,13 +83,13 @@ room::room(unsigned char _channel_owner, RoomInfoEx _ri)
 
 	geraSecurityKey();
 
-	// Calcula chuva(weather) se o tipo da sala for lounge
+	// Calculates rain (weather) if the room type is lounge
 	calcRainLounge();
 
-	// Atualiza tipo da sala
+	// Updates room type
 	setTipo(m_ri.tipo);
 
-	// Att Exp rate, e Pang rate, que criou a sala, att ele também quando começa o jogo
+	// Updates Exp rate and Pang rate, of whoever created the room, updates it also when the game starts
 	//if (sgs::gs != nullptr) {
 		m_ri.rate_exp = sgs::gs::getInstance().getInfo().rate.exp;
 		m_ri.rate_pang = sgs::gs::getInstance().getInfo().rate.pang;
@@ -158,7 +158,7 @@ void room::destroy() {
 
 	m_personal_shop.destroy();
 
-	// Destruindo a sala
+	// Destroying the room
 	try {
 
 		lock();
@@ -231,7 +231,7 @@ void room::enter(player& _session) {
 
 		_session.m_pi.mi.sala_numero = m_ri.numero;
 
-		// Update Place player
+		// Update player Place
 		if (m_ri.tipo == RoomInfo::PRACTICE || m_ri.tipo == RoomInfo::GRAND_ZODIAC_PRACTICE)
 			_session.m_pi.place = 2u;
 		else
@@ -241,14 +241,14 @@ void room::enter(player& _session) {
 
 		++m_ri.num_player;
 
-		// Update Trofel
+		// Update Trophy
 		if (m_ri.trofel > 0)
 			updateTrofel();
 
-		// Acabou de criar a sala
+		// Just finished creating the room
 		if (m_ri.master == _session.m_pi.uid && m_ri.tipo != RoomInfo::TIPO::GRAND_PRIX) {
 
-			// Update Trofel
+			// Update Trophy
 			if (_session.m_pi.m_cap.stBit.game_master/* & 4*/) {	// GM
 
 				if ((m_ri.max_player > 30 && m_ri.tipo == RoomInfo::TIPO::TOURNEY) || (m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV)) {
@@ -269,12 +269,12 @@ void room::enter(player& _session) {
 			updateTrofel();
 
 		// Update Master
-		// Só trocar o master da sala se não tiver nenhum jogo inicializado
+		// Only change the room master if there is no game initialized
 		if (m_pGame == nullptr && v_sessions.size() > 0 && _session.m_pi.m_cap.stBit.game_master/* & 4*/ && m_ri.state_flag != 0x100/*GM*/
 				&& m_ri.tipo != RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE && m_ri.tipo != RoomInfo::TIPO::GRAND_PRIX)
 			updateMaster(&_session);
 
-		// Add o player ao jogo
+		// Adds the player to the game
 		if (m_pGame != nullptr) {
 
 			m_pGame->addPlayer(_session);
@@ -333,14 +333,14 @@ int room::leave(player& _session, int _option) {
 					+ std::to_string(m_ri.numero) + "].", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 5, 0));
 		}
 
-		if (_option != 0 && _option != 1 && _option != 0x800/*GM Sai da sala*/ && _option != 10/*Saiu com ticket report*/)
+		if (_option != 0 && _option != 1 && _option != 0x800/*GM Leaves the room*/ && _option != 10/*Left with ticket report*/)
 			addPlayerKicked(_session.m_pi.uid);
 
-		// Verifica se ele está em um jogo e tira ele
+		// Checks whether he is in a game and removes him
 		try {
 		
 			if (m_pGame != nullptr)
-				if (m_pGame->deletePlayer(&_session, _option) && m_pGame->finish_game(_session, 2)/*Deixa para o ultimo da sala finalizar o jogo*/)
+				if (m_pGame->deletePlayer(&_session, _option) && m_pGame->finish_game(_session, 2)/*Leaves it to the last one in the room to finish the game*/)
 					finish_game();
 
 		}catch (exception& e) {
@@ -355,7 +355,7 @@ int room::leave(player& _session, int _option) {
 		if ((m_ri.num_player - 1) > 0 || v_sessions.size() == 0)
 			--m_ri.num_player;
 
-		// Sai do Team se for Match
+		// Leaves the Team if it is Match
 		if (m_ri.tipo == RoomInfo::TIPO::MATCH) {
 
 			if (m_teans.size() < 2)
@@ -384,16 +384,16 @@ int room::leave(player& _session, int _option) {
 				throw exception("[room::leave][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sair da sala[NUMERO=" 
 						+ std::to_string(m_ri.numero) + "], mas o player nao esta em nenhuma guild da sala. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1504, 0));
 
-			// Deleta o player da guild  da sala
+			// Deletes the player from the room's guild 
 			guild->deletePlayer(&_session);
 
-			// Deleta player do team
+			// Deletes player from the team
 			m_teans[pPri->state_flag.uFlag.stFlagBit.team].deletePlayer(&_session, _option);
 
-			// Limpa o team do player
+			// Clears the player's team
 			pPri->state_flag.uFlag.stFlagBit.team = 0u;
 				
-			// Limpa guild
+			// Clears guild
 			if (guild->numPlayers() == 0) {
 				
 				if (guild->getTeam() == Guild::eTEAM::RED) {
@@ -422,19 +422,19 @@ int room::leave(player& _session, int _option) {
 		// Delete Player Info
 		m_player_info.erase(&_session);
 
-		// reseta(default) o número da sala no info do player
+		// resets (default) the room number in the player's info
 		_session.m_pi.mi.sala_numero = -1;
 		_session.m_pi.place = 0u;
 
-		// Excluiu personal shop do player se ele estiver com shop aberto
+		// Deleted the player's personal shop if he has an open shop
 		m_personal_shop.destroyShop(_session);
 
 		updatePosition();
 
 		updateTrofel();
 
-		// Isso é para o cliente saber que ele foi kickado pelo server sem ação de outro player
-		if (_option == 0x800 || (_option != 0/*foi chutado da sala*/ && _option != 1/*Próprio player saiu*/ && _option != 3/*chutado da sala sem o jogo ter começado*/)) {
+		// This is so the client knows he was kicked by the server without action from another player
+		if (_option == 0x800 || (_option != 0/*was kicked from the room*/ && _option != 1/*Player himself left*/ && _option != 3/*kicked from the room without the game having started*/)) {
 
 			uint32_t opt_kick = 0x800;
 
@@ -456,7 +456,7 @@ int room::leave(player& _session, int _option) {
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		if (m_ri.tipo == RoomInfo::LOUNGE) { // Zera State lounge of player
+		if (m_ri.tipo == RoomInfo::LOUNGE) { // Zeroes State lounge of player
 			
 			_session.m_pi.state = 0u;
 			_session.m_pi.state_lounge = 0u;
@@ -468,7 +468,7 @@ int room::leave(player& _session, int _option) {
 
 			sendCharacter(_session, 2);
 		}
-		// Fim Update Players State
+		// End Update Players State
 
 		if ((m_pGame == nullptr && m_ri.tipo == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE && _session.m_pi.uid == m_ri.master)
 			|| (_session.m_pi.m_cap.stBit.game_master/* & 4*/ && m_ri.master == _session.m_pi.uid && m_ri.tipo != RoomInfo::TIPO::LOUNGE && m_ri.trofel == TROFEL_GM_EVENT_TYPEID)) {
@@ -479,9 +479,9 @@ int room::leave(player& _session, int _option) {
 			pthread_mutex_unlock(&m_cs);
 #endif
 
-			return 0x801;	// deleta todos da sala
+			return 0x801;	// deletes everyone from the room
 
-		}else if (m_pGame == nullptr/*Só atualiza o master da sala quando não tem nenhum jogo inicializado na sala*/)
+		}else if (m_pGame == nullptr/*Only updates the room master when there is no game initialized in the room*/)
 			updateMaster(nullptr);	// update Master
 
 	}catch (exception& e) {
@@ -495,7 +495,7 @@ int room::leave(player& _session, int _option) {
 	pthread_mutex_unlock(&m_cs);
 #endif
 
-	return (v_sessions.size() > 0 || (m_ri.master == -2 && (/*~Nega*/!isDropRoom() || m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV))) ? 0 : 1;
+	return (v_sessions.size() > 0 || (m_ri.master == -2 && (/*~Denies*/!isDropRoom() || m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV))) ? 0 : 1;
 };
 
 int room::leaveAll(int _option) {
@@ -547,7 +547,7 @@ InviteChannelInfo room::addInvited(uint32_t _uid_has_invite, player& _session) {
 
 	_session.m_pi.mi.sala_numero = m_ri.numero;
 
-	_session.m_pi.place = 70;	// Está sendo convidado	
+	_session.m_pi.place = 70;	// Is being invited	
 
 	v_sessions.push_back(&_session);
 
@@ -616,7 +616,7 @@ InviteChannelInfo room::addInvited(uint32_t _uid_has_invite, player& _session) {
 
 InviteChannelInfo room::deleteInvited(player& _session) {
 
-	// Por que se o player não estiver mais online não pode deletar o convidado
+	// Because if the player is no longer online, the invited cannot be deleted
 	//if (!_session.getState())
 		//throw exception("[room::deleteInvited][Error] player nao esta connectado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 4, 0));
 
@@ -646,7 +646,7 @@ InviteChannelInfo room::deleteInvited(player& _session) {
 
 	_session.m_pi.mi.sala_numero = -1;
 
-	_session.m_pi.place = 0;	// Limpa Está sendo convidado	
+	_session.m_pi.place = 0;	// Clears Is being invited	
 
 	v_sessions.erase(v_sessions.begin() + index);
 
@@ -677,7 +677,7 @@ InviteChannelInfo room::deleteInvited(player& _session) {
 
 	// End Delete Invite Channel Info
 
-	// Resposta Delete Convidado
+	// Response Delete Invited
 	packet p((unsigned short)0x130);
 
 	p.addUint32(_session.m_pi.uid);
@@ -758,7 +758,7 @@ InviteChannelInfo room::deleteInvited(uint32_t _uid) {
 
 	// End Delete Invite Channel Info
 
-	// Resposta Delete Convidado
+	// Response Delete Invited
 	packet p((unsigned short)0x130);
 
 	p.addUint32(_uid);
@@ -969,7 +969,7 @@ void room::setTipo(unsigned char _tipo) {
 
 	m_ri.tipo = _tipo;
 	
-	// Atualizar tipo da sala
+	// Update room type
 	if (m_ri.tipo > RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 		m_ri.tipo_show = 4;
 	else if (m_ri.tipo == RoomInfo::TIPO::GRAND_ZODIAC_ADV || m_ri.tipo == RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
@@ -982,7 +982,7 @@ void room::setTipo(unsigned char _tipo) {
 	else
 		m_ri.tipo_ex = ~0;
 
-	// Atualiza Trofel se for Tourney
+	// Updates Trophy if it is Tourney
 	if (m_ri.tipo == RoomInfo::TIPO::TOURNEY || (m_ri.master != -2 && m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV)) {
 		
 		if ((m_ri.max_player > 30 && m_ri.tipo == RoomInfo::TIPO::TOURNEY) || (m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV)) {
@@ -1025,7 +1025,7 @@ void room::setMaxPlayer(unsigned char _max_player) {
 	// New Max player room
 	m_ri.max_player = _max_player;
 
-	// Atualiza Trofeu se for Tourney
+	// Updates Trophy if it is Tourney
 	if (m_ri.tipo == RoomInfo::TIPO::TOURNEY || (m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV)) {
 
 		if ((m_ri.max_player > 30 && m_ri.tipo == RoomInfo::TIPO::TOURNEY) || (m_ri.tipo >= RoomInfo::TIPO::GRAND_ZODIAC_INT && m_ri.tipo <= RoomInfo::TIPO::GRAND_ZODIAC_ADV)) {
@@ -1114,7 +1114,7 @@ void room::updatePlayerInfo(player& _session) {
 		throw exception("[room::updatePlayerInfo][Error] nao tem o player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] info dessa session na sala.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 8, 0));
 
-	// Copia do que esta no map
+	// Copy of what is in the map
 	pri = *_pri;
 
 	// Player Room Info Update
@@ -1126,7 +1126,7 @@ void room::updatePlayerInfo(player& _session) {
 	memcpy(pri.nickname, _session.m_pi.nickname, sizeof(pri.nickname));
 	memcpy(pri.guild_name, _session.m_pi.gi.name, sizeof(pri.guild_name));
 #endif
-	pri.position = (unsigned char)getPosition(&_session) + 1;	// posição na sala
+	pri.position = (unsigned char)getPosition(&_session) + 1;	// position in the room
 	pri.capability = _session.m_pi.m_cap;
 	pri.title = _session.m_pi.ue.m_title;
 	
@@ -1138,14 +1138,14 @@ void room::updatePlayerInfo(player& _session) {
 #elif defined(__linux__)
 	memcpy(pri.skin, _session.m_pi.ue.skin_typeid, sizeof(pri.skin));
 #endif
-	pri.skin[4] = 0;		// Aqui tem que ser zero, se for outro valor não mostra a imagem do character equipado
+	pri.skin[4] = 0;		// This has to be zero, if it is another value the equipped character image is not shown
 
 	if (getMaster() == _session.m_pi.uid) {
 		pri.state_flag.uFlag.stFlagBit.master = 1;
-		pri.state_flag.uFlag.stFlagBit.ready = 1;	// Sempre está pronto(ready) o master
+		pri.state_flag.uFlag.stFlagBit.ready = 1;	// The master is always ready
 	}else {
 		
-		// Só troca o estado de pronto dele na sala, se anterior mente ele era Master da sala ou não estiver pronto
+		// Only changes his ready state in the room, if he was previously the room Master or is not ready
 		if (pri.state_flag.uFlag.stFlagBit.master || !pri.state_flag.uFlag.stFlagBit.ready)
 			pri.state_flag.uFlag.stFlagBit.ready = 0;
 
@@ -1154,17 +1154,17 @@ void room::updatePlayerInfo(player& _session) {
 
 	pri.state_flag.uFlag.stFlagBit.sexo = _session.m_pi.mi.sexo;
 
-	// Update Team se for Match
+	// Update Team if it is Match
 	if (m_ri.tipo == RoomInfo::TIPO::MATCH) {
 
-		// Verifica se o player está em algum team para atualizar o team dele se ele não estiver em nenhum
+		// Checks whether the player is in any team to update his team if he is not in any
 		auto player_team = pri.state_flag.uFlag.stFlagBit.team;
 		player* p_seg_team = nullptr;
 
-		// atualizar o team do player a flag de team dele não bate com o team dele
+		// update the player's team, the player's team flag does not match his team
 		if (m_teans[player_team].findPlayerByUID(pri.uid) == nullptr && (p_seg_team = m_teans[~player_team].findPlayerByUID(pri.uid)) == nullptr) {
 
-			// Player não está em nenhum team
+			// Player is not in any team
 			if (v_sessions.size() > 1) {
 
 				if (m_teans[0].getCount() >= 2 && m_teans[1].getCount() >= 2)
@@ -1192,15 +1192,15 @@ void room::updatePlayerInfo(player& _session) {
 		
 		}else if (p_seg_team != nullptr) {
 		
-			// a flag de team do player está errada, ele está no outro team, ajeita
+			// the player's team flag is wrong, he is in the other team, fixes it
 			pri.state_flag.uFlag.stFlagBit.team = ~player_team;
 		}
 
-	}else if (m_ri.tipo != RoomInfo::TIPO::GUILD_BATTLE)	// O Guild Battle tem sua própria função para inicializar e atualizar o team e os dados da guild
+	}else if (m_ri.tipo != RoomInfo::TIPO::GUILD_BATTLE)	// Guild Battle has its own function to initialize and update the team and the guild data
 		pri.state_flag.uFlag.stFlagBit.team = (pri.position - 1) % 2;
 
-	// Só faz calculo de Quita rate depois que o player
-	// estiver no level Beginner E e jogado 50 games
+	// Only does the Quit rate calculation after the player
+	// is at level Beginner E and has played 50 games
 	if (_session.m_pi.level >= 6 && _session.m_pi.ui.jogado >= 50) {
 		float rate = _session.m_pi.ui.getQuitRate();
 
@@ -1229,7 +1229,7 @@ void room::updatePlayerInfo(player& _session) {
 	pri.guild_mark_index = _session.m_pi.gi.index_mark_emblem;
 	pri.uid = _session.m_pi.uid;
 	pri.state_lounge = _session.m_pi.state_lounge;
-	pri.usUnknown_flg = 0;			// Ví players com valores 2 e 4 e 0
+	pri.usUnknown_flg = 0;			// I saw players with values 2 and 4 and 0
 	pri.state = _session.m_pi.state;
 	pri.location = { _session.m_pi.location.x, _session.m_pi.location.z, _session.m_pi.location.r };
 	
@@ -1241,12 +1241,12 @@ void room::updatePlayerInfo(player& _session) {
 
 	pri.flag_item_boost = _session.m_pi.checkEquipedItemBoost();
 	pri.ulUnknown_flg = 0;
-	//pri.id_NT não estou usando ainda
+	//pri.id_NT I am not using yet
 	//pri.ucUnknown106
 	
-	// Só atualiza a flag de convidado se for diferente de 1, por que 1 ele é convidado
+	// Only updates the invited flag if it is different from 1, because 1 means he is invited
 	if (pri.convidado != 1)
-		pri.convidado = 0;	// Flag Convidado, [Não sei bem por que os que entra na sala normal tem valor igual aqui, já que é flag de convidado waiting], Valor constante da sala para os players(ACHO)
+		pri.convidado = 0;	// Invited Flag, [I do not really know why those who enter the room normally have an equal value here, since it is the invited waiting flag], Constant value of the room for the players (I THINK)
 	
 	pri.avg_score = _session.m_pi.ui.getMediaScore();
 	//pri.ucUnknown3
@@ -1254,7 +1254,7 @@ void room::updatePlayerInfo(player& _session) {
 	if (_session.m_pi.ei.char_info != nullptr)
 		pri.ci = *_session.m_pi.ei.char_info;
 	
-	// Salva novamente
+	// Saves again
 	*_pri = pri;
 };
 
@@ -1338,10 +1338,10 @@ void room::makeBot(player& _session) {
 // Bot Ticket TypeId
 #define TICKET_BOT_TYPEID 0x1A000401ul
 
-		// Premium User Não precisa de ticket não
+		// Premium User does not need a ticket
 		if (_session.m_pi.m_cap.stBit.premium_user) {
 
-			// Add Bot Tourney Visual para a sala
+			// Add Bot Tourney Visual to the room
 			addBotVisual(_session);
 
 			// Send Message
@@ -1356,7 +1356,7 @@ void room::makeBot(player& _session) {
 
 		}else {
 
-			// Verifica se ele tem o ticket para criar o Bot se não manda mensagem dizenho que ele não tem ticket para criar o bot
+			// Checks whether he has the ticket to create the Bot, if not sends a message saying he does not have a ticket to create the bot
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(TICKET_BOT_TYPEID);
 
 			if (pWi != nullptr && pWi->STDA_C_ITEM_QNTD > 1) {
@@ -1371,7 +1371,7 @@ void room::makeBot(player& _session) {
 
 				if (item_manager::removeItem(item, _session) > 0) {
 
-					// Atualiza o item no Jogo e Add o Bot e manda a mensagem que o bot foi add
+					// Updates the item in the Game and Adds the Bot and sends the message that the bot was added
 					p.init_plain((unsigned short)0x216);
 
 					p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -1418,7 +1418,7 @@ void room::makeBot(player& _session) {
 					
 			}else {
 
-				// Não tem ticket bot suficiente, manda mensagem
+				// Does not have enough bot tickets, sends message
 				// Send Message
 				p.init_plain((unsigned short)0x40);	// Msg to Chat of player
 
@@ -1490,19 +1490,19 @@ bool room::requestChangeInfoRoom(player& _session, packet *_packet) {
 			case RoomInfo::INFO_CHANGE::MODO:
 				setModo(_packet->readUint8());
 				break;
-			case RoomInfo::INFO_CHANGE::TEMPO_VS:	// Passa em Segundos
+			case RoomInfo::INFO_CHANGE::TEMPO_VS:	// Passed in Seconds
 				setTempoVS(_packet->readUint16() * 1000);
 				break;
 			case RoomInfo::INFO_CHANGE::MAX_PLAYER:
 				setMaxPlayer(_packet->readUint8());
 				break;
-			case RoomInfo::INFO_CHANGE::TEMPO_30S:	// Passa em Minutos
+			case RoomInfo::INFO_CHANGE::TEMPO_30S:	// Passed in Minutes
 				setTempo30S(_packet->readUint8() * 60000);
 				break;
 			case RoomInfo::INFO_CHANGE::STATE_FLAG:
-				// Esse não usa mais
-				// Aqui posso usar para começar o jogo, se a sala estiver(AFK) => "isso acontece quando o master está AFK"
-				// Então vou salver esse valor aqui
+				// This one is not used anymore
+				// Here I can use it to start the game, if the room is (AFK) => "this happens when the master is AFK"
+				// So I will save this value here
 				setStateAFK(_packet->readUint8());
 				break;
 			case RoomInfo::INFO_CHANGE::HOLE_REPEAT:
@@ -1518,7 +1518,7 @@ bool room::requestChangeInfoRoom(player& _session, packet *_packet) {
 			{
 				uNaturalAndShortGame natural = (uint32_t)_packet->readUint32();
 
-				if (sgs::gs::getInstance().getInfo().propriedade.stBit.natural)	// Natural não deixa desabilitar o Natural da sala, por que o server é natural
+				if (sgs::gs::getInstance().getInfo().propriedade.stBit.natural)	// Natural does not allow disabling Natural for the room, because the server is natural
 					natural.stBit.natural = 1u;
 
 				setNatural(natural.ulNaturalAndShortGame);
@@ -1534,16 +1534,16 @@ bool room::requestChangeInfoRoom(player& _session, packet *_packet) {
 		// send to clients update room info
 		sendUpdate();
 
-		ret = true;	// Trocou o info da sala com sucesso
+		ret = true;	// Changed the room info successfully
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[room::requestChangeInfoRoom][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para o cliente
+		// Response to the client
 		packet p;
 
-		packet_func::pacote04A(p, m_ri, 25/*Não mostra erro mas eu sei que foi erro pela opção que enviei*/);
+		packet_func::pacote04A(p, m_ri, 25/*Does not show an error but I know it was an error because of the option I sent*/);
 		packet_func::session_send(p, &_session, 1);
 	}
 
@@ -1559,7 +1559,7 @@ void room::requestChatTeam(player& _session, packet *_packet) {
 
 		auto msg = _packet->readString();
 
-		// Verifica a mensagem com palavras proibida e manda para o log e bloquea o chat dele
+		// Checks the message for forbidden words and sends it to the log and blocks his chat
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("[room::requestChatTeam][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + ", MESSAGE=" + msg + "]", CL_ONLY_FILE_LOG));
 #endif
@@ -1588,8 +1588,8 @@ void room::requestChatTeam(player& _session, packet *_packet) {
 			throw exception("[room::requestChatTeam][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou mandar messsage[MSG=" + msg + "] no chat do team na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas ele nao esta no team que a flag de team dele diz. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 2004, 0));
 
-		// LOG GM
-		// Envia para todo os GM do server essa message
+		// GM LOG
+		// Sends this message to all the GMs of the server
 		auto c = sgs::gs::getInstance().findChannel(_session.m_pi.channel);
 
 		if (c != nullptr) {
@@ -1611,9 +1611,9 @@ void room::requestChatTeam(player& _session, packet *_packet) {
 
 					if (((el->m_gi.channel && el->m_pi.channel == c->getInfo()->id) || el->m_gi.whisper || el->m_gi.isOpenPlayerWhisper(_session.m_pi.uid))
 						&& /* Check SAME Channel and Room*/(el->m_pi.channel != _session.m_pi.channel || el->m_pi.mi.sala_numero != _session.m_pi.mi.sala_numero
-							||/*não está no mesmo team que enviou a mensagem*/ team.findPlayerByUID(el->m_pi.uid) == nullptr)) {
+							||/*is not in the same team that sent the message*/ team.findPlayerByUID(el->m_pi.uid) == nullptr)) {
 
-						// Responde no chat do player
+						// Replies in the player's chat
 						p.init_plain((unsigned short)0x40);
 
 						p.addUint8(0);
@@ -1631,7 +1631,7 @@ void room::requestChatTeam(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[room::requestChatTeam][WARNING] Log GM nao encontrou o Channel[ID=" 
 					+ std::to_string((unsigned short)_session.m_pi.channel) + "] no server. Bug", CL_FILE_LOG_AND_CONSOLE));
 
-		// Manda message para o team da sala
+		// Sends message to the room's team
 		p.init_plain((unsigned short)0xB0);
 
 		p.addString(_session.m_pi.nickname);
@@ -1673,7 +1673,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						if (el->second.type == UpdateItem::CADDIE) {
 								
-							// Desequipa o caddie
+							// Unequips the caddie
 							_session.m_pi.ei.cad_info = nullptr;
 							_session.m_pi.ue.caddie_id = 0;
 
@@ -1681,7 +1681,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						}else if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							pCi->parts_typeid = 0u;
 							pCi->parts_end_date_unix = 0;
 							pCi->end_parts_date = { 0 };
@@ -1690,7 +1690,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							_session.m_pi.ue.caddie_id = _cpir.caddie;
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -1700,7 +1700,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					_session.m_pi.ei.cad_info = pCi;
 					_session.m_pi.ue.caddie_id = _cpir.caddie;
 
-					// Verifica se o Caddie pode ser equipado
+					// Checks whether the Caddie can be equipped
 					if (_session.checkCaddieEquiped(_session.m_pi.ue))
 						_cpir.caddie = _session.m_pi.ue.caddie_id;
 
@@ -1709,7 +1709,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, _cpir.caddie), room::SQLDBResponse, this);
 
-			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Desequipa Caddie
+			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Unequips Caddie
 			
 				error = (_cpir.caddie == 0) ? 1/*client give invalid item id*/ : (pCi == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
 
@@ -1726,16 +1726,16 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					for (auto& el : v_it) {
 
-						// Caddie já vai se desequipar, só verifica o parts
+						// Caddie is already going to be unequipped, only checks the parts
 						if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							_session.m_pi.ei.cad_info->parts_typeid = 0u;
 							_session.m_pi.ei.cad_info->parts_end_date_unix = 0;
 							_session.m_pi.ei.cad_info->end_parts_date = { 0 };
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -1746,10 +1746,10 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 				_cpir.caddie = 0;
 
-				// Zera o Error para o cliente desequipar o caddie que o server desequipou
+				// Zeroes the Error so the client unequips the caddie that the server unequipped
 				error = 0;
 
-				// Att No DB
+				// Update In DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, _cpir.caddie), room::SQLDBResponse, this);
 			}
 
@@ -1765,22 +1765,22 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					&& sIff::getInstance().getItemGroupIdentify(pWi->_typeid) == iff::BALL) {
 			
 				_session.m_pi.ei.comet = pWi;
-				_session.m_pi.ue.ball_typeid = _cpir.ball;		// Ball(Comet) é o typeid que o cliente passa
+				_session.m_pi.ue.ball_typeid = _cpir.ball;		// Ball(Comet) is the typeid that the client passes
 
-				// Verifica se a bola pode ser equipada
+				// Checks whether the ball can be equipped
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					_cpir.ball = _session.m_pi.ue.ball_typeid;
 
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateBallEquiped(_session.m_pi.uid, _cpir.ball), room::SQLDBResponse, this);
 
-			}else if (_cpir.ball == 0) { // Bola 0 coloca a bola padrão para ele, se for premium user coloca a bola de premium user
+			}else if (_cpir.ball == 0) { // Ball 0 puts the default ball for him, if premium user puts the premium user ball
 
-				// Zera para equipar a bola padrão
+				// Zeroes to equip the default ball
 				_session.m_pi.ei.comet = nullptr;
 				_session.m_pi.ue.ball_typeid = 0l;
 
-				// Verifica se a Bola pode ser equipada (Coloca para equipar a bola padrão
+				// Checks whether the Ball can be equipped (Sets it to equip the default ball
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					_cpir.ball = _session.m_pi.ue.ball_typeid;
 
@@ -1802,7 +1802,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					_session.m_pi.ei.comet = pWi;
 					_cpir.ball = _session.m_pi.ue.ball_typeid = pWi->_typeid;
 
-					// Zera o Error para o cliente equipar a Ball Padrão que o server equipou
+					// Zeroes the Error so the client equips the Default Ball that the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -1821,13 +1821,13 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = DEFAULT_COMET_TYPEID;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((_cpir.ball = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((_cpir.ball = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa a Ball padrao
+							// Equips the default Ball
 							pWi = _session.m_pi.findWarehouseItemById(_cpir.ball);
 
 							if (pWi != nullptr) {
@@ -1835,7 +1835,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								_session.m_pi.ei.comet = pWi;
 								_session.m_pi.ue.ball_typeid = pWi->_typeid;
 
-								// Zera o Error para o cliente equipar a Ball Padrão que o server equipou
+								// Zeroes the Error so the client equips the Default Ball that the server equipped
 								error = 0;
 
 								// Update ON DB
@@ -1892,8 +1892,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					_session.m_pi.ei.clubset = pWi;
 
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+					// which in the original stays in the warehouse itself, I just got confused when I made it
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -1905,7 +1905,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						_session.m_pi.ue.clubset_id = _cpir.clubset;
 
-						// Verifica se o ClubSet pode ser equipado
+						// Checks whether the ClubSet can be equipped
 						if (_session.checkClubSetEquiped(_session.m_pi.ue))
 							_cpir.clubset = _session.m_pi.ue.clubset_id;
 
@@ -1920,7 +1920,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								+ "] tentou Atualizar Clubset[TYPEID=" + std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) 
 								+ "] equipado, mas ClubSet Not exists on IFF structure. Equipa o ClubSet padrao. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
-						// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+						// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 						pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 						if (pWi != nullptr) {
@@ -1930,8 +1930,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 									+ "] para comecar o jogo, mas acabou o tempo do ClubSet[ID=" + std::to_string(_cpir.clubset) 
 									+ "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 						
-							// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-							// que no original fica no warehouse msm, eu só confundi quando fiz
+							// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+							// which in the original stays in the warehouse itself, I just got confused when I made it
 							_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 							IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -1943,7 +1943,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							_session.m_pi.ei.clubset = pWi;
 							_cpir.clubset = _session.m_pi.ue.clubset_id = pWi->id;
 
-							// Zera o Error para o cliente equipar a "CV1" que o server equipou
+							// Zeroes the Error so the client equips the "CV1" that the server equipped
 							error = 0;
 
 							// Update ON DB
@@ -1962,19 +1962,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							bi._typeid = AIR_KNIGHT_SET;
 							bi.qntd = 1;
 				
-							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 							if (item._typeid != 0) {
 
-								if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+								if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-									// Equipa o ClubSet CV1
+									// Equips the ClubSet CV1
 									pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 									if (pWi != nullptr) {
 
-										// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-										// que no original fica no warehouse msm, eu só confundi quando fiz
+										// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+										// which in the original stays in the warehouse itself, I just got confused when I made it
 										_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 										IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -1986,7 +1986,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 										_session.m_pi.ei.clubset = pWi;
 										_session.m_pi.ue.clubset_id = pWi->id;
 
-										// Zera o Error para o cliente equipar a "CV1" que o server equipou
+										// Zeroes the Error so the client equips the "CV1" that the server equipped
 										error = 0;
 
 										// Update ON DB
@@ -2025,11 +2025,11 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						}
 					}
 			
-				}else {	// ClubSet Acabou o tempo
+				}else {	// ClubSet time ran out
 
-					error = 6;	// Acabou o tempo do item
+					error = 6;	// The item's time ran out
 
-					// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+					// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 					pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 					if (pWi != nullptr) {
@@ -2038,8 +2038,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								+ "] tentou trocar o ClubSet[ID=" + std::to_string(_cpir.clubset) + "] para comecar o jogo, mas acabou o tempo do ClubSet[ID="
 								+ std::to_string(_cpir.clubset) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
-						// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-						// que no original fica no warehouse msm, eu só confundi quando fiz
+						// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+						// which in the original stays in the warehouse itself, I just got confused when I made it
 						_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 						IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2051,7 +2051,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						_session.m_pi.ei.clubset = pWi;
 						_cpir.clubset = _session.m_pi.ue.clubset_id = pWi->id;
 
-						// Zera o Error para o cliente equipar a "CV1" que o server equipou
+						// Zeroes the Error so the client equips the "CV1" that the server equipped
 						error = 0;
 
 						// Update ON DB
@@ -2070,19 +2070,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						bi._typeid = AIR_KNIGHT_SET;
 						bi.qntd = 1;
 				
-						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 						if (item._typeid != 0) {
 
-							if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+							if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-								// Equipa o ClubSet CV1
+								// Equips the ClubSet CV1
 								pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 								if (pWi != nullptr) {
 
-									// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-									// que no original fica no warehouse msm, eu só confundi quando fiz
+									// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+									// which in the original stays in the warehouse itself, I just got confused when I made it
 									_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 									IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2094,7 +2094,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 									_session.m_pi.ei.clubset = pWi;
 									_session.m_pi.ue.clubset_id = pWi->id;
 
-									// Zera o Error para o cliente equipar a "CV1" que o server equipou
+									// Zeroes the Error so the client equips the "CV1" that the server equipped
 									error = 0;
 
 									// Update ON DB
@@ -2145,8 +2145,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							+ "] tentou trocar o ClubSet[ID=" + std::to_string(_cpir.clubset) + "] para comecar o jogo, mas deu Error[VALUE="
 							+ std::to_string(error) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+					// which in the original stays in the warehouse itself, I just got confused when I made it
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2158,7 +2158,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					_session.m_pi.ei.clubset = pWi;
 					_cpir.clubset = _session.m_pi.ue.clubset_id = pWi->id;
 
-					// Zera o Error para o cliente equipar a "CV1" que o server equipou
+					// Zeroes the Error so the client equips the "CV1" that the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -2177,19 +2177,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = AIR_KNIGHT_SET;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa o ClubSet CV1
+							// Equips the ClubSet CV1
 							pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 							if (pWi != nullptr) {
 
-								// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-								// que no original fica no warehouse msm, eu só confundi quando fiz
+								// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+								// which in the original stays in the warehouse itself, I just got confused when I made it
 								_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 								IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2201,7 +2201,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								_session.m_pi.ei.clubset = pWi;
 								_session.m_pi.ue.clubset_id = pWi->id;
 
-								// Zera o Error para o cliente equipar a "CV1" que o server equipou
+								// Zeroes the Error so the client equips the "CV1" that the server equipped
 								error = 0;
 
 								// Update ON DB
@@ -2303,7 +2303,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					_session.m_pi.ei.char_info = &_session.m_pi.mp_ce.begin()->second;
 					_cpir.character = _session.m_pi.ue.character_id = _session.m_pi.ei.char_info->id;
 
-					// Zera o Error para o cliente equipar o Primeiro Character do map de character do player, que o server equipou
+					// Zeroes the Error so the client equips the First Character of the player's character map, which the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -2355,14 +2355,14 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = iff::CHARACTER << 26;	// Nuri
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						// Add Item já atualiza o Character equipado
-						if ((_cpir.character = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						// Add Item already updates the equipped Character
+						if ((_cpir.character = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Zera o Error para o cliente equipar o Nuri que o server equipou
+							// Zeroes the Error so the client equips the Nuri that the server equipped
 							error = 0;
 
 							// Update ON GAME
@@ -2442,7 +2442,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					if (m_it != _session.m_pi.mp_ui.end()) {
 
-						// Desequipa o Mascot que acabou o tempo dele
+						// Unequips the Mascot whose time ran out
 						_session.m_pi.ei.mascot_info = nullptr;
 						_session.m_pi.ue.mascot_id = 0;
 
@@ -2454,7 +2454,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						_session.m_pi.ei.mascot_info = pMi;
 						_session.m_pi.ue.mascot_id = _cpir.mascot;
 
-						// Verifica se o mascot pode equipar
+						// Checks whether the mascot can be equipped
 						if (_session.checkMascotEquiped(_session.m_pi.ue))
 							_cpir.mascot = _session.m_pi.ue.mascot_id;
 
@@ -2478,34 +2478,34 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					_cpir.mascot = 0;
 
-					// Att No DB
+					// Update In DB
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, _cpir.mascot), room::SQLDBResponse, this);
 				}
 
-			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Desequipa Mascot
+			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Unequips Mascot
 
 				_session.m_pi.ei.mascot_info = nullptr;
 				_session.m_pi.ue.mascot_id = 0;
 
 				_cpir.mascot = 0;
 
-				// Att No DB
+				// Update In DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, _cpir.mascot), room::SQLDBResponse, this);
 
-			} // else Não tem nenhum mascot equipado, para desequipar, então o cliente só quis atualizar o estado
+			} // else There is no mascot equipped, to unequip, so the client only wanted to update the state
 			
 
 			packet_func::pacote04B(p, &_session, _cpir.type, error);
 			packet_func::room_broadcast(*this, p, 1);
 			break;
 		}
-		case ChangePlayerItemRoom::TYPE_CHANGE::TC_ITEM_EFFECT_LOUNGE: // Itens Active, Jester x2 velocidade no lounge, e Harmes tamanho da cabeça
+		case ChangePlayerItemRoom::TYPE_CHANGE::TC_ITEM_EFFECT_LOUNGE: // Active Items, Jester x2 speed in the lounge, and Harmes head size
 		{
-			// ignora o item_id por que ele envia 0
+			// ignores the item_id because it sends 0
 
-			// Valor 1 Cabeca
-			// Valor 2 Velocidade
-			// Valor 3 Twilight
+			// Value 1 Head
+			// Value 2 Speed
+			// Value 3 Twilight
 
 			if (!sIff::getInstance().isLoad())
 				sIff::getInstance().load();
@@ -2513,7 +2513,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 			if (_session.m_pi.ei.char_info == nullptr)
 				throw exception("[room::requestChangePlayerItemRoom][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] nao tem nenhum character equipado. Hacker ou Bug.", 
-						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1000, 0x57007/*player não tem nenhum character equipado*/));
+						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1000, 0x57007/*player does not have any character equipped*/));
 
 			if (_cpir.effect_lounge.effect != ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_TWILIGHT) {
 
@@ -2552,7 +2552,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					break;
 				}
-				case ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_FAST_WALK:	// Hermes (Velocidade x2)
+				case ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_FAST_WALK:	// Hermes (Speed x2)
 				{
 
 					auto cch = std::find_if(cadie_cauldron_Hermes_item_typeid, LAST_ELEMENT_IN_ARRAY(cadie_cauldron_Hermes_item_typeid), [&](auto& el) {
@@ -2576,8 +2576,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 				} // End Switch
 
 			}else {
-				// else == 3 // Twilight (Fogos de artifícios em cima da cabeça do player)
-				// Valor 1 pass para fazer o fogos
+				// else == 3 // Twilight (Fireworks above the player's head)
+				// Value 1 pass to do the fireworks
 
 				auto cct = std::find_if(cadie_cauldron_Twilight_item_typeid, LAST_ELEMENT_IN_ARRAY(cadie_cauldron_Twilight_item_typeid), [&](auto& el) {
 					return sIff::getInstance().getItemCharIdentify(el) == (_session.m_pi.ei.char_info->_typeid & 0x000000FF);
@@ -2598,9 +2598,9 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 			packet_func::room_broadcast(*this, p, 1);
 			break;
 		}
-		case ChangePlayerItemRoom::TYPE_CHANGE::TC_ALL: // Todos
+		case ChangePlayerItemRoom::TYPE_CHANGE::TC_ALL: // Everyone
 		{
-			// Aqui se não tiver os itens, algum hacker, gera Log, e coloca item padrão ou nenhum
+			// Here if he does not have the items, some hacker, generates Log, and puts the default item or none
 			CharacterInfo *pCe = nullptr;
 			CaddieInfoEx *pCi = nullptr;
 			WarehouseItemEx *pWi = nullptr;
@@ -2645,12 +2645,12 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = iff::CHARACTER << 26;	// Nuri
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						// Add Item já atualiza o Character equipado
-						if ((_cpir.character = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						// Add Item already updates the equipped Character
+						if ((_cpir.character = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
 							// Update ON GAME
 							p.init_plain((unsigned short)0x216);
@@ -2693,7 +2693,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						if (el->second.type == UpdateItem::CADDIE) {
 								
-							// Desequipa o caddie
+							// Unequips the caddie
 							_session.m_pi.ei.cad_info = nullptr;
 							_session.m_pi.ue.caddie_id = 0;
 
@@ -2701,7 +2701,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						}else if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							pCi->parts_typeid = 0u;
 							pCi->parts_end_date_unix = 0;
 							pCi->end_parts_date = { 0 };
@@ -2710,7 +2710,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							_session.m_pi.ue.caddie_id = _cpir.caddie;
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -2720,7 +2720,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					_session.m_pi.ei.cad_info = pCi;
 					_session.m_pi.ue.caddie_id = _cpir.caddie;
 
-					// Verifica se o Caddie pode equipar
+					// Checks whether the Caddie can be equipped
 					if (_session.checkCaddieEquiped(_session.m_pi.ue))
 						_cpir.caddie = _session.m_pi.ue.caddie_id;
 
@@ -2729,7 +2729,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, _cpir.caddie), room::SQLDBResponse, this);
 
-			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Desequipa Caddie
+			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Unequips Caddie
 			
 				error = (_cpir.caddie == 0) ? 1/*client give invalid item id*/ : (pCi == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
 
@@ -2746,16 +2746,16 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					for (auto& el : v_it) {
 
-						// Caddie já vai se desequipar, só verifica o parts
+						// Caddie is already going to be unequipped, only checks the parts
 						if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							_session.m_pi.ei.cad_info->parts_typeid = 0u;
 							_session.m_pi.ei.cad_info->parts_end_date_unix = 0;
 							_session.m_pi.ei.cad_info->end_parts_date = { 0 };
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -2766,7 +2766,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 				_cpir.caddie = 0;
 
-				// Att No DB
+				// Update In DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, _cpir.caddie), room::SQLDBResponse, this);
 			}
 
@@ -2780,8 +2780,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 					_session.m_pi.ei.clubset = pWi;
 
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+					// which in the original stays in the warehouse itself, I just got confused when I made it
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2793,7 +2793,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 
 						_session.m_pi.ue.clubset_id = _cpir.clubset;
 
-						// Verifica se o ClubSet pode equipar
+						// Checks whether the ClubSet can be equipped
 						if (_session.checkClubSetEquiped(_session.m_pi.ue))
 							_cpir.clubset = _session.m_pi.ue.clubset_id;
 
@@ -2808,7 +2808,7 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) 
 								+ "] equipado, mas ClubSet Not exists on IFF structure. Equipa o ClubSet padrao. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
-						// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+						// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 						pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 						if (pWi != nullptr) {
@@ -2817,8 +2817,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 									+ "] tentou trocar o ClubSet[ID=" + std::to_string(_cpir.clubset) + "] para comecar o jogo, mas acabou o tempo do ClubSet[ID="
 									+ std::to_string(_cpir.clubset) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 							
-							// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-							// que no original fica no warehouse msm, eu só confundi quando fiz
+							// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+							// which in the original stays in the warehouse itself, I just got confused when I made it
 							_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 							IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2846,19 +2846,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							bi._typeid = AIR_KNIGHT_SET;
 							bi.qntd = 1;
 				
-							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 							if (item._typeid != 0) {
 
-								if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+								if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-									// Equipa o ClubSet CV1
+									// Equips the ClubSet CV1
 									pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 									if (pWi != nullptr) {
 
-										// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-										// que no original fica no warehouse msm, eu só confundi quando fiz
+										// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+										// which in the original stays in the warehouse itself, I just got confused when I made it
 										_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 										IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2906,9 +2906,9 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						}
 					}
 			
-				}else {	// ClubSet Acabou o tempo
+				}else {	// ClubSet time ran out
 
-					// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+					// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 					pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 					if (pWi != nullptr) {
@@ -2917,8 +2917,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 								+ "] tentou trocar o ClubSet[ID=" + std::to_string(_cpir.clubset) + "] para comecar o jogo, mas acabou o tempo do ClubSet[ID="
 								+ std::to_string(_cpir.clubset) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				
-						// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-						// que no original fica no warehouse msm, eu só confundi quando fiz
+						// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+						// which in the original stays in the warehouse itself, I just got confused when I made it
 						_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 						IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -2946,19 +2946,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 						bi._typeid = AIR_KNIGHT_SET;
 						bi.qntd = 1;
 				
-						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 						if (item._typeid != 0) {
 
-							if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+							if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-								// Equipa o ClubSet CV1
+								// Equips the ClubSet CV1
 								pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 								if (pWi != nullptr) {
 
-									// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-									// que no original fica no warehouse msm, eu só confundi quando fiz
+									// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+									// which in the original stays in the warehouse itself, I just got confused when I made it
 									_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 									IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -3018,8 +3018,8 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 							+ "] tentou trocar o ClubSet[ID=" + std::to_string(_cpir.clubset) + "] para comecar o jogo, mas deu Error[VALUE="
 							+ std::to_string(error) + "], colocando o ClubSet Padrao\"CV1\" do player. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+					// which in the original stays in the warehouse itself, I just got confused when I made it
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -3047,19 +3047,19 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = AIR_KNIGHT_SET;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((_cpir.clubset = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa o ClubSet CV1
+							// Equips the ClubSet CV1
 							pWi = _session.m_pi.findWarehouseItemById(_cpir.clubset);
 
 							if (pWi != nullptr) {
 
-								// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-								// que no original fica no warehouse msm, eu só confundi quando fiz
+								// This C of WarehouseItem, which comes from the DB, is not the initial already-updated one of the club bag, it is the one in the enchant table, 
+								// which in the original stays in the warehouse itself, I just got confused when I made it
 								_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 								IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -3112,22 +3112,22 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					&& sIff::getInstance().getItemGroupIdentify(pWi->_typeid) == iff::BALL) {
 			
 				_session.m_pi.ei.comet = pWi;
-				_session.m_pi.ue.ball_typeid = _cpir.ball;		// Ball(Comet) é o typeid que o cliente passa
+				_session.m_pi.ue.ball_typeid = _cpir.ball;		// Ball(Comet) is the typeid that the client passes
 
-				// Verifica se a Bola pode ser equipada
+				// Checks whether the Ball can be equipped
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					_cpir.ball = _session.m_pi.ue.ball_typeid;
 
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateBallEquiped(_session.m_pi.uid, _cpir.ball), room::SQLDBResponse, this);
 
-			}else if (_cpir.ball == 0) { // Bola 0 coloca a bola padrão para ele, se for premium user coloca a bola de premium user
+			}else if (_cpir.ball == 0) { // Ball 0 puts the default ball for him, if premium user puts the premium user ball
 
-				// Zera para equipar a bola padrão
+				// Zeroes to equip the default ball
 				_session.m_pi.ei.comet = nullptr;
 				_session.m_pi.ue.ball_typeid = 0l;
 
-				// Verifica se a Bola pode ser equipada (Coloca para equipar a bola padrão
+				// Checks whether the Ball can be equipped (Sets it to equip the default ball
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					_cpir.ball = _session.m_pi.ue.ball_typeid;
 
@@ -3165,13 +3165,13 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 					bi._typeid = DEFAULT_COMET_TYPEID;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((_cpir.ball = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((_cpir.ball = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa a Ball padrao
+							// Equips the default Ball
 							pWi = _session.m_pi.findWarehouseItemById(_cpir.ball);
 
 							if (pWi != nullptr) {
@@ -3215,27 +3215,27 @@ void room::requestChangePlayerItemRoom(player& _session, ChangePlayerItemRoom& _
 				}
 			}
 
-			// Verifica se o Mascot Equipado acabou o tempo
+			// Checks whether the Equipped Mascot's time ran out
 			if (_session.m_pi.ue.mascot_id != 0 && _session.m_pi.ei.mascot_info != nullptr) {
 
 				auto m_it = _session.m_pi.findUpdateItemByIdAndType(_session.m_pi.ue.mascot_id, UpdateItem::MASCOT);
 
 				if (m_it != _session.m_pi.mp_ui.end()) {
 
-					// Desequipa o Mascot que acabou o tempo dele
+					// Unequips the Mascot whose time ran out
 					_session.m_pi.ei.mascot_info = nullptr;
 					_session.m_pi.ue.mascot_id = 0;
 
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, 0/*Mascot_id == 0 not equiped*/), room::SQLDBResponse, this);
 
-					// Update on GAME se não o cliente continua com o mascot equipado
+					// Update on GAME otherwise the client keeps the mascot equipped
 					packet_func::pacote04B(p, &_session, ChangePlayerItemRoom::TYPE_CHANGE::TC_MASCOT, 0);
 					packet_func::session_send(p, &_session, 0);
 
 				}
 			}
 
-			// Começa jogo
+			// Starts game
 			startGame(_session);
 
 			break;
@@ -3414,7 +3414,7 @@ void room::requestToggleAssist(player& _session, packet *_packet) {
 
 		auto pWi = _session.m_pi.findWarehouseItemByTypeid(ASSIST_ITEM_TYPEID);
 
-		if (pWi == nullptr) {	// Não tem ativa o Assist
+		if (pWi == nullptr) {	// Assist is not active
 			item.qntd = 1;
 			item.STDA_C_ITEM_QNTD = 1;
 
@@ -3428,7 +3428,7 @@ void room::requestToggleAssist(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[room::requestToggleAssist][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Ligou o Assist Modo", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-		}else {	// Já tem, Desativa
+		}else {	// Already has it, Deactivates
 			
 			item.id = pWi->id;
 			item.qntd = (pWi->STDA_C_ITEM_QNTD <= 0) ? 1 : pWi->STDA_C_ITEM_QNTD;
@@ -3465,7 +3465,7 @@ void room::requestToggleAssist(player& _session, packet *_packet) {
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Resposta ao Toggle Assist
+		// Response to Toggle Assist
 		p.init_plain((unsigned short)0x26A);
 
 		p.addUint32(0);	// OK
@@ -3503,7 +3503,7 @@ void room::requestChangeTeam(player& _session, packet *_packet) {
 			throw exception("[room::requestChangeTeam][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou trocar o team(time) na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas a sala nao tem teans(times) suficiente. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1506, 0));
 
-		// Sai do outro team(time) se ele estiver
+		// Leaves the other team if he is in it
 		try {
 
 			m_teans[pPri->state_flag.uFlag.stFlagBit.team].deletePlayer(&_session, 3/*force*/);
@@ -3513,7 +3513,7 @@ void room::requestChangeTeam(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[room::requestChangeTeam][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		}
 
-		// Add o Player ao (team)time
+		// Adds the Player to the team
 		m_teans[team].addPlayer(&_session);
 
 		pPri->state_flag.uFlag.stFlagBit.team = team; // ~pri->state_flag.uFlag.stFlagBit.team;
@@ -3545,18 +3545,18 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 			throw exception("[room::requestStartGame][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comecar o jogo na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas ele nao eh o master da sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1, 0x5900201));
 
-		// Verifica se já tem um jogo inicializado e lança error se tiver, para o cliente receber uma resposta
+		// Checks whether a game is already initialized and throws an error if so, so the client receives a response
 		if (m_pGame != nullptr)
 			throw exception("[room::requestStartGame][Error] player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] tentou comecar o jogo na sala[NUMERO=" + std::to_string(m_ri.numero) + "], mas ja tem um jogo inicializado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 8, 0x5900202));
 
-		// Verifica se todos estão prontos se não da erro
+		// Checks whether everyone is ready, if not gives an error
 		if (!isAllReady())
 			throw exception("[room::requestStartGame][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] tentou comecar o jogo na sala[NUMERO=" + std::to_string(m_ri.numero) + ", MASTER=" + std::to_string(m_ri.master) 
 					+ "], mas nem todos jogadores estao prontos. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 8, 0x5900202));
 
-		// Coloquei para verificar se a flag de Bot tourney não está ativo verifica o resto das condições
+		// I made it check the rest of the conditions only if the Bot tourney flag is not active
 		if (!m_bot_tourney && v_sessions.size() == 1 && m_ri.tipo != RoomInfo::PRACTICE && m_ri.tipo != RoomInfo::GRAND_PRIX
 			&& m_ri.tipo != RoomInfo::GRAND_ZODIAC_INT && m_ri.tipo != RoomInfo::GRAND_ZODIAC_ADV && m_ri.tipo != RoomInfo::GRAND_ZODIAC_PRACTICE)
 			throw exception("[room::requestStartGame][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comecar o jogo na sala[NUMERO=" 
@@ -3602,15 +3602,15 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 			if (error_check <= 0) {
 				
 				switch (error_check) {
-					case 0:		// Não tem duas guilds na sala
+					case 0:		// There are not two guilds in the room
 						throw exception("[room::requestStartGame][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comecar o Guild Battle na sala[NUMERO="
 								+ std::to_string(m_ri.numero) + "], mas nao tem guilds suficientes para comecar o jogo. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 10, 0x5900202));
 						break;
-					case -1:	// Não tem o mesmo número de jogadores na sala as duas guilds
+					case -1:	// The two guilds do not have the same number of players in the room
 						throw exception("[room::requestStartGame][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comecar o Guild Battle na sala[NUMERO="
 								+ std::to_string(m_ri.numero) + "], mas as duas guilds nao tem o mesmo numero de jogadores na sala. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 11, 0x5900202));
 						break;
-					case -2:	// Uma das Guilds ou as duas não tem 2 jogadores
+					case -2:	// One of the Guilds or both do not have 2 players
 						throw exception("[room::requestStartGame][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comecar o Guild Battle na sala[NUMERO="
 								+ std::to_string(m_ri.numero) + "], mas uma ou as duas guilds tem menos que 2 jogadores na sala. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 12, 0x5900202));
 						break;
@@ -3693,7 +3693,7 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 
 		RateValue rv{ 0 };
 
-		// Att Exp rate, e Pang rate, que começou o jogo
+		// Updates Exp rate and Pang rate, of whoever started the game
 		//if (sgs::gs != nullptr) {
 
 			rv.exp = m_ri.rate_exp = sgs::gs::getInstance().getInfo().rate.exp;
@@ -3706,7 +3706,7 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 			rv.rain = sgs::gs::getInstance().getInfo().rate.chuva;
 			rv.treasure = sgs::gs::getInstance().getInfo().rate.treasure;
 
-			rv.persist_rain = 0u;	// Persist rain flag isso é feito na classe game
+			rv.persist_rain = 0u;	// Persist rain flag this is done in the game class
 		//}
 
 		switch (m_ri.tipo) {
@@ -3716,7 +3716,7 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 		case RoomInfo::TIPO::MATCH:
 			m_pGame = new Match(v_sessions, m_ri, rv, m_ri.channel_rookie, m_teans);
 			break;
-		case RoomInfo::TIPO::PANG_BATTLE:	// Ainda não está feio, usa o  Versus Normal
+		case RoomInfo::TIPO::PANG_BATTLE:	// It is not done yet, uses Versus Normal
 			m_pGame = new PangBattle(v_sessions, m_ri, rv, m_ri.channel_rookie/*Channel Rookie Wind From 1m At 5m*/);
 			break;
 		case RoomInfo::TIPO::APPROCH:
@@ -3780,7 +3780,7 @@ bool room::requestStartGame(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		ret = false;	// Error ao inicializar o Jogo
+		ret = false;	// Error initializing the Game
 	}
 
 	return ret;
@@ -3958,9 +3958,9 @@ RetFinishShot room::requestFinishShot(player& _session, packet *_packet) {
 
 		if (rfs.ret > 0) {
 
-			// Acho que não usa mais isso então vou deixar ai, e o ret == 2 vou deixar no channel, 
-			// por que se ele for o ultimo da sala tem que excluir ela
-			if (rfs.ret == 1/*Finaliza Jogo*/)
+			// I think this is not used anymore so I will leave it there, and the ret == 2 I will leave in the channel, 
+			// because if he is the last one in the room it has to be deleted
+			if (rfs.ret == 1/*Finishes Game*/)
 				finish_game();
 
 		}
@@ -4273,10 +4273,10 @@ bool room::requestLastPlayerFinishVersus(player& _session, packet *_packet) {
 			throw exception("[room::requestLastPlayerFinishVersus][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou finalizar Versus na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "], mas a sala nao tem nenhum jogo inicializado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1, 0x555001));
 
-		// Finaliza o Versus
+		// Finishes the Versus
 		if (m_pGame->getSessions().size() > 0) {
 
-			if (m_pGame->finish_game(**m_pGame->getSessions().begin(), 2/*Termina*/))
+			if (m_pGame->finish_game(**m_pGame->getSessions().begin(), 2/*Ends*/))
 				finish_game();
 
 		}else
@@ -4305,11 +4305,11 @@ bool room::requestReplyContinueVersus(player& _session, packet *_packet) {
 			throw exception("[room::requestReplyContinueVersus][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou responder se quer continuar o versus ou nao na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "], mas a sala nao tem nenhum jogo inicializado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1, 0x556001));
 
-		if (opt == 0/*Finaliza o Versus*/) {
+		if (opt == 0/*Finishes the Versus*/) {
 			
 			if (m_pGame->getSessions().size() > 0) {
 				
-				if (m_pGame->finish_game(**m_pGame->getSessions().begin(), 2/*Termina*/))
+				if (m_pGame->finish_game(**m_pGame->getSessions().begin(), 2/*Ends*/))
 					finish_game();
 			
 			}else
@@ -4317,7 +4317,7 @@ bool room::requestReplyContinueVersus(player& _session, packet *_packet) {
 
 			ret = true;
 
-		}else if (opt == 1/*Continua o Versus*/)
+		}else if (opt == 1/*Continues the Versus*/)
 			m_pGame->requestReplyContinue();
 
 	}catch (exception& e) {
@@ -4370,9 +4370,9 @@ void room::testeDegree() {
 		packet p((unsigned short)0x5B);
 
 		p.addUint8(1);
-		p.addUint8(0);	// Flag de card de vento, aqui é a qnd diminui o vento, 1 Vento azul
+		p.addUint8(0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 		p.addUint16(pgi->degree);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+		p.addUint8(1/*Resets*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 		packet_func::room_broadcast(*this, p, 1);
 
@@ -4395,7 +4395,7 @@ void room::requestLeavePractice(player& _session, packet *_packet) {
 			throw exception("[room::requestLeavePractice][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sair do Practice na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas TIPO=" + std::to_string((unsigned short)m_ri.tipo) + " de jogo da sala nao eh Practice", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 2, 0x6202002));
 	
-		// Acabou o tempo /*Sai do Practice*/
+		// Time ran out /*Leaves Practice*/
 		reinterpret_cast< TourneyBase* >(m_pGame)->timeIsOver();
 
 	}catch (exception& e) {
@@ -4438,8 +4438,8 @@ void room::requestLeaveChipInPractice(player& _session, packet *_packet) {
 			throw exception("[room::requestLeaveChipInPractice][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sair do Chip-in Practice na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas TIPO=" + std::to_string((unsigned short)m_ri.tipo) + " de jogo da sala nao eh Chip-in Practice", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 2, 0x6701002));
 
-		// Acabou o tempo /*Sai do Chip-in Practice*/
-		if (m_pGame->finish_game(_session, 2)/*Deixa para o ultimo da sala finalizar o jogo*/)
+		// Time ran out /*Leaves Chip-in Practice*/
+		if (m_pGame->finish_game(_session, 2)/*Leaves it to the last one in the room to finish the game*/)
 			finish_game();
 
 	}catch (exception& e) {
@@ -4673,7 +4673,7 @@ void room::requestSendTimeGame(player& _session) {
 
 		_smp::message_pool::getInstance().push(new message("[room::requestSendTimeGame][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -4715,9 +4715,9 @@ bool room::requestEnterGameAfterStarted(player& _session) {
 
 		if (remain >= tempo)
 			throw exception("[room::requestEnterGameAfrerStarted][WARNING] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou entrar na sala[NUMERO="
-					+ std::to_string(m_ri.numero) + "] ja em jogo, mas o tempo de entrar no tourney acabou.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 2706, 2));	// Acabou o tempo de entrar na sala
+					+ std::to_string(m_ri.numero) + "] ja em jogo, mas o tempo de entrar no tourney acabou.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 2706, 2));	// Time to enter the room ran out
 
-		// Add Player a sala
+		// Add Player to room
 		enter(_session);
 
 		ret = true;
@@ -4726,11 +4726,11 @@ bool room::requestEnterGameAfterStarted(player& _session) {
 
 		_smp::message_pool::getInstance().push(new message("[room::requestEnterGameAfterStarted][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Excluí player da sala se adicionou ele antes
+		// Remove player from room if he was added before
 		if (findSessionByUID(_session.m_pi.uid) != nullptr)
 			leave(_session, 0);
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -4761,7 +4761,7 @@ void room::requestUpdateEnterAfterStartedInfo(player& _session, EnterAfterStartI
 
 		_smp::message_pool::getInstance().push(new message("[room::requestUpdateEnterAfterStartedInfo][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -4784,7 +4784,7 @@ bool room::requestFinishGame(player& _session, packet *_packet) {
 			throw exception("[room::requestFinishGame][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou finalizar jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "], mas a sala nao tem nenhum jogo inicializado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1, 0x5202101));
 
-		if (m_pGame->requestFinishGame(_session, _packet)) {	// Terminou o Jogo
+		if (m_pGame->requestFinishGame(_session, _packet)) {	// Game finished
 
 			finish_game();
 
@@ -4875,7 +4875,7 @@ void room::requestExecCCGChangeWeather(player& _session, packet *_packet) {
 			packet p((unsigned short)0x9E);
 
 			p.addUint16(m_weather_lounge);
-			p.addUint8(1);			// Acho que seja flag, não sei, vou deixar 1 por ser o GM que mudou
+			p.addUint8(1);			// I think it is a flag, not sure, I'll leave 1 since it was the GM who changed it
 
 			packet_func::room_broadcast(*this, p, 1);
 		
@@ -4931,10 +4931,10 @@ void room::requestExecCCGGoldenBell(player& _session, packet *_packet) {
 
 		for (auto& el : v_sessions) {
 
-			// Limpa item
+			// Clear item
 			item.clear();
 
-			item_manager::initItemFromBuyItem(el->m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+			item_manager::initItemFromBuyItem(el->m_pi, item, bi, false, 0, 0, 1/*~does not Check Level*/);
 
 			if (item._typeid == 0)
 				throw exception("[room::requestExecCCGGoldenBell][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar presente para todos da sala[NUMERO="
@@ -5014,7 +5014,7 @@ void room::startGame(player& _session) {
 			if (m_ri.tipo == RoomInfo::TIPO::STROKE || m_ri.tipo == RoomInfo::TIPO::MATCH)
 				sendCharacter(_session, 0x103);
 
-		}else {	// Entra depois
+		}else {	// Enters later
 			
 			try {
 
@@ -5029,7 +5029,7 @@ void room::startGame(player& _session) {
 				// Send Make Room
 				packet p((unsigned short)0x113);
 
-				p.addUint8(4);	// Cria sala
+				p.addUint8(4);	// Create room
 				p.addUint8(0);
 
 				p.addBuffer(&m_ri, sizeof(RoomInfo));
@@ -5079,7 +5079,7 @@ void room::startGame(player& _session) {
 				for (auto i = 0u; i < v_element.size(); i++)
 					p.addBuffer(&v_element[i], sizeof(PlayerRoomInfo));
 
-				// Send ALL players of room exceto ele
+				// Send ALL players of room except him
 				packet_func::vector_send(p, getSessions(&_session), 1);
 			
 			}catch (exception& e) {
@@ -5140,7 +5140,7 @@ void room::sendUpdate() {
 
 	packet p;
 
-	packet_func::pacote04A(p, m_ri, -1/*valor constante*/);
+	packet_func::pacote04A(p, m_ri, -1/*constant value*/);
 	packet_func::room_broadcast(*this, p, 0);
 };
 
@@ -5195,7 +5195,7 @@ void room::sendCharacter(player& _session, int _option) {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Relança
+		// Rethrow
 		throw;
 	}
 };
@@ -5222,13 +5222,13 @@ void room::sendWeatherLounge(player& _session) {
 
 	if (m_ri.tipo == RoomInfo::TIPO::LOUNGE) {
 
-		// Envia o tempo(weather) do lounge só se ele for diferente de tempo bom
+		// Send the lounge weather only if it is different from good weather
 		if (m_weather_lounge != 0u/*Good Weather*/) {
 		
 			packet p((unsigned short)0x9E);
 
 			p.addUint16(m_weather_lounge);
-			p.addUint8(0);	// Flag (acho), vou colocar 0 o padrão, colocou 1 aqui só quando eu mudou com o comando GM
+			p.addUint8(0);	// Flag (I think), I'll set 0 as default, it was 1 here only when I changed it with the GM command
 
 			packet_func::session_send(p, &_session, 1);
 		}
@@ -5254,7 +5254,7 @@ void room::lock() {
 		throw exception("[room::lock][Error] room esta no estado para ser destruida, nao pode bloquear ela.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 150, 0));
 	}
 
-	m_lock_spin_state++;	// Bloqueado
+	m_lock_spin_state++;	// Locked
 };
 
 bool room::tryLock() {
@@ -5264,7 +5264,7 @@ bool room::tryLock() {
 #if defined(_WIN32)
 	if ((ret = TryEnterCriticalSection(&m_lock_cs))) {
 #elif defined(__linux__)
-	int err_ret = 0; // provável erro é EBUSY, mas pode falhar com outros também, mas muito menos provável
+	int err_ret = 0; // probable error is EBUSY, but it can fail with others too, though much less likely
 
 	if ((err_ret = pthread_mutex_trylock(&m_lock_cs)) == 0) {
 
@@ -5282,7 +5282,7 @@ bool room::tryLock() {
 			throw exception("[room::tryLock][Error] room esta no estado para ser destruida, nao pode bloquear ela.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 150, 0));
 		}
 
-		m_lock_spin_state++;	// Bloqueado
+		m_lock_spin_state++;	// Locked
 	}
 
 	return ret;
@@ -5316,7 +5316,7 @@ void room::setDestroying() {
 	pthread_mutex_lock(&m_lock_cs);
 #endif
 
-	// Destruindo a sala
+	// Destroying the room
 	m_destroying = true;
 
 #if defined(_WIN32)
@@ -5333,7 +5333,7 @@ void room::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just leaves, I'll add another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[room::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -5397,7 +5397,7 @@ void room::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		break;
 	}
 	case 0:
-	default:	// 25 é update item equipado slot
+	default:	// 25 is update equipped item slot
 		break;
 	}
 };
@@ -5473,7 +5473,7 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 	memcpy(pri.nickname, _session.m_pi.nickname, sizeof(pri.nickname));
 	memcpy(pri.guild_name, _session.m_pi.gi.name, sizeof(pri.guild_name));
 #endif
-	pri.position = (unsigned char)getPosition(&_session) + 1;	// posição na sala
+	pri.position = (unsigned char)getPosition(&_session) + 1;	// position in the room
 	pri.capability = _session.m_pi.m_cap;
 	pri.title = _session.m_pi.ue.m_title;
 
@@ -5485,16 +5485,16 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 #elif defined(__linux__)
 	memcpy(pri.skin, _session.m_pi.ue.skin_typeid, sizeof(pri.skin));
 #endif
-	pri.skin[4] = 0;		// Aqui tem que ser zero, se for outro valor não mostra a imagem do character equipado
+	pri.skin[4] = 0;		// This has to be zero, with any other value the equipped character image is not shown
 
 	if (getMaster() == _session.m_pi.uid) {
 		pri.state_flag.uFlag.stFlagBit.master = 1;
-		pri.state_flag.uFlag.stFlagBit.ready = 1;	// Sempre está pronto(ready) o master
+		pri.state_flag.uFlag.stFlagBit.ready = 1;	// The master is always ready
 	}
 
 	pri.state_flag.uFlag.stFlagBit.sexo = _session.m_pi.mi.sexo;
 
-	// Update Team se for Match
+	// Update Team if Match
 	if (m_ri.tipo == RoomInfo::TIPO::MATCH) {
 
 		if (v_sessions.size() > 1) {
@@ -5522,11 +5522,11 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 
 		m_teans[pri.state_flag.uFlag.stFlagBit.team].addPlayer(&_session);
 
-	}else if (m_ri.tipo != RoomInfo::TIPO::GUILD_BATTLE)	// O Guild Battle tem sua própria função para inicializar e atualizar o team e os dados da guild
+	}else if (m_ri.tipo != RoomInfo::TIPO::GUILD_BATTLE)	// Guild Battle has its own function to initialize and update the team and the guild data
 		pri.state_flag.uFlag.stFlagBit.team = (pri.position - 1) % 2;
 	
-	// Só faz calculo de Quit rate depois que o player
-	// estiver no level Beginner E e jogado 50 games
+	// Only calculates Quit rate after the player
+	// is at level Beginner E and has played 50 games
 	if (_session.m_pi.level >= 6 && _session.m_pi.ui.jogado >= 50) {
 		float rate = _session.m_pi.ui.getQuitRate();
 
@@ -5545,7 +5545,7 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 	else
 		pri.icon_angel = 0u;
 
-	pri.ucUnknown_0A = 10;	// 0x0A dec"10" _session.m_pi.place, pode ser lugar[place]
+	pri.ucUnknown_0A = 10;	// 0x0A dec"10" _session.m_pi.place, could be place[place]
 	pri.guild_uid = _session.m_pi.gi.uid;
 #if defined(_WIN32)
 	memcpy_s(pri.guild_mark_img, sizeof(pri.guild_mark_img), _session.m_pi.gi.mark_emblem, sizeof(pri.guild_mark_img));
@@ -5555,7 +5555,7 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 	pri.guild_mark_index = _session.m_pi.gi.index_mark_emblem;
 	pri.uid = _session.m_pi.uid;
 	pri.state_lounge = _session.m_pi.state_lounge;
-	pri.usUnknown_flg = 0;			// Ví players com valores 2 e 4 e 0
+	pri.usUnknown_flg = 0;			// I saw players with values 2, 4 and 0
 	pri.state = _session.m_pi.state;
 	pri.location = { _session.m_pi.location.x, _session.m_pi.location.z, _session.m_pi.location.r };
 	
@@ -5567,9 +5567,9 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 
 	pri.flag_item_boost = _session.m_pi.checkEquipedItemBoost();
 	pri.ulUnknown_flg = 0;
-	//pri.id_NT não estou usando ainda
+	//pri.id_NT not using it yet
 	//pri.ucUnknown106
-	pri.convidado = 0;	// Flag Convidado, [Não sei bem por que os que entra na sala normal tem valor igual aqui, já que é flag de convidado waiting], Valor constante da sala para os players(ACHO)
+	pri.convidado = 0;	// Guest Flag, [I am not sure why those who enter a normal room have the same value here, since it is a guest waiting flag], Constant room value for the players (I THINK)
 	pri.avg_score = _session.m_pi.ui.getMediaScore();
 	//pri.ucUnknown3
 
@@ -5585,18 +5585,18 @@ PlayerRoomInfoEx* room::makePlayerInfo(player& _session) {
 
 			if (it.first->second.uid != _session.m_pi.uid) {
 
-				// Add novo PlayerRoomInfo para a (session*), que tem um novo player conectado na session.
-				// Isso pode acontecer quando chama essa função 2x com a mesma session e o mesmo player
+				// Add new PlayerRoomInfo for the (session*), which has a new player connected to the session.
+				// This can happen when this function is called twice with the same session and the same player
 
 				try {
 
-					// pega o antigo PlayerRoomInfo para usar no Log
+					// get the old PlayerRoomInfo to use in the Log
 					auto pri_ant = m_player_info.at(&_session);
 
-					// Novo PlayerRoomInfo
+					// New PlayerRoomInfo
 					m_player_info.at(&_session) = pri;
 
-					// Log de que trocou o PlayerChannelInfo da session
+					// Log that the session's PlayerChannelInfo was replaced
 					_smp::message_pool::getInstance().push(new message("[room::makePlayerInfo][WARNING][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 							+ "] esta trocando o PlayerRoomInfo[UID=" + std::to_string(pri_ant.uid) + "] do player anterior que estava conectado com essa session, pelo o PlayerRoomInfo[UID=" 
 							+ std::to_string(pri.uid) + "] do player atual da session.", CL_FILE_LOG_AND_CONSOLE));
@@ -5626,13 +5626,13 @@ PlayerRoomInfoEx* room::makePlayerInvitedInfo(player& _session) {
 
 	// Player Room Info Init
 	pri.oid = _session.m_oid;
-	pri.position = (unsigned char)(getPosition(&_session) + 1);	// posição na sala
+	pri.position = (unsigned char)(getPosition(&_session) + 1);	// position in the room
 
-	pri.ucUnknown_0A = 10;	// 0x0A dec"10" _session.m_pi.place, pode ser lugar[place]
+	pri.ucUnknown_0A = 10;	// 0x0A dec"10" _session.m_pi.place, could be place[place]
 	
 	pri.uid = _session.m_pi.uid;
 
-	pri.convidado = 1;	// Flag Convidado, [Não sei bem por que os que entra na sala normal tem valor igual aqui, já que é flag de convidado waiting], Valor constante da sala para os players(ACHO)
+	pri.convidado = 1;	// Guest Flag, [I am not sure why those who enter a normal room have the same value here, since it is a guest waiting flag], Constant room value for the players (I THINK)
 
 	auto it = m_player_info.insert(std::make_pair(&_session, pri));
 
@@ -5643,18 +5643,18 @@ PlayerRoomInfoEx* room::makePlayerInvitedInfo(player& _session) {
 
 			if (it.first->second.uid != _session.m_pi.uid) {
 
-				// Add novo PlayerRoomInfo para a (session*), que tem um novo player conectado na session.
-				// Isso pode acontecer quando chama essa função 2x com a mesma session e o mesmo player
+				// Add new PlayerRoomInfo for the (session*), which has a new player connected to the session.
+				// This can happen when this function is called twice with the same session and the same player
 
 				try {
 
-					// pega o antigo PlayerRoomInfo para usar no Log
+					// get the old PlayerRoomInfo to use in the Log
 					auto pri_ant = m_player_info.at(&_session);
 
-					// Novo PlayerRoomInfo
+					// New PlayerRoomInfo
 					m_player_info.at(&_session) = pri;
 
-					// Log de que trocou o PlayerChannelInfo da session
+					// Log that the session's PlayerChannelInfo was replaced
 					_smp::message_pool::getInstance().push(new message("[room::makePlayerInfo][WARNING][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 							+ "] esta trocando o PlayerRoomInfo[UID=" + std::to_string(pri_ant.uid) + "] do player anterior que estava conectado com essa session, pelo o PlayerRoomInfo[UID=" 
 							+ std::to_string(pri.uid) + "] do player atual da session.", CL_FILE_LOG_AND_CONSOLE));
@@ -5729,7 +5729,7 @@ void room::updateTrofel() {
 
 			if (new_trofel > 0 && new_trofel != m_ri.trofel) {
 
-				// Check se o trofeu anterior era o GM e se o novo não é mais, aí tira a flag de GM da sala
+				// Check if the previous trophy was the GM's and the new one is not anymore, then remove the GM flag from the room
 				if (m_ri.trofel == TROFEL_GM_EVENT_TYPEID && new_trofel != TROFEL_GM_EVENT_TYPEID)
 					m_ri.flag_gm = 0;
 
@@ -5754,9 +5754,9 @@ void room::updateMaster(player* _session) {
 
 	player *master = findSessionByUID(m_ri.master);
 
-	if (_session != nullptr && _session->m_pi.m_cap.stBit.game_master/* & 4*/ && m_ri.master != -2) { // GM Entrou na sala
+	if (_session != nullptr && _session->m_pi.m_cap.stBit.game_master/* & 4*/ && m_ri.master != -2) { // GM entered the room
 
-		// Só troca o master se ele saiu da sala ou se ele não for GM
+		// Only changes the master if he left the room or if he is not a GM
 		if (master == nullptr || !(master->m_pi.m_cap.stBit.game_master/* & 4*/)) {
 			
 			packet p;
@@ -5784,14 +5784,14 @@ void room::updateMaster(player* _session) {
 
 			p.addUint32(_session->m_oid);
 
-			p.addInt16(0);	// option ACHO
+			p.addInt16(0);	// option I THINK
 
 			packet_func::room_broadcast(*this, p, 0);
 		}
 
-	}else if (master == nullptr && v_sessions.size() > 0 && m_ri.master != -2) { // Master saiu da sala
+	}else if (master == nullptr && v_sessions.size() > 0 && m_ri.master != -2) { // Master left the room
 		
-		//só troca se for diferente de SSC e GRANDPRIX e GZ Event
+		//only changes if different from SSC and GRANDPRIX and GZ Event
 		if (m_ri.tipo != RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE && m_ri.tipo != RoomInfo::TIPO::GRAND_PRIX) {
 
 			// Find GM
@@ -5827,7 +5827,7 @@ void room::updateMaster(player* _session) {
 
 			p.addUint32(master->m_oid);
 
-			p.addInt16(0);	// option ACHO
+			p.addInt16(0);	// option I THINK
 
 			packet_func::room_broadcast(*this, p, 0);
 		}
@@ -5863,7 +5863,7 @@ void room::updateGuild(player& _session) {
 		// Team Red
 		pri->state_flag.uFlag.stFlagBit.team = 0;
 
-		// Add a guild Vermelha
+		// Add the Red guild
 		guild = m_guild_manager.addGuild(Guild::eTEAM::RED, m_ri.guilds.guild_1_uid);
 
 	}else if (m_ri.guilds.guild_1_uid == _session.m_pi.gi.uid) {
@@ -5871,7 +5871,7 @@ void room::updateGuild(player& _session) {
 		// Team Red
 		pri->state_flag.uFlag.stFlagBit.team = 0;
 
-		// Find Guild Vermelha
+		// Find Red Guild
 		guild = m_guild_manager.findGuildByTeam(Guild::eTEAM::RED);
 
 	}else if (m_ri.guilds.guild_2_uid == 0) {
@@ -5889,7 +5889,7 @@ void room::updateGuild(player& _session) {
 		// Team Blue
 		pri->state_flag.uFlag.stFlagBit.team = 1;
 
-		// Add a guild Azul
+		// Add the Blue guild
 		guild = m_guild_manager.addGuild(Guild::eTEAM::BLUE, m_ri.guilds.guild_2_uid);
 
 	}else {
@@ -5897,7 +5897,7 @@ void room::updateGuild(player& _session) {
 		// Team Blue
 		pri->state_flag.uFlag.stFlagBit.team = 1;
 
-		// Find Guild Azul
+		// Find Blue Guild
 		guild = m_guild_manager.findGuildByTeam(Guild::eTEAM::BLUE);
 	}
 
@@ -5908,7 +5908,7 @@ void room::updateGuild(player& _session) {
 				+ "] tentou entrar em uma guild da sala[NUMERO=" + std::to_string(m_ri.numero) 
 				+  "], mas nao conseguiu criar ou achar nenhum guild na sala. Bug.", CL_FILE_LOG_AND_CONSOLE));
 
-	// Add player ao team
+	// Add player to the team
 	m_teans[pri->state_flag.uFlag.stFlagBit.team].addPlayer(&_session);
 };
 
@@ -5942,12 +5942,12 @@ bool room::isAllReady() {
 	if (m_bot_tourney && v_sessions.size() == 1 && (m_ri.tipo == RoomInfo::TOURNEY || m_ri.tipo == RoomInfo::SPECIAL_SHUFFLE_COURSE))
 		return true;
 
-	// se a sala for Practice, CHIP-IN Practice, e GRAND_PRIX_NOVICE não precisa o player está pronto
+	// if the room is Practice, CHIP-IN Practice, or GRAND_PRIX_NOVICE the player does not need to be ready
 	if (m_ri.tipo == RoomInfo::TIPO::PRACTICE || m_ri.tipo == RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE
-			|| (m_ri.tipo == RoomInfo::TIPO::GRAND_PRIX /*GP tem sua classe sobrecarregada, ele verifica sozinho o isAllready()*/))
+			|| (m_ri.tipo == RoomInfo::TIPO::GRAND_PRIX /*GP has its own overloaded class, it checks isAllready() by itself*/))
 		return true;
 
-	// Se o master for GM então não precisar todos está ready(prontos)
+	// If the master is a GM then not everyone needs to be ready
 	if (master->m_pi.m_cap.stBit.game_master && !_haveInvited())
 		return true;
 
@@ -5955,10 +5955,10 @@ bool room::isAllReady() {
 
 		auto pri = getPlayerInfo(_el);
 
-		return (pri != nullptr && pri->state_flag.uFlag.stFlagBit.ready);	// Pronto(Ready
+		return (pri != nullptr && pri->state_flag.uFlag.stFlagBit.ready);	// Ready
 	});
 
-	// Conta com o master por que o master sempre está pronto(ready)
+	// Counts the master because the master is always ready
 	return (count == v_sessions.size());
 };
 
@@ -5967,13 +5967,13 @@ void room::finish_game() {
 	if (m_pGame != nullptr) {
 		packet p;
 
-		// Deleta o jogo
+		// Delete the game
 		delete m_pGame;
 
-		// Zera Player Flags
+		// Reset Player Flags
 		for (auto& el : m_player_info) {
 			
-			// Update Place player
+			// Update player Place
 			if (m_ri.tipo == RoomInfo::PRACTICE || m_ri.tipo == RoomInfo::GRAND_ZODIAC_PRACTICE)
 				el.first->m_pi.place = 2u;
 			else
@@ -5981,7 +5981,7 @@ void room::finish_game() {
 
 			el.second.state_flag.uFlag.stFlagBit.away = 0;
 			
-			// Aqui só zera quem não é Master da sala, o master deixa sempre ready
+			// Here it only resets those who are not the room Master, the master is always kept ready
 			if (m_ri.master == el.first->m_pi.uid)
 				el.second.state_flag.uFlag.stFlagBit.ready = 1;
 			else
@@ -5994,11 +5994,11 @@ void room::finish_game() {
 			sendCharacter(*el.first, 3);
 		}
 
-		// Atualiza flag da sala, só não atualiza se for GM evento ou GZ Event e SSC
-		if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID/*GM event não abre a sala de novo depois que acaba*/ || m_ri.tipo == RoomInfo::SPECIAL_SHUFFLE_COURSE || m_ri.master == -2/*GP e GZ por tempo*/))
-			m_ri.state = 1;	/*em espera*/
+		// Update the room flag, it is only not updated for GM event or GZ Event and SSC
+		if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID/*GM event does not reopen the room after it ends*/ || m_ri.tipo == RoomInfo::SPECIAL_SHUFFLE_COURSE || m_ri.master == -2/*GP and GZ by time*/))
+			m_ri.state = 1;	/*waiting*/
 
-		// Att Exp rate, e Pang rate, que criou a sala, att ele também quando começa o jogo
+		// Update Exp rate and Pang rate of whoever created the room, update him also when the game starts
 		//if (sgs::gs != nullptr) {
 			m_ri.rate_exp = sgs::gs::getInstance().getInfo().rate.exp;
 			m_ri.rate_pang = sgs::gs::getInstance().getInfo().rate.pang;
@@ -6009,22 +6009,22 @@ void room::finish_game() {
 		if (m_ri.course >= 0x7Fu)					// Random Course With Course already draw
 			m_ri.course = RoomInfo::eCOURSE(0x7Fu);	// Random Course standard
 
-		// Update Master da sala
+		// Update room Master
 		updateMaster(nullptr);
 
 		if (m_ri.master == -2)
-			m_ri.master = -1; // pode deletar a sala quando sair todos
+			m_ri.master = -1; // can delete the room when everyone leaves
 
 		if (v_sessions.size() > 0) {
-			// Atualiza info da sala para quem está na sala
+			// Update room info for those in the room
 			packet_func::pacote04A(p, m_ri, -1);
 			packet_func::room_broadcast(*this, p, 1);
 		}
 
-		// limpa lista de player kikados
+		// clear the list of kicked players
 		clear_player_kicked();
 
-		// Verifica se o Bot Tourney está ativo, kika bot e limpa a flag
+		// Check if Bot Tourney is active, kick the bot and clear the flag
 		if (m_bot_tourney) {
 
 			auto pMaster = findMaster();
@@ -6033,7 +6033,7 @@ void room::finish_game() {
 
 				try {
 					// Kick Bot
-					// Atualiza os player que estão na sala que o Bot sai por que ele é só visual
+					// Update the players in the room that the Bot leaves because it is only visual
 					sendCharacter(*pMaster, 0);
 				
 				}catch (exception& e) {
@@ -6045,7 +6045,7 @@ void room::finish_game() {
 			m_bot_tourney = false;
 		}
 
-		// Terminou o jogo
+		// Game finished
 		m_pGame = nullptr;
 	}
 };
@@ -6061,7 +6061,7 @@ void room::clear_invite() {
 
 void room::init_teans() {
 
-	// Limpa teans, se tiver teans inicilizados já
+	// Clear teams, if teams are already initialized
 	clear_teans();
 
 	// Init Teans
@@ -6070,7 +6070,7 @@ void room::init_teans() {
 
 	PlayerRoomInfo *pPri = nullptr;
 
-	// Add Players All Seus Respectivos teans
+	// Add all Players to their respective teams
 	for (auto& el : v_sessions) {
 
 		if ((pPri = getPlayerInfo(el)) == nullptr)
@@ -6113,10 +6113,10 @@ void room::addBotVisual(player& _session) {
 				+ std::to_string(m_ri.numero) + ", MASTER=" + std::to_string(m_ri.master) + "], mas nao nenhum player na sala. Bug", 
 				STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM, 1, 5000));
 
-		// Inicializa os dados do Bot
+		// Initialize the Bot data
 		pri.uid = _session.m_pi.uid;
 		pri.oid = _session.m_oid;
-		pri.position = 0;	// 0 Que é para ele ficar em primeiro e parece que tbm não deixa kick(ACHO)
+		pri.position = 0;	// 0 so that he stays first and it seems it also does not allow kick (I THINK)
 		pri.state_flag.uFlag.stFlagBit.ready = 1u;
 		pri.char_typeid = 0x4000000u;	// Nuri
 		pri.title = 0x39800013u;		// Title Helper
@@ -6126,21 +6126,21 @@ void room::addBotVisual(player& _session) {
 		strcpy(pri.nickname, "\\1Bot");
 #endif
 
-		// Add o Bot a sala, só no visual
+		// Add the Bot to the room, visual only
 		v_element.push_back(pri);
 
 		// Packet
 		packet p;
 
-		// Option 0, passa todos que estão na sala
+		// Option 0, passes everyone in the room
 		if (packet_func::pacote048(p, &_session, v_element, 0x100))
 			packet_func::room_broadcast(*this, p, 1);
 
-		// Option 1, passa só o player que entrou na sala, nesse caso foi o Bot
+		// Option 1, passes only the player who entered the room, in this case the Bot
 		if (packet_func::pacote048(p, &_session, std::vector< PlayerRoomInfoEx > { pri  }, 0x101))
 			packet_func::room_broadcast(*this, p, 1);
 
-		// Criou Bot com sucesso
+		// Bot created successfully
 		m_bot_tourney = true;
 
 		// Log
@@ -6162,13 +6162,13 @@ void room::addBotVisual(player& _session) {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Relança
+		// Rethrow
 		throw;
 	}
 };
 
 bool room::isDropRoom() {
-	return true; // class room normal é sempre true
+	return true; // normal room class is always true
 };
 
 uint32_t room::_getRealNumPlayersWithoutInvited() {
@@ -6186,7 +6186,7 @@ uint32_t room::_getRealNumPlayersWithoutInvited() {
 bool room::_haveInvited() {
 	return std::find_if(v_sessions.begin(), v_sessions.end(), [this](auto _el) {
 		
-		// session invalid, pula ela
+		// invalid session, skip it
 		if (_el == nullptr)
 			return false;
 
@@ -6198,7 +6198,7 @@ bool room::_haveInvited() {
 
 void room::calcRainLounge() {
 
-	// Só calcRainLounge se for lounge
+	// Only calcRainLounge if it is a lounge
 	if (m_ri.tipo == RoomInfo::TIPO::LOUNGE) {
 
 		m_weather_lounge = 0u;	// Good Weather

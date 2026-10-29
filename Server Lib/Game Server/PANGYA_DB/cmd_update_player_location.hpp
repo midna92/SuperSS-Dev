@@ -1,6 +1,6 @@
-// Arquivo cmd_update_player_location.hpp
-// Criado em 11/05/2019 as 17:32 por Acrisio
-// Definição da classe CmdUpdatePlayerLocation
+// File cmd_update_player_location.hpp
+// Created on 11/05/2019 at 17:32 by Acrisio
+// Definition of class CmdUpdatePlayerLocation
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_PLAYER_LOCATION_HPP

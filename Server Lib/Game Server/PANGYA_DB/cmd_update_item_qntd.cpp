@@ -1,6 +1,6 @@
-// Arquivo cmd_update_item_qntd.cpp
-// Criado em 31/05/2018 as 10:47 por Acrisio
-// Implementa��o da classe CmdUpdateItemQntd
+// File cmd_update_item_qntd.cpp
+// Created on 31/05/2018 at 10:47 by Acrisio
+// Implementation of class CmdUpdateItemQntd
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateItemQntd::~CmdUpdateItemQntd() {
 
 void CmdUpdateItemQntd::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdUpdateItemQntd::prepareConsulta(database& _db) {

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_achievement_user.cpp
-// Criado em 14/04/2018 as 17:13 por Acrisio
-// Implementa��o da classe CmdUpdateAchievementUser
+// File cmd_update_achievement_user.cpp
+// Created on 14/04/2018 at 17:13 by Acrisio
+// Implementation of the class CmdUpdateAchievementUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateAchievementUser::~CmdUpdateAchievementUser() {
 
 void CmdUpdateAchievementUser::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

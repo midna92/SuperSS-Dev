@@ -1,6 +1,6 @@
-// Arquivo cmd_update_normal_trofel.cpp
-// Criado em 23/09/2018 as 12:33 por Acrisio
-// Implementação da classe CmdUpdateNormalTrofel
+// File cmd_update_normal_trofel.cpp
+// Created on 23/09/2018 at 12:33 by Acrisio
+// Implementation of class CmdUpdateNormalTrofel
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateNormalTrofel::~CmdUpdateNormalTrofel() {
 
 void CmdUpdateNormalTrofel::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdUpdateNormalTrofel::prepareConsulta(database& _db) {

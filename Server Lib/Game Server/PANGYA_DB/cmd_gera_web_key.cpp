@@ -1,6 +1,6 @@
-// Arquivo cmd_gera_web_key.cpp
-// Criado em 25/03/2018 as 17:23 por Acrisio
-// Implementa��o da classe CmdGeraWebKey
+// File cmd_gera_web_key.cpp
+// Created on 25/03/2018 at 17:23 by Acrisio
+// Implementation of the class CmdGeraWebKey
 
 #if defined(_WIN32)
 #pragma pack(1)

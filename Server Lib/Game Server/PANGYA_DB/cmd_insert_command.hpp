@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_command.hpp
-// Criado em 04/12/2018 as 03:51 por Acrisio
-// Defini��o da classe CmdInsertCommand
+// File cmd_insert_command.hpp
+// Created on 04/12/2018 at 03:51 by Acrisio
+// Definition of the class CmdInsertCommand
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_COMMAND_HPP

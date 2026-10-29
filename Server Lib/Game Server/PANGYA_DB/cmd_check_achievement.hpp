@@ -1,6 +1,6 @@
-// Arquivo cmd_achievement_check.hpp
-// Criado em 07/04/2018 as 19:00 por Acrisio
-// Defini��o da classe CmdCheckAchievement
+// File cmd_achievement_check.hpp
+// Created on 07/04/2018 at 19:00 by Acrisio
+// Definition of the class CmdCheckAchievement
 
 #pragma once
 #ifndef _STDA_CMD_ACHIEVEMENT_CHECK_HPP

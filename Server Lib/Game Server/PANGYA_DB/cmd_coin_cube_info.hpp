@@ -1,6 +1,6 @@
-// Arquivo cmd_coin_cube_info.hpp
-// Criado em 16/10/2020 as 18:48 por Acrisio
-// Defini��o da classe CmdCoinCubeInfo
+// File cmd_coin_cube_info.hpp
+// Created on 16/10/2020 at 18:48 by Acrisio
+// Definition of the class CmdCoinCubeInfo
 
 #pragma once
 #ifndef _STDA_CMD_COIN_CUBE_INFO_HPP

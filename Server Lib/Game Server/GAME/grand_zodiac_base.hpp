@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac_base.hpp
-// Criado em 23/06/2020 as 15:28 por Acrisio
-// Defini��o da classe GrandZodiacBase
+// File grand_zodiac_base.hpp
+// Created on 23/06/2020 at 15:28 by Acrisio
+// Definition of class GrandZodiacBase
 
 #pragma once
 #ifndef _STDA_GRAND_ZODIAC_BASE_HPP
@@ -110,7 +110,7 @@ namespace stdA {
 
 			virtual void sendInitialData(player& _session) override;
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestInitHole(player& _session, packet *_packet) override;
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) override;
@@ -123,18 +123,18 @@ namespace stdA {
 			virtual void requestActiveBooster(player& _session, packet *_packet) override;
 			virtual void requestActiveCutin(player& _session, packet *_packet) override;
 
-			// Exclusivo do Grand Zodiac Modo
+			// Exclusive to Grand Zodiac Mode
 			virtual void requestStartFirstHoleGrandZodiac(player& _session, packet *_packet) override;
 			virtual void requestReplyInitialValueGrandZodiac(player& _session, packet *_packet) override;
 
 			// Game
 			virtual bool requestFinishGame(player& _session, packet *_packet) override;
 
-			// Tempo
+			// Time
 			virtual void timeIsOver() = 0;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override = 0;
 
 			virtual void requestFinishExpGame() = 0;
@@ -153,16 +153,16 @@ namespace stdA {
 
 			virtual void requestReplySyncShotData(player& _session) override;
 
-			// Envia o Placar do Jogo, Os Scores Finais, pang e experi�ncia e etc
+			// Sends the Game Scoreboard, the Final Scores, pang and experience, etc
 			virtual void sendPlacar(player& _session) override;
 
-			// Envia para o jogador, que o tempo do Tourney Acabou
+			// Sends to the player that the Tourney time is up
 			virtual void sendTimeIsOver(player& _session) override;
 
-			// Verifica se � a ultima tacada do hole, para passar para o proximo hole
+			// Checks whether it is the last shot of the hole, to move on to the next hole
 			virtual int checkEndShotOfHole(player& _session) override;
 
-			// Sortea Item Drop do Hole, pode dropar ou n�o
+			// Draws the Item Drop of the Hole, may or may not drop
 			virtual void drawDropItem(player& _session) override = 0;
 
 			virtual void requestFinishData(player& _session, int option) = 0;
@@ -207,7 +207,7 @@ namespace stdA {
 			virtual bool finish_game(player& _session, int option = 0) override = 0;
 
 		protected:
-			// Make Object Player Info Polimofirsmo
+			// Make Object Player Info Polymorphism
 			virtual PlayerGameInfo* makePlayerInfoObject(player& _session) override;
 
 			virtual void startGoldenBeam() = 0;
@@ -243,11 +243,11 @@ namespace stdA {
 			stStateGrandZodiacSync m_state_gz;
 
 		protected:
-			uint32_t volatile m_golden_beam_state;					// Status do golden beam
+			uint32_t volatile m_golden_beam_state;					// Golden beam status
 
-			std::map< player*, bool > m_mp_golden_beam_player;			// Map de golden beam player, os player que fizeram hio no tempo do golden beam
+			std::map< player*, bool > m_mp_golden_beam_player;			// Golden beam player map, the players who made hio during the golden beam time
 
-			std::vector< double > m_initial_values_seed;				// Valores que passa com o pacote1EC
+			std::vector< double > m_initial_values_seed;				// Values passed with packet1EC
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs_sync_shot;

@@ -1,6 +1,6 @@
-// Arquivo packet_func_as.cpp
-// Criado em 02/12/2018 as 13:33 por Acrisio
-// Implementa��o da classe packet_func
+// File packet_func_as.cpp
+// Created on 02/12/2018 at 13:33 by Acrisio
+// Implementation of class packet_func
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -41,7 +41,7 @@
 												\
 											}catch (exception& e) { \
 												\
-												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*n�o pode usa session*/)) \
+												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 													if ((_session)->devolve()) \
 														sas::as::getInstance().DisconnectSession((_session)); \
 												\

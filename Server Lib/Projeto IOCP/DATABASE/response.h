@@ -1,6 +1,6 @@
-// Arquivo response.h
-// Criado em 28/01/2018 as 14:59 por Acrisio
-// Definição da classe response
+// File response.h
+// Created on 28/01/2018 at 14:59 by Acrisio
+// Definition of class response
 
 #pragma once
 #ifndef _STDA_RESPONSE_H

@@ -1,6 +1,6 @@
-// Arquivo packet_func_ls.h
-// Criado em 04/06/2017 por Acrisio
-// Definição da classe packet_func
+// File packet_func_ls.h
+// Created on 04/06/2017 by Acrisio
+// Definition of the packet_func class
 
 #pragma once
 #ifndef STDA_PACKET_FUNC_LS_H
@@ -32,7 +32,7 @@ namespace stdA {
 
     class packet_func : public packet_func_base {
         public:
-			// Cliente
+			// Client
             static int packet001(void* _arg1, void* _arg2);
 			static int packet003(void* _arg1, void* _arg2);
 			static int packet004(void* _arg1, void* _arg2);
@@ -57,7 +57,7 @@ namespace stdA {
 			static int pacote009(packet& p, player *_session, std::vector< ServerInfo >& v_element);
 			static int pacote00E(packet& p, player *_session, std::string nick, int option = 0, uint32_t error = 0);
 			static int pacote00E(packet& p, player *_session, std::wstring nick, int option = 0, uint32_t error = 0);
-			static int pacote00F(packet& p, player *_session, int option = 0);	// Abre o tutorial que quer dizer que é nova conta
+			static int pacote00F(packet& p, player *_session, int option = 0);	// Opens the tutorial which means it is a new account
 			static int pacote010(packet& p, player *_session, std::string& AuthKey);
 			static int pacote011(packet& p, player *_session, int option = 0);
 

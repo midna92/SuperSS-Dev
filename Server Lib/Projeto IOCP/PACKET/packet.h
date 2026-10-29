@@ -1,6 +1,6 @@
-// Arquivo packet.h
-// Criado em 05/11/2017 por Acrisio
-// Definição da classe packet com o novo modo de alocar memoria dinamica
+// File packet.h
+// Created on 05/11/2017 by Acrisio
+// Definition of class packet com o novo modo de alocar memoria dinamica
 
 #pragma once
 #ifndef _STDA_PACKET__H
@@ -39,7 +39,7 @@ namespace stdA {
     
     struct packet_head_client : public packet_head {
         packet_head_client() : packet_head(), seq(0) {};
-        unsigned char seq; // Packet Sequência
+        unsigned char seq; // Packet Sequence
     };
 
 #if defined(__linux__)
@@ -94,14 +94,14 @@ namespace stdA {
             }
         }
     
-        unsigned char m_flag;	// 0x1 - Sequência invertida, 0x10 - Base256
+        unsigned char m_flag;	// 0x1 - Inverted sequence, 0x10 - Base256
     
     public: 
-        inline uint32_t getNumberNS() { // Normal Sequência
+        inline uint32_t getNumberNS() { // Normal Sequence
             return unionConvertido.dwConvertido;
         };
     
-        inline uint32_t getNumberIS() { // Inverse Sequência
+        inline uint32_t getNumberIS() { // Inverse Sequence
             uint32_t ulNumber = 0;
     
             ulNumber = unionConvertido.stConvertido.d;
@@ -205,7 +205,7 @@ namespace stdA {
             void unMakeRaw();
             void makeRaw();
 
-			// Utiliza no Rank Server
+			// Used in the Rank Server
 			void unMakeRawClient();
 
             WSABUF getPlainBuf();
@@ -214,7 +214,7 @@ namespace stdA {
 			size_t getSizePlain();
 			size_t getSizeMaked();
 
-            // Methods gets
+            // Getter methods
             unsigned short getTipo();
 			//session* getSession();
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_find_mail_box_item.cpp
-// Criado em 29/10/2019 as 21:19 por Acrisio
-// Implemneta��o da classe CmdFindMailBoxItem
+// File cmd_find_mail_box_item.cpp
+// Created on 29/10/2019 at 21:19 by Acrisio
+// Implementation of the class CmdFindMailBoxItem
 
 #if defined(_WIN32)
 #pragma pack(1)

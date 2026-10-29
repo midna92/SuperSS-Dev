@@ -1,6 +1,6 @@
-// Arquivo pangya_login_db.h
-// Criado em 23/07/2017 por Acrisio
-// Definição da classe pangya_db para o Login Server
+// File pangya_login_db.h
+// Created on 23/07/2017 by Acrisio
+// Definition of the pangya_db class for the Login Server
 
 #pragma once
 #ifndef _STDA_PANGYA_LOGIN_DB_H

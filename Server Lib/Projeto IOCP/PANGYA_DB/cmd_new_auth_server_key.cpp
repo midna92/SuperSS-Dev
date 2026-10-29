@@ -1,6 +1,6 @@
-// Arquivo cmd_new_auth_server_key.cpp
-// Criado em 15/12/2018 as 15:43 por Acrisio
-// Implementação da classe CmdNewAuthServerKey
+// File cmd_new_auth_server_key.cpp
+// Created on 15/12/2018 at 15:43 by Acrisio
+// Implementation of class CmdNewAuthServerKey
 
 #if defined(_WIN32)
 #pragma pack(1)

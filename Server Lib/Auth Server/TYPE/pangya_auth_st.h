@@ -1,6 +1,6 @@
-// Arquivo pangya_auth_st.h
-// Criado em 02/12/2018 as 13:12 por Acrisio
-// Defini��o da do tipos usando na classe auth_server
+// File pangya_auth_st.h
+// Created on 02/12/2018 at 13:12 by Acrisio
+// Definition of the types used in the auth_server class
 
 #pragma once
 #ifndef _STDA_PANGYA_AUTH_ST_H

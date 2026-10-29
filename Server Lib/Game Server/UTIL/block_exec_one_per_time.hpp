@@ -1,6 +1,6 @@
-// Arquivo block_exec_one_per_time.hpp
-// Criado em 03/04/2020 as 17:41 por Acrisio
-// Defini��o da classe SyncBlockExecOnePerTime
+// File block_exec_one_per_time.hpp
+// Created on 03/04/2020 at 17:41 by Acrisio
+// Definition of the SyncBlockExecOnePerTime class
 
 #pragma once
 #ifndef _STDA_BLOCK_EXEC_ONE_PER_TIME_HPP
@@ -57,7 +57,7 @@ namespace stdA {
 			uKey m_key;
 	};
 
-	// declara aqui primeiro para usar como friend no ThreadSafeCS
+	// declare here first to use as friend in ThreadSafeCS
 	class EventCV;
 
 	// Thread Safe Critical Section

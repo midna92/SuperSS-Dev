@@ -1,6 +1,6 @@
-// Arquivo job.h
-// Criado em 21/05/2017 por Acrisio
-// Definição da classe job
+// File job.h
+// Created on 21/05/2017 by Acrisio
+// Definition of class job
 
 #pragma once
 #ifndef _STDA_JOB_H

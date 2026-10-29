@@ -1,6 +1,6 @@
-// Arquivo cmd_card_equip_info
-// Criado em 21/03/2018 as 22:27 por Acrisio
-// Defini��o da classe CmdCardEquipInfo
+// File cmd_card_equip_info
+// Created on 21/03/2018 at 22:27 by Acrisio
+// Definition of the class CmdCardEquipInfo
 
 #pragma once
 #ifndef _STDA_CMD_CARD_EQUIP_INFO_HPP

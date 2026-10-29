@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_caddie.hpp
-// Criado em 16/06/2018 as 12:58 por Acrisio
-// Defini��o da classe CmdDeleteCaddie
+// File cmd_delete_caddie.hpp
+// Created on 16/06/2018 at 12:58 by Acrisio
+// Definition of the class CmdDeleteCaddie
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_CADDIE_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_guild_info.hpp
-// Criado em 24/03/2018 as 20:18 por Acrisio
-// Defini��o da classe CmdGuildInfo
+// File cmd_guild_info.hpp
+// Created on 24/03/2018 at 20:18 by Acrisio
+// Definition of the class CmdGuildInfo
 
 #pragma once
 #ifndef _STDA_CMD_GUILD_INFO_HPP

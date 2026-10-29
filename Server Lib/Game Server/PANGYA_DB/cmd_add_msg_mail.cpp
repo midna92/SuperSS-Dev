@@ -1,6 +1,6 @@
-// Arquivo cmd_add_msg_mail.cpp
-// Criado em 26/05/2018 as 15:12 por Acrisio
-// Implement���o da classe CmdAddMsgMail
+// File cmd_add_msg_mail.cpp
+// Created on 26/05/2018 at 15:12 by Acrisio
+// Implementation of the class CmdAddMsgMail
 
 #if defined(_WIN32)
 #pragma pack(1)

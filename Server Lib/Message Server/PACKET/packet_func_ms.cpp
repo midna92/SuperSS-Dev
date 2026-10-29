@@ -1,6 +1,6 @@
-// Arquivo packet_func_ms.cpp
-// Criado em 29/07/2018 as 14:39 por Acrisio
-// Implementa��o da classe packet_func para o Message Server
+// File packet_func_ms.cpp
+// Created on 29/07/2018 at 14:39 by Acrisio
+// Implementation of class packet_func for the Message Server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -31,7 +31,7 @@
 												\
 											}catch (exception& e) { \
 												\
-												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*n�o pode usa session*/)) \
+												if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/)) \
 													if ((_session)->devolve()) \
 														sms::ms::getInstance().DisconnectSession((_session)); \
 												\
@@ -39,8 +39,8 @@
 													throw; \
 											} \
 
-// Verifica se session est� autorizada para executar esse a��o, 
-// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+// Check whether the session is authorized to perform this action, 
+// if it has not logged in to the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!pd._session.m_is_authorized) \
 												throw exception("[packet_func::" + std::string((method)) + "][Error] Player[UID=" + std::to_string(pd._session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_MS, 1, 0x5000501)); \
@@ -74,8 +74,8 @@ int packet_func::packet013(void* _arg1, void* _arg2) {
 				+ "] mandou o Pacote013, nao sei o que esse pacote pede ou faz. Hex: \n\r"
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet013");
 	
 	}catch (exception& e) {
@@ -364,8 +364,8 @@ int packet_func::packet029(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet029");
 
 		uint32_t player_uid_send = pd._packet->readUint32();
@@ -400,8 +400,8 @@ int packet_func::packet02A(void* _arg1, void* _arg2) {
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_ONLY_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet02A");
 	
 	}catch (exception& e) {
@@ -430,8 +430,8 @@ int packet_func::packet02B(void* _arg1, void* _arg2) {
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_ONLY_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet02B");
 	
 	}catch (exception& e) {
@@ -460,8 +460,8 @@ int packet_func::packet02C(void* _arg1, void* _arg2) {
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_ONLY_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet02C");
 	
 	}catch (exception& e) {
@@ -490,8 +490,8 @@ int packet_func::packet02D(void* _arg1, void* _arg2) {
 				+ hex_util::BufferToHexString(pd._packet->getBuffer(), pd._packet->getSize()), CL_ONLY_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Check whether the session is authorized to perform this action, 
+		// if it has not logged in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("packet02D");
 	
 	}catch (exception& e) {
@@ -508,8 +508,8 @@ int packet_func::packet02D(void* _arg1, void* _arg2) {
 int packet_func::packet_svFazNada(void* _arg1, void* _arg2) {
 	MAKE_BEGIN_PACKET_SERVER(_arg1, _arg2);
 
-	// Esse pacote � para os pacotes que o server envia para o cliente
-	// e n�o precisa de tratamento depois que foi enviado para o cliente
+	// This packet is for the packets that the server sends to the client
+	// and needs no handling after it has been sent to the client
 
 	return 0;
 }
@@ -575,7 +575,7 @@ void packet_func::friend_broadcast(std::map< uint32_t, player* > _m_player, pack
 
 	for (auto& el : _m_player) {
 
-		if (el.second != nullptr && el.second != _s) {	// N�o envia para a mesma session, por que j� enviou l� em cima
+		if (el.second != nullptr && el.second != _s) {	// Do not send to the same session, because it was already sent above
 			MAKE_SEND_BUFFER(_p, el.second);
 
 			SHOW_DEBUG_PACKET(_p, _debug);
@@ -598,7 +598,7 @@ void packet_func::friend_broadcast(std::map< uint32_t, player* > _m_player, std:
 
 			for (auto& el2 : _m_player) {
 
-				if (el2.second != nullptr && el2.second != _s) {	// N�o envia para a mesma session, por que j� enviou l� em cima
+				if (el2.second != nullptr && el2.second != _s) {	// Do not send to the same session, because it was already sent above
 					MAKE_SEND_BUFFER(*el, el2.second);
 
 					SHOW_DEBUG_PACKET(*el, _debug);

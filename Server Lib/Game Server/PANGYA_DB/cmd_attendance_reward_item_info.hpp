@@ -1,6 +1,6 @@
-// Arquivo cmd_attendance_reward_item_info.hpp
-// Criado em 14/11/2018 as 21:57 por Acrisio
-// Defini��o da classe CmdAttendanceRewardItemInfo
+// File cmd_attendance_reward_item_info.hpp
+// Created on 14/11/2018 at 21:57 by Acrisio
+// Definition of the class CmdAttendanceRewardItemInfo
 
 #pragma once
 #ifndef _STDA_CMD_ATTENDANCE_REWARD_ITEM_INFO_HPP

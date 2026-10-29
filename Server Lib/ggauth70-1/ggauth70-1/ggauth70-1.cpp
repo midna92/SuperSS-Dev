@@ -1,4 +1,4 @@
-// ggauth70-1.cpp : Define as funções exportadas para a DLL.
+// ggauth70-1.cpp : Defines the exported functions for the DLL.
 //
 
 #if defined(_WIN32)

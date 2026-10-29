@@ -1,6 +1,6 @@
-// Arquivo normal_manager_db.hpp
-// Criado em 01/05/2018 as 12:45 por Acrisio
-// Definição da classe NormalManagerDB
+// File normal_manager_db.hpp
+// Created on 01/05/2018 at 12:45 by Acrisio
+// Definition of class NormalManagerDB
 
 #pragma once
 #ifndef _STDA_NORMAL_MANAGER_DB_HPP
@@ -52,7 +52,7 @@ namespace stdA {
 
 			void freeAllWaiting(std::string _msg);
 
-        // Methods que o normal db faz para o server e o channel
+        // Methods that the normal db performs for the server and the channel
         public:
             void insertLoginLog(session& _session, NormalDB::msg_t* _msg);
 

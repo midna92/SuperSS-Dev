@@ -1,6 +1,6 @@
-// Arquivo unit.cpp
-// Criado em 02/12/2018 as 12:32 por Acrisio
-// Implementação da classe unit
+// File unit.cpp
+// Created on 02/12/2018 at 12:32 by Acrisio
+// Implementation of the class unit
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -67,8 +67,8 @@ unit::unit(session_manager& _session_manager, uint32_t _db_instance_num, uint32_
 
 		m_accept_sock = nullptr;
 
-		// chama aqui, que quando o auth_server estiver initializado(o construtor das classe base terminar e criar essa classe)
-		// pode chamar essas funções puras
+		// called here, because when the auth_server is initialized (the base class constructor finishes and creates this class)
+		// it can call these pure functions
 
 #if defined(_WIN32)
 		if ((EventShutdownServer = CreateEvent(NULL, true, false, NULL)) == INVALID_HANDLE_VALUE)
@@ -126,7 +126,7 @@ unit::unit(session_manager& _session_manager, uint32_t _db_instance_num, uint32_
 		m_threads.push_back(new thread(TT_DISCONNECT_SESSION, unit::_disconnect_session, (LPVOID)this));
 
 		// Accept(s)
-		m_threads.push_back(new thread(TT_ACCEPT, unit::_accept, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL/*1 = Primeiro, 2 = segundo core acho*/));		// Estava NORMAL
+		m_threads.push_back(new thread(TT_ACCEPT, unit::_accept, (LPVOID)this, THREAD_PRIORITY_ABOVE_NORMAL/*1 = First, 2 = second core I think*/));		// Was NORMAL
 
 		m_state = GOOD;
 
@@ -235,8 +235,8 @@ void* unit::monitor() {
 
 				try {
 
-					// Verifica se já virou o dia e cria novos arquivos de log
-					// Todo dia 00:00 horas cria um novo arquivo de log
+					// Check whether the day has changed and create new log files
+					// Every day at 00:00 creates a new log file
 					if (_smp::message_pool::getInstance().checkUpdateDayLog())
 						_smp::message_pool::getInstance().push(new message("[unit::monitor::UpdateLogFiles][Log] Atualizou os arquivos de Log por que trocou de dia.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -269,7 +269,7 @@ void* unit::monitor() {
 					
 				}catch (exception& e) {
 					
-					// Query UPDATE não retorna nada ai retorna essa exception
+					// The UPDATE query returns nothing, so it returns this exception
 					if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PANGYA_DB, 2)
 						&& STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) != 3) {
 						
@@ -286,14 +286,14 @@ void* unit::monitor() {
 					}
 				}
 		
-				cmdUpdateServerList();	// Pega a Lista de servidores online
+				cmdUpdateServerList();	// Get the list of online servers
 
 				onHeartBeat();
 		
 #if defined(_WIN32)
-				Sleep(1000); // 1 second para próxima verificação
+				Sleep(1000); // 1 second until the next check
 #elif defined(__linux__)
-				usleep(1000000); // 1 second para próxima verificação
+				usleep(1000000); // 1 second until the next check
 #endif
 
 			}catch (exception& e) {
@@ -324,7 +324,7 @@ void* unit::monitor() {
 
 void unit::waitAllThreadFinish(DWORD dwMilleseconds) {
 
-	// Libera todos que estão esperando o pangya_db ser executado
+	// Release everyone waiting for pangya_db to be executed
 	snmdb::NormalManagerDB::getInstance().freeAllWaiting("[unit::waitAllThreadFinish][Error] Libera todos que estao esperando pangya_db ser executado");
 
 	// Monitor Thread
@@ -369,21 +369,21 @@ void unit::waitAllThreadFinish(DWORD dwMilleseconds) {
 		case TT_WORKER_LOGICAL:
 			//for (auto io = 0u; io < (sizeof(m_iocp_logical) / sizeof(iocp)); ++io)
 #if defined(_WIN32)
-			m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_logical.postStatus((ULONG_PTR)nullptr, 0, nullptr);			// This one had Index[io], it was an array of 16 iocp
 #elif defined(__linux__)
-			m_iocp_logical.push(nullptr);										// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_logical.push(nullptr);										// This one had Index[io], it was an array of 16 iocp
 #endif
 			break;
 		case TT_WORKER_SEND:
 			//for (auto io = 0u; io < (sizeof(m_iocp_send) / sizeof(iocp)); ++io)
 #if defined(_WIN32)
-			m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);				// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_send.postStatus((ULONG_PTR)nullptr, 0, nullptr);				// This one had Index[io], it was an array of 16 iocp
 #elif defined(__linux__)
-			m_iocp_send.push(nullptr);											// Esse tinha Index[io], era um array de 16 iocp
+			m_iocp_send.push(nullptr);											// This one had Index[io], it was an array of 16 iocp
 #endif
 			break;
 		case TT_ACCEPT:
-			// Libera o accept se ele ainda não estiver liberado
+			// Release the accept if it is not released yet
 			setAcceptConnection();
 #if defined(_WIN32)
 			InterlockedDecrement(&m_continue_accpet);
@@ -399,13 +399,13 @@ void unit::waitAllThreadFinish(DWORD dwMilleseconds) {
 #endif
 			break;
 		case TT_JOB:
-			m_job_pool.push(nullptr);			// Sai do job
+			m_job_pool.push(nullptr);			// Exit the job
 			break;
 		case TT_CONSOLE:
-			_smp::message_pool::getInstance().push(nullptr);	// Sai do console
+			_smp::message_pool::getInstance().push(nullptr);	// Exit the console
 			break;
 		case TT_DB_NORMAL:
-			pangya_db::m_query_pool.push(nullptr);	// sai do db query pool
+			pangya_db::m_query_pool.push(nullptr);	// exit the db query pool
 			break;
 		case TT_MONITOR:
 #if defined(_WIN32)
@@ -432,7 +432,7 @@ void unit::waitAllThreadFinish(DWORD dwMilleseconds) {
 		if (m_threads[i] != nullptr)
 			m_threads[i]->waitThreadFinish(dwMilleseconds);
 
-	_smp::message_pool::getInstance().push(nullptr);		// Sai console;
+	_smp::message_pool::getInstance().push(nullptr);		// Exit console;
 
 	if (m_thread_console != nullptr)
 		m_thread_console->waitThreadFinish(dwMilleseconds);
@@ -478,13 +478,13 @@ void* unit::accept() {
 		socklen_t length = sizeof(remote);
 #endif
 	
-		addr.sin_family = AF_INET;	// depois coloca o host aqui // m_si.m_ip
+		addr.sin_family = AF_INET;	// later put the host here // m_si.m_ip
 		addr.sin_port = htons(m_si.port);
 		addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	
 		sock = new socket(sv->getsocklistener(), 1);
 		
-		// pega a referencia do sock que controla as conexão que pode logar
+		// get the reference to the sock that controls the connections that can log in
 		m_accept_sock = sock;
 
 		sock->bind(addr);
@@ -564,7 +564,7 @@ void* unit::accept() {
 								::shutdown(accpt, SD_BOTH);
 								::closesocket(accpt);
 
-								// Desconnectar o socket
+								// Disconnect the socket
 								continue;
 							}
 	
@@ -579,7 +579,7 @@ void* unit::accept() {
 							/// COM NO_TCPDELAY e SO_SNDBUF 0	AVG(MEDIA) 0.569
 							/// COM NO_TCPDELAY e SO_RCVBUF 0	AVG(MEDIA) 0.566
 							/// SEM NENHUM SOCKOPT				AVG(MEDIA) 0.569
-							// Não tem muita diferença vou deixar só o NO_TCPDELAY mesmo
+							// There is not much difference, I will leave only NO_TCPDELAY
 	
 							//if (setsockopt(accpt, SOL_SOCKET, SO_SNDBUF, (char*)&so_sndbuf, sizeof(int)) == SOCKET_ERROR)
 							//	_smp::message_pool.push(new message("nao conseguiu setar SO_SNDBUF para 0, threadpl_server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
@@ -609,7 +609,7 @@ void* unit::accept() {
 	
 							onAcceptCompleted(_session);
 	
-							_session = nullptr;	// reseta aqui para usar ela de novo
+							_session = nullptr;	// reset here to use it again
 						}
 
 					}else
@@ -620,10 +620,10 @@ void* unit::accept() {
 				
 				_smp::message_pool::getInstance().push(new message("[unit::accept][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	
-				if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::PLAYER_MANAGER || STDA_ERROR_DECODE(e.getCodeError()) != 3/*checou ao limit de sesssion*/)	// Diferente do erro chegou ao limite de usuarios online
+				if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::PLAYER_MANAGER || STDA_ERROR_DECODE(e.getCodeError()) != 3/*reached the session limit*/)	// Different from the error of reaching the online users limit
 					throw;
 				else {
-					// aqui envia algo ou so deleta o sock
+					// here send something or just delete the sock
 					if (_session != nullptr)
 						m_session_manager.deleteSession(_session);
 					else if (accpt != INVALID_SOCKET) {
@@ -680,7 +680,7 @@ void* unit::accept() {
 						::shutdown(accpt.fd, SD_BOTH);
 						::closesocket(accpt.fd);
 
-						// Desconnectar o socket
+						// Disconnect the socket
 						continue;
 					}
 
@@ -695,7 +695,7 @@ void* unit::accept() {
 					/// COM NO_TCPDELAY e SO_SNDBUF 0	AVG(MEDIA) 0.569
 					/// COM NO_TCPDELAY e SO_RCVBUF 0	AVG(MEDIA) 0.566
 					/// SEM NENHUM SOCKOPT				AVG(MEDIA) 0.569
-					// Não tem muita diferença vou deixar só o NO_TCPDELAY mesmo
+					// There is not much difference, I will leave only NO_TCPDELAY
 
 					//if (setsockopt(accpt, SOL_SOCKET, SO_SNDBUF, (char*)&so_sndbuf, sizeof(int)) == SOCKET_ERROR)
 					//	_smp::message_pool.push(new message("nao conseguiu setar SO_SNDBUF para 0, threadpl_server::accept(). error Code: " + std::to_string(STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 2, WSAGetLastError())), CL_FILE_LOG_AND_CONSOLE));
@@ -738,17 +738,17 @@ void* unit::accept() {
 
 					onAcceptCompleted(_session);
 
-					_session = nullptr;	// reseta aqui para usar ela de novo
+					_session = nullptr;	// reset here to use it again
 				}
 
 			}catch (exception e) {
 				
 				_smp::message_pool::getInstance().push(new message("[unit::accept][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	
-				if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::PLAYER_MANAGER || STDA_ERROR_DECODE(e.getCodeError()) != 3/*checou ao limit de sesssion*/)	// Diferente do erro chegou ao limite de usuarios online
+				if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::PLAYER_MANAGER || STDA_ERROR_DECODE(e.getCodeError()) != 3/*reached the session limit*/)	// Different from the error of reaching the online users limit
 					throw;
 				else {
-					// aqui envia algo ou so deleta o sock
+					// here send something or just delete the sock
 					if (_session != nullptr)
 						m_session_manager.deleteSession(_session);
 					else if (accpt.fd != INVALID_SOCKET) {
@@ -833,16 +833,16 @@ void* unit::disconnect_session() {
 
 					if (session_manager::isInit()) {
 
-						auto s = m_session_manager.getSessionToDelete(1000/*1 second para libera o while se não tiver session para desconectar*/);
+						auto s = m_session_manager.getSessionToDelete(1000/*1 second to release the while if there is no session to disconnect*/);
 
 						if (s != nullptr)
 							DisconnectSession(s);
 
 					}else
 #if defined(_WIN32)
-						Sleep(300/*espera 300 miliseconds até o session_manager ser inicializado*/);
+						Sleep(300/*wait 300 milliseconds until the session_manager is initialized*/);
 #elif defined(__linux__)
-						usleep(300000/*espera 300 miliseconds até o session_manager ser inicializado*/);
+						usleep(300000/*wait 300 milliseconds until the session_manager is initialized*/);
 #endif
 				
 				}catch (exception& e) {
@@ -886,7 +886,7 @@ inline void unit::dispach_packet_same_thread(session& _session, packet *_packet)
 	
 	}catch (exception& e) {
 		
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc.*/) {
 			
 			_smp::message_pool::getInstance().push(new message("[unit::dispach_packet_same_thread][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -898,17 +898,17 @@ inline void unit::dispach_packet_same_thread(session& _session, packet *_packet)
 					+ std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_ONLY_FILE_LOG));
 #endif
 
-			// Auth server só os outros servers que conectam, então não vai ter pacote que ainda não implementei
+			// Auth server is only connected to by the other servers, so there will be no packet that I have not implemented yet
 			DisconnectSession(&_session);
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
-			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// Handle the error here
+			// and log out the session that sent the wrong packet
+			/// put back ------> m_pe->_session_pool.deleteSession(_packet->getSession());
+			// if it is very serious, rethrow it to terminate the thread
 		}else
 			DisconnectSession(&_session);
 		
-		// Relança a exception
+		// Rethrow the exception
 		throw;
 	}
 
@@ -916,8 +916,8 @@ inline void unit::dispach_packet_same_thread(session& _session, packet *_packet)
 
 		_session.usa();
 
-		// só pode contar o tick se for um pacote conhecido pelo, server, se contar por dados recebido, nunca vai derrubar o cliente mau intensionado
-		_session.m_tick = std::clock();	// Tick time client para o TTL(time to live)
+		// can only count the tick if it is a packet known by the server; if counting by received data, it will never drop a malicious client
+		_session.m_tick = std::clock();	// Client tick time for the TTL (time to live)
 
 		ParamDispatch pd = { *(player*)&_session, _packet };
 
@@ -942,7 +942,7 @@ inline void unit::dispach_packet_same_thread(session& _session, packet *_packet)
 		_smp::message_pool::getInstance().push(new message("[unit::dispach_packet_same_thread][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -978,7 +978,7 @@ inline void unit::dispach_packet_sv_same_thread(session& _session, packet *_pack
 	
 	}catch (exception& e) {
 		
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Erro, Warning e etc*/) {
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::FUNC_ARR/*Packet_func Error, Warning, etc.*/) {
 			
 			_smp::message_pool::getInstance().push(new message("[unit::dispach_packet_sv_same_thread][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
@@ -987,10 +987,10 @@ inline void unit::dispach_packet_sv_same_thread(session& _session, packet *_pack
 					+ ", OID=" + std::to_string(_session.m_oid) + "]size packet: " + std::to_string(_packet->getSize()) + "\n" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_ONLY_FILE_LOG));
 #endif
 
-			// Trata o erro aqui
-			// e desloga a session que enviou pacote errado
-			/// colocar de novo ------> m_pe->_session_pool.deleteSession(_packet->getSession());
-			// se for muito grave relança ele para terminar a thread
+			// Handle the error here
+			// and log out the session that sent the wrong packet
+			/// put back ------> m_pe->_session_pool.deleteSession(_packet->getSession());
+			// if it is very serious, rethrow it to terminate the thread
 		}else
 			throw;
 	}
@@ -1013,7 +1013,7 @@ inline void unit::dispach_packet_sv_same_thread(session& _session, packet *_pack
 		_smp::message_pool::getInstance().push(new message("[unit::dispach_packet_same_thread][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*não pode usa session*/))
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*cannot use session*/))
 			if (_session.devolve())
 				DisconnectSession(&_session);
 
@@ -1076,7 +1076,7 @@ void unit::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[unit::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -1202,7 +1202,7 @@ void unit::commandScan() {
 
 					command[0] = _getch();
 
-					// Recebeu um valor que é de 2 bytes, então ignora esse
+					// Received a 2-byte value, so ignore this one
 					if (command[1] < 0) {
 
 						command[1] = '\0';
@@ -1229,7 +1229,7 @@ void unit::commandScan() {
 
 						std::stringstream ss(s);
 
-						// Reseta std::string s
+						// Reset std::string s
 						if (!s.empty()) {
 							s.clear();
 							s.shrink_to_fit();
@@ -1238,9 +1238,9 @@ void unit::commandScan() {
 						while (!ss.eof()) {
 							if (checkCommand(ss)) {
 
-								shutdown = true;	// Sai do While Principal
+								shutdown = true;	// Exit the main While
 
-								break;	// Sai do While de comandos
+								break;	// Exit the commands While
 							}
 						}
 
@@ -1285,7 +1285,7 @@ void unit::commandScan() {
 
 			command[0] = _getch();
 
-			// Recebeu um valor que é de 2 bytes, então ignora esse
+			// Received a 2-byte value, so ignore this one
 			if (command[1] < 0) {
 
 				command[1] = '\0';
@@ -1312,7 +1312,7 @@ void unit::commandScan() {
 
 				std::stringstream ss(s);
 
-				// Reseta std::string s
+				// Reset std::string s
 				if (!s.empty()) {
 					s.clear();
 					s.shrink_to_fit();
@@ -1325,9 +1325,9 @@ void unit::commandScan() {
 				while (!ss.eof()) {
 					if (checkCommand(ss)) {
 
-						shutdown = true;	// Sai do While Principal
+						shutdown = true;	// Exit the main While
 
-						break;	// Sai do While de comandos
+						break;	// Exit the commands While
 					}
 				}
 
@@ -1377,7 +1377,7 @@ void unit::config_init() {
 	m_si.max_user = m_reader_ini.readInt("SERVERINFO", "MAXUSER");
 	m_si.propriedade.ulProperty = m_reader_ini.readInt("SERVERINFO", "PROPERTY");
 	
-	// Pega na classe de DB msm, aqui não pega mais
+	// Gets it in the DB class itself, no longer gets it here
 	/*memcpy_s(m_ctx_db.ip, sizeof(m_ctx_db.ip), m_reader_ini.readString("DATABASE", "DBIP").c_str(), sizeof(m_ctx_db.ip));
 	memcpy_s(m_ctx_db.name, sizeof(m_ctx_db.name), m_reader_ini.readString("DATABASE", "DBNAME").c_str(), sizeof(m_ctx_db.name));
 	memcpy_s(m_ctx_db.user, sizeof(m_ctx_db.user), m_reader_ini.readString("DATABASE", "DBUSER").c_str(), sizeof(m_ctx_db.user));

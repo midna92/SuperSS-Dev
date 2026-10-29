@@ -1,6 +1,6 @@
-// Arquivo auth_server.cpp
-// Criado em 02/12/2018 as 13:24 por Acrisio
-// Implementa��o da classe auth_server
+// File auth_server.cpp
+// Created on 02/12/2018 at 13:24 by Acrisio
+// Implementation of class auth_server
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -43,8 +43,8 @@
 							  if (_packet == nullptr) \
 									throw exception("[auth_server::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 6, 0)); \
 
-// Verifica se session est� autorizada para executar esse a��o, 
-// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+// Checks whether the session is authorized to execute this action, 
+// if it has not logged in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[auth_server::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 1, 0x7000501)); \
@@ -93,13 +93,13 @@ auth_server::auth_server() : unit(m_player_manager, 4/*DB Instance Num*/, 4/*Job
 
 		m_state = FAILURE;
 
-		// n�o posso lan�a exception para fora do contrutor que eles nao chama o destrutor dele antes
+		// cannot throw an exception out of the constructor because the destructor is not called before it
 	}
 }
 
 auth_server::~auth_server() {
 
-	// Crucial esse aqui para terminar o server sem crashs
+	// Crucial for shutting down the server without crashes
 	waitAllThreadFinish(INFINITE);
 }
 
@@ -116,8 +116,8 @@ void auth_server::requestDisconnectPlayer(player& _session, packet *_packet) {
 		player_uid = _packet->readUint32();
 		server_uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("DisconnectPlayer");
 
 		auto s = m_player_manager.findPlayer(server_uid);
@@ -128,18 +128,18 @@ void auth_server::requestDisconnectPlayer(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[auth_server::requestDisconnectPlayer][Log] o Server[UID=" + std::to_string(_session.m_pi.uid) + "] pediu para o outro Server[UID="
 					+ std::to_string(server_uid) + "] desconectar o Player[UID=" + std::to_string(player_uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Envia para o outro server o comando para desconectar o player
+			// Sends the command to the other server to disconnect the player
 			p.init_plain((unsigned short)0x6);
 
 			p.addUint32(player_uid);
-			p.addUint32(_session.m_pi.uid);	// Quem pediu para disconectar o player
-			p.addUint8(0u);					// 1 Ativado, Flag que forca a desconecta mesmo se o server tiver outras regras
+			p.addUint32(_session.m_pi.uid);	// Who requested to disconnect the player
+			p.addUint8(0u);					// 1 Enabled, flag that forces the disconnect even if the server has other rules
 
 			packet_func::session_send(p, s, 1);
 
 		}else {
 
-			// n�o encontrou o Server para enviar o comando para deconectar o player
+			// did not find the Server to send the command to disconnect the player
 #ifdef _DEBUG
 			_smp::message_pool::getInstance().push(new message("[auth_server::requestDisconnectPlayer][Log] o Server[UID=" + std::to_string(_session.m_pi.uid) + "] pediu para o outro Server[UID="
 					+ std::to_string(server_uid) + "] desconectar o Player[UID=" + std::to_string(player_uid) + "], mas nao encontrou o Server.", CL_FILE_LOG_AND_CONSOLE));
@@ -148,8 +148,8 @@ void auth_server::requestDisconnectPlayer(player& _session, packet *_packet) {
 					+ std::to_string(server_uid) + "] desconectar o Player[UID=" + std::to_string(player_uid) + "], mas nao encontrou o Server.", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-			// Ent�o retorn para o Cliente que pediu para desconectar o player,
-			// para ele continuar sua execu��o e deixar que o server deconecte o player quando ele logar
+			// Then returns to the Client that requested to disconnect the player,
+			// so it can continue its execution and let the server disconnect the player when they log in
 			p.init_plain((unsigned short)0x7);
 
 			p.addUint32(player_uid);
@@ -160,8 +160,8 @@ void auth_server::requestDisconnectPlayer(player& _session, packet *_packet) {
 
 	}catch (exception& e) {
 
-		// Ent�o retorn para o Cliente que pediu para desconectar o player,
-		// para ele continuar sua execu��o e deixar que o server deconecte o player quando ele logar
+		// Then returns to the Client that requested to disconnect the player,
+		// so it can continue its execution and let the server disconnect the player when they log in
 		p.init_plain((unsigned short)0x7);
 
 		p.addUint32(player_uid);
@@ -180,13 +180,13 @@ void auth_server::requestConfirmDisconnectPlayer(player& _session, packet *_pack
 		uint32_t player_uid = _packet->readUint32();
 		uint32_t server_uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ConfirmDisconnectPlayer");
 
 		if (server_uid != m_si.uid) {
 			
-			// N�o foi o Auth Server que pediu para disconectar esse usu�rio, procura o cliente e manda a resposta para ele
+			// It was not the Auth Server that requested to disconnect this user, find the client and send the reply to it
 			auto s = m_player_manager.findPlayer(server_uid);
 
 			if (s != nullptr) {
@@ -228,8 +228,8 @@ void auth_server::requestInfoPlayer(player& _session, packet *_packet) {
 		server_uid = _packet->readUint32();
 		player_uid = _packet->readUint32();
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("InfoPlayer");
 
 		auto s = m_player_manager.findPlayer(server_uid);
@@ -240,17 +240,17 @@ void auth_server::requestInfoPlayer(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[auth_server::requestInfoPlayer][Log] o Server[UID=" + std::to_string(_session.m_pi.uid) + "] pediu para o outro Server[UID="
 					+ std::to_string(server_uid) + "] o Info do Player[UID=" + std::to_string(player_uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Envia para o outro server o comando para desconectar o player
+			// Sends the command to the other server to disconnect the player
 			p.init_plain((unsigned short)0xB);
 
-			p.addUint32(_session.m_pi.uid);	// Server UID request (quem pediu o info do player)
+			p.addUint32(_session.m_pi.uid);	// Server UID request (who requested the player info)
 			p.addUint32(player_uid);
 
 			packet_func::session_send(p, s, 1);
 
 		}else {
 
-			// n�o encontrou o Server para enviar o comando pedinfo o info do player
+			// did not find the Server to send the player info request command
 #ifdef _DEBUG
 			_smp::message_pool::getInstance().push(new message("[auth_server::requestInfoPlayer][Log] o Server[UID=" + std::to_string(_session.m_pi.uid) + "] pediu para o outro Server[UID="
 					+ std::to_string(server_uid) + "] o info do Player[UID=" + std::to_string(player_uid) + "], mas nao encontrou o Server.", CL_FILE_LOG_AND_CONSOLE));
@@ -259,12 +259,12 @@ void auth_server::requestInfoPlayer(player& _session, packet *_packet) {
 					+ std::to_string(server_uid) + "] o info do Player[UID=" + std::to_string(player_uid) + "], mas nao encontrou o Server.", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-			// Ent�o retorna para o Cliente que pediu o info do player, 
-			// dizendo que o player n�o foi encontrado online por que o server n�o foi encontrado online no Auth Server
+			// Then returns to the Client that requested the player info, 
+			// saying that the player was not found online because the server was not found online on the Auth Server
 			p.init_plain((unsigned short)0xC);
 
 			p.addUint32(server_uid);
-			p.addInt32(-1);	// Error n�o encontrou o server para enviar o request
+			p.addInt32(-1);	// Error: did not find the server to send the request
 
 			p.addUint32(player_uid);
 
@@ -274,12 +274,12 @@ void auth_server::requestInfoPlayer(player& _session, packet *_packet) {
 
 	}catch (exception& e) {
 
-		// Ent�o retorna para o Cliente que pediu o info do player, 
-		// dizendo que o player n�o foi encontrado online por que o teve algum Exception no Auth Server
+		// Then returns to the Client that requested the player info, 
+		// saying that the player was not found online because there was an Exception on the Auth Server
 		p.init_plain((unsigned short)0xC);
 
 		p.addUint32(server_uid);
-		p.addInt32(-1);	// Error n�o encontrou o server para enviar o request
+		p.addInt32(-1);	// Error: did not find the server to send the request
 
 		p.addUint32(player_uid);
 
@@ -308,13 +308,13 @@ void auth_server::requestConfirmSendInfoPlayer(player& _session, packet *_packet
 
 		}
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ConfirmSendInfoPlayer");
 
 		if (req_server_uid != m_si.uid) {
 			
-			// N�o foi o Auth Server que pediu para disconectar esse usu�rio, procura o cliente e manda a resposta para ele
+			// It was not the Auth Server that requested to disconnect this user, find the client and send the reply to it
 			auto s = m_player_manager.findPlayer(req_server_uid);
 
 			if (s != nullptr) {
@@ -326,7 +326,7 @@ void auth_server::requestConfirmSendInfoPlayer(player& _session, packet *_packet
 				// Resposta
 				packet p((unsigned short)0xC);
 
-				p.addUint32(_session.m_pi.uid);	// Server UID (Quem pediu para enviar a confirma��o do info do player)
+				p.addUint32(_session.m_pi.uid);	// Server UID (who requested to send the player info confirmation)
 				p.addInt32(aspi.option);
 				p.addUint32(aspi.uid);
 
@@ -360,8 +360,8 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("SendCommandToOtherServer");
 
 		CommandOtherServerHeaderEx cosh{ 0 };
@@ -381,7 +381,7 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 
 			if (!v_s.empty()) {
 
-				// Inicializa o Buffer do comando
+				// Initialize the command buffer
 				if (command_buff_size > 0) {
 
 					cosh.command.init(command_buff_size);
@@ -392,7 +392,7 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 								+ "] para o outro Server[UID/TYPE=" + std::to_string(cosh.send_server_uid_or_type)
 								+ "], mas nao conseguiu alocar memoria para o comando buff[size=" + std::to_string(command_buff_size) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 3501, 0));
 
-					// Ler o comando buffer do _packet, para enviar para o outro Server
+					// Read the command buffer from _packet, to send to the other Server
 					_packet->readBuffer(cosh.command.buff, cosh.command.size);
 
 				}
@@ -402,10 +402,10 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 						+ "] pediu para enviar o command[ID=" + std::to_string(cosh.command_id)
 						+ "] para o outro Server[UID/TYPE=" + std::to_string(cosh.send_server_uid_or_type) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-				// Envia para todos o Server do mesmo tipo excluindo quem pediu para enviar o comando
+				// Sends to all Servers of the same type, excluding the one that requested to send the command
 				p.init_plain((unsigned short)0x0D);
 
-				// Quem pediu para enviar esse comando para o outro Server
+				// Who requested to send this command to the other Server
 				p.addUint32(_session.m_pi.uid);
 
 				// Comando ID
@@ -413,11 +413,11 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 
 				if (command_buff_size > 0 && cosh.command.size > 0) {
 
-					// Comando buffer
+					// Command buffer
 					p.addBuffer(cosh.command.buff, cosh.command.size);
 
 				}else
-					p.addUint16(0u);	// Comando buffer � vazio
+					p.addUint16(0u);	// Command buffer is empty
 
 				packet_func::vector_send(p, v_s, 1);
 
@@ -429,7 +429,7 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 		
 		}else {
 
-			// Inicializa o Buffer do comando
+			// Initialize the command buffer
 			if (command_buff_size > 0) {
 				
 				cosh.command.init(command_buff_size);
@@ -440,7 +440,7 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 							+ "] para o outro Server[UID/TYPE=" + std::to_string(cosh.send_server_uid_or_type)
 							+ "], mas nao conseguiu alocar memoria para o comando buff[size=" + std::to_string(command_buff_size) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 3501, 0));
 
-				// Ler o comando buffer do _packet, para enviar para o outro Server
+				// Read the command buffer from _packet, to send to the other Server
 				_packet->readBuffer(cosh.command.buff, cosh.command.size);
 
 			}
@@ -450,10 +450,10 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 					+ "] pediu para enviar o command[ID=" + std::to_string(cosh.command_id)
 					+ "] para o outro Server[UID/TYPE=" + std::to_string(cosh.send_server_uid_or_type) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Envia para o Server
+			// Sends to the Server
 			p.init_plain((unsigned short)0x0D);
 
-			// Quem pediu para enviar esse comando para o outro Server
+			// Who requested to send this command to the other Server
 			p.addUint32(_session.m_pi.uid);
 
 			// Comando ID
@@ -461,11 +461,11 @@ void auth_server::requestSendCommandToOtherServer(player& _session, packet *_pac
 
 			if (command_buff_size > 0 && cosh.command.size > 0) {
 
-				// Comando buffer
+				// Command buffer
 				p.addBuffer(cosh.command.buff, cosh.command.size);
 
 			}else
-				p.addUint16(0u);	// Comando buffer � vazio
+				p.addUint16(0u);	// Command buffer is empty
 
 			packet_func::session_send(p, s, 1);
 		}
@@ -484,8 +484,8 @@ void auth_server::requestSendReplyToOtherServer(player& _session, packet *_packe
 
 	try {
 
-		// Verifica se session est� autorizada para executar esse a��o, 
-		// se ele n�o fez o login com o Server ele n�o pode fazer nada at� que ele fa�a o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("SendReplyToOtherServer");
 
 		CommandOtherServerHeaderEx cosh{ 0 };
@@ -505,7 +505,7 @@ void auth_server::requestSendReplyToOtherServer(player& _session, packet *_packe
 					+ "] para o outro Server[UID=" + std::to_string(cosh.send_server_uid_or_type)
 					+ "], mas nao encontrou ele.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 3502, 0));
 
-		// Inicializa o Buffer do comando
+		// Initialize the command buffer
 		if (command_buff_size > 0) {
 				
 			cosh.command.init(command_buff_size);
@@ -516,7 +516,7 @@ void auth_server::requestSendReplyToOtherServer(player& _session, packet *_packe
 						+ "] para o outro Server[UID=" + std::to_string(cosh.send_server_uid_or_type)
 						+ "], mas nao conseguiu alocar memoria para o comando buff[size=" + std::to_string(command_buff_size) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::AUTH_SERVER, 3503, 0));
 
-			// Ler o comando buffer do _packet, para enviar para o outro Server
+			// Read the command buffer from _packet, to send to the other Server
 			_packet->readBuffer(cosh.command.buff, cosh.command.size);
 
 		}
@@ -526,10 +526,10 @@ void auth_server::requestSendReplyToOtherServer(player& _session, packet *_packe
 				+ "] pediu para enviar a resposta[ID=" + std::to_string(cosh.command_id)
 				+ "] para o outro Server[UID=" + std::to_string(cosh.send_server_uid_or_type) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Envia para o Server
+		// Sends to the Server
 		p.init_plain((unsigned short)0x0E);
 
-		// Quem pediu para enviar esse comando para o outro Server
+		// Who requested to send this command to the other Server
 		p.addUint32(_session.m_pi.uid);
 
 		// Comando ID
@@ -537,11 +537,11 @@ void auth_server::requestSendReplyToOtherServer(player& _session, packet *_packe
 
 		if (command_buff_size > 0 && cosh.command.size > 0) {
 
-			// Comando buffer
+			// Command buffer
 			p.addBuffer(cosh.command.buff, cosh.command.size);
 
 		}else
-			p.addUint16(0u);	// Comando buffer � vazio
+			p.addUint16(0u);	// Command buffer is empty
 
 		packet_func::session_send(p, s, 1);
 
@@ -557,7 +557,7 @@ void auth_server::requestAuthenticPlayer(player& _session, packet *_packet) {
 
 	try {
 
-		_session.m_pi.tipo = _packet->readUint32();	// Tipo do server
+		_session.m_pi.tipo = _packet->readUint32();	// Server type
 		_session.m_pi.uid = _packet->readUint32();	// UID
 
 #if defined(_WIN32)
@@ -568,7 +568,7 @@ void auth_server::requestAuthenticPlayer(player& _session, packet *_packet) {
 
 		std::string key = _packet->readString();
 
-		// Passa para o nickname o id
+		// Passes the id to the nickname
 #if defined(_WIN32)
 		memcpy_s(_session.m_pi.nickname, sizeof(_session.m_pi.nickname), _session.m_pi.id, sizeof(_session.m_pi.nickname));
 #elif defined(__linux__)
@@ -591,13 +591,13 @@ void auth_server::requestAuthenticPlayer(player& _session, packet *_packet) {
 					+ std::string(ask.key) + ", VALID=" + std::to_string((unsigned short)ask.valid)
 					+ "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_AS, 350, 0));
 
-		ask.valid = 0;	// J� usou a chave atualiza no banco de dados
+		ask.valid = 0;	// Already used the key, update in the database
 
 		// Update Auth Server Key of Server
 		snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateAuthServerKey(ask), auth_server::SQLDBResponse, this);
 
-		// Logou com sucesso [Por Hora vou deixar assim]
-		_session.m_is_authorized = 1u;	// Autorizado a ficar connectado, por bastante tempo
+		// Logged in successfully [For now I will leave it like this]
+		_session.m_is_authorized = 1u;	// Authorized to stay connected for a long time
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[auth_server::requestAuthenticPlayer][Log] Server[TIPO=" + std::to_string(_session.m_pi.tipo) + ", NAME="
@@ -634,7 +634,7 @@ void auth_server::onAcceptCompleted(session* _session) {
 	if (!_session->isConnected())
 		throw exception("[auth_server::onAcceptCompleted][Error] session is not connected", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SERVER, 62, 0));
 
-	packet _packet((unsigned short)0x0);	// Tipo Packet Auth Server initial packet no compress e no crypt
+	packet _packet((unsigned short)0x0);	// Packet type: Auth Server initial packet, no compress and no crypt
 
 	_packet.addInt32((int)_session->m_key);	// key
 	_packet.addInt32(m_si.uid);					// Server UID
@@ -659,7 +659,7 @@ void auth_server::onDisconnected(session* _session) {
 
 	_smp::message_pool::getInstance().push(new message("[auth_server::onDisconnected][Log] Player Desconectou. ID: " + std::string(_player->m_pi.id) + "  UID: " + std::to_string(_player->m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
-	// Aqui n�o faz nada, no login server por enquanto
+	// Does nothing here, in the login server for now
 }
 
 void auth_server::onHeartBeat() {
@@ -682,7 +682,7 @@ void auth_server::onHeartBeat() {
 
 		// Guild Ranking Update
 
-		// Verifica se já pegou a hora do Guild Ranking se não pega no banco de dados
+		// Checks whether the Guild Ranking time was already fetched, if not fetch it from the database
 		if (isEmpty(m_guild_ranking_time)) {
 
 			CmdGuildRankingUpdateTime cmd_grut(true);	// Waiter
@@ -701,17 +701,17 @@ void auth_server::onHeartBeat() {
 					+ _formatDate(m_guild_ranking_time) + "] com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 		}
 
-		// Local Time para verificar
+		// Local Time to check
 		GetLocalTime(&local);
 
-		// Verifica se é um novo dia e atualiza o Guild Ranking
+		// Checks whether it is a new day and updates the Guild Ranking
 		if (m_guild_ranking_time.wYear < local.wYear || m_guild_ranking_time.wMonth < local.wMonth || m_guild_ranking_time.wDay < local.wDay) {
 				
 			_smp::message_pool::getInstance().push(new message("[auth_server::onHearBeat][Log] Atualizando o Guild Ranking...", CL_FILE_LOG_AND_CONSOLE));
 
 			snmdb::NormalManagerDB::getInstance().add(3, new CmdUpdateGuildRanking(), auth_server::SQLDBResponse, this);
 
-			// atualiza a hora do ranking do server
+			// updates the server ranking time
 			GetLocalTime(&m_guild_ranking_time);
 		}
 
@@ -725,7 +725,7 @@ void auth_server::onStart() {
 
 	try {
 
-		// N�o faz nada por enquanto
+		// Does nothing for now
 
 	}catch (exception& e) {
 
@@ -734,7 +734,7 @@ void auth_server::onStart() {
 }
 
 #define FIND_TARGET_AND_SEND(_target, _p, _msg) { \
-	/*Find Server By UID, se n�o Encontrar, procura por TIPO*/ \
+	/*Find Server By UID, if not found, search by TYPE*/ \
 	auto s = (player*)m_player_manager.findSessionByUID((_target)); \
 \
 	if (s == nullptr) { \
@@ -768,7 +768,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 
 		for (auto& el : _v_ci) {
 
-			// Ainda n�o chegou na date reservada, pula esse comando
+			// Has not reached the reserved date yet, skip this command
 			if (std::time(nullptr) < el.reserveDate)
 				continue;
 
@@ -784,7 +784,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (cmd_ni.getException().getCodeError() != 0) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] " + cmd_ni.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -793,7 +793,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (msg.empty()) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] msg is empty. Comando[" + el.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -818,7 +818,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (cmd_ti.getException().getCodeError() != 0) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] " + cmd_ti.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -828,7 +828,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] Ticker Info is invalid [MSG="
 							+ ti.msg + ", NICK=" + ti.nick + "]. Comando[" + el.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -838,12 +838,12 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				p.addString(ti.nick);
 				p.addString(ti.msg);
 
-				// Find Server By UID, se n�o Encontrar, procura por TIPO
+				// Find Server By UID, if not found, search by TYPE
 				auto s = (player*)m_player_manager.findSessionByUID(el.target);
 
 				if (s == nullptr) {
 				
-					// Exclui do vector de server para enviar, o server que gerou o ticker, ele nao precisa que envie de novo para ele
+					// Excludes from the server vector to send to the server that generated the ticker, it does not need to be sent to it again
 					auto v_s = m_player_manager.findPlayerByTypeExcludeUID(el.target, el.arg[1]/*SERVER UID*/);
 					
 					if (!v_s.empty()) {
@@ -880,7 +880,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (cmd_ni.getException().getCodeError() != 0) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] " + cmd_ni.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -889,7 +889,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (msg.empty()) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] msg is empty. Comando[" + el.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -950,8 +950,8 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				packet p((unsigned short)0x6);
 
 				p.addUint32(el.arg[0]);		// Playe UID
-				p.addUint32(m_si.uid);		// Quem pediu para desconectar o jogador
-				p.addUint8(1u);				// 1 Ativado, Flag que forca a desconecta mesmo se o server tiver outras regras
+				p.addUint32(m_si.uid);		// Who requested to disconnect the player
+				p.addUint8(1u);				// 1 Enabled, flag that forces the disconnect even if the server has other rules
 
 				FIND_TARGET_AND_SEND(el.target, p, "ADM Website Disconnect User[UID=" + std::to_string(el.arg[0]) + "]");
 
@@ -968,7 +968,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 				if (cmd_si.getException().getCodeError() != 0) {
 					_smp::message_pool::getInstance().push(new message("[auth_server::translateCmd][Error] " + cmd_si.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-					// Trata os outros comandos
+					// Handle the other commands
 					continue;
 				}
 
@@ -979,7 +979,7 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 
 				p.addUint32(time_sec);
 
-				// Verifica se � o Auth Server, se for envia para todos o tempo, e desliga o Auth Server Tamb�m
+				// Checks whether it is the Auth Server, if so sends the time to everyone, and also shuts down the Auth Server
 				if (el.target == m_si.uid || el.target == m_si.tipo) {
 
 					packet_func::vector_send(p, m_player_manager.getAllPlayer(), 1);
@@ -989,9 +989,9 @@ void auth_server::translateCmd(std::vector< CommandInfo >& _v_ci) {
 
 					if (time_sec <= 0)
 #if defined(_WIN32)
-						Sleep(5000);	// Espera 5 segundos para da tempo de enviar para todos os server conectados
+						Sleep(5000);	// Wait 5 seconds to give time to send to all connected servers
 #elif defined(__linux__)
-						usleep(5000000);	// Espera 5 segundos para da tempo de enviar para todos os server conectados
+						usleep(5000000);	// Wait 5 seconds to give time to send to all connected servers
 #endif
 
 					// Shutdown With Time
@@ -1047,7 +1047,7 @@ bool auth_server::checkCommand(std::stringstream& _command) {
 		_smp::message_pool::getInstance().push(new message("Auth Server files has been reloaded.", CL_FILE_LOG_AND_CONSOLE));
 	}else if (!s.empty() && s.compare("reload_socket_config") == 0) {
 
-		// Ler novamento o arquivo de configura��o do socket
+		// Re-read the socket configuration file
 		if (m_accept_sock != nullptr)
 			m_accept_sock->reload_config_file();
 		else
@@ -1067,7 +1067,7 @@ bool auth_server::checkCommand(std::stringstream& _command) {
 		if ((int)time_sec < 0)
 			time_sec = 0u;
 
-		// Manda Shutdown para todos os server conectados depois sai
+		// Sends Shutdown to all connected servers then exits
 		
 		// Send Time Shutdown
 		packet p((unsigned short)0x2);
@@ -1080,7 +1080,7 @@ bool auth_server::checkCommand(std::stringstream& _command) {
 				+ std::to_string(time_sec) + " segundos", CL_FILE_LOG_AND_CONSOLE));
 
 		// Shutdown With Time
-		shutdown_time((time_sec > 0 ? time_sec : 5)); // Espera 5 segundos para da tempo de enviar para todos os server conectados;
+		shutdown_time((time_sec > 0 ? time_sec : 5)); // Wait 5 seconds to give time to send to all connected servers;
 
 	}else if (!s.empty() && s.compare("snapshot") == 0) {
 
@@ -1103,9 +1103,9 @@ bool auth_server::checkCommand(std::stringstream& _command) {
 bool auth_server::checkPacket(session& _session, packet *_packet) {
 	
 	///--------------- INICIO CHECK PACKET SESSION
-	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Dentro do Interval */
+	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Within the interval */
 		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Mesmo pacote */
-		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* deu o limit de count DERRUBA a session */
+		/*&& _session.m_check_packet.count++ >= CHK_PCKT_COUNT_LIMIT /* reached the count limit, DROP the session */
 		_session.m_check_packet.checkPacketId(_packet->getTipo()) && _session.m_check_packet.incrementCount() >= CHK_PCKT_COUNT_LIMIT) {
 
 		_smp::message_pool::getInstance().push(new message("[WARNING] Tentativa de DDoS ataque com pacote ID: (0x" + hex_util::lltoaToHex(_packet->getTipo()) + ") " + std::to_string(_packet->getTipo()) + ". IP=" + std::string(_session.m_ip), CL_FILE_LOG_AND_CONSOLE));
@@ -1121,7 +1121,7 @@ bool auth_server::checkPacket(session& _session, packet *_packet) {
 
 void auth_server::config_init() {
 
-	// Server Tipo
+	// Server Type
 	m_si.tipo = 5/*Auth Server*/;
 }
 
@@ -1133,16 +1133,16 @@ void auth_server::reload_files() {
 
 void auth_server::shutdown_time(int32_t _time_sec) {
 
-	if (_time_sec <= 0)	// Desliga o Server Imediatemente
+	if (_time_sec <= 0)	// Shut down the Server immediately
 		shutdown();
 	else {
 
 		job _job(unit::end_time_shutdown, this, (void*)0);
 
-		// Se o Shutdown Timer estiver criado descria e cria um novo
+		// If the Shutdown Timer is created, destroy it and create a new one
 		if (m_shutdown != nullptr) {
 
-			// Para o Tempo se ele n�o estiver parado
+			// Stop the timer if it is not stopped
 			if (m_shutdown->getState() != timer::STOPPED)
 				m_shutdown->stop();
 
@@ -1163,7 +1163,7 @@ void auth_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[auth_server::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

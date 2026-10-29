@@ -1,6 +1,6 @@
 // Arquivo course.hpp
-// Criado em 12/08/2018 as 12:39 por Acrisio
-// Defini��o da classe Course
+// Created on 12/08/2018 at 12:39 by Acrisio
+// Definition of the Course class
 
 #pragma once
 #ifndef _STDA_COURSE_HPP
@@ -49,14 +49,14 @@ namespace stdA {
 
 			/// Finders
 			
-			// Find Hole, se n�o achar retorna um ponteiro nulo
+			// Find Hole, if not found returns a null pointer
 			Hole* findHole(unsigned short _number);
 			Hole* findHoleBySeq(unsigned short _seq);
 
-			// Find Hole Sequ�ncia
+			// Find Hole Sequence
 			unsigned short findHoleSeq(unsigned short _number);
 			
-			// Find intervalo de hole do n�mero fornecido at� o ultimo do map
+			// Find hole range from the given number to the last one of the map
 			std::pair< std::map< unsigned short, Hole >::iterator, std::map< unsigned short, Hole >::iterator > findRange(unsigned short _number);
 
 			// Random Wind and Degree
@@ -74,7 +74,7 @@ namespace stdA {
 			uint32_t countHolesRain();
 			uint32_t countHolesRainBySeq(uint32_t _seq);
 
-			// retorna Media de tacadas do course para fazer par em todos os holes
+			// return the course's average shots to make par in all holes
 			float getMediaAllParHoles();
 			float getMediaAllParHolesBySeq(uint32_t _seq);
 
@@ -103,13 +103,13 @@ namespace stdA {
 
 			RoomInfoEx& m_ri;
 
-			HolesRain m_holes_rain;			// N�mero de holes que est� chovendo no course
-			ConsecutivosHolesRain m_chr;	// N�mero de chuva em holes consecutivos, 2, 3 e 4+
+			HolesRain m_holes_rain;			// Number of holes with rain in the course
+			ConsecutivosHolesRain m_chr;	// Number of rains in consecutive holes, 2, 3 and 4+
 
-			bool m_grand_prix_special_hole;	// Flag de special hole Grand Prix, true tem special hole, false n�o tem
+			bool m_grand_prix_special_hole;	// Grand Prix special hole flag, true has special hole, false does not
 
 		private:
-			unsigned short m_flag_cube_coin;		// 1 Tem Cube e Coin, 0 sem
+			unsigned short m_flag_cube_coin;		// 1 Has Cube and Coin, 0 without
 	};
 }
 

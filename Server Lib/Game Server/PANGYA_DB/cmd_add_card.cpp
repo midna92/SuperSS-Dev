@@ -1,6 +1,6 @@
-// Arquivo cmd_add_card.cpp
-// Criado em 19/05/2018 as 15:30 por Acrisio
-// Implementa��o da classe CmdAddCard
+// File cmd_add_card.cpp
+// Created on 19/05/2018 at 15:30 by Acrisio
+// Implementation of the class CmdAddCard
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -33,7 +33,7 @@ response* CmdAddCard::prepareConsulta(database& _db) {
 	if (m_ci._typeid == 0)
 		throw exception("[CmdAddCard::prepareConsulta][Error] Card Info is invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 4, 0));
 
-	// Ignora as flags purchase e gift por hora, para usar a tabela antiga que eu fiz de card
+	// Ignores the purchase and gift flags for now, to use the old card table I made
 	auto r = procedure(_db, m_szConsulta, std::to_string(m_uid) + ", " + std::to_string(m_ci._typeid)
 				+ ", " + std::to_string(m_ci.qntd) + ", " + std::to_string((unsigned short)m_ci.type)
 	);

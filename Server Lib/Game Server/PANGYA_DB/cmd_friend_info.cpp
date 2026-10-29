@@ -1,6 +1,6 @@
-// Arquivo cmd_friend_info.cpp
-// Criado em 28/10/2018 as 15:44 por Acrisio
-// Implementa��o da classe CmdFriendInfo
+// File cmd_friend_info.cpp
+// Created on 28/10/2018 at 15:44 by Acrisio
+// Implementation of the class CmdFriendInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -44,7 +44,7 @@ void CmdFriendInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 
 	auto it = m_fi.find(fi.uid);
 
-	if (it == m_fi.end())	// N�o tem add um novo Amigo
+	if (it == m_fi.end())	// Does not exist, add a new Friend
 		m_fi.insert(std::make_pair(fi.uid, fi));
 	else
 		_smp::message_pool::getInstance().push(new message("[CmdFriendInfo::lineResult][Error][WARNING] player[UID=" + std::to_string(m_uid) + "] tento o Amigo[UID=" 

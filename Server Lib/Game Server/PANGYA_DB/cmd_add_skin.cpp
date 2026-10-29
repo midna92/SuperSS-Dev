@@ -1,6 +1,6 @@
-// Arquivo cmd_add_skin.cpp
-// Criado em 20/05/2018 as 10:56 por Acrisio
-// Implementa��o da classe CmdAddSkin
+// File cmd_add_skin.cpp
+// Created on 20/05/2018 at 10:56 by Acrisio
+// Implementation of the class CmdAddSkin
 
 #if defined(_WIN32)
 #pragma pack(1)

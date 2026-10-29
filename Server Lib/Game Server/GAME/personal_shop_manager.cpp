@@ -1,6 +1,6 @@
-// Arquivo personal_shop_manager.cpp
-// Criado em 01/04/2022 as 19:32 por Acrisio
-// Implementação da classe PersonalShopManager
+// File personal_shop_manager.cpp
+// Created on 01/04/2022 at 19:32 by Acrisio
+// Implementation of the PersonalShopManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -221,17 +221,17 @@ bool PersonalShopManager::isItemForSale(player& _session, int32_t _item_id) {
 
 	try {
 
-		// Sala não é Lounge, não tem como o player abrir um shop
+		// Room is not a Lounge, there is no way for the player to open a shop
 		if (m_ri.tipo != RoomInfo::TIPO::LOUNGE)
 			return false;
 
 		auto ps = findShop(&_session);
 
-		// Player não tem um shop aberto na sala
+		// Player does not have an open shop in the room
 		if (ps == nullptr)
 			return false;
 
-		// O item não está à venda no shop do player
+		// The item is not for sale in the player's shop
 		if (ps->findItemById(_item_id) == nullptr)
 			return false;
 
@@ -240,7 +240,7 @@ bool PersonalShopManager::isItemForSale(player& _session, int32_t _item_id) {
 		_smp::message_pool::getInstance().push(new message("[PersonalShopManager::isItemForSale][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// O item está à venda no shop do player
+	// The item is for sale in the player's shop
 	return true;
 }
 
@@ -303,7 +303,7 @@ bool PersonalShopManager::openShopToEdit(player& _session, packet& _out_packet) 
 			throw exception("[PersonalShopManager::openShopToEdit][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir um personal shop para vender na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "], mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP_MANAGER, 4, 0x790001));
 
-		// Verifica o level do player e bloquea se não tiver level Beginner E
+		// Checks the player's level and blocks if he does not have level Beginner E
 		if (_session.m_pi.level < _session.m_pi.enLEVEL::BEGINNER_E)
 			throw exception("[PersonalShopManager::openShopToEdit][Error] player[UID=" + std::to_string(_session.m_pi.uid) + ", LEVEL=" + std::to_string(_session.m_pi.level)
 					+ "] tentou abrir um personal shop para vender na sala[NUMERO=" + std::to_string(m_ri.numero) + "], mas o level dele eh menor que Beginner E.",
@@ -316,7 +316,7 @@ bool PersonalShopManager::openShopToEdit(player& _session, packet& _out_packet) 
 
 		PersonalShop *ps = nullptr;
 
-		// Esse aqui não é para da esse erro por que o pacote que pede para editar a loja, é esse também
+		// This one is not meant to give this error because the packet that requests to edit the shop is this one too
 		if ((ps = findShop(&_session)) != nullptr) {
 
 			ps->setState(PersonalShop::OPEN_EDIT);
@@ -329,7 +329,7 @@ bool PersonalShopManager::openShopToEdit(player& _session, packet& _out_packet) 
 			// lock
 			lock();
 
-			// Cria um Personal Shop para o player, por que ele não tem 1
+			// Creates a Personal Shop for the player, because he does not have 1
 			auto r = m_shops.insert(std::make_pair(&_session, PersonalShopCtx(new PersonalShop(_session), eTYPE_LOCK::TL_SELECT, 1)));
 
 			if (!r.second && (r.first == m_shops.end() || r.first->first == nullptr || r.first->first != (&_session))) {
@@ -354,7 +354,7 @@ bool PersonalShopManager::openShopToEdit(player& _session, packet& _out_packet) 
 				+ std::to_string(ps->getOwner().m_pi.uid) + ", STATE=" + std::to_string(ps->getState()) + ", Name=" + ps->getName() + ", Item Count="
 				+ std::to_string(ps->getCountItem()) + ", Pang Sale=" + std::to_string(ps->getPangSale()) + "] para editar na sala[numero=" + std::to_string(m_ri.numero) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Sucesso
+		// Success
 		_out_packet.init_plain((unsigned short)0xE5);
 
 		_out_packet.addUint32(1);
@@ -362,7 +362,7 @@ bool PersonalShopManager::openShopToEdit(player& _session, packet& _out_packet) 
 		_out_packet.addString(_session.m_pi.nickname);
 		_out_packet.addUint32(_session.m_pi.uid);
 
-		// sucesso, enviar o pacote para a sala toda
+		// success, send the packet to the whole room
 		return true;
 	
 	}catch (exception& e) {
@@ -402,7 +402,7 @@ bool PersonalShopManager::cancelEditShop(player& _session, packet& _out_packet) 
 
 		_out_packet.addString(_session.m_pi.nickname);
 
-		// sucesso, enviar o pacote para a sala toda
+		// success, send the packet to the whole room
 		return true;
 
 	}catch (exception& e) {
@@ -427,7 +427,7 @@ bool PersonalShopManager::closeShop(player& _session, packet& _out_packet) {
 
 	try {
 
-		// Verifica se o player tem um shop aberto
+		// Checks whether the player has an open shop
 		PersonalShop *ps = nullptr;
 
 		if ((ps = findShop(&_session)) == nullptr)
@@ -438,10 +438,10 @@ bool PersonalShopManager::closeShop(player& _session, packet& _out_packet) {
 				+ std::to_string(ps->getOwner().m_pi.uid) + ", STATE=" + std::to_string(ps->getState()) + ", NAME=" + ps->getName() + ", Count Item="
 				+ std::to_string(ps->getCountItem()) + ", Pang Sale=" + std::to_string(ps->getPangSale()) + "] na sala[numero=" + std::to_string(m_ri.numero) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Deleta shop
+		// Deletes shop
 		delete_shop(&_session);
 
-		// Sucesso
+		// Success
 		_out_packet.init_plain((unsigned short)0xE4);
 
 		_out_packet.addUint32(1);
@@ -449,7 +449,7 @@ bool PersonalShopManager::closeShop(player& _session, packet& _out_packet) {
 		_out_packet.addString(_session.m_pi.nickname);
 		_out_packet.addUint32(_session.m_pi.uid);
 
-		// sucesso, enviar o pacote para a sala toda
+		// success, send the packet to the whole room
 		return true;
 
 	}catch (exception& e) {
@@ -479,7 +479,7 @@ bool PersonalShopManager::changeShopName(player& _session, std::string _name, pa
 					+ "] tentou trocar o no do shop mas enviou uma string vazia. Hacker ou Bug",
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP_MANAGER, 200, 5200201));
 
-		// Verifica se esse nome de shop já existe na sala, tirando o dele é claro
+		// Checks whether this shop name already exists in the room, excluding his own of course
 		if (hasNameInSomeShop(_name, _session.m_pi.uid))
 				throw exception("[PersonalShopManager::changeShopName][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou trocar o name[value="
 						+ _name + "] do Personal Shop dele, but already exists on room.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP_MANAGER, 201, 5200202));
@@ -505,7 +505,7 @@ bool PersonalShopManager::changeShopName(player& _session, std::string _name, pa
 
 		_out_packet.addString(_session.m_pi.nickname);
 
-		// sucesso, enviar o pacote para a sala toda
+		// success, send the packet to the whole room
 		return true;
 
 	}catch (exception& e) {
@@ -543,7 +543,7 @@ void PersonalShopManager::openShop(player& _session, packet *_packet) {
 			throw exception("[PersonalShopManager::openShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir um Personal Shop que ele nao tem.",
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP_MANAGER, 251, 5200252));
 
-		// Limpa os itens do Shop se tiver
+		// Clears the Shop items if any
 		ps->clearItem();
 
 		for (auto i = 0u; i < count; ++i) {
@@ -551,11 +551,11 @@ void PersonalShopManager::openShop(player& _session, packet *_packet) {
 
 			_packet->readBuffer(&psi, sizeof(PersonalShopItem));
 
-			// Dentro do push ele verifica se é permitido esse item no Personal Shop
+			// Inside push it checks whether this item is allowed in the Personal Shop
 			ps->pushItem(psi);
 		}
 
-		// Abre o Shop
+		// Opens the Shop
 		ps->setState(PersonalShop::OPEN);
 
 		_smp::message_pool::getInstance().push(new message("[PersonalShopManager::openShop][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] abriu o Personal Shop[NAME="
@@ -774,10 +774,10 @@ void PersonalShopManager::closeViewShop(player& _session, uint32_t _owner_uid) {
 					+ std::to_string(_owner_uid) + "], mas ele nao tem um shop nesta nessa sala[numero=" + std::to_string(m_ri.numero) + "]. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP_MANAGER, 501, 5200502));
 
-		// deleta viewer
+		// deletes viewer
 		ps->deleteClient(_session);
 
-		// Sucesso
+		// Success
 		p.init_plain((unsigned short)0xE7);
 
 		p.addUint32(1);	// OK

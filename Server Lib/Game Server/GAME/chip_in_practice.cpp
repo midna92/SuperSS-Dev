@@ -19,7 +19,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[ChipInPractice::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHIP_IN_PRACTICE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) PlayerGrandZodiacInfo *pgi = reinterpret_cast< PlayerGrandZodiacInfo* >(getPlayerInfo((__session))); \
 	if (pgi == nullptr) \
 		throw exception("[ChipInPractice::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHIP_IN_PRACTICE, 1, 4)); \
@@ -89,15 +89,15 @@ void ChipInPractice::finish_chip_in_practice(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculate the pangs the player won
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if he has assist on, and is higher than beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Achievement Counter, Chip-in Practice n�o precisa do counter de game complete
+				// Achievement Counter, Chip-in Practice does not need the game complete counter
 				//pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
 			}//else if (m_game_init_state == 1 && _option == 1)	// Acabou o Tempo
@@ -107,7 +107,7 @@ void ChipInPractice::finish_chip_in_practice(player& _session, int _option) {
 		
 		GetLocalTime(&pgi->time_finish);
 
-		// Terminou o jogo no Grand Zodiac
+		// Finished the game in Grand Zodiac
 		setEndGame(pgi);
 
 		setFinishGameFlag(pgi, 1u);
@@ -118,7 +118,7 @@ void ChipInPractice::finish_chip_in_practice(player& _session, int _option) {
 		packet_func::session_send(p, &_session, 1);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish(_option);	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish(_option);	// Send the packets that end the game, e.g.: 0xCE, 0x79, etc
 	}
 }
 
@@ -130,10 +130,10 @@ void ChipInPractice::timeIsOver() {
 
 		for (auto& el : m_player_info) {
 
-			// S� os que n�o acabaram
+			// Only those who did not finish
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING && (_session = findSessionByUID(el.second->uid)) != nullptr) {
 				
-				// Send full time que o pr�prio cliente termina
+				// Send full time, the client itself ends it
 				packet p((unsigned short)0x8D);
 
 				p.addUint32(m_ri.time_30s);
@@ -153,10 +153,10 @@ bool ChipInPractice::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that stores the system local date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_chip_in_practice_state = true;
 	}
@@ -180,7 +180,7 @@ void ChipInPractice::requestFinishExpGame() {
 					exp = 45;
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(el.second->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 
-					if (el.second->level < 70/*Ultimo level n�o ganha exp*/)
+					if (el.second->level < 70/*Last level does not earn exp*/)
 						el.second->data.exp = exp;
 				}
 
@@ -189,7 +189,7 @@ void ChipInPractice::requestFinishExpGame() {
 				exp = (int)(reinterpret_cast< PlayerGrandZodiacInfo* >(el.second)->m_gz.hole_in_one / 2);
 				exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(el.second->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 
-				if (el.second->level < 70/*Ultimo level n�o ganha exp*/)
+				if (el.second->level < 70/*Last level does not earn exp*/)
 					el.second->data.exp = exp;
 			}
 		}
@@ -216,7 +216,7 @@ void ChipInPractice::finish(int option) {
 }
 
 void ChipInPractice::drawDropItem(player& _session) {
-	return; // N�o tem drop de item no Chip-in Practice
+	return; // No item drop in Chip-in Practice
 }
 
 void ChipInPractice::requestFinishData(player& _session, int option) {
@@ -229,10 +229,10 @@ void ChipInPractice::requestFinishData(player& _session, int option) {
 
 		requestSaveInfo(_session, 0/*Terminou*/);
 
-		// Atualiza itens usados no Grand Zodiac
+		// Update items used in Grand Zodiac
 		requestUpdateItemUsedGame(_session);
 
-		// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+		// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 		requestFinishItemUsedGame(_session);
 
 		requestSaveDrop(_session);
@@ -268,17 +268,17 @@ void ChipInPractice::requestFinishData(player& _session, int option) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+		// Update Mascot Info ON GAME, if the player has a mascot equipped
 		if (_session.m_pi.ei.mascot_info != nullptr) {
 			packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Achievement Aqui
+		// Achievement Here
 		pgi->sys_achieve.finish_and_update(_session);
 
-		// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+		// This one is new from JP, has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 		p.init_plain((unsigned short)0x24F);
 
 		p.addUint32(0);	// OK
@@ -286,7 +286,7 @@ void ChipInPractice::requestFinishData(player& _session, int option) {
 		packet_func::session_send(p, &_session, 1);
 
 		// Exp
-		if (pgi->data.exp > 0) // s� add exp se for maior que 0
+		if (pgi->data.exp > 0) // only add exp if greater than 0
 			_session.addExp(pgi->data.exp, true); // Update in Game
 
 	}catch (exception& e) {
@@ -301,7 +301,7 @@ void ChipInPractice::updateFinishHole(player& _session, int _option) {
 
 		INIT_PLAYER_INFO("updateFinishHole", "tentou atualizar o finish hole do grand zodiac", &_session);
 
-		// Passa a localiza��o do player, esse � a primeira, vez ent�o passa os valores do init Hole sempre
+		// Pass the player's location, this is the first time so always pass the init Hole values
 		packet p((unsigned short)0x1EE);
 
 		p.addUint32(_session.m_oid);
@@ -317,15 +317,15 @@ void ChipInPractice::updateFinishHole(player& _session, int _option) {
 }
 
 void ChipInPractice::requestMakeTrofel() {
-	return; // N�o tem isso no Chip-in Practice
+	return; // This does not exist in Chip-in Practice
 }
 
 void ChipInPractice::startGoldenBeam() {
-	return; // N�o tem isso no Chip-in Practice
+	return; // This does not exist in Chip-in Practice
 }
 
 void ChipInPractice::endGoldenBeam() {
-	return; // N�o tem isso no Chip-in Practice
+	return; // This does not exist in Chip-in Practice
 }
 
 bool ChipInPractice::finish_game(player& _session, int option) {
@@ -340,7 +340,7 @@ bool ChipInPractice::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 0x12C/*packet12C pacote que termina o Grand Zodiac*/ || option == 2/*Saiu*/) {
+		if (option == 0x12C/*packet12C packet that ends the Grand Zodiac*/ || option == 2/*Saiu*/) {
 
 			bool is_hacker_or_bug = false;
 
@@ -355,7 +355,7 @@ bool ChipInPractice::finish_game(player& _session, int option) {
 			}
 
 			if (m_chip_in_practice_state)
-				finish_chip_in_practice(_session, (option == 0x12C && !is_hacker_or_bug) ? 0 : 1);	// Termina sem ter acabado de jogar
+				finish_chip_in_practice(_session, (option == 0x12C && !is_hacker_or_bug) ? 0 : 1);	// Ends without having finished playing
 		}
 	}
 

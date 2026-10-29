@@ -1,6 +1,6 @@
-// Arquivo cmd_transfer_part.cpp
-// Criado em 10/06/2018 as 11:44 por Acrisio
-// Implementa��o da classe CmdTransferPart
+// File cmd_transfer_part.cpp
+// Created on 10/06/2018 at 11:44 by Acrisio
+// Implementation of the class CmdTransferPart
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdTransferPart::~CmdTransferPart() {
 
 void CmdTransferPart::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa aqui por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

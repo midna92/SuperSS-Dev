@@ -1,6 +1,6 @@
-// Arquivo item_manager.cpp
-// Criado em 240/02/2018 as 19:07 por Acrisio
-// Implementação da classe item_manager
+// File item_manager.cpp
+// Created on 240/02/2018 at 19:07 by Acrisio
+// Implementation of class item_manager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -95,7 +95,7 @@ using namespace stdA;
 							_item.qntd = (uint32_t)_bi.qntd; \
 							_item.is_cash = item->shop.flag_shop.uFlagShop.stFlagShop.is_cash; \
  \
-							_item.type = 2; /*aqui é o valor padrão, mas outros iff pode mexer nele depois*/ 
+							_item.type = 2; /*this is the default value, but other iffs may change it later*/ 
 #elif defined(__linux__)
 #define INIT_COMMOM_BUYITEM memcpy(_item.name, item->name, sizeof(_item.name)); \
 							memcpy(_item.icon, item->icon, sizeof(_item.icon)); \
@@ -107,7 +107,7 @@ using namespace stdA;
 							_item.qntd = (uint32_t)_bi.qntd; \
 							_item.is_cash = item->shop.flag_shop.uFlagShop.stFlagShop.is_cash; \
  \
-							_item.type = 2; /*aqui é o valor padrão, mas outros iff pode mexer nele depois*/ 
+							_item.type = 2; /*this is the default value, but other iffs may change it later*/ 
 #endif
 
 #define CHECK_LEVEL_ITEM { \
@@ -135,7 +135,7 @@ using namespace stdA;
 
 #define END_INIT_BUYITEM }else  _smp::message_pool::getInstance().push(new message("Item nao encontrado. Typeid: " + std::to_string(_bi._typeid), CL_FILE_LOG_AND_CONSOLE));
 
-// Translate Value from Base Flag Time to Second, 1 = Dia, 0x20 and 2, 3 = Hour, 0x40 and 4 = Dia, 5 = 30Dias(mês), 0x60 and 6 = Day
+// Translate Value from Base Flag Time to Second, 1 = Day, 0x20 and 2, 3 = Hour, 0x40 and 4 = Day, 5 = 30 Days (month), 0x60 and 6 = Day
 #define STDA_TRANSLATE_FLAG_TIME(_flag_time, _value) ((_flag_time) >= 0x10 \
 	? /* If true */ \
 		((_flag_time) == 0x20/*Hour*/ || (_flag_time) == 3/*Hour*/ \
@@ -146,8 +146,8 @@ using namespace stdA;
 			? /* If true */ \
 				(_value) * 24 * 60 * 60 \
 			: /* else */ \
-				((_flag_time) == 0x50/*30 Dias(Mês)*/ \
-				?/*If true*/ (_value) * 30/*30 Dias Mês*/ * 24 * 60 * 60 \
+				((_flag_time) == 0x50/*30 Days(Month)*/ \
+				?/*If true*/ (_value) * 30/*30 Days Month*/ * 24 * 60 * 60 \
 				: /* else */ 0))) \
 	: /* else */ \
 		((_flag_time) == 2/*Hour*/ || (_flag_time) == 3/*Hour*/ \
@@ -158,9 +158,9 @@ using namespace stdA;
 			? /* If true */ \
 				(_value) * 24 * 60 *60 \
 			: /* else */ \
-				((_flag_time) == 5/*30 Dias(Mês)*/ \
+				((_flag_time) == 5/*30 Days(Month)*/ \
 				? /* If true */ \
-					(_value) * 30/*30 Dias Mês*/ * 24 * 60 * 60 \
+					(_value) * 30/*30 Days Month*/ * 24 * 60 * 60 \
 				: /* else */ 0))) \
 ) \
 
@@ -214,7 +214,7 @@ std::vector< stItem > item_manager::getItemOfSetItem(player& _session, uint32_t 
 
 				if (base->shop.flag_shop.time_shop.uTimeShop.IFF_time_limit == 1) {
 					item.STDA_C_ITEM_TIME = (unsigned short)item.qntd;
-					item.type = 0x20;	// Temporário, tenho que ver o tipo direito da hora, minuto, segundo e etc
+					item.type = 0x20;	// Temporary, I have to figure out the proper type for hour, minute, second, etc
 				}
 			}*/
 
@@ -258,12 +258,12 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		if (_option == 1/*Rental*/ && item->valor_rental > 0) {
 			_item.price = item->valor_rental;
-			_item.is_cash = 0;	// Pang, por que é rental
-			_item.STDA_C_ITEM_TIME = 7;		// 7 dias	// no original é no C[3] o tempos
+			_item.is_cash = 0;	// Pang, because it is rental
+			_item.STDA_C_ITEM_TIME = 7;		//  7 dias	// in the original the times are in C[3]
 			_item.flag = 0x60;	// dias Rental(acho)
 			// time tipo 6 rental, 4, 2,
 			_item.flag_time = 6;
-		}else if (_bi.time > 0) {	// Roupa de tempo do CadieCauldron
+		}else if (_bi.time > 0) {	// Time-limited clothing from CadieCauldron
 
 			if (item->shop.flag_shop.time_shop.active)
 				_smp::message_pool::getInstance().push(new message("[item_manager::initItemFromBuyItem][WARNIG] Player[UID=" + std::to_string(_pi.uid) 
@@ -344,21 +344,21 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		BEGIN_INIT_BUYITEM;
 
-		// essa regra é para os itens que é 1 item, mas tem mais quantidade que vai ser add, 1 item normal, mas ele vem 10, fica no STDA_C_ITEM_QNTD
+		// this rule is for items that are 1 item but have a larger quantity to be added, e.g. 1 normal item but it comes as 10, stored in STDA_C_ITEM_QNTD
 		if (_item.qntd > 0 && item->STDA_C_ITEM_QNTD != 0 && (item->STDA_C_ITEM_QNTD == 1 || item->STDA_C_ITEM_QNTD == _item.qntd))
 			_item.qntd /= item->STDA_C_ITEM_QNTD;
 
-		// Copia C[] do IFF::Item para o _item
+		// Copies C[] from IFF::Item to _item
 #if defined(_WIN32)
 		memcpy_s(_item.c, sizeof(_item.c), item->c, sizeof(_item.c));
 #elif defined(__linux__)
 		memcpy(_item.c, item->c, sizeof(_item.c));
 #endif
 
-		// Tem preço de tempo
+		// Has time price
 		auto empty_price = EMPTY_ARRAY_PRICE(_item.c);
 
-		if (_bi.time > 0 && !empty_price && sIff::getInstance().getEnchantSlotStat(_item._typeid) == 0x21/*Item por tempo, enchante é ~0xFC000000 >> 20*/) {
+		if (_bi.time > 0 && !empty_price && sIff::getInstance().getEnchantSlotStat(_item._typeid) == 0x21/*Time-limited item, enchant is ~0xFC000000 >> 20*/) {
 
 			if (item->shop.flag_shop.time_shop.active && item->shop.flag_shop.time_shop.dia > 0) {
 
@@ -398,14 +398,14 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 							+ std::to_string(_bi.time) + "] que 365 dia na compra do Premium Ticket. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 			}
 		
-		}else if (_bi.time == 0 && !empty_price && sIff::getInstance().getEnchantSlotStat(_item._typeid) == 0x21/*Item por tempo, enchante é ~0xFC000000 >> 20*/ && _bi.qntd > 0) {
+		}else if (_bi.time == 0 && !empty_price && sIff::getInstance().getEnchantSlotStat(_item._typeid) == 0x21/*Time-limited item, enchant is ~0xFC000000 >> 20*/ && _bi.qntd > 0) {
 
 			_smp::message_pool::getInstance().push(new message("[item_manager::initItemFromBuyItem][WARNING] Player[UID=" + std::to_string(_pi.uid)
 					+ "] tentou inicializar Item[TYPEID=" + std::to_string(_bi._typeid) + "] sem tempo no jogo e no IFF_STRUCT ele tem tempo. Hacker ou Command GM.", CL_FILE_LOG_AND_CONSOLE));
 
 			_bi.time = (unsigned short)(_bi.qntd > 365 ? 365 : _bi.qntd);
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
@@ -449,7 +449,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 		}
 
 		if (/*item->shop.flag_shop.uFlagShop.IFF_item_pack && */(item->_typeid == 0x1A000081 || item->_typeid == 0x1A000082 || item->_typeid == 0x1A0003B3/*Event gacha Sale Pack*/)) {
-			_item._typeid = 0x1A000080;	// Typeid do Coupon Gacha Single, por que os outros é item pack, em um item
+			_item._typeid = 0x1A000080;	// Typeid of the Single Gacha Coupon, because the others are item packs, in one item
 		}
 
 		if (_item.STDA_C_ITEM_QNTD <= 0 || _item.STDA_C_ITEM_QNTD < (int)_item.qntd)
@@ -460,7 +460,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_item.qntd = _bi.qntd;
 		}
 
-		if (sIff::getInstance().IsItemEquipable(_bi._typeid)) {	// Equiável
+		if (sIff::getInstance().IsItemEquipable(_bi._typeid)) {	// Equippable
 		}else {	// Passivo
 			
 		}
@@ -481,10 +481,10 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 #elif defined(__linux__)
 			memcpy(_item.c, item->c, sizeof(_item.c));
 #endif
-			_item.flag = 0x20;	// Time de dias( acho que seja o 0x20, não lembro mais)
+			_item.flag = 0x20;	// Time in days (I think it is 0x20, I do not remember anymore)
 			_item.flag_time = 2;
 
-			_item.STDA_C_ITEM_TIME = _item.date_reserve;	// Caddie depois que add, só colocar o time novamente
+			_item.STDA_C_ITEM_TIME = _item.date_reserve;	// Caddie after being added, just set the time again
 		}
 
 		END_INIT_BUYITEM;
@@ -496,12 +496,12 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		BEGIN_INIT_BUYITEM;
 
-		// Aqui não precisa ver se tem time_limit e time_start, so tem que verificar se tem o item->price[0~4]
+		// Here there is no need to check time_limit and time_start, only need to check item->price[0~4]
 		auto empty_price = EMPTY_ARRAY_PRICE(item->price);
 
 		if (_bi.time > 0 && !empty_price) {
 			
-			switch (_bi.time) {	// Dias
+			switch (_bi.time) {	// Days
 			case 1:
 				if (_item.is_cash ? _bi.cookie == item->price[0] : _bi.pang == item->price[0])
 					_item.price = item->price[0];
@@ -530,14 +530,14 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_smp::message_pool::getInstance().push(new message("[item_manager::initItemFromBuyItem][WARNING] Player[UID=" + std::to_string(_pi.uid) 
 					+ "] inicializou Caddie Item[TYPEID=" + std::to_string(_bi._typeid) + "] com tempo no jogo e no IFF_STRUCT, mas ele nao tem os precos de tempo no IFF_STRUCT. Box ou Comando GM", CL_FILE_LOG_AND_CONSOLE));
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
 			_item.STDA_C_ITEM_QNTD = 1;// item->shop.flag_shop.time_shop.uc_time_start;
 			_item.flag_time = 4;
 			_item.flag = 0x40;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 
 		}else if (_bi.time == 0 && !empty_price && _bi.qntd > 0) {
 
@@ -546,11 +546,11 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 			_bi.time = (unsigned short)(_bi.qntd > 30 ? 30 : _bi.qntd);
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 		
-			switch (_bi.time) {	// Dias
+			switch (_bi.time) {	// Days
 			case 1:
 				if (_item.is_cash ? _bi.cookie == item->price[0] : _bi.pang == item->price[0])
 					_item.price = item->price[0];
@@ -567,7 +567,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 				if (_item.is_cash ? _bi.cookie == item->price[3] : _bi.pang == item->price[3])
 					_item.price = item->price[3];
 				break;
-			default:	// Não passou a quantidade de dias certo manda a soma de todos os preços que tem no iff
+			default:	// The correct number of days was not passed, sends the sum of all prices in the iff
 				_item.price = SUM_ARRAY_PRICE_ULONG(item->price);
 				break;
 			}
@@ -605,15 +605,15 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		BEGIN_INIT_BUYITEM;
 
-		// ESSE AQUI É ONDE COMEÇA OS TEMPO, [1] É DO 1 A 365 DIAS, [7] É DO 7 A 365 DIAS
-		//item->shop.flag_shop.time_shop.uc_time_start //---- AS SKINS É DO 7
+		// THIS IS WHERE THE TIMES START, [1] IS FROM 1 TO 365 DAYS, [7] IS FROM 7 TO 365 DAYS
+		//item->shop.flag_shop.time_shop.uc_time_start //---- SKINS START AT 7
 
-		// Aqui não precisa ver se tem time_limit e time_start, so tem que verificar se tem o item->price[0~4]
+		// Here there is no need to check time_limit and time_start, only need to check item->price[0~4]
 		auto empty_price = EMPTY_ARRAY_PRICE(item->price);
 
 		if (_bi.time > 0 && !empty_price) {
 			
-			switch (_bi.time) {	// Dias
+			switch (_bi.time) {	// Days
 			case 1:
 				if (_item.is_cash ? _bi.cookie == item->price[0] : _bi.pang == item->price[0])
 					_item.price = item->price[0];
@@ -634,7 +634,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 				if (_item.is_cash ? _bi.cookie == item->price[4] : _bi.pang == item->price[4])
 					_item.price = item->price[4];
 				break;
-			default:	// Não passou a quantidade de dias certo manda a soma de todos os preços que tem no iff
+			default:	// The correct number of days was not passed, sends the sum of all prices in the iff
 				_item.price = SUM_ARRAY_PRICE_ULONG(item->price);
 				break;
 			}
@@ -642,21 +642,21 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_item.STDA_C_ITEM_QNTD = 1;
 			_item.flag_time = 4;
 			_item.flag = 0x20;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 
 		}else if (_bi.time > 0 && (item->shop.flag_shop.time_shop.active || item->shop.flag_shop.time_shop.dia > 0)) {
 
 			_smp::message_pool::getInstance().push(new message("[item_manager::initItemFromBuyItem][WARNING] Player[UID=" + std::to_string(_pi.uid) 
 					+ "] inicializou Skin[TYPEID=" + std::to_string(_bi._typeid) + "] com tempo no jogo e no IFF_STRUCT, mas ele nao tem os precos de tempo no IFF_STRUCT. Box ou Comando GM", CL_FILE_LOG_AND_CONSOLE));
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
 			_item.STDA_C_ITEM_QNTD = 1;// item->shop.flag_shop.time_shop.uc_time_start;
 			_item.flag_time = 4;
 			_item.flag = 0x40;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 
 		}else if (_bi.time == 0 && !empty_price && _bi.qntd > 0) {
 			
@@ -665,11 +665,11 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 			_bi.time = (unsigned short)(_bi.qntd > 365 ? 365 : _bi.qntd);
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
-			switch (_bi.time) {	// Dias
+			switch (_bi.time) {	// Days
 			case 1:
 				if (_item.is_cash ? _bi.cookie == item->price[0] : _bi.pang == item->price[0])
 					_item.price = item->price[0];
@@ -690,7 +690,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 				if (_item.is_cash ? _bi.cookie == item->price[4] : _bi.pang == item->price[4])
 					_item.price = item->price[4];
 				break;
-			default:	// Não passou a quantidade de dias certo manda a soma de todos os preços que tem no iff
+			default:	// The correct number of days was not passed, sends the sum of all prices in the iff
 				_item.price = SUM_ARRAY_PRICE_ULONG(item->price);
 				break;
 			}
@@ -698,7 +698,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_item.STDA_C_ITEM_QNTD = 1;
 			_item.flag_time = 4;
 			_item.flag = 0x20;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 		
 		}else if (_bi.time == 0 && !empty_price && _bi.qntd == 0) {
 
@@ -728,8 +728,8 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		BEGIN_INIT_BUYITEM;
 
-		// Dias
-		// Aqui não precisa ver se tem time_limit e time_start, so tem que verificar se tem o item->price[0~4]
+		// Days
+		// Here there is no need to check time_limit and time_start, only need to check item->price[0~4]
 		auto empty_price = EMPTY_ARRAY_PRICE(item->price);
 
 		if (_bi.time > 0 && !empty_price) {
@@ -760,7 +760,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_item.STDA_C_ITEM_QNTD = 1;// item->shop.flag_shop.time_shop.uc_time_start;
 			_item.flag_time = 4;
 			_item.flag = 0x40;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 		
 		}else if (_bi.time > 0 && (item->shop.flag_shop.time_shop.active || item->shop.flag_shop.time_shop.dia > 0)) {
 
@@ -768,14 +768,14 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 				_smp::message_pool::getInstance().push(new message("[item_manager::initItemFromBuyItem][WARNING] Player[UID=" + std::to_string(_pi.uid) 
 						+ "] inicializou Mascot[TYPEID=" + std::to_string(_bi._typeid) + "] com tempo no jogo e no IFF_STRUCT, mas ele nao tem os precos de tempo no IFF_STRUCT. Box ou Comando GM", CL_FILE_LOG_AND_CONSOLE));
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
 			_item.STDA_C_ITEM_QNTD = 1;// item->shop.flag_shop.time_shop.uc_time_start;
 			_item.flag_time = 4;
 			_item.flag = 0x40;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 
 		}else if (_bi.time == 0 && !empty_price && _bi.qntd > 0) {
 
@@ -784,7 +784,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 			_bi.time = (unsigned short)(_bi.qntd > 365 ? 365 : _bi.qntd);
 
-			// Qntd tem que ser 1 por que o item é por tempo
+			// Qntd must be 1 because the item is time-limited
 			if (_bi.qntd > 1)
 				_item.qntd = _bi.qntd = 1;
 
@@ -809,7 +809,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 				if (_item.is_cash ? _bi.cookie == item->price[4] : _bi.pang == item->price[4])
 					_item.price = item->price[4];
 				break;
-			default:	// Não passou a quantidade de dias certo manda a soma de todos os preços que tem no iff
+			default:	// The correct number of days was not passed, sends the sum of all prices in the iff
 				_item.price = SUM_ARRAY_PRICE_ULONG(item->price);
 				break;
 			}
@@ -817,7 +817,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 			_item.STDA_C_ITEM_QNTD = 1;// item->shop.flag_shop.time_shop.uc_time_start;
 			_item.flag_time = 4;
 			_item.flag = 0x40;
-			_item.STDA_C_ITEM_TIME = _bi.time;	// Dias
+			_item.STDA_C_ITEM_TIME = _bi.time;	// Days
 
 		}else if (_bi.time == 0 && !empty_price && _bi.qntd == 0) {
 
@@ -868,7 +868,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 		END_INIT_BUYITEM;
 		break;
 	}
-	default:	// Não tem esse item para vender no shop
+	default:	// This item is not for sale in the shop
 		_smp::message_pool::getInstance().push(new message("Player[UID=" + std::to_string(_pi.uid) + "] Tentou comprar um item que nao tem no shop para vender. typeid: " + std::to_string(_bi._typeid), CL_FILE_LOG_AND_CONSOLE));
 
 		//if (item != nullptr) {
@@ -884,7 +884,7 @@ void item_manager::initItemFromBuyItem(PlayerInfo& _pi, stItem& _item, BuyItem& 
 
 		//	if (_bi.time > 0) {
 		//		_item.STDA_C_ITEM_TIME = _bi.time;
-		//		_item.type = 0x20;		// Temporário, tenho que ver o tipo direito da hora, minuto, segundo e etc
+		//				_item.type = 0x20;		// Temporary, I have to figure out the proper type for hour, minute, second, etc
 		//	}else
 		//		_item.type = 2;
 		//}
@@ -902,8 +902,8 @@ void item_manager::initItemFromEmailItem(PlayerInfo& _pi, stItem& _item, EmailIn
 
 	_item.flag_time = _ei_item.flag_time;
 
-	// Aqui tem que criar o proprio dele por que tem o tipo do tempo[dias, horas, minutos, segundos] e etc
-	initItemFromBuyItem(_pi, _item, item, false, 0, 0, 1/*não checar o level*/);
+	// Here it must create its own, because it has the time type [days, hours, minutes, seconds] etc
+	initItemFromBuyItem(_pi, _item, item, false, 0, 0, 1/*do not check the level*/);
 };
 
 void item_manager::checkSetItemOnEmail(player& _session, EmailInfo& _ei) {
@@ -913,7 +913,7 @@ void item_manager::checkSetItemOnEmail(player& _session, EmailInfo& _ei) {
 
 	for (auto i = 0u; i < _ei.itens.size(); ++i) {
 		if (item_manager::isSetItem(_ei.itens[i]._typeid)) {
-			auto v_item = item_manager::getItemOfSetItem(_session, _ei.itens[i]._typeid, false, 1/*Não verifica o Level*/);
+			auto v_item = item_manager::getItemOfSetItem(_session, _ei.itens[i]._typeid, false, 1/*Does not check the Level*/);
 
 			if (!v_item.empty()) {
 
@@ -943,10 +943,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 	try {
 
-		// Block Memória para o UID, para garantir que não vai adicionar itens simuntaneamente
+		// Block Memory for the UID, to ensure items are not added simultaneously
 		BlockMemoryManager::blockUID(_uid);
 
-		// Error Grave lança uma excessa
+		// Serious Error throws an exception
 		if (_uid == 0)
 			throw exception("[item_manager::addItem][Error] uid invalid(zero).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_ITEM_MANAGER, 8, 0));
 
@@ -967,10 +967,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 			ce.initComboDef();
 
-			// Aqui tem que add em uma fila e manda pra query e depois ver se foi concluida, enquanto verifica outras coisas[
-			// E ESSA CLASSE NÃO PODE SER STATIC, POR QUE TEM QUE GUARDA UNS VALORE NECESSÁRIOS
+			// Here it must be added to a queue and sent to the query, then check whether it completed, while checking other things[
+			// AND THIS CLASS CANNOT BE STATIC, BECAUSE IT HAS TO KEEP SOME NECESSARY VALUES
 
-			// Add no banco de dados
+			// Add to the database
 			CmdAddCharacter cmd_ac(_uid, ce, _purchase, 0/*_gift_flag*/, true);	// Waitable
 
 			snmdb::NormalManagerDB::getInstance().add(0, &cmd_ac, nullptr, nullptr);
@@ -1008,11 +1008,11 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 			ci.id = _item.id;
 			ci._typeid = _item._typeid;
 			ci.check_end = 1;	// Yes;
-			ci.rent_flag = 1;	// 1 Normal sem ferias(tempo), 2 com ferias(tempo)
+			ci.rent_flag = 1;	// 1 Normal without time limit, 2 with time limit
 
 			if (_item.date_reserve > 0) {
 				ci.rent_flag = 2;
-				ci.end_date_unix = _item.date_reserve;//(_item.flag == 0x20/*dia*/) ? _item.STDA_C_ITEM_TIME : (_item.flag == 0x40/*minutos*/) ? _item.STDA_C_ITEM_TIME * 60 * 60 : _item.STDA_C_ITEM_TIME;
+				ci.end_date_unix = _item.date_reserve;//(_item.flag == 0x20/*day*/) ? _item.STDA_C_ITEM_TIME : (_item.flag == 0x40/*minutes*/) ? _item.STDA_C_ITEM_TIME * 60 * 60 : _item.STDA_C_ITEM_TIME;
 			}
 		
 			CmdAddCaddie cmd_ac(_uid, ci, _purchase, 0/*_gift_flag*/, true);	// Waitable
@@ -1054,12 +1054,12 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 			time_t end_date = 0;
 
-			if (ci.parts_typeid == _item._typeid) {	// Já tem o parts caddie, atualiza o tempo
+			if (ci.parts_typeid == _item._typeid) {	// Already has the caddie parts, updates the time
 			
 				// Adiciona o Tempo em Unix Time Stamp
 				end_date = SystemTimeToUnix(ci.end_parts_date) + STDA_TRANSLATE_FLAG_TIME(_item.flag_time, _item.STDA_C_ITEM_TIME); //(((_item.flag_time == 2) ? _item.STDA_C_ITEM_TIME : _item.STDA_C_ITEM_TIME * 24) * 60 * 60);
 				
-				// Converte para System Time novamente
+				// Converts to System Time again
 				ci.end_parts_date = UnixToSystemTime(end_date);
 
 				// update Parts End Date Unix
@@ -1075,12 +1075,12 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				
 			}else {
 
-				// Não tem o caddie parts ainda, add
+				// Does not have the caddie parts yet, add
 				ci.parts_typeid = _item._typeid;
 				
 				end_date = GetLocalTimeAsUnix() + ((ci.parts_end_date_unix = STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME)) * 60 * 60);
 
-				// Converte para System Time novamente
+				// Converts to System Time again
 				ci.end_parts_date = UnixToSystemTime(end_date);
 
 				_item.id = ci.id;
@@ -1092,7 +1092,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 			auto str_end_date = _formatDate(ci.end_parts_date);
 
-			// Atualiza no para os 2 aqui
+			// Updates both here
 			snmdb::NormalManagerDB::getInstance().add(5, new CmdUpdateCaddieItem(_uid, str_end_date, ci), item_manager::SQLDBResponse, nullptr);
 
 			break;
@@ -1107,7 +1107,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 			auto pMi = _ownerMascot(_uid, _item._typeid);
 		
-			if ((pMi.id > 0)/*hasFound*/) {	// Player já tem o mascot, só add mais tempo à ele
+			if ((pMi.id > 0)/*hasFound*/) {	// Player already has the mascot, just add more time to it
 
 				if (mascot->shop.flag_shop.time_shop.active && _item.STDA_C_ITEM_TIME > 0) {
 
@@ -1132,7 +1132,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 					auto str_date = _formatDate(pMi.data);
 				
 					// Cmd update time mascot db
-					snmdb::NormalManagerDB::getInstance().add(6, new CmdUpdateMascotTime(_uid, pMi.id, str_date), item_manager::SQLDBResponse, nullptr/*o item_manager é static*/);
+					snmdb::NormalManagerDB::getInstance().add(6, new CmdUpdateMascotTime(_uid, pMi.id, str_date), item_manager::SQLDBResponse, nullptr/*item_manager is static*/);
 				}
 
 				_item.id = pMi.id;
@@ -1146,7 +1146,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				mi._typeid = _item._typeid;
 				mi.is_cash = _item.is_cash;
 				mi.price = _item.price;
-				mi.tipo = 0;	// Padrão, é os mascot que não tem tempo
+				mi.tipo = 0;	// Default, the mascots that have no time limit
 #if defined(_WIN32)
 				memcpy_s(mi.message, sizeof(mi.message), "PangYa SuperSS", 15);
 #elif defined(__linux__)
@@ -1161,7 +1161,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 #endif
 
 				if (mascot->shop.flag_shop.time_shop.active && _item.STDA_C_ITEM_TIME > 0)
-					mi.tipo = 1;	// Mascot de Tempo
+					mi.tipo = 1;	// Time-limited Mascot
 
 				CmdAddMascot cmd_am(_uid, mi, _item.STDA_C_ITEM_TIME, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -1215,7 +1215,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		{
 			auto pWi = _ownerBall(_uid, _item._typeid);
 
-			if ((pWi.id > 0)/*hasFound*/) {	// já tem atualiza quantidade
+			if ((pWi.id > 0)/*hasFound*/) {	// already has it, updates quantity
 			
 				_item.stat.qntd_ant = pWi.STDA_C_ITEM_QNTD;
 
@@ -1228,7 +1228,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				snmdb::NormalManagerDB::getInstance().add(7, new CmdUpdateBallQntd(_uid, pWi.id, pWi.STDA_C_ITEM_QNTD), item_manager::SQLDBResponse, nullptr);
 
 				STATIC_ADD_ITEM_SUCESS_MSG_LOG("Atualizou Ball");
-			}else {	// não tem, add
+			}else {	// does not have it, add
 
 				WarehouseItemEx wi{ 0 };
 				wi.id = _item.id;
@@ -1281,7 +1281,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 			auto pWi = _ownerItem(_uid, _item._typeid);
 
-			if ((pWi.id > 0)/*hasFound*/) { // Já tem, verifica se é de tempo e atualizar, se não dá error
+			if ((pWi.id > 0)/*hasFound*/) { // Already has it, checks whether it is time-limited and updates, otherwise errors
 
 
 				// Add Mais tempo no Club Set
@@ -1289,10 +1289,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 					_item.date.active = 1;
 
-					// update ano (Horas) que o item ainda tem
+					// update year (Hours) the item still has
 					pWi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;
 
-					// Só atualiza o Apply date se não tiver
+					// Only updates the Apply date if it does not have one
 					if (pWi.apply_date_unix_local == 0u) {
 
 						pWi.apply_date_unix_local = (uint32_t)GetLocalTimeAsUnix();
@@ -1310,7 +1310,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 					_item.date.date.sysDate[0] = UnixToSystemTime(pWi.apply_date_unix_local);
 					_item.date.date.sysDate[1] = UnixToSystemTime(pWi.end_date_unix_local);
 
-					// Atualiza o tempo do ClubSet do player
+					// Updates the player's ClubSet time
 					snmdb::NormalManagerDB::getInstance().add(20, new CmdUpdateClubSetTime(_uid, pWi), item_manager::SQLDBResponse, nullptr);
 
 					_item.STDA_C_ITEM_QNTD = 1;
@@ -1340,9 +1340,9 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				wi.clubset_workshop.level = clubset->work_shop.tipo;	// Cv 1 e etc
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to minutes or seconds (I think)
 
 				if (_gift_flag && wi.id > 0) {
 					CmdGetGiftClubSet cmd_ggcs(_uid, wi, true);	// Waiter
@@ -1383,7 +1383,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				if (_item.STDA_C_ITEM_TIME > 0) {
 					_item.date.active = 1;
 
-					// Tenho que mexer nessas flags direitinho, por que aqui só está a de 0x60 e 0x20
+					// I have to fix these flags properly, because only 0x60 and 0x20 are here
 					wi.apply_date_unix_local = (uint32_t)GetLocalTimeAsUnix();
 
 					// Convert to UTC to send client
@@ -1414,7 +1414,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		{
 			auto pCi = _ownerCard(_uid, _item._typeid);
 
-			if ((pCi.id > 0)/*hasFound*/) {	// Já tem o item atualiza quantidade
+			if ((pCi.id > 0)/*hasFound*/) {	// Already has the item, updates quantity
 
 				_item.stat.qntd_ant = pCi.qntd;
 			
@@ -1465,7 +1465,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		}
 		case iff::FURNITURE:
 		{
-			// Tem que fazer esse aqui, por que pode vim por Set Item ou MailBox
+			// This one must be done, because it can come from Set Item or MailBox
 			auto furniture = sIff::getInstance().findFurniture(_item._typeid);
 
 			if (furniture == nullptr)
@@ -1510,7 +1510,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		}
 		case iff::AUX_PART:
 		{
-			// Tem que fazer esse aqui, por que pode vim por Set Item ou MailBox
+			// This one must be done, because it can come from Set Item or MailBox
 			//auto auxPart = sIff::getInstance().findAuxPart(_item._typeid);
 
 			auto pWi = _ownerAuxPart(_uid, _item._typeid);
@@ -1547,9 +1547,9 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 #endif
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to minutes or seconds (I think)
 
 				CmdAddItem cmd_ai(_uid, wi, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -1600,7 +1600,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 			// CHECK FOR POUCH [PANG OR EXP]
 			if (_item._typeid == PANG_POUCH_TYPEID/*Pang Pouch*/) {
 			
-				// Pang Pouch para o player
+				// Pang Pouch for the player
 				PlayerInfo::addPang(_uid, (_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
 	#ifdef _DEBUG
@@ -1611,14 +1611,14 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 	#endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_uid);
 
 				return item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
 
 			}else if (_item._typeid == EXP_POUCH_TYPEID/*Exp Pouch*/) {
 			
-				// Exp Pouch para o player
+				// Exp Pouch for the player
 				player::addExp(_uid, (uint32_t)((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD));
 
 	#ifdef _DEBUG
@@ -1629,24 +1629,24 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 	#endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_uid);
 
 				return item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
 
 			}else if (_item._typeid == CP_POUCH_TYPEID/*Cookie Point Pouch*/) {
 
-				// Log Ganhos de CP
+				// Log CP Earnings
 				CPLog cp_log;
 
 				cp_log.setType(CPLog::TYPE::CP_POUCH);
 
 				cp_log.setCookie((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
-				// Cookie Point(CP) Pouch para o player
+				// Cookie Point(CP) Pouch for the player
 				PlayerInfo::addCookie(_uid, (_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
-				// Log de Ganhos de CP
+				// CP Earnings Log
 				player::saveCPLog(_uid, cp_log);
 
 #ifdef _DEBUG
@@ -1657,7 +1657,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 #endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_uid);
 
 				return RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
@@ -1699,9 +1699,9 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 #endif
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to minutes or seconds (I think)
 
 				CmdAddItem cmd_ai(_uid, wi, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -1815,7 +1815,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 				throw exception("[item_manager::addItem][Error] player[UID=" + std::to_string(_uid) + "] tentou add Part[TYPEID="
 						+ std::to_string(_item._typeid) + "] que ele ja possui", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_ITEM_MANAGER, 10, 0));
 
-			// Ainda falta as parte por tempo, aquelas do couldron de cor dourada
+			// Still missing the time-limited parts, the golden-colored ones from the cauldron
 			WarehouseItemEx wi{ 0 };
 			wi.id = _item.id;
 			wi._typeid = _item._typeid;
@@ -1918,7 +1918,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		
 			ret_id = (RetAddItem::TYPE)wi.id;
 
-			STATIC_ADD_ITEM_SUCESS_MSG_LOG("Adicionou Part" + (wi.ano > 0 && (wi.ano / 24) == 7/*Dias*/ && wi.flag == 0x60/*Rental*/ ? " Rental[Dia(s)=" + std::to_string(wi.STDA_C_ITEM_TIME) + "]" : std::string("")));
+			STATIC_ADD_ITEM_SUCESS_MSG_LOG("Adicionou Part" + (wi.ano > 0 && (wi.ano / 24) == 7/*Days*/ && wi.flag == 0x60/*Rental*/ ? " Rental[Dia(s)=" + std::to_string(wi.STDA_C_ITEM_TIME) + "]" : std::string("")));
 
 			break;
 		}
@@ -1955,16 +1955,16 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 			break;
 		case iff::ACHIEVEMENT:
 			break;
-		case iff::MATCH:	// Troféu
+		case iff::MATCH:	// Trophy
 		{
 			auto type_trofel = sIff::getInstance().getItemSubGroupIdentify24(_item._typeid);
 
-			// Troféu Espacial
+			// Special Trophy
 			if (type_trofel == 1 || type_trofel == 2) {
 
 				auto tsi = _ownerTrofelEspecial(_uid, _item._typeid);
 
-				if (tsi.id > 0) {	// Já tem item add quantidade do Troféu especial
+				if (tsi.id > 0) {	// Already has the item, add quantity of the Special Trophy
 
 					_item.stat.qntd_ant = tsi.qntd;
 			
@@ -2012,7 +2012,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 
 				auto tsi = _ownerTrofelEspecial(_uid, _item._typeid);
 
-				if (tsi.id > 0) {	// Já tem item add quantidade do Troféu Grand Prix
+				if (tsi.id > 0) {	// Already has the item, add quantity of the Grand Prix Trophy
 
 					_item.stat.qntd_ant = tsi.qntd;
 			
@@ -2061,14 +2061,14 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, uint32_t _ui
 		}	// End iff::MATCH
 		}	// End Switch
 
-		// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+		// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 		BlockMemoryManager::unblockUID(_uid);
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[item_manager::addItem][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+		// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 		BlockMemoryManager::unblockUID(_uid);
 
 		ret_id = RetAddItem::T_ERROR;
@@ -2196,10 +2196,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 	try {
 
-		// Block Memória para o UID, para garantir que não vai adicionar itens simuntaneamente
+		// Block Memory for the UID, to ensure items are not added simultaneously
 		BlockMemoryManager::blockUID(_session.m_pi.uid);
 
-		// Error Grave lança uma exception
+		// Serious Error throws an exception
 		if (!_session.getState())
 			throw exception("[item_manager::addItem][Error] session nao esta conectada.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_ITEM_MANAGER, 8, 0));
 
@@ -2221,10 +2221,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 			ce.initComboDef();
 
-			// Aqui tem que add em uma fila e manda pra query e depois ver se foi concluida, enquanto verifica outras coisas[
-			// E ESSA CLASSE NÃO PODE SER STATIC, POR QUE TEM QUE GUARDA UNS VALORE NECESSÁRIOS
+			// Here it must be added to a queue and sent to the query, then check whether it completed, while checking other things[
+			// AND THIS CLASS CANNOT BE STATIC, BECAUSE IT HAS TO KEEP SOME NECESSARY VALUES
 
-			// Add no banco de dados
+			// Add to the database
 			CmdAddCharacter cmd_ac(_session.m_pi.uid, ce, _purchase, 0/*_gift_flag*/, true);	// Waitable
 
 			snmdb::NormalManagerDB::getInstance().add(0, &cmd_ac, nullptr, nullptr);
@@ -2272,11 +2272,11 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 			ci.id = _item.id;
 			ci._typeid = _item._typeid;
 			ci.check_end = 1;	// Yes;
-			ci.rent_flag = 1;	// 1 Normal sem ferias(tempo), 2 com ferias(tempo)
+			ci.rent_flag = 1;	// 1 Normal without time limit, 2 with time limit
 
 			if (_item.date_reserve > 0) {
 				ci.rent_flag = 2;
-				ci.end_date_unix = _item.date_reserve;//(_item.flag == 0x20/*dia*/) ? _item.STDA_C_ITEM_TIME : (_item.flag == 0x40/*minutos*/) ? _item.STDA_C_ITEM_TIME * 60 * 60 : _item.STDA_C_ITEM_TIME;
+				ci.end_date_unix = _item.date_reserve;//(_item.flag == 0x20/*day*/) ? _item.STDA_C_ITEM_TIME : (_item.flag == 0x40/*minutes*/) ? _item.STDA_C_ITEM_TIME * 60 * 60 : _item.STDA_C_ITEM_TIME;
 			}
 		
 			CmdAddCaddie cmd_ac(_session.m_pi.uid, ci, _purchase, 0/*_gift_flag*/, true);	// Waitable
@@ -2321,11 +2321,11 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 			time_t end_date = 0;
 
-			if (ci->parts_typeid == _item._typeid) {	// Já tem o parts caddie, atualiza o tempo
+			if (ci->parts_typeid == _item._typeid) {	// Already has the caddie parts, updates the time
 			
 				end_date = SystemTimeToUnix(ci->end_parts_date) + STDA_TRANSLATE_FLAG_TIME(_item.flag_time, _item.STDA_C_ITEM_TIME); //(((_item.flag_time == 2) ? _item.STDA_C_ITEM_TIME : _item.STDA_C_ITEM_TIME * 24) * 60 * 60);
 
-				// Converte para System Time novamente
+				// Converts to System Time again
 				ci->end_parts_date = UnixToSystemTime(end_date);
 
 				// Update Parts End Date Unix
@@ -2342,12 +2342,12 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 			}else {
 
-				// Não tem o caddie parts ainda, add
+				// Does not have the caddie parts yet, add
 				ci->parts_typeid = _item._typeid;
 
 				end_date = GetLocalTimeAsUnix() + ((ci->parts_end_date_unix = STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME)) * 60 * 60);
 
-				// Converte para System Time novamente
+				// Converts to System Time again
 				ci->end_parts_date = UnixToSystemTime(end_date);
 
 				_item.id = ci->id;
@@ -2357,23 +2357,23 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 				ADD_ITEM_SUCESS_MSG_LOG("Adicionou Caddie Item");
 			}
 
-			// Verifica se o Caddie já tem um item update do parts do caddie, por que se tiver, 
-			// ele vai desequipar esse parts novo por que o player não relogou quando acabou o tempo do caddie parts
+			// Checks whether the Caddie already has an update item for the caddie parts, because if so, 
+			// it will unequip this new part because the player did not relog when the caddie parts time ran out
 			auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(ci->_typeid, ci->id);
 
 			if (!v_it.empty()) {
 
 				for (auto& el : v_it)
 					if (el->second.type == UpdateItem::CADDIE_PARTS)
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 
 			}
-			// ---- fim do verifica se o caddie tem parts no update item ----
+			// ---- end of the check whether the caddie has parts in the update item ----
 
 			auto str_end_date = formatDateLocal(end_date);
 
-			// Atualiza no para os 2 aqui
+			// Updates both here
 			snmdb::NormalManagerDB::getInstance().add(5, new CmdUpdateCaddieItem(_session.m_pi.uid, str_end_date, *ci), item_manager::SQLDBResponse, nullptr);
 
 			break;
@@ -2388,7 +2388,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 			auto pMi = _session.m_pi.findMascotByTypeid(_item._typeid);
 		
-			if (pMi != nullptr) {	// Player já tem o mascot, só add mais tempo à ele
+			if (pMi != nullptr) {	// Player already has the mascot, just add more time to it
 
 				if (mascot->shop.flag_shop.time_shop.active && _item.STDA_C_ITEM_TIME > 0) {
 
@@ -2414,7 +2414,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 					auto str_date = _formatDate(pMi->data);
 				
 					// Cmd update time mascot db
-					snmdb::NormalManagerDB::getInstance().add(6, new CmdUpdateMascotTime(_session.m_pi.uid, pMi->id, str_date), item_manager::SQLDBResponse, nullptr/*o item_manager é static*/);
+					snmdb::NormalManagerDB::getInstance().add(6, new CmdUpdateMascotTime(_session.m_pi.uid, pMi->id, str_date), item_manager::SQLDBResponse, nullptr/*item_manager is static*/);
 				}
 
 				_item.id = pMi->id;
@@ -2423,19 +2423,19 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 				ADD_ITEM_SUCESS_MSG_LOG("Atualizou o tempo[Dia(s)=" + std::to_string(_item.STDA_C_ITEM_TIME) + "] do Mascot");
 
-				// Verifica se o Mascot está no item update, por que se tiver, 
-				// ele vai desequipar esse mascot por que o player não relogou quando acabou o tempo do Mascot
+				// Checks whether the Mascot is in the item update, because if so, 
+				// it will unequip this mascot because the player did not relog when the Mascot time ran out
 				auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(pMi->_typeid, pMi->id);
 
 				if (!v_it.empty()) {
 
 					for (auto& el : v_it)
 						if (el->second.type == UpdateItem::UI_TYPE::MASCOT)
-							// Tira esse Update Item do map
+							// Removes this Update Item from the map
 							_session.m_pi.mp_ui.erase(el);
 
 				}
-				// ---- fim do verifica se o Mascot está no update item ----
+				// ---- end of the check whether the Mascot is in the update item ----
 			
 			}else {
 			
@@ -2444,7 +2444,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 				mi._typeid = _item._typeid;
 				mi.is_cash = _item.is_cash;
 				mi.price = _item.price;
-				mi.tipo = 0;	// Padrão, é os mascot que não tem tempo
+				mi.tipo = 0;	// Default, the mascots that have no time limit
 #if defined(_WIN32)
 				memcpy_s(mi.message, sizeof(mi.message), "PangYa SuperSS", 15);
 #elif defined(__linux__)
@@ -2459,7 +2459,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 #endif
 
 				if (mascot->shop.flag_shop.time_shop.active && _item.STDA_C_ITEM_TIME > 0)
-					mi.tipo = 1;	// Mascot de Tempo
+					mi.tipo = 1;	// Time-limited Mascot
 
 				CmdAddMascot cmd_am(_session.m_pi.uid, mi, _item.STDA_C_ITEM_TIME, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -2501,7 +2501,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 					_item.date.date.sysDate[1] = mi.data;
 				
-				}else // O Mascot não é por tempo, mas precisa do end data, por que é a mesma da data que ele foi adicionado no banco de dados, precisa na hora de atualizar o mascot
+				}else // The Mascot is not time-limited, but it needs the end date, because it is the same as the date it was added to the database, needed when updating the mascot
 					GetLocalTime(&mi.data);
 
 				// Add List Item ON Server
@@ -2518,7 +2518,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 		{
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(_item._typeid);
 
-			if (pWi != nullptr) {	// já tem atualiza quantidade
+			if (pWi != nullptr) {	// already has it, updates quantity
 			
 				_item.stat.qntd_ant = pWi->STDA_C_ITEM_QNTD;
 
@@ -2531,7 +2531,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 				snmdb::NormalManagerDB::getInstance().add(7, new CmdUpdateBallQntd(_session.m_pi.uid, pWi->id, pWi->STDA_C_ITEM_QNTD), item_manager::SQLDBResponse, nullptr);
 
 				ADD_ITEM_SUCESS_MSG_LOG("Atualizou Ball");
-			}else {	// não tem, add
+			}else {	// does not have it, add
 
 				WarehouseItemEx wi{ 0 };
 				wi.id = _item.id;
@@ -2594,10 +2594,10 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 					_item.date.active = 1;
 
-					// update ano (Horas) que o item ainda tem
+					// update year (Hours) the item still has
 					pWi->ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;
 
-					// Só atualiza o Apply date se não tiver
+					// Only updates the Apply date if it does not have one
 					if (pWi->apply_date_unix_local == 0u) {
 
 						pWi->apply_date_unix_local = (uint32_t)GetLocalTimeAsUnix();
@@ -2615,7 +2615,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 					_item.date.date.sysDate[0] = UnixToSystemTime(pWi->apply_date_unix_local);
 					_item.date.date.sysDate[1] = UnixToSystemTime(pWi->end_date_unix_local);
 
-					// Atualiza o tempo do ClubSet do player
+					// Updates the player's ClubSet time
 					snmdb::NormalManagerDB::getInstance().add(20, new CmdUpdateClubSetTime(_session.m_pi.uid, *pWi), item_manager::SQLDBResponse, nullptr);
 
 					_item.STDA_C_ITEM_QNTD = 1;
@@ -2626,19 +2626,19 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 					ADD_ITEM_SUCESS_MSG_LOG("Atualizou ClubSet");
 
-					// Verifica se o ClubSet está no item update, por que se tiver, 
-					// ele vai desequipar esse clubset por que o player não relogou quando acabou o tempo do clubset
+					// Checks whether the ClubSet is in the item update, because if so, 
+					// it will unequip this clubset because the player did not relog when the clubset time ran out
 					auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(pWi->_typeid, pWi->id);
 
 					if (!v_it.empty()) {
 
 						for (auto& el : v_it)
 							if (el->second.type == UpdateItem::UI_TYPE::WAREHOUSE)
-								// Tira esse Update Item do map
+								// Removes this Update Item from the map
 								_session.m_pi.mp_ui.erase(el);
 
 					}
-					// ---- fim do verifica se o ClubSet está no update item ----
+					// ---- end of the check whether the ClubSet is in the update item ----
 
 				}else
 					throw exception("[item_manager::addItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou add clubset[TYPEID="
@@ -2654,14 +2654,14 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 				wi.clubset_workshop.level = clubset->work_shop.tipo;	// Cv 1 e etc
 
-				// Tempo
+				// Time
 				if (_item.STDA_C_ITEM_TIME > 0)
 					wi.STDA_C_ITEM_TIME = _item.STDA_C_ITEM_TIME;
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para Horas, quanto tempo falta em horas
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to Hours, how much time is left in hours
 
 				if (_gift_flag && wi.id > 0) {
 					CmdGetGiftClubSet cmd_ggcs(_session.m_pi.uid, wi, true);	// Waiter
@@ -2736,7 +2736,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 		{
 			auto pCi = _session.m_pi.findCardByTypeid(_item._typeid);
 
-			if (pCi != nullptr) {	// Já tem item add quantidade ao card
+			if (pCi != nullptr) {	// Already has the item, add quantity to the card
 
 				_item.stat.qntd_ant = pCi->qntd;
 			
@@ -2790,7 +2790,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 		}
 		case iff::FURNITURE:
 		{
-			// Tem que fazer esse aqui, por que pode vim por Set Item ou MailBox
+			// This one must be done, because it can come from Set Item or MailBox
 			auto furniture = sIff::getInstance().findFurniture(_item._typeid);
 
 			if (furniture == nullptr)
@@ -2840,12 +2840,12 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 		}
 		case iff::AUX_PART:
 		{
-			// Tem que fazer esse aqui, por que pode vim por Set Item ou MailBox
+			// This one must be done, because it can come from Set Item or MailBox
 			//auto auxPart = sIff::getInstance().findAuxPart(_item._typeid);
 
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(_item._typeid);
 
-			if (pWi != nullptr) {	// Já tem item add quantidade do AuxPart
+			if (pWi != nullptr) {	// Already has the item, add quantity of the AuxPart
 
 				if (!sIff::getInstance().IsCanOverlapped(pWi->_typeid))
 					throw exception("[item_manager::addItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou add AuxPart[TYPEID="
@@ -2877,9 +2877,9 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 #endif
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to minutes or seconds (I think)
 
 				CmdAddItem cmd_ai(_session.m_pi.uid, wi, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -2933,7 +2933,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 			// CHECK FOR POUCH [PANG, EXP OR CP]
 			if (_item._typeid == PANG_POUCH_TYPEID/*Pang Pouch*/) {
 			
-				// Pang Pouch para o player
+				// Pang Pouch for the player
 				_session.addPang((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
 	#ifdef _DEBUG
@@ -2944,14 +2944,14 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 	#endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_session.m_pi.uid);
 
 				return RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
 
 			}else if (_item._typeid == EXP_POUCH_TYPEID/*Exp Pouch*/) {
 			
-				// Exp Pouch para o player
+				// Exp Pouch for the player
 				_session.addExp((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD, true/*Send packet for update level and exp in game*/);
 
 	#ifdef _DEBUG
@@ -2962,24 +2962,24 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 	#endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_session.m_pi.uid);
 
 				return RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
 			
 			}else if (_item._typeid == CP_POUCH_TYPEID/*Cookie Point Pouch*/) {
 
-				// Log Ganhos de CP
+				// Log CP Earnings
 				CPLog cp_log;
 
 				cp_log.setType(CPLog::TYPE::CP_POUCH);
 
 				cp_log.setCookie((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
-				// Cookie Point(CP) Pouch para o player
+				// Cookie Point(CP) Pouch for the player
 				_session.addCookie((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD);
 
-				// Log de Ganhos de CP
+				// CP Earnings Log
 				_session.saveCPLog(cp_log);
 
 #ifdef _DEBUG
@@ -2990,7 +2990,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 						+ std::to_string(_item._typeid) + "] Qntd[value=" + std::to_string((_item.qntd > 0xFFu) ? _item.qntd : _item.STDA_C_ITEM_QNTD) + "]", CL_ONLY_FILE_LOG));
 #endif
 
-				// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+				// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 				BlockMemoryManager::unblockUID(_session.m_pi.uid);
 
 				return RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH;
@@ -3000,7 +3000,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(_item._typeid);
 
 			// Ticket Report Sempre Add 1 Novo
-			if (pWi != nullptr && _item._typeid != TICKET_REPORT_SCROLL_TYPEID) {	// Já tem item add quantidade do Item
+			if (pWi != nullptr && _item._typeid != TICKET_REPORT_SCROLL_TYPEID) {	// Already has the item, add quantity of the Item
 
 				if (sPremiumSystem::getInstance().isPremiumTicket(pWi->_typeid)) {
 
@@ -3019,22 +3019,22 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 				_item.id = ret_id = (RetAddItem::TYPE)pWi->id;
 
-				// Verifica se é Premium Ticket
-				if (sPremiumSystem::getInstance().isPremiumTicket(pWi->_typeid)) { // Renova o Premium Ticket por mais 30(tempo, coloquei mais opções) dias
+				// Checks whether it is a Premium Ticket
+				if (sPremiumSystem::getInstance().isPremiumTicket(pWi->_typeid)) { // Renews the Premium Ticket for 30 more days (time, I added more options)
 
 					if (_item.STDA_C_ITEM_TIME > 0) {
 						_item.date.active = 1;
 
 						// Conver
-						pWi->STDA_C_ITEM_TIME = _item.STDA_C_ITEM_TIME / 24; // converte de novo para Dias para salvar no banco de dados
+						pWi->STDA_C_ITEM_TIME = _item.STDA_C_ITEM_TIME / 24; // converts back to Days to save in the database
 
-						// Atualiza o tempo do Premium Ticket do player
+						// Updates the player's Premium Ticket time
 						snmdb::NormalManagerDB::getInstance().add(19, new CmdUpdatePremiumTicketTime(_session.m_pi.uid, *pWi), item_manager::SQLDBResponse, nullptr);
 
-						// update ano (Horas) que o item ainda tem
+						// update year (Hours) the item still has
 						pWi->ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;
 
-						// Só atualiza o Apply date se não tiver
+						// Only updates the Apply date if it does not have one
 						if (pWi->apply_date_unix_local == 0u) {
 
 							pWi->apply_date_unix_local = (uint32_t)GetLocalTimeAsUnix();
@@ -3058,23 +3058,23 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 						_smp::message_pool::getInstance().push(new message("[item_manager::addItem][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] renovou premium ticket[TYPEID="
 								+ std::to_string(pWi->_typeid) + "] por " + std::to_string(_item.STDA_C_ITEM_TIME / 24u) + " Dias", CL_FILE_LOG_AND_CONSOLE));
 
-						sPremiumSystem::getInstance().addPremiumUser(_session, *pWi, _item.STDA_C_ITEM_TIME / 24u/*Dias*/);
+						sPremiumSystem::getInstance().addPremiumUser(_session, *pWi, _item.STDA_C_ITEM_TIME / 24u/*Days*/);
 					}
 
-					// Verifica se o Premium Ticket está no item update, por que se tiver
+					// Checks whether the Premium Ticket is in the item update, because if so
 					auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(pWi->_typeid, pWi->id);
 
 					if (!v_it.empty()) {
 
 						for (auto& el : v_it)
 							if (el->second.type == UpdateItem::UI_TYPE::WAREHOUSE)
-								// Tira esse Update Item do map
+								// Removes this Update Item from the map
 								_session.m_pi.mp_ui.erase(el);
 
 					}
-					// ---- fim do verifica se o Premium Ticket está no update item ----
+					// ---- end of the check whether the Premium Ticket is in the update item ----
 
-				}else // Atualiza a quantidade do item normal
+				}else // Updates the quantity of the normal item
 					snmdb::NormalManagerDB::getInstance().add(9, new CmdUpdateItemQntd(_session.m_pi.uid, pWi->id, pWi->STDA_C_ITEM_QNTD), item_manager::SQLDBResponse, nullptr);
 
 				// Atualiza Gacha Coupon
@@ -3117,9 +3117,9 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 #endif
 
 				if (wi.STDA_C_ITEM_TIME > 0)
-					wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+					wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+				wi.ano = (_item.STDA_C_ITEM_TIME > 0) ? STDA_TRANSLATE_FLAG_TIME_TO_HOUR(_item.flag_time, _item.STDA_C_ITEM_TIME) : -1;	// Here it must be set to minutes or seconds (I think)
 
 				CmdAddItem cmd_ai(_session.m_pi.uid, wi, _purchase, 0/*_gift_flag*/, true);	// Waiter
 
@@ -3258,7 +3258,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 				throw exception("[item_manager::addItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou add Part[TYPEID="
 						+ std::to_string(_item._typeid) + "] que ele ja possui", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_ITEM_MANAGER, 10, 0));
 
-			// Ainda falta as parte por tempo, aquelas do couldron de cor dourada, Já Fiz
+			// Still missing the time-limited parts, the golden-colored ones from the cauldron, Already Done
 			WarehouseItemEx wi{ 0 };
 			wi.id = _item.id;
 			wi._typeid = _item._typeid;
@@ -3403,16 +3403,16 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 			break;
 		case iff::ACHIEVEMENT:
 			break;
-		case iff::MATCH:	// Troféu
+		case iff::MATCH:	// Trophy
 		{
 			auto type_trofel = sIff::getInstance().getItemSubGroupIdentify24(_item._typeid);
 
-			// Troféu Espacial
+			// Special Trophy
 			if (type_trofel == 1 || type_trofel == 2) {
 
 				auto tsi = _session.m_pi.findTrofelEspecialByTypeid(_item._typeid);
 
-				if (tsi != nullptr) {	// Já tem item add quantidade do Troféu Especial
+				if (tsi != nullptr) {	// Already has the item, add quantity of the Special Trophy
 
 					_item.stat.qntd_ant = tsi->qntd;
 			
@@ -3463,7 +3463,7 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 
 				auto tsi = _session.m_pi.findTrofelGrandPrixByTypeid(_item._typeid);
 
-				if (tsi != nullptr) {	// Já tem item add quantidade do Troféu Grand Prix
+				if (tsi != nullptr) {	// Already has the item, add quantity of the Grand Prix Trophy
 
 					_item.stat.qntd_ant = tsi->qntd;
 			
@@ -3515,14 +3515,14 @@ item_manager::RetAddItem::TYPE item_manager::addItem(stItem& _item, player& _ses
 		}	// End iff::MATCH
 		}	// End Switch
 
-		// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+		// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 		BlockMemoryManager::unblockUID(_session.m_pi.uid);
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[item_manager::addItem][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Block memória para o UID, previne de add mais de um item simuntaneamente, para não gerar valores errados
+		// Releases the Block memory for the UID, prevents adding more than one item simultaneously, to avoid generating wrong values
 		BlockMemoryManager::unblockUID(_session.m_pi.uid);
 
 		ret_id = RetAddItem::T_ERROR;
@@ -3744,7 +3744,7 @@ int32_t item_manager::giveItem(stItem& _item, player& _session, unsigned char _g
 
 	switch (sIff::getInstance().getItemGroupIdentify(_item._typeid)) {
 	case iff::CHARACTER:
-		// Não pode deletar Character
+		// Cannot delete Character
 		throw exception("[item_manager::giveItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao pode presentear um Character[TYPEID=" 
 					+ std::to_string(_item._typeid) + ", ID=" + std::to_string(_item.id) + "] ja comprado", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_ITEM_MANAGER, 20, 0));
 		break;
@@ -3770,7 +3770,7 @@ int32_t item_manager::giveItem(stItem& _item, player& _session, unsigned char _g
 
 		_item.stat.qntd_dep = pCi->qntd;
 
-		_item.STDA_C_ITEM_QNTD *= -1;	// deixa negativo para tirar no pangya
+		_item.STDA_C_ITEM_QNTD *= -1;	// leave it negative to remove in pangya
 
 		// Return value, avoid memory leaks
 		ret_id = pCi->id;
@@ -3831,7 +3831,7 @@ int32_t item_manager::giveItem(stItem& _item, player& _session, unsigned char _g
 
 		_item.stat.qntd_dep = pWi->STDA_C_ITEM_QNTD;
 
-		_item.STDA_C_ITEM_QNTD *= -1;	// deixa negativo para tirar no pangya
+		_item.STDA_C_ITEM_QNTD *= -1;	// leave it negative to remove in pangya
 
 		// Return value, avoid memory leaks
 		ret_id = pWi->id;
@@ -3876,7 +3876,7 @@ int32_t item_manager::giveItem(stItem& _item, player& _session, unsigned char _g
 
 		_item.stat.qntd_dep = pWi->STDA_C_ITEM_QNTD;
 
-		_item.STDA_C_ITEM_QNTD *= -1;	// deixa negativo para tirar no pangya
+		_item.STDA_C_ITEM_QNTD *= -1;	// leave it negative to remove in pangya
 
 		// Return value, avoid memory leaks
 		ret_id = pWi->id;
@@ -3942,7 +3942,7 @@ int32_t item_manager::giveItem(std::vector< stItem >& _v_item, player& _session,
 
 	for (i = 0u; i < _v_item.size(); ++i)
 		if (giveItem(_v_item[i], _session, _gift_flag) <= 0)
-			_v_item.erase(_v_item.begin() + i--/*Decrementa o 'i' por que esta tira um no vector*/);
+			_v_item.erase(_v_item.begin() + i--/*Decrements 'i' because this removes one from the vector*/);
 
 	return (int)i;
 };
@@ -3953,7 +3953,7 @@ int32_t item_manager::giveItem(std::vector< stItemEx >& _v_item, player& _sessio
 
 	for (i = 0u; i < _v_item.size(); ++i)
 		if (giveItem(_v_item[i], _session, _gift_flag) <= 0)
-			_v_item.erase(_v_item.begin() + i--/*Decrementa o 'i' por que esta tira um no vector*/);
+			_v_item.erase(_v_item.begin() + i--/*Decrements 'i' because this removes one from the vector*/);
 
 	return (int)i;
 };
@@ -4009,7 +4009,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			ret_id = _item.id;
 
-			// Se deletou a AuxPart que estava equipada 
+			// If the equipped AuxPart was deleted 
 			// Desequipa o AuxPart
 			auto v_ci = _session.isAuxPartEquiped(_item._typeid);
 
@@ -4046,7 +4046,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			DEL_ITEM_SUCESS_MSG_LOG("Deletou AuxPart");
 
-		}else {	// Att quantidade do Item
+		}else {	// Update Item quantity
 
 			_item.stat.qntd_ant = pWi->STDA_C_ITEM_QNTD;
 
@@ -4084,7 +4084,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			_item.stat.qntd_dep = pWi->STDA_C_ITEM_QNTD;
 
-			// Passa o typeid do Warehouse para o _item para garantir, se não tiver colocado o typeid, na estrutura
+			// Passes the Warehouse typeid to _item to be safe, in case the typeid was not set in the structure
 			_item._typeid = pWi->_typeid;
 			
 			snmdb::NormalManagerDB::getInstance().add(0, new CmdDeleteBall(_session.m_pi.uid, pWi->id), item_manager::SQLDBResponse, nullptr);
@@ -4097,21 +4097,21 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			ret_id = _item.id;
 
-			// Se deletou a bola que estava equipada 
-			// troca para a bola padrão
+			// If the equipped ball was deleted 
+			// switches to the default ball
 			if (_session.m_pi.ue.ball_typeid == _item._typeid) {
 
 				WarehouseItemEx *pBall = nullptr;
 				packet p;
 
-				if ((pBall = _session.m_pi.findWarehouseItemByTypeid(0x14000000/*Comet Padrão*/)) == nullptr)
+				if ((pBall = _session.m_pi.findWarehouseItemByTypeid(0x14000000/*Default Comet*/)) == nullptr)
 					_smp::message_pool::getInstance().push(new message("[item_manager::removeItem][Error][WARNING] player[UID=" 
 							+ std::to_string(_session.m_pi.uid) + "] nao tem a Comet padrao para substituir a bola[TYPEID=" 
 							+ std::to_string(_item._typeid) + "] deletada. Bug", CL_FILE_LOG_AND_CONSOLE));
 				else {	// Substitui
 
 					// Update ON SERVER
-					_session.m_pi.ue.ball_typeid = DEFAULT_COMET_TYPEID;	// Comet Padrão
+					_session.m_pi.ue.ball_typeid = DEFAULT_COMET_TYPEID;	// Default Comet
 
 					_session.m_pi.ei.comet = pBall;
 
@@ -4131,7 +4131,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			DEL_ITEM_SUCESS_MSG_LOG("Deletou Ball");
 			
-		}else {	// Att quantidade do Item
+		}else {	// Update Item quantity
 
 			_item.stat.qntd_ant = pWi->STDA_C_ITEM_QNTD;
 
@@ -4180,7 +4180,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 		break;
 	}
 	case iff::IFF_GROUP_ID::CAD_ITEM:
-		// por hora nao exclui esse por que ainda nao vi nenhum que exclui caddie item
+		// for now does not delete this one because I have not seen any that deletes a caddie item
 		_smp::message_pool::getInstance().push(new message("[item_manager::removeItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou remover um caddie item[TYPEID=" 
 				+ std::to_string(_item._typeid) + ", ID=" + std::to_string(_item.id) + "] mas nao e permitido. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 		break;
@@ -4218,7 +4218,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			DEL_ITEM_SUCESS_MSG_LOG("Deletou Card");
 
-		}else {	// Att quantidade do Item
+		}else {	// Update Item quantity
 
 			_item.stat.qntd_ant = pCi->qntd;
 
@@ -4338,7 +4338,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 			DEL_ITEM_SUCESS_MSG_LOG("Deletou Item");
 			
-		}else {	// Att quantidade do Item
+		}else {	// Update Item quantity
 
 			_item.stat.qntd_ant = pWi->STDA_C_ITEM_QNTD;
 
@@ -4413,7 +4413,7 @@ int32_t item_manager::removeItem(stItem& _item, player& _session) {
 
 		ret_id = _item.id;
 
-		// Se deletou a Part que estava equipada 
+		// If the equipped Part was deleted 
 		// Desequipa o Part
 		auto ci = _session.isPartEquiped(_item._typeid);
 
@@ -4493,7 +4493,7 @@ int32_t item_manager::removeItem(std::vector< stItem >& _v_item, player& _sessio
 
 	for (i = 0u; i < _v_item.size(); ++i)
 		if (removeItem(_v_item[i], _session) <= 0)
-			_v_item.erase(_v_item.begin() + i--/*Decrementa o 'i' por que esta tira um no vector*/);
+			_v_item.erase(_v_item.begin() + i--/*Decrements 'i' because this removes one from the vector*/);
 
 	return (int)i;
 };
@@ -4504,7 +4504,7 @@ int32_t item_manager::removeItem(std::vector< stItemEx >& _v_item, player& _sess
 
 	for (i = 0u; i < _v_item.size(); ++i)
 		if (removeItem(_v_item[i], _session) <= 0)
-			_v_item.erase(_v_item.begin() + i--/*Decrementa o 'i' por que esta tira um no vector*/);
+			_v_item.erase(_v_item.begin() + i--/*Decrements 'i' because this removes one from the vector*/);
 
 	return (int)i;
 };
@@ -4553,7 +4553,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 
 		auto pWi_r = _s_rcv.m_pi.findWarehouseItemByTypeid(_psi.item._typeid);
 
-		if (pWi_r != nullptr) { // Ele já tem atualiza
+		if (pWi_r != nullptr) { // He already has it, updates
 
 			pWi_r->STDA_C_ITEM_QNTD += (short)_psi.item.qntd;
 
@@ -4563,7 +4563,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 
 			snmdb::NormalManagerDB::getInstance().add(9, new CmdUpdateItemQntd(_s_rcv.m_pi.uid, pWi_r->id, pWi_r->STDA_C_ITEM_QNTD), item_manager::SQLDBResponse, nullptr);
 
-		}else {	// Cria um novo item para ele
+		}else {	// Creates a new item for him
 
 			WarehouseItemEx wi{ 0 };
 			wi.id = _psi.item.id;
@@ -4575,9 +4575,9 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 			wi.STDA_C_ITEM_QNTD = (short)_psi.item.qntd;
 
 			if (wi.STDA_C_ITEM_TIME > 0)
-				wi.STDA_C_ITEM_TIME /= 24; // converte de novo para Dias para salvar no banco de dados
+				wi.STDA_C_ITEM_TIME /= 24; // converts back to Days to save in the database
 
-			wi.ano = -1;	// Aqui tem que colocar para minutos ou segundos(acho)
+			wi.ano = -1;	// Here it must be set to minutes or seconds (I think)
 
 			CmdAddItem cmd_ai(_s_rcv.m_pi.uid, wi, 0, 0/*_gift_flag*/, true);	// Waiter
 
@@ -4599,7 +4599,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 			ret_wi = &_s_rcv.m_pi.mp_wi.insert(std::make_pair(wi.id, wi))->second;
 		}
 
-		// Att Item do player que vendeu
+		// Update Item of the player who sold
 		pWi_s->STDA_C_ITEM_QNTD -= (short)_psi.item.qntd;
 
 		if (pWi_s->STDA_C_ITEM_QNTD == 0) {
@@ -4616,7 +4616,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 
 		TRANSFER_ITEM_SUCESS_MSG_LOG("Transferiu Item");
 
-		// Depois que que fazer um CmdPersonalShop Venda Log
+		// Later make a CmdPersonalShop Sale Log
 		break;
 	}
 	case iff::PART:
@@ -4651,10 +4651,10 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 			// CmdTransferPart
 			snmdb::NormalManagerDB::getInstance().add(16, new CmdTransferPart(_s_snd.m_pi.uid, _s_rcv.m_pi.uid, pWi_s->id, (unsigned char)part->type_item), item_manager::SQLDBResponse, nullptr);
 
-			// Add para o player que comprou
+			// Add to the player who bought
 			ret_wi = &_s_rcv.m_pi.mp_wi.insert(std::make_pair(pWi_s->id, *pWi_s))->second;
 
-			// Deleta do player que vendeu
+			// Deletes from the player who sold
 			//auto it = VECTOR_FIND_ITEM(_s_snd.m_pi.v_wi, id, == , pWi_s->id);
 			auto it = _s_snd.m_pi.findWarehouseItemItById(pWi_s->id);
 
@@ -4668,7 +4668,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 	}
 	case iff::CLUBSET:
 	{
-		// Vai ter mas só quando eu liberar no cliente
+		// It will exist, but only when I enable it in the client
 		auto base = sIff::getInstance().findCommomItem(_psi.item._typeid);
 
 		if (base == nullptr) {
@@ -4685,7 +4685,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 	}
 	case iff::CARD:
 	{
-		// Vai ter mas só quando eu liberar no cliente
+		// It will exist, but only when I enable it in the client
 		auto base = sIff::getInstance().findCommomItem(_psi.item._typeid);
 
 		if(base == nullptr) {
@@ -4715,7 +4715,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 
 		auto pCi_r = _s_rcv.m_pi.findCardByTypeid(_psi.item._typeid);
 
-		if (pCi_r != nullptr) { // Ele já tem atualiza
+		if (pCi_r != nullptr) { // He already has it, updates
 
 			pCi_r->qntd += (short)_psi.item.qntd;
 
@@ -4725,7 +4725,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 
 			snmdb::NormalManagerDB::getInstance().add(9, new CmdUpdateCardQntd(_s_rcv.m_pi.uid, pCi_r->id, pCi_r->qntd), item_manager::SQLDBResponse, nullptr);
 
-		}else {	// Cria um novo item para ele
+		}else {	// Creates a new item for him
 
 			CardInfo ci{ 0 };
 			ci.id = _psi.item.id;
@@ -4755,7 +4755,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 			ret_wi = &(*_s_rcv.m_pi.v_card_info.insert(_s_rcv.m_pi.v_card_info.end(), ci));
 		}
 
-		// Att Item do player que vendeu
+		// Update Item of the player who sold
 		pCi_s->qntd -= (short)_psi.item.qntd;
 
 		if (pCi_s->qntd == 0) {
@@ -4777,7 +4777,7 @@ void* item_manager::transferItem(player& _s_snd, player& _s_rcv, PersonalShopIte
 				+ (base->shop.flag_shop.uFlagShop.stFlagShop.can_send_mail_and_personal_shop ? std::string("") : std::string("no cliente e")) + " no server. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));*/
 		break;
 	}
-	default:	// Não suporta todos os outros, [não é permitido vender no Personal Shop]
+	default:	// Does not support all the others, [selling in the Personal Shop is not allowed]
 		_smp::message_pool::getInstance().push(new message("[item_manager::transferItem][Error] player_rcv[UID=" + std::to_string(_s_rcv.m_pi.uid) + "], player_snd[UID=" + std::to_string(_s_snd.m_pi.uid) + "] Esse Item[TYPEID=" 
 				+ std::to_string(_psi.item._typeid) + "] nao pode ser vendido no Personal Shop", CL_FILE_LOG_AND_CONSOLE));
 		break;
@@ -5475,7 +5475,7 @@ std::vector< stItem > item_manager::exchangeTikiShop(player& _session, uint32_t 
 					return std::vector< stItem >();
 				}
 
-				if ((pWi->flag & 96) == 96/*Rental não pode trocar no Tiki Shop*/ || (pWi->flag & 0x20) == 0x20 || (pWi->flag & 0x40) == 0x40) {
+				if ((pWi->flag & 96) == 96/*Rental cannot be exchanged in the Tiki Shop*/ || (pWi->flag & 0x20) == 0x20 || (pWi->flag & 0x40) == 0x40) {
 					_smp::message_pool::getInstance().push(new message("[item_manager::exchangeTikiShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao pode trocar Part Rental[TYPEID="
 							+ std::to_string(_typeid) + ", ID=" + std::to_string(_id) + "] no Tiki Shop. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
@@ -5618,22 +5618,22 @@ void item_manager::openTicketReportScroll(player& _session, int32_t _ticket_scro
 		// Check if it is on Update Item Map
 		auto ui_it = _session.m_pi.findUpdateItemByIdAndType(_ticket_scroll_item_id, UpdateItem::WAREHOUSE);
 
-		// Add Experiencia se ele ganhou
+		// Add Experience if he earned any
 		auto it = std::find_if(trsi.v_players.begin(), trsi.v_players.end(), [&](auto& _el) {
 			return _el.uid == _session.m_pi.uid;
 		});
 
 		uint32_t exp = 0u;
 
-		// Guarda exp para enviar depois que enviar o pacote do ticker report open
+		// Stores exp to send after sending the ticker report open packet
 		if (it != trsi.v_players.end() && it->exp > 0)
 			exp = it->exp;
 
-		// Tempo do Item Acabou, Exclui ele do Server, DB and Game, e manda a resposta de erro para o Game(player)
+		// Item time ran out, deletes it from the Server, DB and Game, and sends the error response to the Game(player)
 		if (ui_it != _session.m_pi.mp_ui.end()) {
 
 			if (_upt_on_game) {
-				// Exclui do Game
+				// Deletes from the Game
 				p.init_plain((unsigned short)0x216);
 
 				p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -5653,11 +5653,11 @@ void item_manager::openTicketReportScroll(player& _session, int32_t _ticket_scro
 			// Exclui Update Item
 			_session.m_pi.mp_ui.erase(ui_it);
 
-			// Add experiência do player e enviar o pacote de experiência
+			// Add the player's experience and send the experience packet
 			if (exp > 0u)
 				_session.addExp(exp, _upt_on_game/*Update ON Game*/);
 
-			// Resposta para o cliente
+			// Response to the client
 			throw exception("[item_manager::openTicketReportScroll][Error] player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] tentou abrir Ticket Report Scroll[ITEM_ID=" + std::to_string(_ticket_scroll_item_id) + ", ID=" + std::to_string(_ticket_scroll_id) + ", END_DATE="
 					+ formatDateLocal(pWi->end_date_unix_local) + ", EXP=" + std::to_string(exp) 
@@ -5669,7 +5669,7 @@ void item_manager::openTicketReportScroll(player& _session, int32_t _ticket_scro
 		_smp::message_pool::getInstance().push(new message("[item_manager::openTicketReportScroll][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] abriu Ticket Report Scroll[ITEM_ID=" 
 				+ std::to_string(_ticket_scroll_item_id) + ", ID=" + std::to_string(_ticket_scroll_id) + ", EXP=" + std::to_string(exp) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Reposta para o cliente
+		// Response to the client
 		p.init_plain((unsigned short)0x11A);
 
 		p.addUint32((uint32_t)trsi.v_players.size());
@@ -5681,9 +5681,9 @@ void item_manager::openTicketReportScroll(player& _session, int32_t _ticket_scro
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Tem que add exp aqui depois do pacote11A por que att antes e depois o pacote11A começa a contar a experiência do exp já atualizado, 
-		// aí o visual fica errado, mas no info fica tudo certo
-		// Add experiência do player e enviar o pacote de experiência
+		// Exp must be added here after packet11A because otherwise it updates before and then packet11A starts counting from the already updated exp, 
+		// so the visual is wrong, but the info is all correct
+		// Add the player's experience and send the experience packet
 		if (exp > 0u)
 			_session.addExp(exp, _upt_on_game/*Update ON Game*/);
 
@@ -5717,7 +5717,7 @@ bool item_manager::ownerItem(uint32_t _uid, uint32_t _typeid) {
 
 	bool ret = false;
 
-	// Procura primeiro no Dolfini Locker o item, se for diferente de SetItem
+	// Searches for the item in the Dolfini Locker first, if it is not a SetItem
 	if (sIff::getInstance().getItemGroupIdentify(_typeid) != iff::SET_ITEM) {
 		
 		CmdFindDolfiniLockerItem cmd_dli(_uid, _typeid, true);	// Waiter
@@ -5732,7 +5732,7 @@ bool item_manager::ownerItem(uint32_t _uid, uint32_t _typeid) {
 		if (cmd_dli.hasFound())
 			return true;
 	}
-	// Find de busca em dolfini locker
+	// Find search in dolfini locker
 
 	switch (sIff::getInstance().getItemGroupIdentify(_typeid)) {
 	case iff::CHARACTER:
@@ -5815,7 +5815,7 @@ bool item_manager::ownerItem(uint32_t _uid, uint32_t _typeid) {
 	case iff::HAIR_STYLE:
 		ret = ownerHairStyle(_uid, _typeid);
 		break;
-	case iff::CAD_ITEM:		// Esse aqui verifica se já tem, mas não que não pode ter mais. mas sim para aumentar o tempo
+	case iff::CAD_ITEM:		// This one checks whether it already has it, not that it cannot have more, but to increase the time
 		ret = ownerCaddieItem(_uid, _typeid);
 		break;
 	case iff::MATCH:
@@ -5828,10 +5828,10 @@ bool item_manager::ownerItem(uint32_t _uid, uint32_t _typeid) {
 	} // End iff::MATCH
 	} // End Switch
 
-	// Player não tem o item no warehouse e nem no Dolfini Locker, Verifica no Mail Box dele
+	// Player does not have the item in the warehouse or in the Dolfini Locker, checks his Mail Box
 	if (!ret) {
 
-		// Procura no Mail Box do player
+		// Searches the player's Mail Box
 		ret = ownerMailBoxItem(_uid, _typeid);
 	}
 
@@ -5844,10 +5844,10 @@ bool item_manager::ownerSetItem(uint32_t _uid, uint32_t _typeid) {
 
 	if (set != nullptr) {
 		for (auto i = 0u; i < (sizeof(set->package.item_typeid) / sizeof(set->package.item_typeid[0])); ++i) {
-			// Eleminar a verificação do character que ele só inclui se o player não tiver ele
-			// se ele tiver não faz diferença não anula o verificação do set
+			// Eliminate the character check, since it is only included if the player does not have it
+			// if he has it, it makes no difference, it does not void the set check
 			if (set->package.item_typeid[i] != 0 && sIff::getInstance().getItemGroupIdentify(set->package.item_typeid[i]) != iff::CHARACTER)
-				if (ownerItem(_uid, set->package.item_typeid[i]))	// se tiver 1 item que seja não pode ganhar o set se não vai duplicar os itens, que ele tem
+				if (ownerItem(_uid, set->package.item_typeid[i]))	// if he has even 1 item, he cannot receive the set, otherwise the items he has would be duplicated
 					return true;
 		}
 	}
@@ -5859,11 +5859,11 @@ bool item_manager::ownerCaddieItem(uint32_t _uid, uint32_t _typeid) {
 
 	auto caddie = _ownerCaddieItem(_uid, _typeid);
 
-	if (!(caddie.id > 0)/*!hasFound*/)	// Não tem o caddie então não pode ter o caddie item
+	if (!(caddie.id > 0)/*!hasFound*/)	// Does not have the caddie, so cannot have the caddie item
 		return true;
 
 	// Pode enviar o mesmo
-	/*if (caddie.parts_typeid == _typeid)	// Tem a Parts
+	/*if (caddie.parts_typeid == _typeid)	// Has the Parts
 		return true;*/
 
 	return false;
@@ -6004,7 +6004,7 @@ bool item_manager::ownerHairStyle(uint32_t _uid, uint32_t _typeid) {
 	if (hair != nullptr) {
 		auto character = _ownerHairStyle(_uid, _typeid);
 
-		if (!(character.id > 0)/*!hasFound*/)	// Não tem o Character
+		if (!(character.id > 0)/*!hasFound*/)	// Does not have the Character
 			return true;
 
 		if (character.default_hair == hair->cor)
@@ -6046,7 +6046,7 @@ bool item_manager::betweenTimeSystem(stItem::stDate& _date) {
 	SystemTimeToFileTime(&_date.date.sysDate[1], &ft2);
 	SystemTimeToFileTime(&st, &ft3);
 
-	// Date de termino é 0, então passa a do LocalTime, por que ele só tem a data de quando começa
+	// End date is 0, so passes the LocalTime one, because it only has the start date
 	if (ft2.dwHighDateTime == 0 && ft2.dwLowDateTime == 0)
 		ft2 = ft3;
 
@@ -6074,114 +6074,114 @@ void item_manager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just leaves, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[item_manager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
 	}
 
-	// isso aqui depois pode mudar para o Item_manager, que vou tirar de ser uma classe static e usar ela como objeto(instancia)
+	// this may later move to Item_manager, which I will change from a static class to an object (instance)
 	//auto _session = reinterpret_cast< player* >(_arg);
 
 	switch (_msg_id) {
 	case 1:	// Add Character
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 2:	// add Caddie
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 3:	// add Warehouse
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 4:	// Add HairStyle
 	{
-		// Esse aqui só tem att o cabelo no character do player
+		// This one only updates the hair on the player's character
 		break;
 	}
 	case 5: // Caddie Item
 	{
-		// Esse aqui só att o parts typeid do caddie e o tempo no DB, não precisa esperar a resposta do DB já que ele não retorna nada
+		// This one only updates the caddie's parts typeid and the time in the DB, no need to wait for the DB response since it returns nothing
 		break;
 	}
 	case 6: // Update Mascot Time
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 7:	// Update Ball Quantidade
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 8:	// Update Card Quantidade
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 9: // Update Item Quantidade
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 10: // Delete Item
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 11: // Delete Ball
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 12: // Delete Card
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 13: // Gift ClubSet
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 14: // Gift Part
 	{
-		// Não usa mais
+		// No longer used
 		break;
 	}
 	case 15: // Personal Shop Log
 	{
-		// Não usa por que não retorna nada é um INSERT
+		// Not used because it returns nothing, it is an INSERT
 		break;
 	}
 	case 16:	// Personal Shop Transfer Part
 	{
-		// Não usa por que não retorna nada é um UPDATE
+		// Not used because it returns nothing, it is an UPDATE
 		break;
 	}
 	case 17:	// Update Character Equipped
 	{
-		// Não usa por que não retorna nada é um UPDATE
+		// Not used because it returns nothing, it is an UPDATE
 		break;
 	}
 	case 18:	// Update Trofel Especial e Grand Prix
 	{
-		// Não usa por que não retorna nada é um UPDATE
+		// Not used because it returns nothing, it is an UPDATE
 		break;
 	}
 	case 19:	// Update Premium Ticket Time
 	{
-		// Não usa por que não retorna nada é um UPDATE
+		// Not used because it returns nothing, it is an UPDATE
 		break;
 	}
 	case 20:	// Update Clubset Time
 	{
-		// Não uda por que não retorna nada é um UPDATE
+		// Not used because it returns nothing, it is an UPDATE
 		break;
 	}
 	case 0:

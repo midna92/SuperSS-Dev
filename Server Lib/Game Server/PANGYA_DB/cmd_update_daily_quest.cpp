@@ -1,6 +1,6 @@
-// Arquivo cmd_update_daily_quest.cpp
-// Criado em 13/04/2018 as 18:41 por Acrisio
-// Implementa��o da classe CmdUpdateDailyQuest
+// File cmd_update_daily_quest.cpp
+// Created on 13/04/2018 at 18:41 by Acrisio
+// Implementation of class CmdUpdateDailyQuest
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ void CmdUpdateDailyQuest::lineResult(result_set::ctx_res* _result, uint32_t /*_i
 	// Update ON DB
 	m_updated = IFNULL(atoi, _result->data[0]) == 1 ? true : false;
 	
-	if (!m_updated) { // Não atualizou, pega os valores atualizados do banco de dados
+	if (!m_updated) { // Did not update, gets the updated values from the database
 
 		for (auto i = 0u; i < 3u; ++i)
 			m_dqi._typeid[i] = (uint32_t)IFNULL(atoi, _result->data[1u + i]);	// 1 + 3

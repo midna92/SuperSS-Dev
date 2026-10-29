@@ -1,6 +1,6 @@
-// Arquivo cmd_notice_info.cpp
-// Criado em 03/12/2018 as 00:53 por Acrisio
-// Implementa��o da classe CmdNoticeInfo
+// File cmd_notice_info.cpp
+// Created on 03/12/2018 at 00:53 by Acrisio
+// Implementation of class CmdNoticeInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

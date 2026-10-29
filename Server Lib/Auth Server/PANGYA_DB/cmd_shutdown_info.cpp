@@ -1,6 +1,6 @@
-// Arquivo cmd_shutdown_info.cpp
-// Criado em 02/12/2018 as 23:19 por Acrisio
-// Implementa��o da classe CmdShutdownInfo
+// File cmd_shutdown_info.cpp
+// Created on 02/12/2018 at 23:19 by Acrisio
+// Implementation of class CmdShutdownInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

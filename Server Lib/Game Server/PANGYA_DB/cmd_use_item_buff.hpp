@@ -1,6 +1,6 @@
-// Arquivo cmd_use_item_buff.hpp
-// Criado em 07/07/2018 as 21:25 por Acrisio
-// Defini��o da classe CmdUseItemBuff
+// File cmd_use_item_buff.hpp
+// Created on 07/07/2018 at 21:25 by Acrisio
+// Definition of class CmdUseItemBuff
 
 #pragma once
 #ifndef _STDA_CMD_USE_ITEM_BUFF_HPP

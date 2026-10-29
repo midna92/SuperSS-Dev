@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_workshop.cpp
-// Criado em 23/06/2018 as 18:47 por Acrisio
-// Implementa��o da classe CmdUpdateClubSetWorkshop
+// File cmd_update_clubset_workshop.cpp
+// Created on 23/06/2018 at 18:47 by Acrisio
+// Implementation of class CmdUpdateClubSetWorkshop
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -24,7 +24,7 @@ CmdUpdateClubSetWorkshop::~CmdUpdateClubSetWorkshop() {
 
 void CmdUpdateClubSetWorkshop::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

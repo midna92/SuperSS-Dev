@@ -1,6 +1,6 @@
-// Arquivo crypt.cpp
-// Criado em 23/09/2017 por Acrisio
-// Implementação da classe crypt
+// File crypt.cpp
+// Created on 23/09/2017 by Acrisio
+// Implementation of class crypt
 
 #include "crypt.h"
 #include "../UTIL/exception.h"

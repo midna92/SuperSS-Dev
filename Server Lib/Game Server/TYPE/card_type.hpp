@@ -1,6 +1,6 @@
-// Arquivo card_type.hpp
-// Criado em 01/07/2018 as 00:33 por Acrisio
-// Definição das struct e tipo de suporte para a classe CardSystem
+// File card_type.hpp
+// Created on 01/07/2018 at 00:33 by Acrisio
+// Definition of the structs and support types for class CardSystem
 
 #pragma once
 #ifndef _STDA_CARD_TYPE_HPP
@@ -26,8 +26,8 @@ namespace stdA {
 	struct Card {
 		void clear() { memset(this, 0, sizeof(Card)); };
 		uint32_t _typeid;
-		uint32_t prob;		// Probabilidade
-		CARD_TYPE tipo;			// tipo, Normal, Rare, Super Rare, Secreto
+		uint32_t prob;		// Probability
+		CARD_TYPE tipo;			// type, Normal, Rare, Super Rare, Secret
 	};
 
 	struct CardPack {
@@ -53,8 +53,8 @@ namespace stdA {
 			unsigned short value[4];	// Normal, Rare, Super Rare, Secret
 		};
 		uint32_t _typeid;
-		uint32_t num;			// Número de card(s) que esse pack dá
-		unsigned char volume;		// Volume do Card Pack, Vol 1, 2, 3, 4, 5 etc
+		uint32_t num;			// Number of card(s) this pack gives
+		unsigned char volume;		// Card Pack volume, Vol 1, 2, 3, 4, 5 etc
 		Rate rate;					// Rate, N, R, SR, SC
 		std::vector< Card > card;	// Cards
 	};

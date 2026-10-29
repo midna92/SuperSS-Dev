@@ -1,6 +1,6 @@
-// Arquivo club3d.hpp
-// Criado em 03/10/2020 as 14:38 por Acrisio
-// Definição da classe Club3D
+// File club3d.hpp
+// Created on 03/10/2020 at 14:38 by Acrisio
+// Definition of the Club3D class
 
 #pragma once
 #ifndef _STDA_CLUB3D_HPP

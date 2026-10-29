@@ -1,6 +1,6 @@
-// Arquivo Protocol70.cpp
-// Criado em 11/10/2021 as 14:52 por Acrisio
-// Implementação da classe Protocol70
+// File Protocol70.cpp
+// Created on 11/10/2021 at 14:52 by Acrisio
+// Implementation of the class Protocol70
 
 #include "Protocol70.hpp"
 #include <ctime>
@@ -108,7 +108,7 @@ UINT32 Protocol70::getInformation(UINT32 _type, GG_AUTH_DATA *_pAuthAnswer) {
 UINT32 Protocol70::checkValidAnswer(GG_AUTH_DATA *_pAuthAnswer, UINT32 *_pReturnFlag) {
 
 	if (_pReturnFlag == nullptr || _pAuthAnswer == nullptr)
-		return 0x12; // Invalid parameter (estou usando o de invalid AuthAnswer)
+		return 0x12; // Invalid parameter (I am using the one for invalid AuthAnswer)
 
 	*_pReturnFlag = 0;
 
@@ -244,7 +244,7 @@ UINT32 Protocol70::loopAuth(unsigned char *_pByLastLoop1, DWORD *_pdwLoop1AuthAr
 UINT32 Protocol70::checkAuthAnswer(UINT32 *_pUserFlag, GG_VERSION *_pGGVer, GG_AUTH_DATA *_pAuthAnswer, GG_AUTH_DATA *_pAuthChecked, UINT32 _nSequenceNum, UINT32 *_pdwLastValue4) {
 
 	if (_pUserFlag == nullptr || _pGGVer == nullptr || _pAuthAnswer == nullptr || _pAuthChecked == nullptr || _pdwLastValue4 == nullptr)
-		return 0x0C; // invalid parameter. (USANDO o do invalid version protocol)
+		return 0x0C; // invalid parameter. (USING the one for invalid version protocol)
 
 	GG_AUTH_DATA gg_auth_temp;
 

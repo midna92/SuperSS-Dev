@@ -1,6 +1,6 @@
 // Arquivo coin_cube_location_update_system.hpp
-// Criado em 16/10/2020 as 20:35 por Acrisio
-// Defini��o da classe CoinCubeLocationUpdateSystem
+// Created on 16/10/2020 at 20:35 by Acrisio
+// Definition of the CoinCubeLocationUpdateSystem class
 
 #pragma once
 #ifndef _STDA_COIN_CUBE_LOCATION_UPDATE_SYSTEM_HPP
@@ -45,7 +45,7 @@ namespace stdA {
 			void pushOrderToCalcule(CalculeCoinCubeUpdateOrder _cccuo);
 
 #ifdef _DEBUG
-			void forceUpdate(); // For�a o update location coin e cube antes da hora
+			void forceUpdate(); // Force the coin and cube location update ahead of time
 #endif // _DEBUG
 
 		protected:
@@ -84,10 +84,10 @@ namespace stdA {
 
 			uint32_t volatile m_continue_translate;
 
-			time_t m_update_location_time;						// Atualiza os spawn de coin e cube que foram gerados no tempo determinado
+			time_t m_update_location_time;						// Update the coin and cube spawns that were generated in the determined time
 
-			MAP_COURSE_COIN_CUBE m_course_coin_cube;			// Esse � o que ele est� gerando das tacadas dos jogadores
-			MAP_COURSE_COIN_CUBE m_course_coin_cube_current;	// Esse � o atual que ele est� spawnando no course
+			MAP_COURSE_COIN_CUBE m_course_coin_cube;			// This is what it is generating from the players' shots
+			MAP_COURSE_COIN_CUBE m_course_coin_cube_current;	// This is the current one that it is spawning in the course
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;

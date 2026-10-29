@@ -1,6 +1,6 @@
-// Arquivo cmd_coupon_gacha.cpp
-// Criado em 19/03/2018 as 22:14 por Acrisio
-// Implementação da classe CmdCouponGacha
+// File cmd_coupon_gacha.cpp
+// Created on 19/03/2018 at 22:14 by Acrisio
+// Implementation of the class CmdCouponGacha
 
 #if defined(_WIN32)
 #pragma pack(1)

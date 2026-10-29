@@ -1,6 +1,6 @@
-// Arquivo memorial_system.cpp
-// Criado em 21/07/2018 as 18:58 por Acrisio
-// Implementa��o da classe MemorialSystem
+// File memorial_system.cpp
+// Created on 21/07/2018 at 18:58 by Acrisio
+// Implementation of the MemorialSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -92,7 +92,7 @@ MemorialSystem::MemorialSystem() : m_load(false), m_coin{}, m_level{}, m_consolo
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initializes
 	initialize();
 }
 
@@ -111,7 +111,7 @@ void MemorialSystem::initialize() {
 
 	TRY_CHECK;
 
-	// Carrega as Coin e os Itens
+	// Loads the Coins and the Items
 	auto coins = sIff::getInstance().getMemorialShopCoinItem();
 	auto rares = sIff::getInstance().getMemorialShopRareItem();
 
@@ -154,23 +154,23 @@ void MemorialSystem::initialize() {
 
 						c.item.push_back(ci);
 
-						break;	// Sai do Loop de Filters
+						break;	// Exits the Filters Loop
 					}
-				}	// Fim do loop de Filters
+				}	// End of the Filters loop
 			}
-		}	// Fim do loop de Rare Item
+		}	// End of the Rare Item loop
 
-		// Add Coin ao Map
+		// Add Coin to the Map
 		auto it = m_coin.find(c._typeid);
 
-		if (it == m_coin.end())	// Add Coin ao map
+		if (it == m_coin.end())	// Add Coin to the map
 			m_coin[c._typeid] = c;
 		else
 			_smp::message_pool::getInstance().push(new message("[MemorialSystem::initialize][WARNING] ja tem essa coin[TYPEID=" + std::to_string(c._typeid) + "] no map.", CL_FILE_LOG_AND_CONSOLE));
 
-	}	// Fim do loop de Coin Item
+	}	// End of the Coin Item loop
 
-	// Add os Itens Padr�es, para quando n�o ganha o rare item
+	// Adds the Default Items, for when the rare item is not won
 	CmdMemorialNormalItemInfo cmd_mnii(true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_mnii, nullptr, nullptr);
@@ -200,14 +200,14 @@ void MemorialSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[MemorialSystem::initialize][Log] Memorial System Carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrows so the server can take action
 	throw;
 
 	END_CHECK;
@@ -259,7 +259,7 @@ bool MemorialSystem::isLoad() {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// + 1 no MEMORIAL_LEVEL_MAX por que � do 0 a 24, da 25 Levels
+	// + 1 on MEMORIAL_LEVEL_MAX because it goes from 0 to 24, giving 25 Levels
 	isLoad = (m_load && !m_coin.empty() && (!m_level.empty() && m_level.size() == (MEMORIAL_LEVEL_MAX + 1)) && !m_consolo_premio.empty());
 
 #if defined(_WIN32)
@@ -312,10 +312,10 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 	ctx_coin_item_ex *ci = nullptr;
 	ctx_coin_set_item *csi = nullptr;
 
-	// Calcula Memorial Level Pelos Achievement Pontos
+	// Calculates Memorial Level By Achievement Points
 	uint32_t level = calculeMemorialLevel(_session.m_pi.mgr_achievement.getPontos());
 
-	// Initialize Rare Item e add � roleta
+	// Initialize Rare Item and add to the roulette
 	for (auto& el : _ctx_c.item) {
 		switch (_ctx_c.tipo) {
 		case MCT_NORMAL:
@@ -326,7 +326,7 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 			if (el.gacha_number < 0 || (uint32_t)el.gacha_number <= m_level[MEMORIAL_LEVEL_MAX].gacha_number)
 				lottery.push(el.probabilidade/* + _ctx_c.probabilidade*/, (size_t)&el);
 			break;
-		case MCT_SPECIAL:	// Special n�o tem limite de level, ele pega todos
+		case MCT_SPECIAL:	// Special has no level limit, it takes all
 				lottery.push(el.probabilidade/* + _ctx_c.probabilidade*/, (size_t)&el);
 			break;
 		default:
@@ -334,7 +334,7 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 		}
 	}
 
-	// Init Common Itens
+	// Init Common Items
 	auto limit_prob = lottery.getLimitProbilidade();
 
 	auto count_item = std::count_if(m_consolo_premio.begin(), m_consolo_premio.end(), [&](auto& el) {
@@ -343,28 +343,28 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 
 	auto rate_memorial = (float)(sgs::gs::getInstance().getInfo().rate.memorial_shop) / 100.f;
 
-	// Rate A+ da Coin
+	// Rate A+ of the Coin
 	if (_ctx_c.probabilidade > 0)
-		rate_memorial += (float)(_ctx_c.probabilidade * 4 / 100.f);	// 100 * 4 / 100 4 / 4 50% coin premium 
+		rate_memorial += (float)(_ctx_c.probabilidade * 4 / 100.f);	// 100 * 4 / 100 4 / 4 50% premium coin 
 
-	limit_prob = (uint64_t)(limit_prob * (4 / rate_memorial));	// Padr�o 75% do limite de probabilidade consolo, 25% normal
+	limit_prob = (uint64_t)(limit_prob * (4 / rate_memorial));	// Default 75% of the consolation probability limit, 25% normal
 
 	if (count_item > 0)
 		count_item = (uint32_t)limit_prob / count_item;
 
-	// Add Common Itens � roleta
+	// Add Common Items to the roulette
 	for (auto& el : m_consolo_premio)
 		if (el.second.tipo == (_ctx_c.tipo == MCT_PREMIUM ? 1 : 0))
-			lottery.push((uint32_t)count_item/*probabilidade*/, (size_t)&el.second);
+			lottery.push((uint32_t)count_item/*probability*/, (size_t)&el.second);
 
 	Lottery::LotteryCtx* lc = nullptr;
-	uint32_t count = 1;	// Qntd de pr�mios sorteados
+	uint32_t count = 1;	// Number of prizes drawn
 
 	do {
 
 		CHECK_SESSION("drawCoin");
 
-		lc = lottery.spinRoleta(true);	// Remove os Item que j� foi sorteado
+		lc = lottery.spinRoleta(true);	// Removes the Items that were already drawn
 
 		if (lc == nullptr)
 			throw exception("[MemorialSystem::drawCoin][Error] nao conseguiu sortear um item. erro na hora de rodar a roleta", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MEMORIAL_SYSTEM, 5, 0));
@@ -372,16 +372,16 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 		if (lc->value == 0u)
 			throw exception("[MemorialSystem::drawCoin][Error] nao conseguiu sortear um item. lc->value is invalid(0).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MEMORIAL_SYSTEM, 5, 1));
 
-		// Tempor�rio Coin Item
+		// Temporary Coin Item
 
-		// Verifica se � SetItem ou Item
+		// Checks whether it is SetItem or Item
 		auto test = *(int32_t*)lc->value;
 
 		if (test == -100) {	// SetItem
 			csi = (ctx_coin_set_item*)lc->value;
 
 			for (auto& el : csi->item) {
-				// Contianua que o player j� tem esse item, e n�o pode ter duplicatas dele 
+				// Continues because the player already has this item, and cannot have duplicates of it 
 				if ((!sIff::getInstance().IsCanOverlapped(el._typeid) || sIff::getInstance().getItemGroupIdentify(el._typeid) == iff::CAD_ITEM) && _session.m_pi.ownerItem(el._typeid))
 					continue;
 
@@ -390,14 +390,14 @@ std::vector< ctx_coin_item_ex > MemorialSystem::drawCoin(player& _session, ctx_c
 		}else {	// Item
 			ci = (ctx_coin_item_ex*)lc->value;
 
-			// Contianua que o player j� tem esse item, e n�o pode ter duplicatas dele
+			// Continues because the player already has this item, and cannot have duplicates of it
 			if ((!sIff::getInstance().IsCanOverlapped(ci->_typeid) || sIff::getInstance().getItemGroupIdentify(ci->_typeid) == iff::CAD_ITEM) && _session.m_pi.ownerItem(ci->_typeid))
 				continue;
 
 			v_item.push_back(*ci);
 		}
 
-		// Decrementa o count, que 1 item voi sorteado
+		// Decrements the count, since 1 item was drawn
 		--count;
 
 	} while (count > 0);

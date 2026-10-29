@@ -1,6 +1,6 @@
-// Arquivo cmd_update_poster_equiped.hpp
-// Criado em 25/03/2018 as 12:56 por Acrisio
-// Defini��o da classe CmdUpdatePosterEquiped
+// File cmd_update_poster_equiped.hpp
+// Created on 25/03/2018 at 12:56 by Acrisio
+// Definition of class CmdUpdatePosterEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_POSTER_EQUIPED_HPP

@@ -1,6 +1,6 @@
-// Arquivo extra_power_interface.hpp
-// Criado em 03/10/2020 as 15:21 por Acrisio
-// Definição da classe Interface ExtraPower
+// File extra_power_interface.hpp
+// Created on 03/10/2020 at 15:21 by Acrisio
+// Definition of class Interface ExtraPower
 
 #pragma once
 #ifndef _STDA_EXTRA_POWER_INTERFACE_HPP

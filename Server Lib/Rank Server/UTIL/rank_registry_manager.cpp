@@ -1,6 +1,6 @@
-// Arquivo rank_registry_manager.cpp
-// Criado em 16/06/2020 as 15:29 por Acrisio
-// Implementa��o da classe RankRegistryManager
+// File rank_registry_manager.cpp
+// Created on 16/06/2020 at 15:29 by Acrisio
+// Implementation of the class RankRegistryManager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -49,7 +49,7 @@ RankRegistryManager::RankRegistryManager() : m_entry(), m_character_entry(), m_s
 	prex = "";
 	dir = "Log";
 
-	// Inicializa
+	// Initialize
 	initialize();
 }
 
@@ -135,15 +135,15 @@ void RankRegistryManager::pageToPacket(packet& _packet, search_dados& _sd) {
 
 		if (it != m_entry.end()) {
 
-			// Encontrou
+			// Found
 			auto range = getPage(it, _sd.page);
 
 			if (range.second && range.first.first != range.first.second && std::distance(range.first.first, range.first.second) > 0u) {
 
-				_packet.addUint32(_sd.page);															// P�gina atual
-				_packet.addUint32(NUMBER_OF_PAGE_MENU_REGISTRY((uint32_t)it->second.size()));		// P�ginas
+				_packet.addUint32(_sd.page);															// Current page
+				_packet.addUint32(NUMBER_OF_PAGE_MENU_REGISTRY((uint32_t)it->second.size()));		// Pages
 
-				// N�mero de registros
+				// Number of records
 				_packet.addUint16((unsigned short)std::distance(range.first.first, range.first.second));
 
 				RankCharacterEntry::iterator it_chr_entry;
@@ -156,7 +156,7 @@ void RankRegistryManager::pageToPacket(packet& _packet, search_dados& _sd) {
 						it_chr_entry->second.playerInfoToPacket(_packet);
 					else {
 
-						// N�o tem character Info do player, WARNING
+						// Player has no character Info, WARNING
 						_smp::message_pool::getInstance().push(new message("[RankRegistryManager::pageToPacket][WARNING] Nao tem o Character Info do player[UID="
 								+ std::to_string(it_entry->second.getUID()) + "], manda valor padrao para nao da erro no cliente.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -165,10 +165,10 @@ void RankRegistryManager::pageToPacket(packet& _packet, search_dados& _sd) {
 				}
 
 			}else
-				_packet.addZeroByte(10); // 4 P�gina, 4 P�ginas, e 2 num entrys
+				_packet.addZeroByte(10); // 4 Page, 4 Pages, and 2 num entries
 		
 		}else 
-			_packet.addZeroByte(10); // 4 P�gina, 4 P�ginas, e 2 num entrys
+			_packet.addZeroByte(10); // 4 Page, 4 Pages, and 2 num entries
 
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
@@ -225,7 +225,7 @@ void RankRegistryManager::playerPositionToPacket(packet& _packet, player& _sessi
 					it_chr_entry->second.playerInfoToPacket(_packet);
 				else {
 
-					// N�o tem character Info do player, WARNING
+					// Player has no character Info, WARNING
 					_smp::message_pool::getInstance().push(new message("[RankRegistryManager::playerPositionToPacket][WARNING] Nao tem o Character Info do player[UID=" 
 							+ std::to_string(it->second.getUID()) + "], manda valor padrao para nao da erro no cliente.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -233,10 +233,10 @@ void RankRegistryManager::playerPositionToPacket(packet& _packet, player& _sessi
 				}
 
 			}else
-				_packet.addUint8(ePLAYER_POSITION_RANK_TYPE::PPRT_NOT_RANK); // N�o tem registro do player nesse Menu->Item (Rank)
+				_packet.addUint8(ePLAYER_POSITION_RANK_TYPE::PPRT_NOT_RANK); // Player has no record in this Menu->Item (Rank)
 
 		}else
-			_packet.addUint8(ePLAYER_POSITION_RANK_TYPE::PPRT_NOT_RANK); // N�o tem registro nesse Menu->Item (Rank)
+			_packet.addUint8(ePLAYER_POSITION_RANK_TYPE::PPRT_NOT_RANK); // No record in this Menu->Item (Rank)
 
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
@@ -294,9 +294,9 @@ void RankRegistryManager::sendPlayerFullInfo(player& _session, uint32_t _uid/*Pl
 		it_chr_entry->second.playerCharacterInfoToPacket(p);
 
 		if (!all_overall.empty())
-			p.addUint8(0u);	// OK Tem os dados do Rank Overall
+			p.addUint8(0u);	// OK Has the Rank Overall data
 		else
-			p.addUint8(1u);	// N�o tem os dados do Rank Overall
+			p.addUint8(1u);	// Does not have the Rank Overall data
 
 		for (auto& el : all_overall)
 			el.second.toCompactPacket(p);
@@ -353,7 +353,7 @@ void RankRegistryManager::sendPageFoundPlayer(player& _session, FoundPlayer& _fp
 			// New Page, Page Found Player
 			_sd.page = (uint32_t)_fp.second;
 
-			// Encontrou
+			// Found
 			auto range = getPage(it, _sd.page);
 
 			if (range.second && range.first.first != range.first.second && std::distance(range.first.first, range.first.second) > 0u) {
@@ -363,16 +363,16 @@ void RankRegistryManager::sendPageFoundPlayer(player& _session, FoundPlayer& _fp
 				p.addUint8(_sd.rank_menu);
 				p.addUint8(_sd.rank_menu_item);
 
-				// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+				// Options discontinued in Fresh UP!, but it still keeps them in the packets
 				p.addUint8(_sd.term_s5_type);
 				
-				// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+				// Options discontinued in Fresh UP!, but it still keeps them in the packets
 				p.addUint8(_sd.class_type);
 
-				p.addUint32(_sd.page);																// P�gina atual
-				p.addUint32(NUMBER_OF_PAGE_MENU_REGISTRY((uint32_t)it->second.size()));		// P�ginas
+				p.addUint32(_sd.page);																// Current page
+				p.addUint32(NUMBER_OF_PAGE_MENU_REGISTRY((uint32_t)it->second.size()));		// Pages
 
-				// N�mero de registros
+				// Number of records
 				p.addUint16((unsigned short)std::distance(range.first.first, range.first.second));
 
 				RankCharacterEntry::iterator it_chr_entry;
@@ -385,7 +385,7 @@ void RankRegistryManager::sendPageFoundPlayer(player& _session, FoundPlayer& _fp
 						it_chr_entry->second.playerInfoToPacket(p);
 					else {
 
-						// N�o tem character Info do player, WARNING
+						// Player has no character Info, WARNING
 						_smp::message_pool::getInstance().push(new message("[RankRegistryManager::sendPageFoundPlayer][WARNING] Nao tem o Character Info do player[UID="
 								+ std::to_string(it_entry->second.getUID()) + "], manda valor padrao para nao da erro no cliente.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -420,7 +420,7 @@ void RankRegistryManager::sendPageFoundPlayer(player& _session, FoundPlayer& _fp
 
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::sendPageFoundPlayer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Relan�a a exception por que quem d� a resposta de error para o cliente � quem chamou essa fun��o
+		// Rethrow the exception because the one who gives the error response to the client is the caller of this function
 		throw;
 	}
 }
@@ -471,7 +471,7 @@ void RankRegistryManager::searchPlayerByNicknameAndSendPage(player& _session, st
 
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::searchPlayerByNicknameAndSendPage][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Relan�a que quem manda a resposta de erro para o cliente � a quem chamou essa fun��o
+		// Rethrow because the one who sends the error response to the client is the caller of this function
 		throw;
 	}
 }
@@ -517,7 +517,7 @@ void RankRegistryManager::searchPlayerByRankAndSendPage(player& _session, uint32
 
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::searchPlayerByRankAndSendPage][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Relan�a que quem manda a resposta de erro para o cliente � a quem chamou essa fun��o
+		// Rethrow because the one who sends the error response to the client is the caller of this function
 		throw;
 	}
 }
@@ -541,7 +541,7 @@ FoundPlayer RankRegistryManager::searchPlayerByNickname(std::string _nickname, s
 			throw exception("[RankRegistryManager::searchPlayerByNickname][Error] Search Rank:{\n" + _sd.toString() 
 					+ "\n} _nickname is invalid(empty).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::RANK_REGISTRY_MANAGER, 6, 0));
 
-		// Find player By nickname, sem Case sensitive
+		// Find player By nickname, case insensitive
 		auto it_player = std::find_if(m_character_entry.begin(), m_character_entry.end(), [&](auto& _el) {
 			return _el.second.getNickname() != nullptr && 
 #if defined(_WIN32)
@@ -559,7 +559,7 @@ FoundPlayer RankRegistryManager::searchPlayerByNickname(std::string _nickname, s
 			pthread_mutex_unlock(&m_cs);
 #endif
 			
-			return ret; // N�o tem o player nos registros com esse nickname
+			return ret; // The player is not in the records with this nickname
 		}
 
 		key_menu km(_sd.rank_menu, _sd.rank_menu_item);
@@ -567,7 +567,7 @@ FoundPlayer RankRegistryManager::searchPlayerByNickname(std::string _nickname, s
 		auto it_map = m_entry.find(km);
 
 		if (it_map == m_entry.end() || it_map->second.empty())
-			return ret;	// N�o tem nenhum registro nesse Rank Menu->Item
+			return ret;	// There is no record in this Rank Menu->Item
 
 		auto it_entry = std::find_if(it_map->second.begin(), it_map->second.end(), [&](auto& _el) {
 			return _el.second.getUID() == it_player->second.getUID();
@@ -581,13 +581,13 @@ FoundPlayer RankRegistryManager::searchPlayerByNickname(std::string _nickname, s
 			pthread_mutex_unlock(&m_cs);
 #endif
 			
-			return ret;	// N�o tem registro do player no Rank Menu->item
+			return ret;	// Player has no record in the Rank Menu->item
 		}
 
 		// Calcule Page
 		auto diff = std::distance(it_map->second.begin(), it_entry);
 
-		ret.first = (it_entry->second.getCurrentPosition() - 1u) % LIMIT_REGISTRY_FOR_PAGE; // Possition relative at page
+		ret.first = (it_entry->second.getCurrentPosition() - 1u) % LIMIT_REGISTRY_FOR_PAGE; // Position relative to page
 		ret.second = (int)diff / LIMIT_REGISTRY_FOR_PAGE;
 
 #if defined(_WIN32)
@@ -640,7 +640,7 @@ FoundPlayer RankRegistryManager::searchPlayerByRank(uint32_t _position, search_d
 			pthread_mutex_unlock(&m_cs);
 #endif
 
-			return ret;	// N�o tem nenhum registro nesse Rank Menu->Item
+			return ret;	// There is no record in this Rank Menu->Item
 		}
 
 		if (_position > it_map->second.size())
@@ -660,13 +660,13 @@ FoundPlayer RankRegistryManager::searchPlayerByRank(uint32_t _position, search_d
 			pthread_mutex_unlock(&m_cs);
 #endif
 
-			return ret;	// N�o tem registro do player no Rank Menu->item
+			return ret;	// Player has no record in the Rank Menu->item
 		}
 
 		// Calcule Page
 		auto diff = std::distance(it_map->second.begin(), it_entry);
 
-		ret.first = (it_entry->second.getCurrentPosition() - 1u) % LIMIT_REGISTRY_FOR_PAGE; // Possition relative at page
+		ret.first = (it_entry->second.getCurrentPosition() - 1u) % LIMIT_REGISTRY_FOR_PAGE; // Position relative to page
 		ret.second = (int)diff / LIMIT_REGISTRY_FOR_PAGE;
 
 #if defined(_WIN32)
@@ -762,7 +762,7 @@ void RankRegistryManager::initialize() {
 #endif
 
 #ifdef _DEBUG
-		// Teste de tempo de carregamento
+		// Load time test
 		std::clock_t begin = std::clock(), finish = 0u;
 
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::initialize][Log] Comecei a carregar. std::clock: " + std::to_string(begin), CL_FILE_LOG_AND_CONSOLE));
@@ -802,11 +802,11 @@ void RankRegistryManager::initialize() {
 		// Log
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::initialize][Log] Inicializou o Rank Registry Manager com sucesso!", CL_FILE_LOG_AND_CONSOLE));
 
-		// Sucesso
+		// Success
 		m_state = true;
 
 #ifdef _DEBUG
-		// Teste de tempo de carregamento
+		// Load time test
 		finish = std::clock();
 
 		_smp::message_pool::getInstance().push(new message("[RankRegistryManager::initialize][Log] Terminei de carregar. std::clock: " 
@@ -894,10 +894,10 @@ std::map< eRANK_OVERALL, RankRegistry > RankRegistryManager::getAllOverallInfoFr
 
 				if (it != it_entry->second.end())
 					v_rcr.insert(std::make_pair(menu_item, it->second));
-				else // N�o tem info do player no Menu->Item (Rank), add item vazio para enviar para o cliente
+				else // No player info in the Menu->Item (Rank), add an empty item to send to the client
 					v_rcr.insert(std::make_pair(menu_item, RankRegistry()));
 
-			}else // N�o tem o Item do Menu->Item (Rank), add item vazio para enviar para o cliente
+			}else // No Item for the Menu->Item (Rank), add an empty item to send to the client
 				v_rcr.insert(std::make_pair(menu_item, RankRegistry()));
 
 		}
@@ -956,7 +956,7 @@ std::pair< RankEntryValueRange, bool > RankRegistryManager::getPage(RankEntry::i
 					+ ", ITEM=" + std::to_string((unsigned short)_registrys->first.m_item) + ", PAGES=" + std::to_string(num_pages) 
 					+ ", REGISTRYS=" + std::to_string(num_registrys) + "], passa a ultima pagina para ele.", CL_FILE_LOG_AND_CONSOLE));
 
-			// _page � uma referen�a para trocar aqui quando o player pedir uma p�gina que n�o tem
+			// _page is a reference to change here when the player requests a page that does not exist
 			_page = (uint32_t)num_pages - 1u;
 		}
 
@@ -999,7 +999,7 @@ void RankRegistryManager::init_log() {
 
 		try {
 
-			// Dir do arquivo .ini ou padr�o se n�o tiver
+			// Directory from the .ini file, or the default if there is none
 			ReaderIni ini(_INI_PATH);
 
 			ini.init();
@@ -1012,15 +1012,15 @@ void RankRegistryManager::init_log() {
 
 				if (std::filesystem::exists(status)) {
 
-					dir = tmp_dir;	// O diret�rio do Arquivo .ini existe, usa esse diret�rio
+					dir = tmp_dir;	// The directory from the .ini file exists, use that directory
 
 				}else if (
 #if defined(_WIN32)
-					_mkdir(tmp_dir.c_str()) == 0/*Criou o direit�rio com sucesso*/
+					_mkdir(tmp_dir.c_str()) == 0/*Directory created successfully*/
 #elif defined(__linux__)
-					mkdir(tmp_dir.c_str(), MODE_DIR_LOG) == 0/*Criou o direit�rio com sucesso*/
+					mkdir(tmp_dir.c_str(), MODE_DIR_LOG) == 0/*Directory created successfully*/
 #endif
-				)	// Tenta cria o diret�rio que est� no Arquivo .ini, se conseguir usa esse diret�rio criado
+				)	// Try to create the directory from the .ini file, and if successful use that created directory
 					dir = tmp_dir;
 				else
 					throw exception("[RankRegistryManager::init_log][Error] Nao conseguiu criar o diretorio[" + tmp_dir 
@@ -1037,8 +1037,8 @@ void RankRegistryManager::init_log() {
 			// Log
 			_smp::message_pool::getInstance().push(new message("[RankRegistryManager::init_log][Log] Nao consguiu pegar o diretorio do Arquivo .ini, usando o diretorio padrao \"Log\".", CL_FILE_LOG_AND_CONSOLE));
 
-			// N�o tem o log dir do arquivo ini, usa o padr�o
-			// Verifica se diret�rio padr�o est� criado, se n�o cria ele
+			// There is no log dir in the ini file, use the default
+			// Check whether the default directory exists, and create it if not
 			dir = "Log";
 
 			auto s = std::filesystem::status(dir);
@@ -1062,7 +1062,7 @@ void RankRegistryManager::init_log() {
 		tm ti{ 0 };
 		time_t day_time = 0u;
 
-		// Atualiza o Day Time do Log para o atual e guarda ele na vari�vel
+		// Update the Log Day Time to the current one and store it in the variable
 		std::time(&day_time);
 
 #if defined(_WIN32)

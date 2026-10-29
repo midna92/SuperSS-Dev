@@ -1,6 +1,6 @@
-// Arquivo session.h
-// Criado em 04/06/2017 por Acrisio
-// Definição da classe session
+// File session.h
+// Created on 04/06/2017 by Acrisio
+// Definition of class session
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -29,14 +29,14 @@
 namespace stdA {
 	class threadpool_base;
 
-// Tempo em millisegundos que a session pode ficar conectada sem logar-se, receber a autorização
+// Time in milliseconds that the session can stay connected without logging in, i.e. receiving authorization
 #define STDA_TIME_LIMIT_NON_AUTHORIZED	10000ul
 
-	// estrutura que guarda os dados do player, de request de packet
+	// structure that stores the player data for packet requests
 	struct ctx_check_packet {
 #define CHK_PCKT_INTERVAL_LIMIT 1000	// Miliseconds
-#define CHK_PCKT_COUNT_LIMIT	5		// Vezes que pode solicitar pacote dentro do intervalo
-#define CHK_PCKT_NUM_PCKT_MRY	3		// Ele Guarda os 3 ultimos pacotes verificados
+#define CHK_PCKT_COUNT_LIMIT	5		// Number of times a packet can be requested within the interval
+#define CHK_PCKT_NUM_PCKT_MRY	3		// It stores the last 3 packets checked
 		ctx_check_packet() {
 			clear();
 		};
@@ -130,7 +130,7 @@ namespace stdA {
 		unsigned char last_index;
 	};
 
-	// Estrutura para sincronizar o uso de buff, para não limpar o socket(session) antes dele ser liberado
+	// Structure to synchronize buff usage, so the socket (session) is not cleared before it is released
 	struct stUseCtx {
 		stUseCtx() {
 			
@@ -231,9 +231,9 @@ namespace stdA {
 			pthread_mutex_unlock(&m_cs);
 #endif
 
-			return spin <= 0 && quit; // pode excluir(limpar) a session
+			return spin <= 0 && quit; // can delete (clear) the session
 		};
-		// Verifica se pode excluir a session, se não seta a flag quit para o prox method que devolver excluir ela
+		// Check whether the session can be deleted, if not, set the quit flag for the next method that returns so it deletes it
 		bool checkCanQuit() {
 
 			auto can = false;
@@ -340,7 +340,7 @@ namespace stdA {
 			void lock();
 			void unlock();
 
-			// Usando para syncronizar outras coisas da session, tipo pacotes
+			// Used to synchronize other things in the session, such as packets
 			void lockSync();
 			void unlockSync();
 
@@ -395,10 +395,10 @@ namespace stdA {
 
 			ctx_check_packet m_check_packet;
 
-			// session autorizada pelo server, fez o login corretamente
+			// session authorized by the server, logged in correctly
 			unsigned char m_is_authorized;
 
-			// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+			// Marks in the session that the socket got disconnected (DC), it reached the TCP retransmission limit when transmitting data
 			// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 			bool m_connection_timeout;
 
@@ -422,10 +422,10 @@ namespace stdA {
 		private:
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;
-			CRITICAL_SECTION m_cs_lock_other;	// Usado para bloquear outras coisas (sincronizar os pacotes, por exemplo)
+			CRITICAL_SECTION m_cs_lock_other;	// Used to block other things (synchronize packets, for example)
 #elif defined(__linux__)
 			pthread_mutex_t m_cs;
-			pthread_mutex_t m_cs_lock_other;	// Usado para bloquear outras coisas (sincronizar os pacotes, por exemplo)
+			pthread_mutex_t m_cs_lock_other;	// Used to block other things (synchronize packets, for example)
 #endif
 
 			int64_t m_request_recv;				// Requests recv buff

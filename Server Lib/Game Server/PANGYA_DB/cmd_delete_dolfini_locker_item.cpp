@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_dolfini_locker_item.cpp
-// Criado em 03/06/2018 as 00:49 por Acrisio
-// Implementa��o da classe CmdDeleteDolfiniLockerItem
+// File cmd_delete_dolfini_locker_item.cpp
+// Created on 03/06/2018 at 00:49 by Acrisio
+// Implementation of the class CmdDeleteDolfiniLockerItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteDolfiniLockerItem::~CmdDeleteDolfiniLockerItem() {
 
 void CmdDeleteDolfiniLockerItem::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

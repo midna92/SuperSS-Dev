@@ -1,6 +1,6 @@
-// Arquivo data_iff.h
-// Criado em 03/10/2017 por Acrisio
-// Definição das estruturas do iff pangya
+// File data_iff.h
+// Created on 03/10/2017 by Acrisio
+// Definition of the pangya iff structures
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -26,7 +26,7 @@
 #define EMPTY_ARRAY_PRICE(_price) (bool)!std::count_if(_price, (_price + (sizeof(_price) / sizeof(_price[0]))), [](auto& el) { return el != 0; })
 #define SUM_ARRAY_PRICE_ULONG(_price) (unsigned int)std::accumulate(_price, (_price + (sizeof(_price) / sizeof(_price[0]))), 0u)
 
-// Aqui para não fazer o pack em outras bibliotecas
+// Here so the pack is not done in other libraries
 #if defined(__linux__)
 #pragma pack(1)
 #endif
@@ -39,18 +39,18 @@ namespace stdA {
 				memset(this, 0, sizeof(Head));
 			};
 			unsigned short count_element;       // Number of Objects on file
-			unsigned short flag_ligacao;        // Flag de ligação com outros IFF
-			unsigned int  version;				// Versão do IFF
+			unsigned short flag_ligacao;        // Link flag to other IFFs
+			unsigned int  version;				// IFF version
 		};
 
-		// Shop Dados
+		// Shop Data
 		struct ShopDados {
 			void clear() {
 				memset(this, 0, sizeof(ShopDados));
 			};
 			unsigned int  price;
 			unsigned int  sale_price;			// By TH S4 - (Sale Price) Desconto (price - sale_price) = Desconto
-			unsigned int  sell_price;			// By TH S4 - (Used Price) Preço de revenda do item, porém foi feito no beta do season 1, e depois desativado
+			unsigned int  sell_price;			// By TH S4 - (Used Price) Resale price of the item, but it was made in the season 1 beta, and later disabled
 			struct FlagShop {
 				struct _8bits {
 					unsigned char bit0 : 1;
@@ -71,12 +71,12 @@ namespace stdA {
 						unsigned char can_dup : 1;
 						unsigned char unknown : 1;
 						unsigned char block_mail_and_personal_shop : 1;
-						unsigned char is_saleable : 1;	// Pang(Only Purchase, CP Gift and Purchase) (is_saleable e is_giftable vira flag de só Purchase CP ou Pang)
-						unsigned char is_giftable : 1;	// CP só pode ser presenteado (is_saleable e is_giftable vira flag de só Purchase CP ou Pang)
-						unsigned char only_display : 1;	// Apenas Display no shop
+						unsigned char is_saleable : 1;	// Pang(Only Purchase, CP Gift and Purchase) (is_saleable and is_giftable become a flag for Purchase only, CP or Pang)
+						unsigned char is_giftable : 1;	// CP can only be gifted (is_saleable and is_giftable become a flag for Purchase only, CP or Pang)
+						unsigned char only_display : 1;	// Display only in the shop
 					} stFlagShop;
 					struct _stIconShop {
-						unsigned short : 8;	// Flag Shop é a estrutura de cima, tenho que fazer isso por que está dentro de uma union
+						unsigned short : 8;	// Flag Shop is the structure above, I have to do this because it is inside a union
 						unsigned short is_new : 1;
 						unsigned short is_hot : 1;
 						unsigned short unknown_bit2 : 1;
@@ -89,13 +89,13 @@ namespace stdA {
 					//_8bits _byte[2];
 					// Byte 1
 /*#define IFF_cash			_byte[0].bit0	// 1 point 0 pang
-#define IFF_personal_shop	_byte[0].bit1	// aqui é flag de que pode vender no personal shop e enviar por email
-#define IFF_dup_normal		_byte[0].bit2	// aqui é flag de dup, acho
-#define IFF_gift			_byte[0].bit3	// Não sei
-#define IFF_time			_byte[0].bit4	// Esse aqui Bloquea o Item de mandar no personal shop e enviar no mail
-#define IFF_shop_sale		_byte[0].bit5	// purchase e gift (essa flag com o bit6, fica purchase somente)
-#define IFF_condition		_byte[0].bit6	// gift somente (essa flag com o bit5, fica purchase somente)
-#define IFF_item_pack		_byte[0].bit7	// ver(Display) somente // (ACHO) Esse bit só vi ele ativo nos 3 coupon gacha, item pack é um item normal que funciona como pack(setItem), ai tem que ver qual é o single do item para trocar o typeid
+#define IFF_personal_shop	_byte[0].bit1	// this flag means it can be sold in the personal shop and sent by email
+#define IFF_dup_normal		_byte[0].bit2	// this is the dup flag, I think
+#define IFF_gift			_byte[0].bit3	// I do not know
+#define IFF_time			_byte[0].bit4	// This one blocks the Item from being sent in the personal shop and mail
+#define IFF_shop_sale		_byte[0].bit5	// purchase and gift (this flag with bit6, becomes purchase only)
+#define IFF_condition		_byte[0].bit6	// gift only (this flag with bit5, becomes purchase only)
+#define IFF_item_pack		_byte[0].bit7	// view (Display) only // (I THINK) I only saw this bit active in the 3 coupon gacha, item pack is a normal item that works as a pack(setItem), so one must check which is the single of the item to change the typeid
 					// Byte 2
 #define IFF_novo			_byte[1].bit1
 #define IFF_hot				_byte[1].bit2*/
@@ -107,14 +107,14 @@ namespace stdA {
 						// Byte 1
 #define IFF_time_limit		_bits.bit0
 					} uTimeShop;*/
-					unsigned char active : 1;	// Item por tempo
-					unsigned char dia;			// Tempo em Dias, 1, 7, 15, 30 e 365 && 0xFF fica 0x6D, por que é 0x16D = 365
+					unsigned char active : 1;	// Time-limited item
+					unsigned char dia;			// Time in Days, 1, 7, 15, 30 and 365 && 0xFF becomes 0x6D, because 0x16D = 365
 				} time_shop;
 			};
 			FlagShop flag_shop;
 		};
 
-		// Tiki Shop Dados
+		// Tiki Shop Data
 		struct TikiShopDados {
 			void clear() {
 				memset(this, 0, sizeof(TikiShopDados));
@@ -131,12 +131,12 @@ namespace stdA {
 			unsigned int  tiki_pang;
 		};
 
-		// Date Dados
+		// Date Data
 		struct DateDados {
 			void clear() {
 				memset(this, 0, sizeof(DateDados));
 			};
-			unsigned int  active_date : 1, : 0;	// 1 Actived, 0 Desatived
+			unsigned int  active_date : 1, : 0;	// 1 Activated, 0 Deactivated
 			SYSTEMTIME date[2];					// Date[0] Start, Date[1] End
 		};
 
@@ -161,7 +161,7 @@ namespace stdA {
 				unsigned char level : 7;
 				unsigned char is_max : 1;
 			};
-			stLevel level;			// é signed aqui
+			stLevel level;			// it is signed here
 			char icon[43];
 			ShopDados shop;
 			TikiShopDados tiki;
@@ -185,8 +185,8 @@ namespace stdA {
 			};
 			unsigned int  tipo_item;
 			char mpet[40];
-			short c[5];			// esse aqui, quando o item é por tempo, aqui é o preço dos dias, 1, 7, 15, 30 e 365 dias
-			short point;		// By TH S4 - (Point) Aqui é o No Limit time preço, mas quando compra ele passa o preço de -1, mas no visual ele mostra o valor que está aqui
+			short c[5];			// this one, when the item is time-limited, is the price for the days, 1, 7, 15, 30 and 365 days
+			short point;		// By TH S4 - (Point) Here is the No Limit time price, but when purchasing it passes the price -1, but visually it shows the value that is here
 		};
 
 		// Achievment IFF
@@ -214,7 +214,7 @@ namespace stdA {
 			struct RewardItem {
 				unsigned int  _typeid[3];
 				unsigned int  qntd[3];
-				unsigned int  time[3];	// !@[ACHO] que é isso aqui também
+				unsigned int  time[3];	// !@[I THINK] this is also that
 			};
 			CounterItem counter_item;
 			RewardItem reward_item;
@@ -235,7 +235,7 @@ namespace stdA {
 			struct Reward {
 				unsigned int  _typeid[2];
 				unsigned int  qntd[2];
-				unsigned int  time[2];		// !@[ACHO] que é isso aqui também
+				unsigned int  time[2];		// !@[I THINK] this is also that
 			};
 			Quest quest;
 			Reward reward;
@@ -257,8 +257,8 @@ namespace stdA {
 				TOP,				// By TH S4 - (UPPER)
 				BOTTOM,				// By TH S4 - (LOWER)
 				HEAD,				// By TH S4 - (HEAD)
-				ARM,				// By TH S4 - (ARM == braço) CLOVE
-				FOOT,				// By TH S4 - (FOOT == pé) SHOE
+				ARM,				// By TH S4 - (ARM == arm) CLOVE
+				FOOT,				// By TH S4 - (FOOT == foot) SHOE
 				ETC,				// By TH S4 - (ETC) ACESSORY_OR_BASE
 				SUB_LEG,			// By TH S4 - (SUB_LEG)
 				UCC,				// By TH S4 - (UCC)
@@ -269,7 +269,7 @@ namespace stdA {
 				memset(this, 0, sizeof(Part));
 			};
 			char mpet[40];
-			PART_TYPE type_item;				// By S4 TH - (Category) o tipo do item, 0, 2 normal, 8 e 9 UCC, 5 acho que é base ou commom Item
+			PART_TYPE type_item;				// By S4 TH - (Category) the item type, 0, 2 normal, 8 and 9 UCC, 5 I think it is base or common Item
 			union u_part_type {
 				unsigned int  ul_part_type;
 				struct {
@@ -354,11 +354,11 @@ namespace stdA {
 				};
 			};
 			u_part_type position_mask;				// By S4 TH - (PosMask) Position Mask
-			u_part_type hide_mask;					// By S4 TH - (HideMask) Esconde os outros parts do slots
-			char texture[3][40];					// 3 Textura
+			u_part_type hide_mask;					// By S4 TH - (HideMask) Hides the other parts of the slots
+			char texture[3][40];					// 3 Texture
 			char texture_org[3][40];				// By S4 TH - (OrgTex) 3 Org Textura(Original)
 			unsigned short c[5];					// C = Stats[Control, Power, Spin e etc]
-			unsigned short slot[5];					// O mesmo que C, só que esse é slot
+			unsigned short slot[5];					// Same as C, but this one is slot
 			char equipable_with[40];				// By TH S4
 			unsigned int sub_part[2];				// By TH S4
 			unsigned short character_slot;			// By TH S4
@@ -366,7 +366,7 @@ namespace stdA {
 			unsigned short npc_slot;
 			unsigned short point;
 			unsigned int  valor_rental;
-			unsigned int  is_beginners;				// Item para iniciantes
+			unsigned int  is_beginners;				// Item for beginners
 			std::string toString() {
 #ifdef _DEBUG
 				return "Typeid: " + std::to_string(_typeid)
@@ -456,10 +456,10 @@ namespace stdA {
 		// SetItem IFF
 		/*Typeids
 		*
-		* Ex: 0x2420 20 01 (2420 "NÃO EXIBE MAIS NO SHOP") (20 "HANA") (01 "ID")
-		* 0x(2420~243F)(char_id)(item_id) Character Set "EXIBE NO SHOP"
-		* 0x(2440~245F)(char_id)(item_id) Character Set "EXIBE NO SHOP"
-		* 0x(24C0~24DE)(char_id)(item_id) Character Set "NÃO EXIBE NO SHOP"
+		* Ex: 0x2420 20 01 (2420 "NO LONGER SHOWN IN SHOP") (20 "HANA") (01 "ID")
+		* 0x(2420~243F)(char_id)(item_id) Character Set "SHOWN IN SHOP"
+		* 0x(2440~245F)(char_id)(item_id) Character Set "SHOWN IN SHOP"
+		* 0x(24C0~24DE)(char_id)(item_id) Character Set "NOT SHOWN IN SHOP"
 		*
 		* 0x(2480~249F) ClubSet
 		* 0x(24A0~24BF) Ball
@@ -469,8 +469,8 @@ namespace stdA {
 		* 0x(24DF00~24DFBF) Caddie
 		* 0x(24E0~24FF) Caddie
 		*
-		* 0x(2500~251F) Card e Card Pack
-		* 0x(2520~253F) Anel
+		* 0x(2500~251F) Card and Card Pack
+		* 0x(2520~253F) Ring
 		*
 		*/
 		struct SetItem : public Base {
@@ -483,7 +483,7 @@ namespace stdA {
 				ITEM,					// By TH S4 - (ITEM) CHARACTER_SET_DUP_AND_ITEM_PASSIVE_AND_ACTIVE
 				CADDIE,					// By TH S4 - (CADDIE)
 				CARD,					// By TH S4 - (CARD)
-				AUXPART,				// Anel
+				AUXPART,				// Ring
 			};
 			// By S4 TH
 			enum SUB_TYPE_CHAR : unsigned char {
@@ -516,7 +516,7 @@ namespace stdA {
 			};
 			Package package;
 			unsigned short c[5];			// By TH S4 - (COM[5])
-			unsigned short point;			// pode ser align memory
+			unsigned short point;			// may be memory alignment
 		};
 
 		// Mascot IFF
@@ -527,21 +527,21 @@ namespace stdA {
 			unsigned char price[5];
 			unsigned char c[5];
 			struct Efeito {
-				short power_drive;			// power sem perder ctrl
+				short power_drive;			// power without losing ctrl
 				short drop_rate;			// % drop item
-				short power_gauge;			// (Acho) rate ou valor de unit
+				short power_gauge;			// (I think) rate or unit value
 				short pang_rate;			// % pang
 				short exp_rate;				// % exp
 				unsigned char item_slot;
 			};
 			struct Mensagem {
 				unsigned char active;
-				short flag;					// pode ser 1 flag de 2 bytes ou 2 flag de 1 byte
+				short flag;					// may be 1 flag of 2 bytes or 2 flags of 1 byte
 				unsigned int  change_price;
 			};
 			struct BonusPang {
-				unsigned short hitting;	// Acertando pang
-				unsigned short missing;	// Errando pang
+				unsigned short hitting;	// Hitting pang
+				unsigned short missing;	// Missing pang
 			};
 			Efeito efeito;
 			Mensagem msg;
@@ -551,16 +551,16 @@ namespace stdA {
 		// AuxPart IFF
 		struct AuxPart : public Base {
 			void clear() { memset(this, 0, sizeof(AuxPart)); };
-			unsigned short cc[5];	// [0] qntd, (Acho) usa para tempo e essas coisas, 1day, 7, 15, 30, 365 e assim vai
+			unsigned short cc[5];	// [0] qty, (I think) used for time and such, 1day, 7, 15, 30, 365 and so on
 			unsigned char c[5];
 			unsigned char slot[5];
 			struct stEfeito {
-				unsigned short power_drive;	// power sem penalidade
+				unsigned short power_drive;	// power without penalty
 				unsigned short drop_rate;
-				unsigned short power_gauge;	// Rate ou valor de unit
+				unsigned short power_gauge;	// Rate or unit value
 				unsigned short pang_rate;
 				unsigned short exp_rate;
-				unsigned short link_power_drive; // No USA/KR cominda com a descrição do scarlet ring de +2 se equipado com o Crinsom Ring
+				unsigned short link_power_drive; // In USA/KR it matches the description of the scarlet ring of +2 if equipped with the Crinsom Ring
 				std::string toString() {
 					return "Efeito [\n\tPOWER_DRIVE: " + std::to_string(power_drive) 
 						+ ";\n\tDROP_RATE: " + std::to_string(drop_rate)
@@ -572,7 +572,7 @@ namespace stdA {
 				};
 			};
 			stEfeito efeito;
-			uint32_t link_item_typeid;	// No USA/KR cominda com a descrição do scarlet ring de +2 se equipado com o Crinsom Ring
+			uint32_t link_item_typeid;	// In USA/KR it matches the description of the scarlet ring of +2 if equipped with the Crinsom Ring
 			std::string toString() {
 #ifdef _DEBUG
 				return "Typeid: " + std::to_string(_typeid)
@@ -636,13 +636,13 @@ namespace stdA {
 			enum Type : unsigned char {
 				COOKIE,		// CASH
 				PANG,		// PANG
-				ESPECIAL,	// ACHO, por que não tem nenhum item com esse, não vi pelo menos
+				ESPECIAL,	// I THINK so, because there is no item with this one, at least I haven't seen one
 				UPGRADE
 			};
 			void clear() { memset(this, 0, sizeof(CaddieItem)); };
 			char faceTex[40];						// By TH S4 - FaceTex[40]
 			char bodyTex[40];						// By TH S4 - BodyTex[40]
-			unsigned short price[5];				// By TH S4 - (COM[5]) - price[0..3] == preço no shop de 1 dia a 30dias(1mês), price[4] == unit start power guage que começa o jogo
+			unsigned short price[5];				// By TH S4 - (COM[5]) - price[0..3] == shop price from 1 day to 30 days (1 month), price[4] == unit start power gauge that starts the game
 			unsigned short point;	
 		};
 
@@ -694,7 +694,7 @@ namespace stdA {
 				T_NPC,
 			};
 			unsigned char tipo;
-			// era 40, mas acho que esse 1 de baixo seja o valor \0(final da string)
+			// it was 40, but I think this 1 below is the \0 value (end of the string)
 			char img[41];				// By TH S4 - (Image)
 			unsigned short c[5];
 			struct Efeito {
@@ -705,11 +705,11 @@ namespace stdA {
 			char subIcon[40];			// By TH S4 - SubIcon[40]
 			char slotImg[40];			// By TH S4 - SlotImg[40]
 			char buffImg[40];			// By TH S4 - BuffImg[40]
-			unsigned short tempo;		// By TH S4 - (UseTime) Os Cards especial que tem tempo
+			unsigned short tempo;		// By TH S4 - (UseTime) The special Cards that have time
 			unsigned short volume;		// By TH S4 - (Volume) Book
 			unsigned int  position;		// By TH S4 - (CardIndex) Slot
-			unsigned int  flag1;		// !@flag que guarda alguns valores de de N, R, SR, SC e etc
-			unsigned int  flag2;		// flag que guarda alguns valores de de N, R, SR, SC e etc
+			unsigned int  flag1;		// !@flag that stores some values of N, R, SR, SC, etc
+			unsigned int  flag2;		// flag that stores some values of N, R, SR, SC, etc
 			std::string toString() {
 				return "Typeid: " + std::to_string(_typeid)
 					+ "(0x" + hex_util::ltoaToHex(_typeid) + ")"
@@ -770,17 +770,17 @@ namespace stdA {
 			unsigned short c[5];
 			unsigned short slot[5];
 			struct WorkShop {
-				int tipo;							// -1 não pode up rank e nem level, 0 pode tudo
-				unsigned int  rank_s_stat;			// para o stat do rank S bonus
+				int tipo;							// -1 cannot up rank nor level, 0 can do everything
+				unsigned int  rank_s_stat;			// for the rank S bonus stat
 				unsigned int  total_recovery;		// recovery points
-				float mastery_rate;					// Rate que vai pegar por hole jogados
-				unsigned int  tipo_rank_s;			// power, spin, control end special para EXP
-				unsigned int  can_transform;		// Que pode Transformar nas taqueiras especiais
-				// o de cima pode ser short e aqui em baixo ter outra flag
+				float mastery_rate;					// Rate that it will get per hole played
+				unsigned int  tipo_rank_s;			// power, spin, control and special for EXP
+				unsigned int  can_transform;		// That can Transform into the special clubs
+				// the one above may be short and here below have another flag
 			};
 			WorkShop work_shop;
-			unsigned int  ulUnknown;		// Pode ser do WorkShop, mas ainda não sei
-			unsigned int  text_pangya;		// [text_pangya_Logo] é o texto que aparece quando acerta pangya, Uso como ClubSet Original Transforme por que todos vão ter o mesmo logo, e o número do logo é o do Original
+			unsigned int  ulUnknown;		// May be from the WorkShop, but I do not know yet
+			unsigned int  text_pangya;		// [text_pangya_Logo] is the text that appears when hitting pangya, I use it as ClubSet Original Transform because all will have the same logo, and the logo number is the one of the Original
 		};
 
 		// ClubSetWorkShopLevelUpLimit IFF
@@ -789,7 +789,7 @@ namespace stdA {
 			unsigned int  tipo;
 			unsigned int  rank;
 			unsigned short c[5];
-			unsigned short point;			// pode ser align memory
+			unsigned short point;			// may be memory alignment
 		};
 
 		// ClubSetWorkShopLevelUpProb IFF
@@ -854,7 +854,7 @@ namespace stdA {
 				unsigned char max_score_hole[18];
 			};
 			ParScore par_score_hole;
-			unsigned short usUnknown; // pode ser o point
+			unsigned short usUnknown; // may be the point
 		};
 
 		// CutinInfomation IFF
@@ -876,7 +876,7 @@ namespace stdA {
 			unsigned int  _typeid;						// By TH S4 - (NormalTypeid)
 			unsigned int  rare_typeid;					// By TH S4 - (RareTypeid)
 			unsigned int  rarity;						// By TH S4 - (Rarity)
-			uCondition	  tipo;							// By TH S4 - (Condition) 1= 1PS, 2= 2PS, 4= Erro Pangya com especial(Toma, Spike Cobra)
+			uCondition	  tipo;							// By TH S4 - (Condition) 1= 1PS, 2= 2PS, 4= Pangya Error with special (Toma, Spike Cobra)
 			unsigned int  sector;						// By TH S4 - (Img_Pos)
 			unsigned int  character_id;					// By TH S4 - (CharIndex) 0 Nuri, 1 Hana, 2 Azer e etc
 			struct Img {
@@ -892,7 +892,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(Enchant)); };
 			unsigned int  active;
 			unsigned int  _typeid;
-			uint64_t pang;	// Value para ser descontado
+			uint64_t pang;	// Value to be discounted
 		};
 
 		// Furniture IFF
@@ -922,7 +922,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(HairStyle)); };
 			unsigned char cor;				// By TH S4 - (HairID)
 			unsigned char character;		// By TH S4 - (CharID)
-			uint16_t point;					// pode ser align memory
+			uint16_t point;					// may be memory alignment
 		};
 
 		// Match IFF
@@ -931,7 +931,7 @@ namespace stdA {
 			unsigned int  active;
 			unsigned int  _typeid;
 			char name[80];
-			unsigned char level;			// By TH S4 - (Level) Não sei o que é, mas em todos é 10(0x0A)
+			unsigned char level;			// By TH S4 - (Level) I do not know what it is, but in all of them it is 10 (0x0A)
 			char trophy[6][40];				// By TH S4 - (icon[6][40])
 			unsigned char ucUnknown2[3];
 		};
@@ -941,7 +941,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(Skin)); };
 			char mpet[40];
 			unsigned char horizontal_scroll;	// By TH S4 - (HScroll)
-			unsigned char vertical_scroll;		// By TH S4 - (VScroll) 256 efeito de rolagem vertical
+			unsigned char vertical_scroll;		// By TH S4 - (VScroll) 256 vertical scroll effect
 			unsigned short price[5];
 		};
 
@@ -949,45 +949,45 @@ namespace stdA {
 		struct Ability {
 			enum class eEFFECT_TYPE : unsigned int  {
 				NONE, 
-				PIXEL,							// Pixel o valor em rate
-				PIXEL_BY_WIND_NO_ITEM,			// Pixel dependendo do vento o valor em rate, se usar item ou ps cancela o efeito
-				PIXEL_OVER_WIND_NO_ITEM,		// Pixel acima de um vento o valor em rate, se usar item ou ps cancela o efeito
-				PIXEL_BY_WIND,					// Pixel dependendo do vento o valor em rate
-				PIXEL_2,						// Pixel o valor em rate
-				PIXEL_WITH_WEAK_WIND,			// Pixel quando o vento é fraco o valor em rate
-				POWER_GAUGE_TO_START_HOLE,		// Power Gauge no começo do hole para cada hole o valor em rate
-				POWER_GAUGE_MORE_ONE,			// Power Gauge da uma barra a+ 33 Units, o valor em rate
-				POWER_GUAGE_TO_START_GAME,		// Power Gauge no começo do jogo o valor em rate
-				PAWS_NOT_ACCUMULATE,			// Patinha não acumula com outro efeito de patinha, probabilidade está em rate
-				SWITCH_TWO_EFFECT,				// Item com 2 efeitos não simutâneos, qual efeito está em rate, 0 Yards, 1 Power Gauge
-				EARCUFF_DIRECTION_WIND,			// Muda a direção do vento, a probabilidade quem escolhe é o pangya
-				COMBINE_ITEM_EFFECT,			// Combinação de itens, em rate tem o ID da combinação em (IFF)SetEffectTable
-				SAFETY_CLIENT_RANDOM,			// Safety a probabilidade o cliente que decide
-				PIXEL_RANDOM,					// Pixel aleatório o valor está em rate, a probabilidade o cliente que decide
-				WIND_1M_RANDOM,					// Wind 1m aleatório a probabilidade está em rate
-				PIXEL_BY_WIND_MIDDLE_DOUBLE,	// Pixel dependendo do vento, vento médio dá o dobro, o valor em rate
-				GROUND_100_PERCENT_RONDOM,		// Terreno 100% aleatório, a probabilidade está em rate
-				ASSIST_MIRACLE_SIGN,			// Assist Olho Mágico
-				VECTOR_SIGN,					// Mostra uma seta na bola, dependendo do vento, tipo trajetória do assist
+				PIXEL,							// Pixel the value in rate
+				PIXEL_BY_WIND_NO_ITEM,			// Pixel depending on the wind the value in rate, if an item or ps is used it cancels the effect
+				PIXEL_OVER_WIND_NO_ITEM,		// Pixel above a certain wind the value in rate, if an item or ps is used it cancels the effect
+				PIXEL_BY_WIND,					// Pixel depending on the wind the value in rate
+				PIXEL_2,						// Pixel the value in rate
+				PIXEL_WITH_WEAK_WIND,			// Pixel when the wind is weak the value in rate
+				POWER_GAUGE_TO_START_HOLE,		// Power Gauge at the start of the hole for each hole the value in rate
+				POWER_GAUGE_MORE_ONE,			// Power Gauge gives one extra bar + 33 Units, the value in rate
+				POWER_GUAGE_TO_START_GAME,		// Power Gauge at the start of the game the value in rate
+				PAWS_NOT_ACCUMULATE,			// Patinha does not stack with another patinha effect, probability is in rate
+				SWITCH_TWO_EFFECT,				// Item with 2 non-simultaneous effects, which effect is in rate, 0 Yards, 1 Power Gauge
+				EARCUFF_DIRECTION_WIND,			// Changes the wind direction, the probability is chosen by pangya
+				COMBINE_ITEM_EFFECT,			// Item combination, in rate there is the combination ID in (IFF)SetEffectTable
+				SAFETY_CLIENT_RANDOM,			// Safety the probability is decided by the client
+				PIXEL_RANDOM,					// Random Pixel the value is in rate, the probability is decided by the client
+				WIND_1M_RANDOM,					// Random Wind 1m the probability is in rate
+				PIXEL_BY_WIND_MIDDLE_DOUBLE,	// Pixel depending on the wind, medium wind gives double, the value in rate
+				GROUND_100_PERCENT_RONDOM,		// 100% random Terrain, the probability is in rate
+				ASSIST_MIRACLE_SIGN,			// Magic Eye Assist
+				VECTOR_SIGN,					// Shows an arrow on the ball, depending on the wind, like the assist trajectory
 				ASSIST_TRAJECTORY_SHOT,			// Assist Trajectory Shot
-				PAWS_ACCUMULATE,				// Patinha acumula com outro efeito de patinha, a probabilidade está em rate
-				POWER_GAUGE_FREE,				// Power Gauge, ganha 1 Power Gauge de graça para usar na tacada
-				SAFETY_RANDOM,					// Safety aleatório a probabilidade está em rate
-				ONE_IN_ALL_STATS,				// [UNKNOWN] mas vou deixar o (Combine Itens) ONE IN ALL STATS, dá 1 para todos os stats, power, cltr, accuracy, spin e curve
-				POWER_GAUGE_BY_MISS_SHOT,		// Power Gauge mesmo que erre pangya ou use item de Power Gauge ele ainda dá Power Gauge
-				PIXEL_BY_WIND_2,				// Pixel dependendo do vento o valor está em rate
-				PIXEL_WITH_RAIN,				// Pixel quando estiver chovendo(recovery) o valor está em rate
-				NO_RAIN_EFFECT,					// Sem efeito dá chuva no terreno
-				PUTT_MORE_10Y_RANDOM,			// +10y no Putt aleatório a probabilidade está em rate
+				PAWS_ACCUMULATE,				// Patinha stacks with another patinha effect, the probability is in rate
+				POWER_GAUGE_FREE,				// Power Gauge, gains 1 free Power Gauge to use on the shot
+				SAFETY_RANDOM,					// Random Safety the probability is in rate
+				ONE_IN_ALL_STATS,				// [UNKNOWN] but I will leave the (Combine Itens) ONE IN ALL STATS, gives 1 to all stats, power, cltr, accuracy, spin and curve
+				POWER_GAUGE_BY_MISS_SHOT,		// Power Gauge even if you miss pangya or use a Power Gauge item it still gives Power Gauge
+				PIXEL_BY_WIND_2,				// Pixel depending on the wind the value is in rate
+				PIXEL_WITH_RAIN,				// Pixel when it is raining (recovery) the value is in rate
+				NO_RAIN_EFFECT,					// No effect from rain on the terrain
+				PUTT_MORE_10Y_RANDOM,			// Random +10y on Putt the probability is in rate
 				UNKNOWN_31,
-				MIRACLE_SIGN_RANDOM,			// Olho Mágico aleatório a probabilidade está em rate
+				MIRACLE_SIGN_RANDOM,			// Random Magic Eye the probability is in rate
 				UNKNOWN_33,
-				DECREASE_1M_OF_WIND,			// Diminui 1m do vento
+				DECREASE_1M_OF_WIND,			// Decreases the wind by 1m
 			};
 			void clear() { memset(this, 0, sizeof(Ability)); };
 			unsigned int  _typeid;
 			struct Efeito {
-				unsigned int  EfeitoOrNo[3];	// Ativação na hora da tacada(ACHO)
+				unsigned int  EfeitoOrNo[3];	// Activation at the time of the shot (I THINK)
 				unsigned int  type[3];
 				float rate[3];
 			};
@@ -1042,9 +1042,9 @@ namespace stdA {
 			unsigned int  active;
 			unsigned int  id;
 			char name[36];
-			unsigned int  BetterOrNo;		// Os Primeiro da classe
+			unsigned int  BetterOrNo;		// The first of the class
 			unsigned int  char_id;			// Character ID, 4000000 | ID
-			unsigned int  _class;			// Class do GrandPrix
+			unsigned int  _class;			// GrandPrix class
 			unsigned int  parts_typeid[24];
 			unsigned char ucUnknown[452];
 			std::string toString() {
@@ -1076,26 +1076,26 @@ namespace stdA {
 		//
 		// (1) 2 bit == 3 Event, 2 bit == 0 Normal
 		// (2) Class "Aba"
-		// (3) Tipo (course ou config diferente)
-		// (4) Id (sequência) horários
+		// (3) Type (course or different config)
+		// (4) Id (sequence) schedules
 		struct GrandPrixData {
 		public:
 			enum GP_ABA : unsigned char {
-				ROOKIE,			// Tutorial joga em istância - Aba Tuto
-				BEGINNER,		// Class 1 a 2				 - Aba 1
-				JUNIOR,			// Class 3 a 5				 - Aba 2
-				SENIOR,			// Class 6 a 9				 - Aba 3
+				ROOKIE,			// Tutorial plays in an instance - Tuto Tab
+				BEGINNER,		// Class 1 to 2				 - Tab 1
+				JUNIOR,			// Class 3 to 5				 - Tab 2
+				SENIOR,			// Class 6 to 9				 - Tab 3
 			};
 
 		public:
 			void clear() { memset(this, 0, sizeof(GrandPrixData)); };
 			unsigned int  active;
 			unsigned int  _typeid;
-			unsigned int  typeid_link;			// Link para outros IFF do GrandPrix de suporte
+			unsigned int  typeid_link;			// Link to other support GrandPrix IFFs
 			unsigned int  type;
 			unsigned short time_hole;
 			char name[64];
-			unsigned short usUnknown;			// Esse pode ser continuação do nome, ou um valor desconhecido
+			unsigned short usUnknown;			// This may be a continuation of the name, or an unknown value
 			struct Ticket {
 				unsigned int  _typeid;
 				unsigned int  qntd;
@@ -1108,7 +1108,7 @@ namespace stdA {
 				unsigned char hole_cup_x2;
 			};
 			Flag flag;
-			unsigned int  rule;					// Typeid da rule, regra do GrandPrix Ex: 1m, 10s, 15s e etc
+			unsigned int  rule;					// Typeid of the rule, GrandPrix rule Ex: 1m, 10s, 15s, etc
 			struct CourseInfo {
 				unsigned int  course;
 				unsigned int  modo;
@@ -1125,20 +1125,20 @@ namespace stdA {
 				int score_min;
 			};
 			BOT bot;
-			unsigned int  _class;				// estava dificuldade no antigo, mas acho que seja classe
-			unsigned int  pang;					// Pode ser os pangs que o bot faz
+			unsigned int  _class;				// it was difficulty in the old one, but I think it is class
+			unsigned int  pang;					// May be the pangs that the bot earns
 			struct Reward {
 				unsigned int  _typeid[5];
 				unsigned int  qntd[5];
-				unsigned int  time[5];			// Time do Item se for por tempo
+				unsigned int  time[5];			// Item time if it is time-limited
 			};
 			Reward reward;
-			SYSTEMTIME open;					// aqui é quando abre a sala do gp
-			SYSTEMTIME start;					// aqui quando começa
-			SYSTEMTIME end;						// aqui quando termina
-			unsigned int  ulUnknown;			// Não sei o que seja direito, mas pode ser outro do clear_GP
-			unsigned int  clear_gp_typeid;		// typeid do GrandPrix que bloquea ele se nao estiver concluido
-			unsigned int  lock_yn;				// Esse só bloquea se tiver um typeid de um gp no de cima sem concluir
+			SYSTEMTIME open;					// here is when the gp room opens
+			SYSTEMTIME start;					// here when it starts
+			SYSTEMTIME end;						// here when it ends
+			unsigned int  ulUnknown;			// I do not know exactly what it is, but it may be another of the clear_GP
+			unsigned int  clear_gp_typeid;		// typeid of the GrandPrix that blocks it if not completed
+			unsigned int  lock_yn;				// This one only blocks if there is a typeid of a gp in the one above that is not completed
 			char info[512];
 			uint32_t ulUnknown2;
 		};
@@ -1152,7 +1152,7 @@ namespace stdA {
 			struct Reward {
 				unsigned int  _typeid[5];
 				unsigned int  qntd[5];
-				unsigned int  time[5];	// Time do Item se for por tempo
+				unsigned int  time[5];	// Item time if it is time-limited
 			};
 			Reward reward;
 			unsigned int  trophy_typeid;
@@ -1163,7 +1163,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(GrandPrixSpecialHole)); };
 			unsigned int  active;
 			unsigned int  _typeid;
-			unsigned int  seq;				// Esse é a ordem dos holes, de 1 a 18 dependendo da quantidade de holes
+			unsigned int  seq;				// This is the order of the holes, from 1 to 18 depending on the number of holes
 			unsigned int  course;
 			unsigned int  hole;
 		};
@@ -1222,16 +1222,16 @@ namespace stdA {
 			};
 			GachaRange gacha_range;
 			/*
-			+ Tipos dos filtros
-			+ 1, 2, 3 e 4, Estação, Primavera, Verão, Outono, Inverno
-			+ 5 Clubset, 6 SetItem, 7 Orelha(Ear), 8 Asa(Wing), 9 Luva
-			+ 10 Anel Mão direita, 11 Anel Mão esquerda, 12 Caddie
-			+ 13 Mascot, 14 Summer(verias de verão), 15 Natal, 16 Halloween
-			+ 17 Homem, 18 Mulher, 19 Nuri, 20 Hana, 21 Azer, 22 Cecilia
+			+ Filter types
+			+ 1, 2, 3 and 4, Season, Spring, Summer, Autumn, Winter
+			+ 5 Clubset, 6 SetItem, 7 Ear, 8 Wing, 9 Glove
+			+ 10 Right Hand Ring, 11 Left Hand Ring, 12 Caddie
+			+ 13 Mascot, 14 Summer (summer variants), 15 Christmas, 16 Halloween
+			+ 17 Man, 18 Woman, 19 Nuri, 20 Hana, 21 Azer, 22 Cecilia
 			+ 23 Max, 24 Kooh, 25 Arin, 26 Kaz, 27 Lucia, 28 Nell, 29 Spika
-			+ 30 Nuri R, 31 Hana R, (32 é Azer R, mas a ntreev não fez ele), 33 Cecilia R
+			+ 30 Nuri R, 31 Hana R, (32 is Azer R, but ntreev did not make it), 33 Cecilia R
 			*/
-			unsigned int  filter[10];		// Filtros com os tipos dos item para pesquisar no outro IFF do memorial shop rare item 
+			unsigned int  filter[10];		// Filters with the item types to search in the other IFF of the memorial shop rare item 
 			bool hasFilter(unsigned int  _filter) {
 				if (_filter == 0)
 					return false;
@@ -1282,18 +1282,18 @@ namespace stdA {
 			Gacha gacha;
 			unsigned int  _typeid;
 			unsigned int  probability;
-			unsigned int  rare_type;		// Tipo Raro, EX: -1 - 0 normal, 1 - 2 raro, 3 - 4 Super raro
+			unsigned int  rare_type;		// Rare Type, EX: -1 - 0 normal, 1 - 2 rare, 3 - 4 Super rare
 			/*
-			+ Tipos dos filtros
-			+ 1, 2, 3 e 4, Estação, Primavera, Verão, Outono, Inverno
-			+ 5 Clubset, 6 SetItem, 7 Orelha(Ear), 8 Asa(Wing), 9 Luva
-			+ 10 Anel Mão direita, 11 Anel Mão esquerda, 12 Caddie
-			+ 13 Mascot, 14 Summer(verias de verão), 15 Natal, 16 Halloween
-			+ 17 Homem, 18 Mulher, 19 Nuri, 20 Hana, 21 Azer, 22 Cecilia
+			+ Filter types
+			+ 1, 2, 3 and 4, Season, Spring, Summer, Autumn, Winter
+			+ 5 Clubset, 6 SetItem, 7 Ear, 8 Wing, 9 Glove
+			+ 10 Right Hand Ring, 11 Left Hand Ring, 12 Caddie
+			+ 13 Mascot, 14 Summer (summer variants), 15 Christmas, 16 Halloween
+			+ 17 Man, 18 Woman, 19 Nuri, 20 Hana, 21 Azer, 22 Cecilia
 			+ 23 Max, 24 Kooh, 25 Arin, 26 Kaz, 27 Lucia, 28 Nell, 29 Spika
-			+ 30 Nuri R, 31 Hana R, (32 é Azer R, mas a ntreev não fez ele), 33 Cecilia R
+			+ 30 Nuri R, 31 Hana R, (32 is Azer R, but ntreev did not make it), 33 Cecilia R
 			*/
-			unsigned int  filter[10];		// O mesmo de cima
+			unsigned int  filter[10];		// Same as above
 			char s_string[28];
 			std::string toString() {
 #ifdef _DEBUG
@@ -1323,8 +1323,8 @@ namespace stdA {
 			unsigned int  active;
 			unsigned int  _typeid;
 			char mpet[40];
-			char texture[3][40];		// Textura
-			char texture_org[3][40];	// Textura Original
+			char texture[3][40];		// Texture
+			char texture_org[3][40];	// Original Texture
 		};
 
 		// ArtifactManaInfo IFF
@@ -1334,7 +1334,7 @@ namespace stdA {
 			unsigned int  _typeid;
 			unsigned int  mana_typeid;
 			char info[132];
-			unsigned int  type;			// 0 = Todos modos (VS, CAMP, MATCH ...) menos GrandPrix, 1 = Só 18H, 3 = Só GrandPrix
+			unsigned int  type;			// 0 = All modes (VS, CAMP, MATCH ...) except GrandPrix, 1 = 18H only, 3 = GrandPrix only
 			unsigned int  ulUnknown;
 			std::string toString() {
 #ifdef _DEBUG
@@ -1427,10 +1427,10 @@ namespace stdA {
 			uAbilityType  type;					// By TH S4 - (btAbilityType)
 			unsigned int  stay_time;			// By TH S4 - (iStayTime)
 			uSuccessType success_type;			// By TH S4 - (btSuccessType)
-			uEffectType  effect_type;			// By TH S4 - (btEffectType) 0 Seu Furniture, 3 Furniture de outra pessoa
+			uEffectType  effect_type;			// By TH S4 - (btEffectType) 0 Your Furniture, 3 Someone else's Furniture
 			unsigned int  set_in_typeid;		// By TH S4 - (dwSetInTID)
-			unsigned int  max_qntd;				// By TH S4 - (iMaxCountAtFurniture) O maximo de item que pode ganhar
-			SYSTEMTIME    date;					// Date Inicio
+			unsigned int  max_qntd;				// By TH S4 - (iMaxCountAtFurniture) The maximum number of items that can be won
+			SYSTEMTIME    date;					// Start Date
 			unsigned int  during_time;			// By TH S4 - (dwDuringTime)
 			struct Item {
 				unsigned int  _typeid;
@@ -1472,7 +1472,7 @@ namespace stdA {
 			struct Reward {
 				unsigned int  _typeid[2];
 				unsigned int  qntd[2];
-				unsigned int  time[2];		// Time do Item se for por tempo
+				unsigned int  time[2];		// Item time if it is time-limited
 			};
 			Reward reward;
 			char description[132];
@@ -1488,20 +1488,20 @@ namespace stdA {
 				SYSTEMTIME start;
 				SYSTEMTIME end;
 			};
-			Date date;	// ACHO
+			Date date;	// I THINK
 		};
 
-		// PointShop IFF(Antigo Sistema de troca de itens da Tiki)
+		// PointShop IFF(Old Tiki item exchange system)
 		struct PointShop {
 			void clear() { memset(this, 0, sizeof(PointShop)); };
 			unsigned int  active;
 			unsigned int  _typeid;
-			unsigned int  point;		// Qntd de pontos que vai trocar pelo itens
-			unsigned int  qntd;			// Qntd de itens que vai trocar pelos pontos
-			unsigned int  rarity;		// raridade
+			unsigned int  point;		// Amount of points that will be exchanged for the items
+			unsigned int  qntd;			// Amount of items that will be exchanged for the points
+			unsigned int  rarity;		// rarity
 		};
 
-		// ScratchRewardSetting IFF (Achei no KR)
+		// ScratchRewardSetting IFF (Found in KR)
 		struct ScratchRewardSetting {
 			struct ItemCounter {
 				uint32_t _typeid;
@@ -1521,7 +1521,7 @@ namespace stdA {
 		+ 2 - Unknown
 		+ 3 - Unknown
 		+ 4 - +1px
-		+ 5 - +Yard, o valor está em effect_add_power
+		+ 5 - +Yard, the value is in effect_add_power
 		+ 6 - +1 all stats
 		+ 7 - (-1) wind speed
 		+ 8 - Patinha
@@ -1532,7 +1532,7 @@ namespace stdA {
 				UNKNOWN_V2,
 				CUTIN,
 				PIXEL,
-				BASE,			// O 5 - esse aqui é um valor base, que usa quando quer da power sem ps e quando quer combinar item  só roupa Hana R
+				BASE,			// The 5 - this one is a base value, used when you want to give power without ps and when you want to combine items  only Hana R clothes
 				ONE_ALL_STATS,
 				WIND_DECREASE,
 				PATINHA,
@@ -1546,7 +1546,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(SetEffectTable)); };
 			unsigned int  id;
 			struct Effect {
-				unsigned int  effect[3];	// eEFFECT = Effect[0~2] é o da descrição em cima
+				unsigned int  effect[3];	// eEFFECT = Effect[0~2] is the one in the description above
 				unsigned int  type[3];		// eEFFECT_TYPE = type[0~2], 2 Game, 4 Room e 8 Lounge
 			};
 			Effect effect;
@@ -1557,7 +1557,7 @@ namespace stdA {
 			Item item;
 			unsigned char ucUnknown[11];
 			unsigned short slot[5];
-			unsigned short effect_add_power;	// Força sem penalidade
+			unsigned short effect_add_power;	// Power without penalty
 			std::string toString() {
 #ifdef _DEBUG
 				return "ID: " + std::to_string(id)
@@ -1596,10 +1596,10 @@ namespace stdA {
 			unsigned int  active;
 			unsigned int  type;
 			unsigned int  _typeid;
-			uint32_t purchases_without_wait; // Total de compras sem tempo de espera (wait_time_hours == 0)
-			uint32_t purchases_with_wait;    // Total de compras com tempo de espera
-			uint32_t wait_time_hours;        // Tempo de espera em horas até a próxima compra
-			uint32_t max_repeat_cycles;      // Total de vezes que o ciclo se repete
+			uint32_t purchases_without_wait; // Total purchases without wait time (wait_time_hours == 0)
+			uint32_t purchases_with_wait;    // Total purchases with wait time
+			uint32_t wait_time_hours;        // Wait time in hours until the next purchase
+			uint32_t max_repeat_cycles;      // Total number of times the cycle repeats
 			struct Date {
 				SYSTEMTIME start;
 				SYSTEMTIME end;
@@ -1612,7 +1612,7 @@ namespace stdA {
 			void clear() { memset(this, 0, sizeof(SpecialPrizeItem)); };
 			unsigned int  _typeid;
 			unsigned int  type;
-			float rate;				// Não ainda
+			float rate;				// Not yet
 			std::string toString() {
 #ifdef _DEBUG
 				return "Typeid: " + std::to_string(_typeid) + "(0x" + hex_util::ltoaToHex(_typeid) + ")"
@@ -1634,10 +1634,10 @@ namespace stdA {
 				SYSTEMTIME start;
 				SYSTEMTIME end;
 			};
-			Date date;	// ACHO
+			Date date;	// I THINK
 		};
 
-		// TikiShopBase estrutura de suporte do (Antigo Sistema de troca de itens da Tiki)
+		// TikiShopBase support structure of the (Old Tiki item exchange system)
 		struct TikiShopBase {
 			void clear() { memset(this, 0, sizeof(TikiShopBase)); };
 			unsigned int  id;
@@ -1645,23 +1645,23 @@ namespace stdA {
 			char name[35];
 		};
 
-		// TikiPointTable IFF(Antigo Sistema de troca de itens da Tiki)
+		// TikiPointTable IFF(Old Tiki item exchange system)
 		struct TikiPointTable : public TikiShopBase {
 			void clear() { memset(this, 0, sizeof(TikiPointTable)); };
 			unsigned int  min;
 			unsigned int  max;
 		};
 
-		// TikieRecipe IFF(Antigo Sistema de troca de itens da Tiki)
+		// TikieRecipe IFF(Old Tiki item exchange system)
 		struct TikiRecipe : public TikiShopBase {
 			void clear() { memset(this, 0, sizeof(TikiRecipe)); };
 			unsigned int  recipe_qntd[3];
 		};
 
-		// TikiSpecialTable IFF(Antigo Sistema de troca de itens da Tiki)
+		// TikiSpecialTable IFF(Old Tiki item exchange system)
 		struct TikiSpecialTable : public TikiShopBase {
 			void clear() { memset(this, 0, sizeof(TikiSpecialTable)); };
-			unsigned int  qntd;				// qtnd de recipes, max 4;
+			unsigned int  qntd;				// number of recipes, max 4;
 			unsigned int  recipe_qntd[4];
 		};
 

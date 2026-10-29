@@ -1,6 +1,6 @@
-// Arquivo WinPort.cpp
-// Criado em 10/03/2021 as 11:18 por Acrisio
-// Porte dos utilies do Windows para Linux
+// File WinPort.cpp
+// Created on 10/03/2021 at 11:18 by Acrisio
+// Port of the Windows utilities to Linux
 
 #include "WinPort.h"
 #include <sys/time.h>
@@ -141,7 +141,7 @@ BOOL TzSpecificLocalTimeToSystemTime(const TIME_ZONE_INFORMATION* _tz, const SYS
         _10micro_tz = __timezone * 10000000;        // seconds to 10 microseconds
 
     }else
-        _10micro_tz = _tz->Bias * 60 * 10000000;    // Minutos to 10 microseconds
+        _10micro_tz = _tz->Bias * 60 * 10000000;    // Minutes to 10 microseconds
 
     FILETIME ft_local{ 0u };
 
@@ -167,7 +167,7 @@ BOOL SystemTimeToTzSpecificLocalTime(const TIME_ZONE_INFORMATION* _tz, const SYS
         _10micro_tz = __timezone * 10000000;        // seconds to 10 microseconds
     
     }else
-        _10micro_tz = _tz->Bias * 60 * 10000000;    // Minutos to 10 microseconds
+        _10micro_tz = _tz->Bias * 60 * 10000000;    // Minutes to 10 microseconds
 
     FILETIME ft{ 0u };
 

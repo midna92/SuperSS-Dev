@@ -1,6 +1,6 @@
-// Arquivo calculator_player.cpp
-// Criado em 23/11/2020 as 15:15 por Acrisio
-// Implementa��o da classe CalculatorPlayer
+// File calculator_player.cpp
+// Created on 23/11/2020 at 15:15 by Acrisio
+// Implementation of the class CalculatorPlayer
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo attendance_reward_system.cpp
-// Criado em 14/11/2018 as 21:39 por Acrisio
-// Implementa��o da classe AttendanceRewardSystem
+// File attendance_reward_system.cpp
+// Created on 14/11/2018 at 21:39 by Acrisio
+// Implementation of class AttendanceRewardSystem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -81,7 +81,7 @@ AttendanceRewardSystem::AttendanceRewardSystem() : m_load(false), v_item{} {
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initialize
 	initialize();
 }
 
@@ -100,7 +100,7 @@ void AttendanceRewardSystem::initialize() {
 
 	TRY_CHECK;
 
-	// Carrega os Itens do Attendance Reward
+	// Loads the Attendance Reward items
 	CmdAttendanceRewardItemInfo cmd_aric(true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_aric, nullptr, nullptr);
@@ -118,14 +118,14 @@ void AttendanceRewardSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[AttendanceRewardSystem::initialize][Log] Attendance Reward System Carregado com sucesso.", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregou com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -160,7 +160,7 @@ void AttendanceRewardSystem::sendGrandPrixTicket(player& _session) {
 
 	auto pWi = _session.m_pi.findWarehouseItemByTypeid(GRAND_PRIX_TICKET);
 
-	// Envia os 3 Grand Prix para o player, ele n�o tem nenhum ticket ou n�o atingiu o limite
+	// Sends the 3 Grand Prix to the player, they have no ticket or have not reached the limit
 	if (pWi == nullptr || pWi->STDA_C_ITEM_QNTD < LIMIT_GRAND_PRIX_TICKET) {
 
 		stItem item{ 0 };
@@ -182,7 +182,7 @@ void AttendanceRewardSystem::sendGrandPrixTicket(player& _session) {
 		_smp::message_pool::getInstance().push(new message("[AttendanceRewardSystem::sendGrandPrixTicket][Log] player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] enviou os Grand Prix Ticket para ele com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON GAME, s� envia se for diferente de Pang and Exp Pouch
+		// UPDATE ON GAME, only sends if different from Pang and Exp Pouch
 		if (rt != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH) {
 
 			packet p((unsigned short)0x216);
@@ -263,7 +263,7 @@ bool AttendanceRewardSystem::passedOneDay(player& _session) {
 
 	auto diff = getTimeDiff(st, _session.m_pi.ari.last_login);
 
-	// Passou um dia, depois que o player logou no PangYa
+	// A day has passed since the player logged into PangYa
 	return (diff / STDA_10_MICRO_PER_DAY) >= 1;
 }
 
@@ -303,21 +303,21 @@ void AttendanceRewardSystem::requestCheckAttendance(player& _session, packet *_p
 
 	TRY_CHECK;
 
-	if (passedOneDay(_session)) {	// Passou 1 dia depois que o player logou no pangya
+	if (passedOneDay(_session)) {	// 1 day has passed since the player logged into pangya
 
 		_session.m_pi.ari.login = 0u;
 			
-		// Troca o item after para now
+		// Swap the after item to now
 		_session.m_pi.ari.now = _session.m_pi.ari.after;
 
-		// Limpa o After
+		// Clears the After
 		_session.m_pi.ari.after.clear();
 
-		// Atualiza no banco de dados
+		// Updates the database
 		snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateAttendanceReward(_session.m_pi.uid, _session.m_pi.ari), AttendanceRewardSystem::SQLDBResponse, nullptr);
 
 	}else
-		_session.m_pi.ari.login = 1u;	// Ainda n�o passou 1 dia desde que ele logou no pangya
+		_session.m_pi.ari.login = 1u;	// 1 day has not yet passed since they logged into pangya
 
 	packet_func::pacote248(p, &_session, _session.m_pi.ari);
 	packet_func::session_send(p, &_session, 0);
@@ -352,8 +352,8 @@ void AttendanceRewardSystem::requestUpdateCountLogin(player& _session, packet *_
 		throw exception("[AttendanceRewardSystem::requestUpdateCountLogin][Error] player[UID=" + std::to_string(_session.m_pi.uid)
 				+ "] tentou pegar o premio do dia logado, mas ele ja pegou. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ATTENDANCE_REWARD_SYSTEM, 8, 1));
 
-	// Verifica se � o primeiro dia que ele loga, ai tem que criar os 2 item, que ele vai ganha o now e after
-	// Incrementa o count de login do player e d� o reward dele
+	// Checks whether it is the first day they log in, then the 2 items must be created, that they will receive as now and after
+	// Increments the player's login count and gives their reward
 	if (_session.m_pi.ari.counter++ == 0 || _session.m_pi.ari.now._typeid == 0u) {
 			
 		auto reward_item = drawReward(1);
@@ -367,10 +367,10 @@ void AttendanceRewardSystem::requestUpdateCountLogin(player& _session, packet *_
 
 	GetLocalTime(&_session.m_pi.ari.last_login);
 
-	// Zera as Horas deixa s� a date
+	// Zeroes the hours, leaving only the date
 	_session.m_pi.ari.last_login.wMilliseconds = _session.m_pi.ari.last_login.wSecond = _session.m_pi.ari.last_login.wMinute = _session.m_pi.ari.last_login.wHour = 0u;
 
-	// Evento de Login do dia concluido
+	// Daily Login event completed
 	_session.m_pi.ari.login = 1u;
 
 	// Reward
@@ -386,8 +386,8 @@ void AttendanceRewardSystem::requestUpdateCountLogin(player& _session, packet *_
 
 	MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item);
 
-	// Sortea o Pr�ximo Item que ele vai ganhar
-	auto reward_item = drawReward(((_session.m_pi.ari.counter + 1) % 10 == 0) ? 2/*Tipo 2 Papel Box*/ : 1/*Item Normal*/);
+	// Draws the Next Item they will receive
+	auto reward_item = drawReward(((_session.m_pi.ari.counter + 1) % 10 == 0) ? 2/*Type 2 Papel Box*/ : 1/*Item Normal*/);
 
 	if (reward_item == nullptr)
 		throw exception("[AttendanceRewardSystem::requestUpdateCountLogin][Error] nao conseguiu sortear um item para o player. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ATTENDANCE_REWARD_SYSTEM, 7, 0));
@@ -395,10 +395,10 @@ void AttendanceRewardSystem::requestUpdateCountLogin(player& _session, packet *_
 	_session.m_pi.ari.after._typeid = reward_item->_typeid;
 	_session.m_pi.ari.after.qntd = reward_item->qntd;
 
-	// Atualiza no Banco de dados
+	// Updates the Database
 	snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateAttendanceReward(_session.m_pi.uid, _session.m_pi.ari), AttendanceRewardSystem::SQLDBResponse, nullptr);
 
-	// D� 3 Grand Prix Ticket, por que � a primeira vez que o player loga no dia
+	// Gives 3 Grand Prix Tickets, because it is the first time the player logs in today
 	sendGrandPrixTicket(_session);
 
 	// Log
@@ -408,7 +408,7 @@ void AttendanceRewardSystem::requestUpdateCountLogin(player& _session, packet *_
 	// UPDATE Achievement ON SERVER, DB and GAME
 	SysAchievement sys_achieve;
 
-	sys_achieve.incrementCounter(0x6C4000A0u/*Login Count por dia, 1 por dia*/);
+	sys_achieve.incrementCounter(0x6C4000A0u/*Login Count per day, 1 per day*/);
 
 	packet_func::pacote249(p, &_session, _session.m_pi.ari);
 	packet_func::session_send(p, &_session, 0);
@@ -441,7 +441,7 @@ void AttendanceRewardSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[AttendanceRewardSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

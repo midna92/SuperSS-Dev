@@ -1,6 +1,6 @@
-// Arquivo player_mail_box.cpp
-// Criado em 13/01/2021 por Acrisio
-// Implementa��o da classe PlayerMailBox
+// File player_mail_box.cpp
+// Created on 13/01/2021 by Acrisio
+// Implementation of the PlayerMailBox class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -136,7 +136,7 @@ void PlayerMailBox::checkAndUpdate() {
 	LEAVE_CHECK;
 	CATCH_CHECK("checkAndUpdate");
 
-	// Relan�a
+	// Rethrows
 	throw;
 
 	END_CHECK;
@@ -199,7 +199,7 @@ void PlayerMailBox::update() {
 	LEAVE_CHECK;
 	CATCH_CHECK("update");
 
-	// Relan�a para quem chamou tratar
+	// Rethrows for the caller to handle
 	throw;
 	
 	END_CHECK;
@@ -215,14 +215,14 @@ std::vector< MailBox > PlayerMailBox::getPage(uint32_t _page) {
 		throw exception("[PlayerMailBox::getPage][Error] Player[UID=" + std::to_string(m_uid) + "] Page(" 
 				+ std::to_string(_page) + ") invalid page number.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_MAIL_BOX, 2, 0));
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	// Check is Empty
 	if (m_emails.empty())
 		RETURNN_CHECK(mails);
 
-	// Verifica se a p�gina existe
+	// Checks whether the page exists
 	if ((float)_page > std::ceil(m_emails.size() / (float)NUM_OF_EMAIL_PER_PAGE))
 		throw exception("[PlayerMailBox::getPage][Error] Player[UID=" + std::to_string(m_uid) + "] Page(" 
 				+ std::to_string(_page) + ") not exists.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_MAIL_BOX, 3, 0));
@@ -256,7 +256,7 @@ std::vector< MailBox > PlayerMailBox::getPage(uint32_t _page) {
 
 	END_CHECK;
 
-	// Classifica pelo o ultimo email ao chegar no mail box
+	// Sorts by the last email to arrive in the mail box
 	std::sort(mails.begin(), mails.end(), PlayerMailBox::sort_last_arrived);
 
 	return mails;
@@ -268,7 +268,7 @@ std::vector< MailBox > PlayerMailBox::getAllUnreadEmail() {
 
 	TRY_CHECK;
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	if (m_emails.empty())
@@ -279,14 +279,14 @@ std::vector< MailBox > PlayerMailBox::getAllUnreadEmail() {
 	for (auto it = m_emails.rbegin(); it != m_emails.rend(); it++) {
 
 		if (it->second.lida_yn)
-			continue;	// J� foi lido
+			continue;	// Already read
 
 		copyEmailInfoExToMailBox(it->second, mail);
 
-		// Add Email n�o lido
+		// Add unread Email
 		unread.push_back(mail);
 
-		// Verifica se chegou no limite de Email n�o lidos, que pode enviar para o player
+		// Checks whether the limit of unread Emails that can be sent to the player has been reached
 		if (unread.size() >= LIMIT_OF_UNREAD_EMAIL)
 			break;
 	}
@@ -300,7 +300,7 @@ std::vector< MailBox > PlayerMailBox::getAllUnreadEmail() {
 
 	END_CHECK;
 
-	// Classifica pelo o ultimo email ao chegar no mail box
+	// Sorts by the last email to arrive in the mail box
 	std::sort(unread.begin(), unread.end(), PlayerMailBox::sort_last_arrived);
 
 	return unread;
@@ -312,7 +312,7 @@ uint32_t PlayerMailBox::getTotalPages() {
 
 	TRY_CHECK;
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 	
 	total_pages = (uint32_t)std::ceil(m_emails.size() / (float)NUM_OF_EMAIL_PER_PAGE);
@@ -334,17 +334,17 @@ void PlayerMailBox::addNewEmailArrived(int32_t _id) {
 
 	auto it = m_emails.find(_id);
 	
-	// N�o precisa adicionar, o cache j� atualizou ele
+	// No need to add, the cache already updated it
 	if (it != m_emails.end())
 		RETURN_CHECK;
 
-	// N�o encontrou, verifica se o cache est� desatualizado
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Not found, checks whether the cache is out of date
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	it = m_emails.find(_id);
 
-	// Adiciona o email ao cache
+	// Adds the email to the cache
 	if (it == m_emails.end()) {
 
 		CmdEmailInfo2 cmd_ei2(m_uid, _id, true); // Waiter
@@ -363,7 +363,7 @@ void PlayerMailBox::addNewEmailArrived(int32_t _id) {
 	LEAVE_CHECK;
 	CATCH_CHECK("addNewEmailArrived");
 
-	// Relan�a
+	// Rethrows
 	throw;
 
 	END_CHECK;
@@ -379,7 +379,7 @@ EmailInfo PlayerMailBox::getEmailInfo(int32_t _id, bool _ler) {
 		throw exception("[PlayerMailBox::getEmailInfo][Error] Player[UID=" + std::to_string(m_uid) + "] email id(" + std::to_string(_id) 
 				+ ") is invalid.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_MAIL_BOX, 4, 0));
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	// Check is Empty
@@ -391,7 +391,7 @@ EmailInfo PlayerMailBox::getEmailInfo(int32_t _id, bool _ler) {
 
 	if (it != m_emails.end()) {
 
-		// Soma +1 no contador de visitas ao email(foi visto)
+		// Adds +1 to the email visit counter (it was seen)
 		if (_ler) {
 
 			if (!it->second.lida_yn)
@@ -426,7 +426,7 @@ void PlayerMailBox::leftItensFromEmail(int32_t _id) {
 		throw exception("[PlayerMailBox::leftItensFromEmail][Error] Player[UID=" + std::to_string(m_uid) + "] email id(" + std::to_string(_id) 
 				+ ") is invalid.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_MAIL_BOX, 4, 0));
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	// Check is Empty
@@ -448,7 +448,7 @@ void PlayerMailBox::leftItensFromEmail(int32_t _id) {
 	LEAVE_CHECK;
 	CATCH_CHECK("leftItensFromEmail");
 
-	// Relan�a
+	// Rethrows
 	throw;
 
 	END_CHECK;
@@ -470,7 +470,7 @@ void PlayerMailBox::deleteEmail(int32_t* _a_id, uint32_t _count) {
 					+ "), count(" + std::to_string(_count) + ")] is invalid.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PLAYER_MAIL_BOX, 4, 0));
 	}
 
-	// Verifica se o tempo do cache expirou, se sim atualiza ele novamente
+	// Checks whether the cache time has expired, if so updates it again
 	checkAndUpdate();
 
 	// Lambda Print All Email Id(s)
@@ -515,7 +515,7 @@ void PlayerMailBox::deleteEmail(int32_t* _a_id, uint32_t _count) {
 	LEAVE_CHECK;
 	CATCH_CHECK("deleteEmail");
 
-	// Relan�a
+	// Rethrows
 	throw;
 
 	END_CHECK;
@@ -534,7 +534,7 @@ void PlayerMailBox::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void*
 
 		auto pmb = reinterpret_cast< PlayerMailBox* >(_arg);
 
-		// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+		// For now it just exits, I will do another kind of handling later if needed
 		if (_pangya_db.getException().getCodeError() != 0) {
 
 			_smp::message_pool::getInstance().push(new message("[PlayerMailBox::SQLDBResponse][Error] Player[UID=" + std::to_string(pmb->m_uid) + "]" 

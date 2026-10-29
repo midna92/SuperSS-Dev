@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_pass.cpp
-// Criado em 17/03/2018 as 20:53 por Acrisio
-// Implementação da classe CmdVerifyPass
+// File cmd_verify_pass.cpp
+// Created on 17/03/2018 at 20:53 by Acrisio
+// Implementation of class CmdVerifyPass
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,10 +23,10 @@ void CmdVerifyPass::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
     
     checkColumnNumber(1, (uint32_t)_result->cols);
 
-    // Aqui faz as coisas
+    // Does the work here
     uint32_t uid_req = IFNULL(atoi, _result->data[0]);
     m_lastVerify = (m_uid == uid_req ? true : false);
-    // Fim
+    // End
 
     if (!m_lastVerify)
         throw exception("[CmdVerifyPass::lineResult][Error] UID do player info nao e igual ao requisitado. UID Req: " + std::to_string(uid_req) + " != " + std::to_string(m_uid), STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 3, 0));

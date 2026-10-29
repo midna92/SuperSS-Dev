@@ -1,6 +1,6 @@
-// Arquivo cmd_firt_login_check.hpp
-// Criado em 30/03/2018 as 20:14 por Acrisio
-// Defini��o da classe CmdFirstLoginCheck
+// File cmd_firt_login_check.hpp
+// Created on 30/03/2018 at 20:14 by Acrisio
+// Definition of the CmdFirstLoginCheck class
 
 #pragma once
 #ifndef _STDA_CMD_FIRST_LOGIN_CHECK_HPP

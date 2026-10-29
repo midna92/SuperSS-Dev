@@ -1,6 +1,6 @@
-// Arquivo normal_manager_db.cpp
-// Criado em 01/05/2018 as 14:32 por Acrisio
-// Implementação da classe NormalManagerDB
+// File normal_manager_db.cpp
+// Created on 01/05/2018 at 14:32 by Acrisio
+// Implementation of class NormalManagerDB
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -70,7 +70,7 @@ void NormalManagerDB::create(uint32_t _db_instance_num) {
 
 			m_db_instance_num = _db_instance_num;
 
-			// Verifica DB Instance Number
+			// Check DB Instance Number
 			checkDBInstanceNumAndFix();
 
 			// Create Data base Instance and initialize
@@ -128,7 +128,7 @@ void NormalManagerDB::destroy() {
 
 	if (m_state) {
 
-		// Verifica DB Instance Number
+		// Check DB Instance Number
 		checkDBInstanceNumAndFix();
 
 		for (auto i = 0u; i < m_db_instance_num && i < m_dbs.size(); ++i) {
@@ -137,7 +137,7 @@ void NormalManagerDB::destroy() {
 				
 				m_dbs[i]->sendCloseAndWait();
 
-				// clean memory allocate
+				// clean allocated memory
 				delete m_dbs[i];
 
 				m_dbs[i] = nullptr;
@@ -154,7 +154,7 @@ void NormalManagerDB::destroy() {
 
 void NormalManagerDB::checkIsDeadAndRevive() {
 
-	// Verifica DB Instance Number
+	// Check DB Instance Number
 	checkDBInstanceNumAndFix();
 
 	for (auto i = 0u; i < m_db_instance_num && i < m_dbs.size(); ++i)
@@ -194,9 +194,9 @@ void* NormalManagerDB::Revive() {
 				checkIsDeadAndRevive();
 
 #if defined(_WIN32)
-			Sleep(1000); // 1 second para próxima verificação
+			Sleep(1000); // 1 second until the next check
 #elif defined(__linux__)
-			usleep(1000000); // 1 second para próxima verificação
+			usleep(1000000); // 1 second until the next check
 #endif
         }
 
@@ -219,7 +219,7 @@ void* NormalManagerDB::Revive() {
 
 int NormalManagerDB::add(NormalDB::msg_t* _msg) {
 
-	if (!m_state)	// DB not Create, cria ela
+	if (!m_state)	// DB not created, create it
 		create();
 
 	uint32_t index = (uint32_t)(/*std::rand() **/ std::time(nullptr)) % m_dbs.size();
@@ -244,9 +244,9 @@ void NormalManagerDB::freeAllWaiting(std::string _msg) {
 			el->freeAllWaiting(_msg);
 }
 
-// Methods que o normal db faz para o server e o channel
+// Methods that the normal db performs for the server and the channel
 void NormalManagerDB::insertLoginLog(session& _session, NormalDB::msg_t* _msg) {
-    // Ainda não implementei depois faço isso, só criei essa função de exemplo
+    // Not implemented yet, I will do it later, I only created this example function
     return;
 }
 

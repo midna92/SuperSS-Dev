@@ -1,6 +1,6 @@
-// Arquivo cmd_update_item_qntd.hpp
-// Criado em 31/05/2018 as 10:42 por Acrisio
-// Defini��o da classe CmdUpdateItemQntd
+// File cmd_update_item_qntd.hpp
+// Created on 31/05/2018 at 10:42 by Acrisio
+// Definition of class CmdUpdateItemQntd
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_ITEM_QNTD_HPP

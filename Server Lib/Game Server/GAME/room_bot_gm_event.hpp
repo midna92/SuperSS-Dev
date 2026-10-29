@@ -1,6 +1,6 @@
-// Arquivo room_bot_gm_event.hpp
-// Criado em 02/11/2020 as 01:31 por Acrisio
-// Defini��o da classe RoomBotGMEvent
+// File room_bot_gm_event.hpp
+// Created on 02/11/2020 at 01:31 by Acrisio
+// Definition of the RoomBotGMEvent class
 
 #pragma once
 #ifndef _STDA_ROOM_BOT_GM_EVENT_HPP
@@ -99,7 +99,7 @@ namespace stdA {
 #endif
 			};
 
-			// Static Instance vector strunct
+			// Static Instance vector struct
 			struct RoomBotGMEventInstanciaCtx {
 			public:
 				enum eSTATE : unsigned char {
@@ -158,16 +158,16 @@ namespace stdA {
 					pthread_mutex_lock(&m_cs);
 #endif
 
-					// Est� bloqueado
+					// Is locked
 					m_lock = true;
 
 				};
 				void unlock() {
 
 					if (!m_lock)
-						return;	// N�o est� bloqueado
+						return;	// Is not locked
 
-					// Desbloquea
+					// Unlock
 					m_lock = false;
 
 #if defined(_WIN32)
@@ -193,10 +193,10 @@ namespace stdA {
 
 			virtual bool isAllReady() override;
 
-			// O Bot GM Event de tempo tem o seu pr�prio startGame j� que quem come�a � o server
+			// The time-based Bot GM Event has its own startGame since the server is the one that starts it
 			bool startGame();
 
-			// Init Instance vector and lock, para n�o d� erro no destrutor por que vai destruir ele primeiro do que a instance da classe
+			// Init Instance vector and lock, to avoid an error in the destructor since it will be destroyed before the class instance
 			static void initFirstInstance();
 
 		protected:
@@ -223,31 +223,31 @@ namespace stdA {
 			// Game
 			virtual void finish_game() override;
 
-			// Para as classes filhas, empedir que exclua a sala dependendo do se tem player ou n�o na sala
+			// For the child classes, prevent the room from being deleted depending on whether there are players in the room or not
 			virtual bool isDropRoom() override;
 
 		protected:
 			stStateRoomBotGMEventSync m_state_rbge;
 
-			SYSTEMTIME m_create_room;			// Data que a sala foi criada
+			SYSTEMTIME m_create_room;			// Date the room was created
 
 			timer *m_timer_count_down;
 
 			thread *m_wait_time_start;
 			
 #if defined(_WIN32)
-			HANDLE m_hEvent_wait_start;			// Evento para terminar a thread sync wait time start
-			HANDLE m_hEvent_wait_start_pulse;	// Evento para pulsar a thread sync wait time start para ir mais r�pido quando um player entra na sala
+			HANDLE m_hEvent_wait_start;			// Event to finish the sync wait time start thread
+			HANDLE m_hEvent_wait_start_pulse;	// Event to pulse the sync wait time start thread to go faster when a player enters the room
 #elif defined(__linux__)
-			Event *m_hEvent_wait_start;			// Evento para terminar a thread sync wait time start
-			Event *m_hEvent_wait_start_pulse;	// Evento para pulsar a thread sync wait time start para ir mais r�pido quando um player entra na sala
+			Event *m_hEvent_wait_start;			// Event to finish the sync wait time start thread
+			Event *m_hEvent_wait_start_pulse;	// Event to pulse the sync wait time start thread to go faster when a player enters the room
 #endif
 
 		protected:
 			std::vector< stReward > m_rewards;
 
 		private:
-			// Static fun��es e variaveis para garantir mexer com o ponteiro das sala Bot GM Event que usar o time com um fun��o callback
+			// Static functions and variables to ensure safe handling of the Bot GM Event room pointer that uses the timer with a callback function
 			static void push_instancia(RoomBotGMEvent* _rbge);
 			static void pop_instancia(RoomBotGMEvent* _rbge);
 

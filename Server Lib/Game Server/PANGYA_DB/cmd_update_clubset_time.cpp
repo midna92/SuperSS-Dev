@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_time.cpp
-// Criado em 01/11/2020 as 03:01 por Acrisio
-// Implementa��o da classe CmdUpdateClubSetItem
+// File cmd_update_clubset_time.cpp
+// Created on 01/11/2020 at 03:01 by Acrisio
+// Implementation of class CmdUpdateClubSetItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateClubSetTime::~CmdUpdateClubSetTime() {
 
 void CmdUpdateClubSetTime::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo threadpl_unit.hpp
-// Criado em 02/12/2018 as 12:11 por Acrisio
-// Definição da classe threadpl_unit, Cuida da comunicação do Auth Server com os outros serveres
+// File threadpl_unit.hpp
+// Created on 02/12/2018 at 12:11 by Acrisio
+// Definition of class threadpl_unit, handles the communication of the Auth Server with the other servers
 
 
 #pragma once

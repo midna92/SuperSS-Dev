@@ -1,6 +1,6 @@
-// Arquivo socketserver.cpp
-// Criado em 01/05/2017 por Acrisio
-// Implementação da classe socketserver
+// File socketserver.cpp
+// Created on 01/05/2017 by Acrisio
+// Implementation of class socketserver
 
 #include "socketserver.h"
 #include "../UTIL/message_pool.h"

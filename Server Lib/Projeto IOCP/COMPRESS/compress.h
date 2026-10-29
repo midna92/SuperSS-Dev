@@ -1,6 +1,6 @@
-// Arquivo compress.h
-// Criado em 24/09/2017 por Acrisio
-// Definição da classe compress
+// File compress.h
+// Created on 24/09/2017 by Acrisio
+// Definition of class compress
 
 #pragma once
 #ifndef _STDA_COMPRESS_H

@@ -1,6 +1,6 @@
-// Arquivo cmd_register_logon.hpp
-// Criado em 01/04/2018 as 21:10 por Acrisio
-// Definição da classe CmdRegisterLogon
+// File cmd_register_logon.hpp
+// Created on 01/04/2018 at 21:10 by Acrisio
+// Definition of class CmdRegisterLogon
 
 #pragma once
 #ifndef _STDA_CMD_REGISTER_LOGON_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_attendance_reward.hpp
-// Criado em 14/11/2018 as 22:39 por Acrisio
-// Defini��o da classe CmdUpdateAttendanceReward
+// File cmd_update_attendance_reward.hpp
+// Created on 14/11/2018 at 22:39 by Acrisio
+// Definition of class CmdUpdateAttendanceReward
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_ATTENDANCE_REWARD_HPP

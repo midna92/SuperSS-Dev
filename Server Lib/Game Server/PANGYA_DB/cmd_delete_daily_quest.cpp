@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_daily_quest.cpp
-// Criado em 24/03/2018 as 22:07 por Acrisio
-// Implementa��o da classe CmdDeleteDailyQuest
+// File cmd_delete_daily_quest.cpp
+// Created on 24/03/2018 at 22:07 by Acrisio
+// Implementation of the class CmdDeleteDailyQuest
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ CmdDeleteDailyQuest::~CmdDeleteDailyQuest() {
 
 void CmdDeleteDailyQuest::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um delete esse aqui
+	// Not used because this one is a delete
 	return;
 }
 

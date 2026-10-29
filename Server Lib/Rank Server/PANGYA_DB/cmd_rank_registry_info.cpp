@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_registry_info.cpp
-// Criado em 16/06/2020 as 15:38 por Acrisio
-// Implementa��o da classe CmdRankRegistryInfo
+// File cmd_rank_registry_info.cpp
+// Created on 16/06/2020 at 15:38 by Acrisio
+// Implementation of the class CmdRankRegistryInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -40,27 +40,27 @@ void CmdRankRegistryInfo::lineResult(result_set::ctx_res* _result, uint32_t _ind
 
 	auto it_map = m_entry.find(km);
 
-	if (it_map != m_entry.end()) { // J� tem essa Menu->Item
+	if (it_map != m_entry.end()) { // Already has this Menu->Item
 
 		key_position kp(rr.getUID(), rr.getCurrentPosition());
 
 		auto ret = it_map->second.insert(std::make_pair(kp, rr));
 
-		// Verifica se inseriu o valor direito no  map
+		// Check whether the value was inserted correctly in the map
 		if (!ret.second) {
 
 			if (ret.first != it_map->second.end() && ret.first->first == kp) {
 
 				if (ret.first->second.getUID() != rr.getUID() || ret.first->second.getCurrentPosition() != rr.getCurrentPosition()) {
 
-					// Troca o rank registro antigo pelo o novo
+					// Replace the old rank record with the new one
 
 					try {
 
-						// Pega o antigo registro rank para usar no Log
+						// Get the old rank record to use in the Log
 						auto rr_ant = it_map->second.at(kp);
 
-						// Novo registro rank
+						// New rank record
 						it_map->second.at(kp) = rr;
 
 						// Log
@@ -92,24 +92,24 @@ void CmdRankRegistryInfo::lineResult(result_set::ctx_res* _result, uint32_t _ind
 
 		key_position kp(rr.getUID(), rr.getCurrentPosition());
 
-		// N�o tem cria um novo
+		// Does not exist, create a new one
 		auto ret = m_entry.insert(std::make_pair(km, RankEntryValue{ std::make_pair(kp, rr) }));
 
-		// Verifica se inseriu o valor direito no  map
+		// Check whether the value was inserted correctly in the map
 		if (!ret.second) {
 
 			if (ret.first != m_entry.end() && ret.first->first == km) {
 
 				if (!ret.first->second.empty() && ret.first->second.begin()->first != kp) {
 
-					// Troca o Menu rank registro antigo pelo o novo
+					// Replace the old Menu rank record with the new one
 
 					try {
 
-						// Pega o antigo Menu rank registro para usar no Log
+						// Get the old Menu rank record to use in the Log
 						auto rm_ant = ret.first->second.begin()->first;
 
-						// Novo Menu rank registro
+						// New Menu rank record
 						ret.first->second.clear();
 
 						ret.first->second[kp] = rr;

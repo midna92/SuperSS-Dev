@@ -1,6 +1,6 @@
-// Arquivo client.h
-// Criado em 19/12/2017 por Acrisio
-// Definição da classe client
+// File client.h
+// Created on 19/12/2017 by Acrisio
+// Definition of class client
 
 #pragma once
 #ifndef _STDA_CLIENT_H

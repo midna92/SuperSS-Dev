@@ -1,6 +1,6 @@
-// Arquivo cmd_update_card_special_time.cpp
-// Criado em 07/07/2018 as 22:35 por Acrisio
-// Implementa��o da classe CmdUpdateCardSpecialTime
+// File cmd_update_card_special_time.cpp
+// Created on 07/07/2018 at 22:35 by Acrisio
+// Implementation of class CmdUpdateCardSpecialTime
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ CmdUpdateCardSpecialTime::~CmdUpdateCardSpecialTime() {
 
 void CmdUpdateCardSpecialTime::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

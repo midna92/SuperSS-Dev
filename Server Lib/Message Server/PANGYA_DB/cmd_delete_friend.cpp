@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_friend.cpp
-// Criado em 05/08/2018 as 20:45 por Acrisio
-// Implementa��o da classe CmdDeleteFriend
+// File cmd_delete_friend.cpp
+// Created on 05/08/2018 at 20:45 by Acrisio
+// Implementation of class CmdDeleteFriend
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteFriend::~CmdDeleteFriend() {
 
 void CmdDeleteFriend::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um DELETE
+	// Not used because it is a DELETE
 	return;
 }
 

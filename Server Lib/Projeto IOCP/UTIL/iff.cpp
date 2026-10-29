@@ -1,6 +1,6 @@
-// Arquivo iff.cpp
-// Criado em 03/10/2017 por Acrisio
-// Implementação da classe iff
+// File iff.cpp
+// Created on 03/10/2017 by Acrisio
+// Implementation of the class iff
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -509,15 +509,15 @@ uint32_t iff::getItemGroupIdentify(uint32_t _typeid) {
 };
 
 uint32_t iff::getItemSubGroupIdentify24(uint32_t _typeid) {
-	return (uint32_t)((_typeid & ~0xFC000000) >> 24);		// aqui é >> 24, mas deixei 25 por causa do item equipável e o passivo, mas posso mudar depois isso
+	return (uint32_t)((_typeid & ~0xFC000000) >> 24);		// here it is >> 24, but I left 25 because of the equippable item and the passive one, but I can change this later
 };
 
 uint32_t iff::getItemSubGroupIdentify22(uint32_t _typeid) {
-	return (uint32_t)((_typeid & ~0xFC000000) >> 22);		// esse retorno os grupos divididos em 0x40 0x80 0xC0, 0x100, 0x140
+	return (uint32_t)((_typeid & ~0xFC000000) >> 22);		// this returns the groups divided into 0x40 0x80 0xC0, 0x100, 0x140
 };
 
 uint32_t iff::getItemSubGroupIdentify21(uint32_t _typeid) {
-	return (uint32_t)((_typeid & ~0xFC000000) >> 21);		// esse retorno os grupos divididos em 0x20 0x40 0x60, 0x80, 0xA0, 0xC0, 0xE0, 0x100
+	return (uint32_t)((_typeid & ~0xFC000000) >> 21);		// this returns the groups divided into 0x20 0x40 0x60, 0x80, 0xA0, 0xC0, 0xE0, 0x100
 };
 
 uint32_t iff::getItemCharIdentify(uint32_t _typeid) {
@@ -549,10 +549,10 @@ uint32_t iff::getCaddieItemType(uint32_t _typeid) {
 };
 
 uint32_t iff::getCaddieIdentify(uint32_t _typeid) {
-	return (uint32_t)(((_typeid & 0x0FFF0000) >> 21)/*Caddie Base*/ + ((_typeid & 0x000F0000) >> 16)/*Caddie Type, N, R, S e etc*/);
+	return (uint32_t)(((_typeid & 0x0FFF0000) >> 21)/*Caddie Base*/ + ((_typeid & 0x000F0000) >> 16)/*Caddie Type, N, R, S, etc.*/);
 };
 
-// Acho que eu fiz para usar no enchant de up stat de taqueira e character
+// I think I made this to use in the enchant of club and character stat upgrades
 uint32_t iff::getEnchantSlotStat(uint32_t _typeid) {
 	return (uint32_t)((_typeid & 0x03FF0000) >> 20);
 };
@@ -667,7 +667,7 @@ void iff::load() {
 
 		_smp::message_pool::getInstance().push(new message("[iff::load][ErrorSystem] " + e.getFullMessageError()));
 
-		// Relança para o server tomar as providências
+		// Rethrow so the server takes action
 		throw;
 	}
 };
@@ -1107,7 +1107,7 @@ std::vector< IFF::TwinsItemTable > iff::findTwinsItemTable(uint32_t _type) {
 
 IFF::SetEffectTable *iff::findFirstItemInSetEffectTable(uint32_t _typeid) {
 
-	// Find LAST_ELEMENT_IN_ARRAY é o mesmo é só para não sobrecarregar e da mensagem
+	// Find LAST_ELEMENT_IN_ARRAY is the same, it is only to avoid overloading and giving the message
 #define LAST_ELEMENT_IN_ARRAY_IFF(_element_arr) ((_element_arr) + (sizeof((_element_arr)) / sizeof((_element_arr)[0])))
 	
 	if (!isLoad()) {
@@ -1157,7 +1157,7 @@ IFF::SetEffectTable *iff::findFirstItemInSetEffectTable(uint32_t _typeid) {
 
 std::vector< IFF::SetEffectTable > iff::findAllItemInSetEffectTable(uint32_t _typeid) {
 	
-	// Find LAST_ELEMENT_IN_ARRAY é o mesmo é só para não sobrecarregar e da mensagem
+	// Find LAST_ELEMENT_IN_ARRAY is the same, it is only to avoid overloading and giving the message
 #define LAST_ELEMENT_IN_ARRAY_IFF(_element_arr) ((_element_arr) + (sizeof((_element_arr)) / sizeof((_element_arr)[0])))
 	
 	if (!isLoad()) {
@@ -1204,7 +1204,7 @@ std::vector< IFF::SetEffectTable > iff::findAllItemInSetEffectTable(uint32_t _ty
 	return ret;
 };
 
-// find Commom Item
+// find Common Item
 IFF::Base *iff::findCommomItem(uint32_t _typeid) {
 	IFF::Base* commom = nullptr;
 
@@ -1239,9 +1239,9 @@ IFF::Base *iff::findCommomItem(uint32_t _typeid) {
 	case COURSE:
 		commom = findCourse(_typeid);
 		break;
-	/*case MATCH:	// Não tem a estrutura base
+	/*case MATCH:	// Does not have the base structure
 		break;*/
-	/*case ENCHANT:	// Não tem a estrutura base
+	/*case ENCHANT:	// Does not have the base structure
 		break;*/
 	case SKIN:
 		commom = findSkin(_typeid);
@@ -1304,7 +1304,7 @@ bool iff::IsCanOverlapped(uint32_t _typeid) {
 		auto cadItem = findCaddieItem(_typeid);
 		
 		if (cadItem != nullptr && cadItem->shop.flag_shop.time_shop.active)
-			return true;	// Caddie item pode, se for de tempo para aumentar o tempo dele
+			return true;	// Caddie item can, if it is a timed one, to extend its time
 		
 		break;
 	}
@@ -1321,14 +1321,14 @@ bool iff::IsCanOverlapped(uint32_t _typeid) {
 	{
 		auto part = findPart(_typeid);
 
-		// Libera os parts para Duplicatas se ele estiver liberado para vender no personal shop
+		// Allows parts to be duplicated if they are allowed to be sold in the personal shop
 		if (part != nullptr && (part->type_item == IFF::Part::UCC_BLANK || part->type_item == IFF::Part::UCC_COPY 
 				|| part->shop.flag_shop.uFlagShop.stFlagShop.can_dup || part->shop.flag_shop.uFlagShop.stFlagShop.can_send_mail_and_personal_shop))
 			return true;
 		
 		break;
 	}
-	case ITEM:	// Libera todos item para dub se tiver habilitado no shop
+	case ITEM:	// Allows all items to be duplicated if enabled in the shop
 	/*{
 		auto commom = findCommomItem(_typeid);
 		if (commom != nullptr && (commom->shop.flag_shop.uFlagShop.stFlagShop.can_dup || commom->shop.flag_shop.uFlagShop.stFlagShop.can_send_mail_and_personal_shop/*mail*//*))
@@ -1357,12 +1357,12 @@ bool iff::IsCanOverlapped(uint32_t _typeid) {
 	{
 		auto auxPart = findAuxPart(_typeid);
 		
-		if (auxPart != nullptr && auxPart->cc[0]/*Qntd*/ > 0)
+		if (auxPart != nullptr && auxPart->cc[0]/*Qty*/ > 0)
 			return (_typeid & ~0x1F0000);
 		
 		break;
 	}	// Fim AuxPart
-	}	// Fim Case
+	}	// End Case
 
 	return false;
 };
@@ -1380,12 +1380,12 @@ bool iff::IsBuyItem(uint32_t _typeid) {
 bool iff::IsGiftItem(uint32_t _typeid) {
 	auto commom = findCommomItem(_typeid);
 
-	// É saleable ou giftable nunca os 2 juntos por que é a flag composta Somente Purchase(compra)
-	// então faço o xor nas 2 flag se der o valor de 1 é por que ela é um item que pode presentear
-	// Ex: 1 + 1 = 2 Não é
+	// It is saleable or giftable, never both together, because it is the composite flag Purchase only
+	// so I XOR the 2 flags, and if the value is 1 it is an item that can be gifted
+	// Ex: 1 + 1 = 2 It is not
 	// Ex: 1 + 0 = 1 OK
 	// Ex: 0 + 1 = 1 OK
-	// Ex: 0 + 0 = 0 Não é
+	// Ex: 0 + 0 = 0 It is not
 	if (commom != nullptr)
 		return (commom->active == 1 && commom->shop.flag_shop.uFlagShop.stFlagShop.is_cash == 1 
 				&& (commom->shop.flag_shop.uFlagShop.stFlagShop.is_saleable ^ commom->shop.flag_shop.uFlagShop.stFlagShop.is_giftable) == 1);
@@ -1426,7 +1426,7 @@ bool iff::IsItemEquipable(uint32_t _typeid) {
 	auto item = findItem(_typeid);
 	
 	if (item != nullptr)
-		return (getItemSubGroupIdentify24(_typeid) >> 1) == 0;	// Equiável, aqui depois tenho que mudar se mudar lá em cima, para (func() >> 1) == 0
+		return (getItemSubGroupIdentify24(_typeid) >> 1) == 0;	// Equippable, here I have to change it later if I change it above, to (func() >> 1) == 0
 
 	return false;
 };
@@ -1434,10 +1434,10 @@ bool iff::IsItemEquipable(uint32_t _typeid) {
 bool iff::IsTitle(uint32_t _typeid) {
 
 	if (getItemGroupIdentify(_typeid) != iff::SKIN)
-		return false;	// Não é uma skin(bg, frame, sticker, slot, cutin, title)
+		return false;	// Not a skin (bg, frame, sticker, slot, cutin, title)
 
 	if ((_typeid & 0x3C00000u) != 0x1800000u)
-		return false;	// Não é um title
+		return false;	// Not a title
 
 	return true;
 };
@@ -1455,8 +1455,8 @@ std::vector< IFF::ClubSet > iff::findClubSetOriginal(uint32_t _typeid) {
 		
 		for (auto& el : m_club_set) {
 
-			// Text pangya é o logo da taqueira, como as especiais tem seu proprio logo
-			// então o número do logo vai ser a taqueira base das taqueira que transforma
+			// Text pangya is the club logo, since the special ones have their own logo
+			// so the logo number will be the base club of the clubs that transform
 			if (el.second.text_pangya == clubset->text_pangya)
 				v_clubset.push_back(el.second);
 		}

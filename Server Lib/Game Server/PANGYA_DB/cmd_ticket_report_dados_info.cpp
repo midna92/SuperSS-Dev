@@ -1,6 +1,6 @@
-// Arquivo cmd_ticket_report_dados_info.cpp
-// Criado em 13/10/2018 as 13:21 por Acrisio
-// Implementa��o da classe CmdTicketReportDadosInfo
+// File cmd_ticket_report_dados_info.cpp
+// Created on 13/10/2018 at 13:21 by Acrisio
+// Implementation of the class CmdTicketReportDadosInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -59,12 +59,12 @@ void CmdTicketReportDadosInfo::lineResult(result_set::ctx_res* _result, uint32_t
 	if (is_valid_c_string(_result->data[19]))
 		STRCPY_TO_MEMORY_FIXED_SIZE(pd.guild_mark_img, sizeof(pd.guild_mark_img), _result->data[19]);
 	
-	pd.mark_index = (uint32_t)IFNULL(atoi, _result->data[20]); // Guild Emblem Index � usado no JP
+	pd.mark_index = (uint32_t)IFNULL(atoi, _result->data[20]); // Guild Emblem Index is used on JP
 
 	if (_result->data[21] != nullptr)
 		_translateDate(_result->data[21], &pd.finish_time);
 
-	// Add ao vector do Ticket Report Scroll Info
+	// Add to the Ticket Report Scroll Info vector
 	m_trsi.v_players.push_back(pd);
 
 	if (m_trsi.id < 0)

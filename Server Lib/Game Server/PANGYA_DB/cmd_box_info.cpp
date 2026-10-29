@@ -1,6 +1,6 @@
-// Arquivo cmd_box_info.cpp
-// Criado em 15/07/2018 as 22:01 por Acrisio
-// Implementa��o da classe CmdBoxInfo
+// File cmd_box_info.cpp
+// Created on 15/07/2018 at 22:01 by Acrisio
+// Implementation of the class CmdBoxInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -36,13 +36,13 @@ void CmdBoxInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_resu
 	ctx_bi.duplicar = (unsigned char)IFNULL(atoi, _result->data[12]);
 	ctx_bi.active = (unsigned char)IFNULL(atoi, _result->data[13]);
 
-	if (it != m_box.end()) {	// J� tem essa box add O Item s�
-		// Add o Item a Box
+	if (it != m_box.end()) {	// This box already exists, add only the Item
+		// Add the Item to the Box
 		it->second.item.push_back(ctx_bi);
 
-	}else {	// Ainda n�o tem essa box no map, add ela ao map
+	}else {	// This box is not in the map yet, add it to the map
 
-		// Inicializa as informa��es da box
+		// Initialize the box information
 		ctx_b.id = IFNULL(atoi, _result->data[0]);
 		ctx_b.numero = IFNULL(atoi, _result->data[2]);
 		ctx_b.tipo_open = BOX_TYPE_OPEN((unsigned char)IFNULL(atoi, _result->data[3]));
@@ -52,10 +52,10 @@ void CmdBoxInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_resu
 		if (is_valid_c_string(_result->data[6]))
 			STRCPY_TO_MEMORY_FIXED_SIZE(ctx_b.msg, sizeof(ctx_b.msg), _result->data[6]);
 
-		// Add o Item a Box
+		// Add the Item to the Box
 		ctx_b.item.push_back(ctx_bi);
 
-		// Add a Box ao map
+		// Add the Box to the map
 		m_box.insert(std::make_pair(ctx_b._typeid, ctx_b));
 	}
 }

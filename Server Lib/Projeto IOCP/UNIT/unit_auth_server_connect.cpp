@@ -1,6 +1,6 @@
-// Arquivo unit_auth_server_connect.cpp
-// Criado em 02/02/2021 as 23:43 por Acrisio
-// Implementação da classe unit_auth_server_connect
+// File unit_auth_server_connect.cpp
+// Created on 02/02/2021 at 23:43 by Acrisio
+// Implementation of the class unit_auth_server_connect
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -38,7 +38,7 @@
 }, this); \
 
 #define INIT_PACKET_SERVER_FAZ_NADA(_num) funcs_sv.addPacketCall((_num), [](void* _arg1, void* _arg2) { \
-		/* Não faz nada */ \
+		/* Does nothing */ \
 	return 0; \
 }, this); \
 
@@ -54,7 +54,7 @@ unit_auth_server_connect::unit_auth_server_connect(IUnitAuthServer& _owner_serve
 
 	try {
 
-		// Inicializar Config do arquivo ini
+		// Initialize Config from the ini file
 		config_init();
 
 		/// ---------- Packets ---------
@@ -218,7 +218,7 @@ void unit_auth_server_connect::requestFirstPacketKey(UnitPlayer& _session, packe
 		if (cmd_nask.getException().getCodeError() != 0)
 			throw cmd_nask.getException();
 
-		// Resposta para o Auth Server
+		// Response to the Auth Server
 		packet p((unsigned short)0x1);
 
 		p.addUint32(_session.m_si.tipo);
@@ -326,7 +326,7 @@ void unit_auth_server_connect::requestDisconnectPlayer(UnitPlayer& _session, pac
 
 		uint32_t player_uid = _packet->readUint32();
 		uint32_t server_uid = _packet->readUint32();
-		unsigned char force = _packet->readUint8();			// Flag que força a disconectar o usuário
+		unsigned char force = _packet->readUint8();			// Flag that forces the user to disconnect
 
 		m_owner_server.authCmdDisconnectPlayer(server_uid, player_uid, force);
 
@@ -586,7 +586,7 @@ void unit_auth_server_connect::sendCommandToOtherServer(uint32_t _server_uid, pa
 
 	try {
 
-		// Ler o Command ID para verificar se está tudo ok
+		// Read the Command ID to check that everything is ok
 		_packet.readUint16();
 
 		if (_packet.getSize() < 2)
@@ -600,7 +600,7 @@ void unit_auth_server_connect::sendCommandToOtherServer(uint32_t _server_uid, pa
 		cosh.send_server_uid_or_type = _server_uid;
 		cosh.command_id = _packet.getTipo();
 
-		// Inicializa comando buffer
+		// Initialize command buffer
 		cosh.command.init(command_buff_size);
 
 		if (!cosh.command.is_good())
@@ -614,7 +614,7 @@ void unit_auth_server_connect::sendCommandToOtherServer(uint32_t _server_uid, pa
 		_smp::message_pool::getInstance().push(new message("[unit_auth_server_connect::sendCommandToOtherServer][Log] Envia comando[ID=" + std::to_string(_packet.getTipo())
 				+ "] para outro server[UID=" + std::to_string(_server_uid) + "] com o Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Envia o comando para o Auth Server enviar para o outro server
+		// Send the command to the Auth Server to forward to the other server
 		packet p((unsigned short)0x06);
 
 		p.addBuffer(&cosh, sizeof(CommandOtherServerHeader));
@@ -639,7 +639,7 @@ void unit_auth_server_connect::sendReplyToOtherServer(uint32_t _server_uid, pack
 	try {
 
 
-		// Ler a Resposta ID para verificar se está tudo ok
+		// Read the Response ID to check that everything is ok
 		_packet.readUint16();
 
 		if (_packet.getSize() < 2)
@@ -653,7 +653,7 @@ void unit_auth_server_connect::sendReplyToOtherServer(uint32_t _server_uid, pack
 		cosh.send_server_uid_or_type = _server_uid;
 		cosh.command_id = _packet.getTipo();
 		
-		// Inicializa comando buffer
+		// Initialize command buffer
 		cosh.command.init(command_buff_size);
 
 		if (!cosh.command.is_good())
@@ -667,7 +667,7 @@ void unit_auth_server_connect::sendReplyToOtherServer(uint32_t _server_uid, pack
 		_smp::message_pool::getInstance().push(new message("[unit_auth_server_connect::sendReplyToOtherServer][Log] Envia resposta[ID=" + std::to_string(_packet.getTipo())
 				+ "] para o outro server[UID=" + std::to_string(_server_uid) + "] com o Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Envia a resposta para o Auth Server enviar para o outro server
+		// Send the response to the Auth Server to forward to the other server
 		packet p((unsigned short)0x07);
 
 		p.addBuffer(&cosh, sizeof(CommandOtherServerHeader));
@@ -685,7 +685,7 @@ void unit_auth_server_connect::sendReplyToOtherServer(uint32_t _server_uid, pack
 
 void unit_auth_server_connect::onHeartBeat() {
 
-	// Aqui Faz a verificação se está connectado com o auth server
+	// Here check whether it is connected to the auth server
 	try {
 
 		if (m_state != STATE::INITIALIZED)
@@ -745,6 +745,6 @@ void unit_auth_server_connect::config_init() {
 	m_unit_ctx.ip = m_reader_ini.readString("AUTHSERVER", "IP");
 	m_unit_ctx.port = m_reader_ini.readInt("AUTHSERVER", "PORT");
 
-	// Carregou com sucesso
+	// Loaded successfully
 	m_unit_ctx.state = true;
 }

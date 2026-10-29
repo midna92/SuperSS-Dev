@@ -1,6 +1,6 @@
-// Arquivo iocp.h
-// Criado em 01/03/2017 por Acrisio
-// Definição da classe iocp
+// File iocp.h
+// Created on 01/03/2017 by Acrisio
+// Definition of class iocp
 
 #pragma once
 #ifndef _STDA_IOCP_H

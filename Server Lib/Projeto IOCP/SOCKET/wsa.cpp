@@ -1,6 +1,6 @@
-// Arquivo wsa.cpp
-// Criado em 01/05/2017 por Acrisio
-// Implementação da classe wsa
+// File wsa.cpp
+// Created on 01/05/2017 by Acrisio
+// Implementation of class wsa
 
 #include "wsa.h"
 #include "../util/exception.h"

@@ -1,6 +1,6 @@
 // Arquivo dupla_manager.hpp
-// Criado em 29/12/2019 as 11:45 por Acrisio
-// Definição da classe DuplaManager
+// Created on 29/12/2019 at 11:45 by Acrisio
+// Definition of the DuplaManager class
 
 #pragma once
 #ifndef _STDA_DUPLA_MANAGER_HPP
@@ -43,7 +43,7 @@ namespace stdA {
 		void updatePangWinDuplas(Guild *_g, uint32_t _pang_win);
 		void updatePangWinDuplas(uint32_t _uid, uint32_t _pang_win);
 
-		bool oneGuildRest();	// Verifica se só sobrou os players de uma guild
+		bool oneGuildRest();	// Check if only the players of one guild remain
 
 		void saveGuildMembersData();
 

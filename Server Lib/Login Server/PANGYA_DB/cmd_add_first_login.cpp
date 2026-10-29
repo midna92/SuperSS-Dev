@@ -1,6 +1,6 @@
-// Arquivo cmd_add_first_login.cpp
-// Criado em 01/04/2018 as 16:21 por Acrisio
-// Implementa��o da classe CmdAddFirstLogin
+// File cmd_add_first_login.cpp
+// Created on 01/04/2018 at 16:21 by Acrisio
+// Implementation of the CmdAddFirstLogin class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdAddFirstLogin::~CmdAddFirstLogin() {
 
 void CmdAddFirstLogin::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdAddFirstLogin::prepareConsulta(database& _db) {

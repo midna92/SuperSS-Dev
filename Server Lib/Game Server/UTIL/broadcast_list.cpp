@@ -1,6 +1,6 @@
-// Arquivo broadcast_list.cpp
-// Criado em 03/12/2018 as 23:08 por Acrisio
-// Implementa��o da classe BroadcastList
+// File broadcast_list.cpp
+// Created on 03/12/2018 at 23:08 by Acrisio
+// Implementation of the BroadcastList class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -92,20 +92,20 @@ BroadcastList::RetNoticeCtx BroadcastList::peek() {
 				// Peek new Notice
 				rnc.nc = m_list.begin()->second;
 
-				// Remove o primeiro da lista
+				// Removes the first one from the list
 				m_list.erase(m_list.begin());
 
 				rnc.ret = RET_TYPE::OK;
 
 				m_last_peek = (uint32_t)std::time(nullptr);
 
-			}else // Ainda n�o deu o tempo de mostrar o notice no tempo dele
+			}else // The time to show the notice has not elapsed yet
 				rnc.ret = RET_TYPE::WAIT;
 		
-		}else // Ainda n�o deu o intervalo para pegar a pr�xima notice da fila
+		}else // The interval to get the next notice from the queue has not elapsed yet
 			rnc.ret = RET_TYPE::WAIT;
 
-	}else // A List est� vazia
+	}else // The List is empty
 		rnc.ret = RET_TYPE::NO_NOTICE;
 
 #if defined(_WIN32)

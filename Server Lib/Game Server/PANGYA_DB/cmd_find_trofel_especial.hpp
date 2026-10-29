@@ -1,6 +1,6 @@
-// Arquivo cmd_find_trofel_especial.hpp
-// Criado em 21/06/2019 as 19:31 por Acrisio
-// Defini��o da classe CmdFindTrofelEspecial
+// File cmd_find_trofel_especial.hpp
+// Created on 21/06/2019 at 19:31 by Acrisio
+// Definition of the class CmdFindTrofelEspecial
 
 #pragma once
 #ifndef _STDA_CMD_FIND_TROFEL_ESPECIAL_HPP

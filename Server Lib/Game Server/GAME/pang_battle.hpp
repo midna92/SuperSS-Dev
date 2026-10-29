@@ -1,6 +1,6 @@
-// Arquivo pang_battle.hpp
-// Criado em 09/01/2020 as 15:07 por Acrisio
-// Definição da classe PangBattle
+// File pang_battle.hpp
+// Created on 09/01/2020 at 15:07 by Acrisio
+// Definition of the PangBattle class
 
 #pragma once
 #ifndef _STDA_PANG_BATTLE_HPP
@@ -19,7 +19,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Metôdos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestInitHole(player& _session, packet *_packet) override;
 			//virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 
@@ -30,7 +30,7 @@ namespace stdA {
 
 			void finish_pang_battle(int _option);
 
-			// Tempo
+			// Time
 			/*virtual void startTime(void* _quem) override;
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -38,17 +38,17 @@ namespace stdA {
 			virtual void timeIsOver(void* _quem) override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
-			// Request Trata Finish Hole Data
+			// Request Handles Finish Hole Data
 			virtual void requestTranslateFinishHoleData(player& _session, UserInfoEx& _ui);
 
 			virtual bool checkEndGame(player& _session) override;
 
 			virtual void requestSaveInfo(player& _session, int option) override;
 
-			// !@ Não tem experiência no Pang Battle
+			// !@ There is no experience in Pang Battle
 			//virtual void requestFinishExpGame();
 
 			virtual void finish();
@@ -62,7 +62,7 @@ namespace stdA {
 			// Check and clear if true
 			virtual bool checkAllClearHole() override;
 
-			// Terminou Hole Update on Game
+			// Finished Hole Update on Game
 			virtual void updateFinishHole() override;
 
 			// Send Player Turn
@@ -74,8 +74,8 @@ namespace stdA {
 
 			virtual void requestCalculeRankPlace() override;
 
-			// Calcula a mensagem que o player vai ser se ele fizer o hole, vai dropar muita moeda, pouca
-			// Isso decide se o player ganhou, empatou ou perdeu
+			// Calculates the message the player will get if he makes the hole, whether it will drop a lot of coins or few
+			// This decides whether the player won, tied or lost
 			// noexception
 			virtual eMSG_MAKE_HOLE calcMsgToPlayerMakeHole(PlayerGameInfo* _pgi);
 
@@ -101,7 +101,7 @@ namespace stdA {
 
 			PangBattleData m_pbd;
 
-			std::vector< PlayerGameInfo* > m_player_order_pb;			// Lista de player do rank do jogo do Pang Battle
+			std::vector< PlayerGameInfo* > m_player_order_pb;			// Player list of the Pang Battle game rank
 	};
 }
 

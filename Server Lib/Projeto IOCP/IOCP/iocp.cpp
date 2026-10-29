@@ -1,6 +1,6 @@
-// Arquivo iocp.cpp
-// Criado em 02/03/2017 por Acrisio
-// Implementação da classe iocp
+// File iocp.cpp
+// Created on 02/03/2017 by Acrisio
+// Implementation of class iocp
 
 #include "iocp.h"
 

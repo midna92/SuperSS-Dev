@@ -1,6 +1,6 @@
-// Arquivo cmd_find_ucc.hpp
-// Criado em 15/07/2018 as 00:23 por Acrisio
-// Defini��o da classe CmdFindUCC
+// File cmd_find_ucc.hpp
+// Created on 15/07/2018 at 00:23 by Acrisio
+// Definition of the class CmdFindUCC
 
 #pragma once
 #ifndef _STDA_CMD_FIND_UCC_HPP

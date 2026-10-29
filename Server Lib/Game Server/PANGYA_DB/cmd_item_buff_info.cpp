@@ -1,6 +1,6 @@
-// Arquivo cmd_item_buff_info.cpp
-// Criado em 21/03/2018 as 22:49 por Acrisio
-// Implementa��o da classe CmdItemBuffInfo
+// File cmd_item_buff_info.cpp
+// Created on 21/03/2018 at 22:49 by Acrisio
+// Implementation of the class CmdItemBuffInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -35,7 +35,7 @@ void CmdItemBuffInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index
 	ib.percent = IFNULL(atoi, _result->data[5]);
 	ib.use_yn = (unsigned char)IFNULL(atoi, _result->data[6]);
 
-	ib.tempo.setTime((uint32_t)(SystemTimeToUnix(ib.end_date) - GetLocalTimeAsUnix()));	// fim - agora (em segundos)
+	ib.tempo.setTime((uint32_t)(SystemTimeToUnix(ib.end_date) - GetLocalTimeAsUnix()));	// end - now (in seconds)
 
 	v_ib.push_back(ib);
 }

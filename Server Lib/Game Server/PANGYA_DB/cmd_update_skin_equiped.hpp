@@ -1,6 +1,6 @@
-// Arquivo cmd_update_skin_equiped.hpp
-// Criado em 25/03/2018 as 12:40 por Acrisio
-// Defini��o da classe CmdUpdateSkinEquiped
+// File cmd_update_skin_equiped.hpp
+// Created on 25/03/2018 at 12:40 by Acrisio
+// Definition of class CmdUpdateSkinEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_SKIN_EQUIPED_HPP

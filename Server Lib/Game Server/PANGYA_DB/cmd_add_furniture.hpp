@@ -1,6 +1,6 @@
-// Arquivo cmd_add_furniture.hpp
-// Criado em 1206/2018 as 20:45 por Acrisio
-// Defini��o da classe CmdAddFurniture
+// File cmd_add_furniture.hpp
+// Created on 1206/2018 at 20:45 by Acrisio
+// Definition of the class CmdAddFurniture
 
 #pragma once
 #ifndef _STDA_CMD_ADD_FURNITURE_HPP

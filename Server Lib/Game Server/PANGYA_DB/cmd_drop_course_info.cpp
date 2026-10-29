@@ -1,6 +1,6 @@
-// Arquivo cmd_drop_course_info.cpp
-// Criado em 07/09/2018 as 14:23 por Acrisio
-// Implementa��o da classe CmdDropCourseInfo
+// File cmd_drop_course_info.cpp
+// Created on 07/09/2018 at 14:23 by Acrisio
+// Implementation of the class CmdDropCourseInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -40,12 +40,12 @@ void CmdDropCourseInfo::lineResult(result_set::ctx_res *_result, uint32_t /*_ind
 	
 	di.active = (unsigned char)IFNULL(atoi, _result->data[8]);	// 4 + 4 = 8
 
-	if ((i = m_course.find(dc.course)) == m_course.end()) { // N�o tem cria um novo Drop Course
+	if ((i = m_course.find(dc.course)) == m_course.end()) { // Does not exist, create a new Drop Course
 
 		dc.v_item.push_back(di);
 
 		m_course.insert(std::make_pair(dc.course, dc));
-	}else	// J� tem, adiciona o item ao course
+	}else	// Already exists, add the item to the course
 		i->second.v_item.push_back(di);
 }
 

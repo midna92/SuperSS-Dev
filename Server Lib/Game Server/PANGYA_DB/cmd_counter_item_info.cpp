@@ -1,6 +1,6 @@
-// Arquivo cmd_counter_item_info.cpp
-// Criado em 19/03/2018 as 23:19 por Acrisio
-// Implementa��o da classe CmdCounterItemInfo
+// File cmd_counter_item_info.cpp
+// Created on 19/03/2018 at 23:19 by Acrisio
+// Implementation of the class CmdCounterItemInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

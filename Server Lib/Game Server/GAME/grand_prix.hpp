@@ -1,6 +1,6 @@
-// Arquivo grand_prix.hpp
-// Criado em 18/06/2019 as 08:22 por Acrisio
-// Defini��o da classe GrandPrix
+// File grand_prix.hpp
+// Created on 18/06/2019 at 08:22 by Acrisio
+// Definition of class GrandPrix
 
 #pragma once
 #ifndef _STDA_GRAND_PRIX_HPP
@@ -28,7 +28,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) override;
 			virtual void requestActiveBooster(player& _session, packet *_packet) override;
 
@@ -43,30 +43,30 @@ namespace stdA {
 
 			void finish_grand_prix(player& _session, int _option);
 
-			// Tempo
+			// Time
 			virtual void startTime(void* _quem);
 			virtual bool stopTime(void* _quem);
 			virtual void timeIsOver(void* _quem);
 
-			// timeIsOver abstract da classe TourneyBase
+			// abstract timeIsOver of class TourneyBase
 			virtual void timeIsOver() override { return; };
 
 		protected:
 
-			// Calcula Rank Place Grand Prix
+			// Calculates Grand Prix Rank Place
 			virtual void requestCalculeRankPlace();
 
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
 			virtual int checkEndShotOfHole(player& _session) override;
 
 			virtual void requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) override;
 
-			// Inicializa os Bots do Grand Prix se tiver espa�o para eles
+			// Initializes the Grand Prix Bots if there is room for them
 			virtual void init_bots();
 
-			// Consome o ticket dos player que v�o jogar o Grand Prix
+			// Consumes the ticket of the players who will play the Grand Prix
 			virtual void consomeTicket();
 
 			virtual void requestFinishExpGame();
@@ -106,13 +106,13 @@ namespace stdA {
 
 			virtual void clear_all_clear_hole();
 
-			// Limpa os tempos criado no Grand Prix
+			// Clears the times created in the Grand Prix
 			virtual void clear_timers();
 
-			// request calcule shot spinning cube - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot spinning cube - It is implemented in the classes that will use it
 			virtual void requestCalculeShotSpinningCube(player& _session, ShotSyncData& _ssd) override;
 
-			// request calcule shot coin - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot coin - It is implemented in the classes that will use it
 			virtual void requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) override;
 
 		public:
@@ -124,7 +124,7 @@ namespace stdA {
 		protected:
 			static int end_time_rule(void* _arg1, void* _arg2);
 
-			// Tempo Rule
+			// Rule Time
 			virtual void startTimeRule(void* _quem);
 			virtual bool stopTimeRule(void* _quem);
 			virtual void timeRuleIsOver(void* _quem);

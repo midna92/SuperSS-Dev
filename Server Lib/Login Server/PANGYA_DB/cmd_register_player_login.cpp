@@ -1,6 +1,6 @@
-// Arquivo cmd_register_player_login.cpp
-// Criado em 01/04/2018 as 18:43 por Acrisio
-// Implementa��o da classe CmdRegisterPlayerLogin
+// File cmd_register_player_login.cpp
+// Created on 01/04/2018 at 18:43 by Acrisio
+// Implementation of the CmdRegisterPlayerLogin class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdRegisterPlayerLogin::~CmdRegisterPlayerLogin() {
 
 void CmdRegisterPlayerLogin::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

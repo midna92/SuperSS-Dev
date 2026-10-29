@@ -1,6 +1,6 @@
-// Arquivo cmd_update_counter_item.cpp
-// Criado em 15/04/2018 as 20:02 por Acrisio
-// Implementa��o da classe CmdUpdateCounterItem
+// File cmd_update_counter_item.cpp
+// Created on 15/04/2018 at 20:02 by Acrisio
+// Implementation of class CmdUpdateCounterItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -24,7 +24,7 @@ CmdUpdateCounterItem::~CmdUpdateCounterItem() {
 
 void CmdUpdateCounterItem::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o aqui por que � um UPDATE
+	// Not here because it is an UPDATE
 	return;
 }
 

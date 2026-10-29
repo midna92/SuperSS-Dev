@@ -1,6 +1,6 @@
-// Arquivo cmd_drop_course_config.cpp
-// Criado em 07/09/2018 as 15:14 por Acrisio
-// Implementa��o da classe CmdDropCourseConfig
+// File cmd_drop_course_config.cpp
+// Created on 07/09/2018 at 15:14 by Acrisio
+// Implementation of the class CmdDropCourseConfig
 
 #if defined(_WIN32)
 #pragma pack(1)

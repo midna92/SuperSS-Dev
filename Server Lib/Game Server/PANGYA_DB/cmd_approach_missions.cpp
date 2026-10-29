@@ -1,6 +1,6 @@
-// Arquivo cmd_approach_missions.cpp
-// Criado em 14/06/2020 as 17:23 por Acrisio
-// Implementa��o da classe CmdApproachMissions
+// File cmd_approach_missions.cpp
+// Created on 14/06/2020 at 17:23 by Acrisio
+// Implementation of the class CmdApproachMissions
 
 #if defined(_WIN32)
 #pragma pack(1)

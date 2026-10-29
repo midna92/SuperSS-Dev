@@ -1,6 +1,6 @@
-// Arquivo buffer.h
-// Criado em 28/05/2017 por Acrisio
-// Definição da classe Buffer
+// File buffer.h
+// Created on 28/05/2017 by Acrisio
+// Definition of the class Buffer
 
 #pragma once
 #ifndef _STDA_BUFFER_H
@@ -79,7 +79,7 @@ namespace stdA {
         private:
             size_t m_index_w;
 
-			// Proteção assincrona
+			// Asynchronous protection
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs_wr;
 #elif defined(__linux__)

@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_config_info.hpp
-// Criado em 18/06/2020 as 21:23 por Acrisio
-// Defini��o da classe CmdRankConfigInfo
+// File cmd_rank_config_info.hpp
+// Created on 18/06/2020 at 21:23 by Acrisio
+// Definition of the class CmdRankConfigInfo
 
 #pragma once
 #ifndef _STDA_CMD_RANK_CONFIG_INFO_HPP

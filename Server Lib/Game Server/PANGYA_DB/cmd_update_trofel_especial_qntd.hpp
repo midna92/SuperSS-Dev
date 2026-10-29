@@ -1,6 +1,6 @@
-// Arquivo cmd_update_trofel_especial_qntd.hpp
-// Criado em 21/06/2019 as 18:49 por Acrisio
-// Defini��o classe CmdUpdateTrofelEspecialQntd
+// File cmd_update_trofel_especial_qntd.hpp
+// Created on 21/06/2019 at 18:49 by Acrisio
+// Definition of class CmdUpdateTrofelEspecialQntd
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_TROFEL_ESPECIAL_QNTD_HPP

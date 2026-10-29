@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_card.cpp
-// Criado em 31/05/2018 as 21:34 por Acrisio
-// Implementa��o da classe CmdDeleteCard
+// File cmd_delete_card.cpp
+// Created on 31/05/2018 at 21:34 by Acrisio
+// Implementation of the class CmdDeleteCard
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteCard::~CmdDeleteCard() {
 
 void CmdDeleteCard::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 	
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

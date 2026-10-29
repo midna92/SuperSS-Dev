@@ -1,6 +1,6 @@
-// Arquivo cmd_warehouse_item.cpp
-// Criado em 18/03/2018 as 22:06 por Acrisio
-// Implementa��o da classe CmdWarehouseItem
+// File cmd_warehouse_item.cpp
+// Created on 18/03/2018 at 22:06 by Acrisio
+// Implementation of class CmdWarehouseItem
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -96,7 +96,7 @@ void CmdWarehouseItem::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 			return _el.second._typeid == wi._typeid;
 		});
 
-		// N�o tem um igual add um novo
+		// There is no equal one, add a new one
 		if (it == er.second/*End*/) {
 
 			v_wi.insert(std::make_pair(wi.id, wi));
@@ -104,11 +104,11 @@ void CmdWarehouseItem::lineResult(result_set::ctx_res* _result, uint32_t /*_inde
 			_smp::message_pool::getInstance().push(new message("[CmdWarehouseItemInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] adicionou WarehouseItem[TYPEID=" 
 					+ std::to_string(wi._typeid) + ", ID=" + std::to_string(wi.id) + "], com mesmo id e typeid diferente de outro WarehouseItemEx que tem no multimap", CL_FILE_LOG_AND_CONSOLE));
 		}else
-			// Tem um WarehouseItemEx com o mesmo ID e TYPEID (DUPLICATA)
+			// There is a WarehouseItemEx with the same ID and TYPEID (DUPLICATE)
 			_smp::message_pool::getInstance().push(new message("[CmdWarehouseItemInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um WarehouseItem[TYPEID=" 
 					+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 
-	}else // Tem um WarehouseItemEx com o mesmo ID e TYPEID (DUPLICATA)
+	}else // There is a WarehouseItemEx with the same ID and TYPEID (DUPLICATE)
 		_smp::message_pool::getInstance().push(new message("[CmdWarehouseItemInfo::lineResult][WARNING] player[UID=" + std::to_string(m_uid) + "] tentou adicionar no multimap um WarehouseItem[TYPEID="
 				+ std::to_string(it->second._typeid) + ", ID=" + std::to_string(it->second.id) + "] com o mesmo ID e TYPEID, DUPLICATA", CL_FILE_LOG_AND_CONSOLE));
 }

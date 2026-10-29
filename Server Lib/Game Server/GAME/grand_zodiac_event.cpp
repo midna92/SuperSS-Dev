@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac_event.cpp
-// Criado em 26/06/2020 as 13:13 por Acrisio
-// Implementa��o da classe GrandZodiacEvent
+// File grand_zodiac_event.cpp
+// Created on 26/06/2020 at 13:13 by Acrisio
+// Implementation of class GrandZodiacEvent
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -196,7 +196,7 @@ void GrandZodiacEvent::setSendedMessage() {
 
 		GetLocalTime(&m_st);
 
-		// Zera todas os intervalos que n�o est� na hora, e o intervalo que est� na hora seta ele
+		// Zeroes all intervals that are not due, and sets the interval that is due
 		std::for_each(m_rt.begin(), m_rt.end(), [&](auto& _el) {
 			
 			if (_el.isBetweenTime(m_st))
@@ -274,13 +274,13 @@ void GrandZodiacEvent::initialize() {
 		_smp::message_pool::getInstance().push(new message("[GrandZodiacEvent::initialize][Log] Grand Zodiac Event System carregado com sucesso!", CL_ONLY_FILE_LOG));
 #endif // _DEBUG*/
 
-		// Carregou com sucesso
+		// Loaded successfully
 		m_load = true;
 
 	LEAVE_CHECK
 	CATCH_CHECK("initialize")
 
-		// Relan�a para o server tomar as provid�ncias
+		// Rethrows so the server can take action
 		throw;
 
 	END_CHECK

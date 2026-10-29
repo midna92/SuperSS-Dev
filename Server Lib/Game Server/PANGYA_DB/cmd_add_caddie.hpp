@@ -1,6 +1,6 @@
-// Arquivo cmd_add_caddie.hpp
-// Criado em 25/03/2018 as 18:36 por Acrisio
-// Defini��o da classe CmdAddCaddie
+// File cmd_add_caddie.hpp
+// Created on 25/03/2018 at 18:36 by Acrisio
+// Definition of the class CmdAddCaddie
 
 #pragma once
 #ifndef _STDA_CMD_ADD_CADDIE_HPP

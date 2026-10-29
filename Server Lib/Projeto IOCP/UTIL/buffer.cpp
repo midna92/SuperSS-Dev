@@ -1,6 +1,6 @@
-// Arquivo buffer.cpp
-// Criado em 28/05/2017 por Acrisio
-// Implementação da classe Buffer
+// File buffer.cpp
+// Created on 28/05/2017 by Acrisio
+// Implementation of the class Buffer
 
 #if defined(_WIN32)
 #include <WinSock2.h>
@@ -346,7 +346,7 @@ void Buffer::consume(size_t size) {
 		pthread_mutex_unlock(&m_cs_wr);
 #endif
 		throw exception("Erro nao pode consumir mais, o buffer index is less or equal 0. Buffer::consume()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::BUFFER, 2, 0));
-	}else if ((m_index_w - size) > MAX_BUFFER_SIZE/*Por que é unsigned ai negativo fica o maximo do int32_t que é maior que o MAX_BUFFER_SIZE*/) {
+	}else if ((m_index_w - size) > MAX_BUFFER_SIZE/*Because it is unsigned, a negative value becomes the int32_t maximum, which is greater than MAX_BUFFER_SIZE*/) {
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs_wr);
 #elif defined(__linux__)
@@ -396,7 +396,7 @@ WSABUF *Buffer::getWSABufToRead() {
 
 	m_mwsab->buf = reinterpret_cast< CHAR* >(&m_buffer[m_index_w]);
 	
-	if (m_index_w > MAX_BUFFER_SIZE)	// chegou ao limite enviar recive de 0 bytes
+	if (m_index_w > MAX_BUFFER_SIZE)	// reached the limit, send a 0-byte receive
 		m_mwsab->len = 0;
 	else
 		m_mwsab->len = (uint32_t)(MAX_BUFFER_SIZE - m_index_w);

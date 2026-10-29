@@ -1,6 +1,6 @@
-// Arquivo approach.cpp
-// Criado em 12/06/2020 as 12:03 por Acrisio
-// Implementa��o da classe Approach
+// File approach.cpp
+// Created on 12/06/2020 at 12:03 by Acrisio
+// Implementation of class Approach
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -36,7 +36,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[Approach::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::APPROACH, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) PlayerApproachInfo *pgi = reinterpret_cast< PlayerApproachInfo* >(getPlayerInfo((__session))); \
 	if (pgi == nullptr) \
 		throw exception("[Approach::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::APPROACH, 1, 4)); \
@@ -45,7 +45,7 @@ using namespace stdA;
 
 bool Approach::sort_approach_rank_place(approach_dados_ex& _ad1, approach_dados_ex& _ad2) {
 
-	// Verifica os state primeiro
+	// Check the states first
 	if (_ad1.state.ucState != 0u)
 		return false;
 	else if (_ad2.state.ucState != 0u)
@@ -66,7 +66,7 @@ Approach::Approach(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue 
 #endif
 	m_state_app(), m_timeout(0u), m_mission(0u) {
 
-	// Inicializa o critical section do sync shot
+	// Initialize the critical section of the sync shot
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs_sync_shot);
 #elif defined(__linux__)
@@ -78,7 +78,7 @@ Approach::Approach(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue 
 	if (!sApproachMissionSystem::getInstance().isLoad())
 		sApproachMissionSystem::getInstance().load();
 
-	// Inicializa o Treasure Hunter System
+	// Initialize the Treasure Hunter System
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
@@ -88,12 +88,12 @@ Approach::Approach(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue 
 		_smp::message_pool::getInstance().push(new message("[Approach::Approach][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
-	// Cria evento que vai para a thread sync hole
+	// Creates the event that goes to the sync hole thread
 #if defined(_WIN32)
 	if ((m_hEvent_sync_hole = CreateEvent(NULL, TRUE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[Approach::Approach][Error] ao criar evento sync hole.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::APPROACH, 1050, GetLastError()));
@@ -111,7 +111,7 @@ Approach::Approach(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue 
 	}
 #endif
 
-	// Cria evento que vai pulsar a thread sync hole para ir mais r�pido quando um player tacar
+	// Creates the event that will pulse the sync hole thread to go faster when a player shoots
 #if defined(_WIN32)
 	if ((m_hEvent_sync_hole_pulse = CreateEvent(NULL, FALSE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[Approach::Approach][Error] ao criar evento sync hole pulse.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::APPROACH, 1050, GetLastError()));
@@ -129,7 +129,7 @@ Approach::Approach(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue 
 	}
 #endif
 
-	// Cria a thread que vai sincronizar os player no hole
+	// Creates the thread that will synchronize the players on the hole
 	m_thread_sync_hole = new thread(1060/*sync hole*/, Approach::_syncHoleTime, (LPVOID)this);
 
 	m_state = init_game();
@@ -154,7 +154,7 @@ Approach::~Approach() {
 	// Finish Thread Sync hole
 	finish_thread_sync_hole();
 
-	// Libera mem�ria do critical section
+	// Frees the critical section memory
 #if defined(_WIN32)
 	DeleteCriticalSection(&m_cs_sync_shot);
 #elif defined(__linux__)
@@ -192,42 +192,42 @@ bool Approach::deletePlayer(player* _session, int _option) {
 
 			auto sessions = getSessions(*it);
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				INIT_PLAYER_INFO("deletePlayer", "tentou sair do jogo", _session);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Approach
+				requestFinishItemUsedGame(*(*it));	// Saves items used in the Approach
 
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Saiu do approach
+				// Left the approach
 				pgi->m_app_dados.setLeftGame();
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Reply: Player left the Game, remove them from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo MSG
+				// Reply: Player left the game MSG
 				p.init_plain((unsigned short)0x40);
 
-				p.addUint8(2);	// Player Saiu Msg
+				p.addUint8(2);	// Player Left Msg
 
 				p.addString((*it)->m_pi.nickname);
 
-				p.addUint16(0);	// size Msg, n�o precisa de msg o pangya j� manda na opt 2
+				p.addUint16(0);	// size Msg, no need for msg, pangya already sends it in opt 2
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo
+				// Reply: Player left the game
 				sendUpdateState(*_session, opt);
 
 				if (AllCompleteGameAndClear())
-					ret = true;	// Termina o Approach
+					ret = true;	// Ends the Approach
 				
 				sendUpdateInfoAndMapStatistics(*_session, -1);
 			
@@ -396,7 +396,7 @@ void* Approach::syncHoleTime() {
 					}
 					case eSTATE_APPROACH_SYNC::WAIT_END_GAME:
 					{
-						// Faz nada por enquanto
+						// Does nothing for now
 						break;
 					}
 				}
@@ -461,7 +461,7 @@ void Approach::requestFinishCharIntro(player& _session, packet* _packet) {
 
 		INIT_PLAYER_INFO("requestFinishCharIntro", "tentou finalizar intro do char no jogo", &_session);
 
-		// Zera todas as tacada num dos players
+		// Resets all the strokes of one of the players
 		pgi->data.tacada_num = 0u;
 		
 		// Giveup Flag
@@ -481,7 +481,7 @@ void Approach::changeHole(player& _session) {
 	if (checkEndGame(_session))
 		finish_approach(_session, 0);
 	else
-		// Resposta terminou o hole
+		// Reply: finished the hole
 		updateFinishHole(_session, 1);	// Terminou
 }
 
@@ -536,10 +536,10 @@ void Approach::finish_approach(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player earned
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if they have assist on, and are higher than beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
@@ -547,9 +547,9 @@ void Approach::finish_approach(player& _session, int _option) {
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}else if (m_game_init_state == 1 && _option == 1) {	// Acabou o Tempo
+			}else if (m_game_init_state == 1 && _option == 1) {	// Time ran out
 
-				requestFinishHole(_session, 1);		// Acabou o Tempo
+				requestFinishHole(_session, 1);		// Time ran out
 			}
 		}
 
@@ -558,7 +558,7 @@ void Approach::finish_approach(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game, e.g.: 0xCE, 0x79, etc.
 	}
 }
 
@@ -573,7 +573,7 @@ bool Approach::requestFinishGame(player& _session, packet* _packet) {
 		_smp::message_pool::getInstance().push(new message("[Approach::requestFinishGame][Log] Packet Hex: " + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// OID do player que enviou o pacote para terminar o Jogo(Approach)
+		// OID of the player that sent the packet to end the Game (Approach)
 		uint32_t oid = _packet->readUint32();
 
 		if (oid != _session.m_oid)
@@ -626,10 +626,10 @@ bool Approach::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that saves the local system date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_approach_state = true;
 	}
@@ -656,11 +656,11 @@ void Approach::requestUpdateItemUsedGame(player& _session) {
 
 	ui.club.count += (uint32_t)(1.f * 10.f * ui.club.rate * TRANSF_SERVER_RATE_VALUE(m_rv.clubset) * TRANSF_SERVER_RATE_VALUE(ui.rate.club));
 
-	// Passive Item exceto Time Booster e Auto Command, que soma o contador por uso, o cliente passa o pacote, dizendo que usou o item
+	// Passive Item except Time Booster and Auto Command, which add to the counter per use, the client sends the packet saying it used the item
 	for (auto& el : ui.v_passive) {
 
-		// Passive Item no Approach s� consome os item boost de pang e o Club Mastery Boost,
-		// Consome todos os outros menos os de Experi�ncia
+		// Passive Item in the Approach only consumes the pang boost items and the Club Mastery Boost,
+		// Consumes all the others except the Experience ones
 		if (std::find(passive_item_exp, LAST_ELEMENT_IN_ARRAY(passive_item_exp), el.second._typeid) == LAST_ELEMENT_IN_ARRAY(passive_item_exp)) {
 
 			if (CHECK_PASSIVE_ITEM(el.second._typeid) && el.second._typeid != TIME_BOOSTER_TYPEID/*Time Booster*/ && el.second._typeid != AUTO_COMMAND_TYPEID)
@@ -693,25 +693,25 @@ void Approach::finish() {
 
 void Approach::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestDrawTreasureHunterItem(_session);
 
-	// Resposta terminou game - Placar
+	// Reply: game finished - Scoreboard
 	sendPlacar(_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Reply: Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 
 	requestSaveInfo(_session, 0);
 
-	// Passa o finaliza o Approach
+	// Passes the finish of the Approach
 	packet p((unsigned short)0x151);
 
 	packet_func::game_broadcast(*this, p, 1);
 
-	// Resposta Treasure Hunter Item
+	// Reply: Treasure Hunter Item
 	requestSendTreasureHunterItem(_session);
 }
 
@@ -745,7 +745,7 @@ void Approach::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd
 			pgi->data.pang = _ssd.pang;
 			pgi->data.bonus_pang = _ssd.bonus_pang;
 
-			// J� s� na fun��o que come�a o tempo do player do turno
+			// Already in the function that starts the player's turn time
 			pgi->data.tacada_num++;
 
 			if (_ssd.state == ShotSyncData::OUT_OF_BOUNDS || _ssd.state == ShotSyncData::UNPLAYABLE_AREA) {
@@ -762,10 +762,10 @@ void Approach::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd
 				throw exception("[Approach::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada no hole[NUMERO="
 						+ std::to_string((unsigned short)pgi->hole) + "], mas o numero do hole is invalid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::APPROACH, 12, 0));
 
-			// Conta j� a pr�xima tacada, no give up
+			// Already counts the next shot, not give up
 			if (!_ssd.state_shot.display.stDisplay.acerto_hole && hole->getPar().total_shot <= (pgi->data.tacada_num + 1)) {
 
-				// +1 que � giveup, s� add se n�o passou o n�mero de tacadas
+				// +1 for giveup, only add if the number of shots has not been exceeded
 				if (pgi->data.tacada_num < hole->getPar().total_shot)
 					pgi->data.tacada_num++;
 
@@ -774,15 +774,15 @@ void Approach::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd
 				// Approach
 				pgi->m_app_dados.state.stState.giveup = 1u;
 
-				// Soma +1 no Bad Condute
+				// Adds +1 to Bad Conduct
   				pgi->data.bad_condute++;
 			}
 
 			// Approach
-			if (_ssd.state == ShotSyncData::SHOT_STATE::INTO_HOLE || std::abs(hole->getPinLocation().diffXZ(pgi->location) * MEDIDA_PARA_YARDS) <= 0.08/*Est� dentro do hole � chip-in*/)
+			if (_ssd.state == ShotSyncData::SHOT_STATE::INTO_HOLE || std::abs(hole->getPinLocation().diffXZ(pgi->location) * MEDIDA_PARA_YARDS) <= 0.08/*Is inside the hole, chip-in*/)
 				pgi->m_app_dados.state.stState.chip_in = 1u;
 
-			// Pega a distancia e o tempo
+			// Gets the distance and the time
 			int32_t elapsed_time = (int)(m_ri.time_30s - m_timer->getElapsed());
 
 			if (elapsed_time <= 0l)
@@ -994,21 +994,21 @@ void Approach::requestFinishHole(player& _session, int option) {
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole
+		// Resets the hole penalties
 		pgi->data.penalidade = 0u;
 
 	}
 
-	// Aqui tem que atualiza o PGI direitinho com outros dados
+	// Here the PGI must be updated properly with other data
 	pgi->progress.hole = (short)m_course->findHoleSeq(pgi->hole);
 
-	// Dados Game Progress do Player
+	// Player Game Progress data
 	if (option == 0) {
 		
 		if (pgi->progress.hole > 0) {
 
 			if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole)
-				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Terminou o hole
+				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Finished the hole
 
 			pgi->progress.par_hole[pgi->progress.hole - 1] = hole->getPar().par;
 			pgi->progress.score[pgi->progress.hole - 1] = (unsigned char)time_hole;
@@ -1028,7 +1028,7 @@ void Approach::requestSaveInfo(player& _session, int option) {
 		_smp::message_pool::getInstance().push(new message("[Approach::requestSaveInfo][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] UserInfo[" + pgi->ui.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Limpa o User Info por que n�o add nada, s� o tempo e os pangs ganhos
+		// Clears the User Info because nothing is added, only the time and the pangs earned
 		pgi->ui.clear();
 
 		auto diff = getLocalTimeDiff(m_start_time);
@@ -1038,7 +1038,7 @@ void Approach::requestSaveInfo(player& _session, int option) {
 
 		pgi->ui.tempo = (uint32_t)diff;
 
-		// Pode tirar pangs
+		// Can take pangs
 		int64_t total_pang = pgi->data.pang + pgi->data.bonus_pang;
 
 		// UPDATE ON SERVER AND DB
@@ -1710,7 +1710,7 @@ void Approach::clear_all_finish_shot() {
 
 			pgi->finish_shot = 0u;
 
-			// Limpa o tick_sync_end_shot para a pr�xima tacada(shot)
+			// Clears tick_sync_end_shot for the next shot
 			pgi->tick_sync_end_shot.clear();
 
 		}catch (exception& e) {
@@ -1747,7 +1747,7 @@ void Approach::clear_all_sync_shot() {
 
 			pgi->sync_shot_flag = 0u;
 
-			// Limpa o tick_sync_shot para a pr�xima tacada(shot)
+			// Clears tick_sync_shot for the next shot
 			pgi->tick_sync_shot.clear();
 
 		}catch (exception& e) {
@@ -1765,7 +1765,7 @@ void Approach::requestCalculeRankPlace() {
 
 	for (auto& el : m_player_info) {
 
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT) {	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT) {	// except those who quit
 
 			pai = (PlayerApproachInfo*)el.second;
 
@@ -1811,7 +1811,7 @@ void Approach::requestCalculeRankPlaceHole() {
 	std::vector< approach_dados_ex > v_ad{};
 
 	for (auto& el : m_player_info)
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// except those who quit
 			v_ad.push_back(((PlayerApproachInfo*)el.second)->m_app_dados);
 
 	std::sort(v_ad.begin(), v_ad.end(), Approach::sort_approach_rank_place);
@@ -1976,7 +1976,7 @@ void Approach::mission_win() {
 	if (m_mission.numero > 0) {
 
 		switch (m_mission.numero) {
-		case 1: // Par ou �mpar, Primeiro lugar parar com dist�ncia Par ou �mpar(mission), todos ganham box
+		case 1: // Even or odd, First place stops at an Even or Odd distance (mission), everyone gets a box
 		{
 			bool win = false;
 
@@ -1991,11 +1991,11 @@ void Approach::mission_win() {
 
 				pai = (PlayerApproachInfo*)it->second;
 
-				if (m_mission.condition[0] == 0) { // Par
+				if (m_mission.condition[0] == 0) { // Even
 
 					win = (pai->m_app_dados.distance % 2) == 0;
 
-				}else { // Impar
+				}else { // Odd
 
 					win = (pai->m_app_dados.distance % 2) != 0;
 				}
@@ -2011,13 +2011,13 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 3: // Quem fazer chip-in ganha box
+		case 3: // Whoever makes a chip-in gets a box
 			for (auto& el : m_player_info)
 				if (el.second != nullptr && el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT
 						&& ((PlayerApproachInfo*)el.second)->m_app_dados.state.stState.chip_in)
 					((PlayerApproachInfo*)el.second)->m_app_dados.box = m_mission.box_qntd;
 			break;
-		case 6: // Mascot equiped, Primeiro lugar estiver com o mascot da mission, todos ganham box
+		case 6: // Mascot equipped, First place has the mission mascot, everyone gets a box
 		{
 			bool win = false;
 
@@ -2058,7 +2058,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 7: // Rank, O player que ficar no rank da mission ele ganha box, independente se ele fez OUT
+		case 7: // Rank, The player who stays in the mission rank gets a box, regardless of whether they got OUT
 		{
 			auto it = std::find_if(m_player_info.begin(), m_player_info.end(), [&](auto& _el) {
 				return (_el.second != nullptr && _el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT 
@@ -2070,7 +2070,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 10: // Character Equiped, Todos que estiverem com o character da mission e pararem coma dist�ncia menor que 10y eles ganham box
+		case 10: // Character Equipped, Everyone who has the mission character and stops at a distance smaller than 10y gets a box
 		{
 
 			std::for_each(m_player_info.begin(), m_player_info.end(), [&](auto& _el) {
@@ -2087,7 +2087,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 11: // Mais (Par ou �mpar), Se tiver dist�ncias dos players mais (Par ou �mpar)(mission), todos ganham box
+		case 11: // More (Even or Odd), If the players' distances are mostly (Even or Odd) (mission), everyone gets a box
 		{
 			bool win = false;
 
@@ -2112,11 +2112,11 @@ void Approach::mission_win() {
 
 			});
 
-			if (m_mission.condition[0] == 0) { // Mais par
+			if (m_mission.condition[0] == 0) { // More even
 
 				win = count_par > count_impar;
 
-			}else { // Mais Impar
+			}else { // More Odd
 
 				win = count_impar > count_par;
 			}
@@ -2131,7 +2131,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 12: // Chip-in, se a maioria dos players fizer chip-in, todos que chiparam e n�o fizeram OUT(timeout, ob) ganham box
+		case 12: // Chip-in, if most players make a chip-in, everyone who chipped in and did not get OUT (timeout, ob) gets a box
 		{
 
 			PlayerApproachInfo* pai = nullptr;
@@ -2159,7 +2159,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 14: // Menor ou igual a dist�ncia(mission) o player ganha box
+		case 14: // Less than or equal to the distance (mission), the player gets a box
 		{
 			PlayerApproachInfo* pai = nullptr;
 
@@ -2176,7 +2176,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 15: // Rank dist�ncia Par ou �mpar, se o player no rank(mission) a dist�ncia for (Par ou �mpar)(mission), todos que n�o deram OUT ganham box
+		case 15: // Rank distance Even or Odd, if the player at the rank (mission) has a distance that is (Even or Odd) (mission), everyone who did not get OUT gets a box
 		{
 			bool win = false;
 
@@ -2191,11 +2191,11 @@ void Approach::mission_win() {
 
 				pai = (PlayerApproachInfo*)it->second;
 
-				if (m_mission.condition[1] == 0) { // Par
+				if (m_mission.condition[1] == 0) { // Even
 
 					win = (pai->m_app_dados.distance % 2) == 0;
 
-				}else { // Impar
+				}else { // Odd
 
 					win = (pai->m_app_dados.distance % 2) != 0;
 				}
@@ -2211,7 +2211,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 16: // Chip-in, Se 4 ou mais player fazer chip-in, todos que fizeram chip-in e n�o deram OUT(timeout, ob) ganham box
+		case 16: // Chip-in, If 4 or more players make a chip-in, everyone who made a chip-in and did not get OUT (timeout, ob) gets a box
 		{
 			PlayerApproachInfo* pai = nullptr;
 
@@ -2238,7 +2238,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 17: // Total dist�ncia de todos players n�o pode passar da dist�ncia da mission, que todos que n�o fizeram OUT ganham box
+		case 17: // Total distance of all players cannot exceed the mission distance, then everyone who did not get OUT gets a box
 		{
 			uint32_t total_dist = 0u;
 
@@ -2250,7 +2250,7 @@ void Approach::mission_win() {
 
 					pai = (PlayerApproachInfo*)_el.second;
 
-					// Quem fez OUT conta a dist�ncia tamb�m
+					// Whoever got OUT also counts the distance
 					total_dist += pai->m_app_dados.distance;
 				}
 			});
@@ -2265,7 +2265,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 18: // Se um player ficar na dist�ncia exata da mission, todos que n�o fizeram OUT ganham box
+		case 18: // If a player stays at the exact mission distance, everyone who did not get OUT gets a box
 		{
 			PlayerApproachInfo* pai = nullptr;
 
@@ -2284,7 +2284,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 20: // Player com a maior dist�ncia que n�o fez OUT ganha box
+		case 20: // Player with the greatest distance who did not get OUT gets a box
 		{
 
 			auto it_win = m_player_info.end();
@@ -2301,7 +2301,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 22: // Se o tempo do player em primeiro lugar for menor ou igual a 10s(10.000 milliseconds), todos que n�o fizeram OUT ganham box
+		case 22: // If the first place player's time is less than or equal to 10s (10,000 milliseconds), everyone who did not get OUT gets a box
 		{
 			PlayerApproachInfo* pai = nullptr;
 
@@ -2320,7 +2320,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 23: // Caddie equiped, o Player que tiver o caddie da mission equipado e ficar com a dist�ncia menor que 20y ganha box
+		case 23: // Caddie equipped, the Player who has the mission caddie equipped and stays at a distance smaller than 20y gets a box
 		{
 			std::for_each(m_player_info.begin(), m_player_info.end(), [&](auto& _el) {
 
@@ -2370,7 +2370,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 24: // Primeiro player a tacar e que n�o deu OUT ganha box
+		case 24: // First player to shoot who did not get OUT gets a box
 		{
 			auto it_win = m_player_info.end();
 
@@ -2386,7 +2386,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 25: // Par ou �mpar, quem ficar com a dist�ncia (Par ou �mpar)(mission) e n�o fizer OUT ganha box
+		case 25: // Even or odd, whoever stays at the (Even or Odd) distance (mission) and does not get OUT gets a box
 		{
 			PlayerApproachInfo* pai = nullptr;
 
@@ -2398,12 +2398,12 @@ void Approach::mission_win() {
 
 					if (pai->m_app_dados.state.ucState == 0u) {
 
-						if (m_mission.condition[0] == 0) { // Par
+						if (m_mission.condition[0] == 0) { // Even
 
 							if ((pai->m_app_dados.distance % 2) == 0)
 								pai->m_app_dados.box = m_mission.box_qntd;
 
-						}else { // Impar
+						}else { // Odd
 
 							if ((pai->m_app_dados.distance % 2) != 0)
 								pai->m_app_dados.box = m_mission.box_qntd;
@@ -2414,7 +2414,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 26: // Ultimo player a tacar e que n�o deu OUT ganha box
+		case 26: // Last player to shoot who did not get OUT gets a box
 		{
 			auto it_win = m_player_info.end();
 
@@ -2430,7 +2430,7 @@ void Approach::mission_win() {
 
 			break;
 		}
-		case 29: // Player(mission) que fazer chip-in, todos que n�o fizeram OUT ganha box e o player que fez chip-in ganha box
+		case 29: // Player (mission) who makes a chip-in, everyone who did not get OUT gets a box and the player who made the chip-in gets a box
 		{
 
 			PlayerApproachInfo* pai = nullptr;
@@ -2480,31 +2480,31 @@ bool Approach::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 0xCB/*packetCB pacote que termina o Approach*/) {
+		if (option == 0xCB/*packetCB packet that ends the Approach*/) {
 
 			if (m_approach_state)
-				finish_approach(_session, 1);	// Termina sem ter acabado de jogar
+				finish_approach(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+			// Reply that is always sent when a game ends, I do not know what else yet, only this one is not in the HIO Event
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+			// This new one from JP has Tourney, VS, Grand Prix, HIO Event, I did not see if the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
@@ -2520,10 +2520,10 @@ bool Approach::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means the camp is finished
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
+			// Flag of the game that finished
 			m_game_init_state = 2;	// ACABOU
 
 		}

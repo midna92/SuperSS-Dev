@@ -1,6 +1,6 @@
-// Arquivo player.hpp
-// Criado em 22/10/2017 por Acrisio
-// Definição da classe player
+// File player.hpp
+// Created on 22/10/2017 by Acrisio
+// Definition of class player
 
 #pragma once
 #ifndef _STDA_CLIENTE_HPP

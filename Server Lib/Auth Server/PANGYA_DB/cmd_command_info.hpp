@@ -1,6 +1,6 @@
-// Arquivo cmd_command_info.hpp
-// Criado em 02/12/2018 as 22:37 por Acrisio
-// Defini��o da classe CmdCommandInfo
+// File cmd_command_info.hpp
+// Created on 02/12/2018 at 22:37 by Acrisio
+// Definition of class CmdCommandInfo
 
 #pragma once
 #ifndef _STDA_CMD_COMMAND_INFO_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_remove_equiped_card.hpp
-// Criado em 17/06/2018 as 21:15 por Acrisio
-// Defini��o da classe CmdRemoveEquipedCard
+// File cmd_remove_equiped_card.hpp
+// Created on 17/06/2018 at 21:15 by Acrisio
+// Definition of the class CmdRemoveEquipedCard
 
 #pragma once
 #ifndef _STDA_CMD_REMOVE_EQUIPED_CARD_HPP

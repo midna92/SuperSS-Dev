@@ -1,6 +1,6 @@
-// Arquivo cmd_list_ip_ban.hpp
-// Criado em 30/03/2018 as 10:33 por Acrisio
-// Defini��o da classe CmdListIPBan
+// File cmd_list_ip_ban.hpp
+// Created on 30/03/2018 at 10:33 by Acrisio
+// Definition of class CmdListIPBan
 
 #pragma once
 #ifndef _STDA_CMD_LIST_IP_BAN_HPP

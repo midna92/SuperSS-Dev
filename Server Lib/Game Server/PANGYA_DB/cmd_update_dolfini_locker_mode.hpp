@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_mode.hpp
-// Criado em 02/06/2018 as 18:03 por Acrisio
-// Defini��o da classe CmdUpdateDolfiniLockerMode
+// File cmd_update_dolfini_locker_mode.hpp
+// Created on 02/06/2018 at 18:03 by Acrisio
+// Definition of class CmdUpdateDolfiniLockerMode
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_DOLFINI_LOCKER_MODE_HPP

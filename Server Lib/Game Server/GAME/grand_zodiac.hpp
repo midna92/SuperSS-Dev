@@ -1,6 +1,6 @@
-// Arquivo grand_zodiac.hpp
-// Criado em 25/06/2020 as 18:27 por Acrisio
-// Definição da classe GrandZodiac
+// File grand_zodiac.hpp
+// Created on 25/06/2020 at 18:27 by Acrisio
+// Definition of class GrandZodiac
 
 #pragma once
 #ifndef _STDA_GRAND_ZODIAC_HPP
@@ -19,24 +19,24 @@ namespace stdA {
 
 			void finish_grand_zodiac(player& _session, int _option);
 
-			// Tempo
+			// Time
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
 			virtual void requestFinishExpGame() override;
 
 			virtual void finish(int option) override;
 
-			// Sortea Item Drop do Hole, pode dropar ou não
+			// Draws the Item Drop of the Hole, may or may not drop
 			virtual void drawDropItem(player& _session) override;
 
 			virtual void requestFinishData(player& _session, int option) override;
 
-			// Terminou Hole Update on Game
-			// Opt 0 Não terminou o hole, 1 Terminou o Hole
+			// Hole Finished Update on Game
+			// Opt 0 Did not finish the hole, 1 Finished the Hole
 			virtual void updateFinishHole(player& _session, int _option) override;
 
 			virtual void requestMakeTrofel() override;

@@ -1,6 +1,6 @@
-// Arquivo singleton.h
-// Criado em 27/04/2019 as 11:11 por Acrisio
-// Definição e implementação da classe template singleton
+// File singleton.h
+// Created on 27/04/2019 at 11:11 by Acrisio
+// Definition and implementation of the template class singleton
 
 #pragma once
 #ifndef _STDA_SINGLETON_H
@@ -25,7 +25,7 @@ namespace stdA {
 
     template<class _ST> _ST& Singleton<_ST>::getInstance()  {
 
-        // Só funciona Thread-safe do C++ 11 para cima(mais recente)
+        // Only thread-safe from C++ 11 onwards (more recent)
         static _ST myInstance;
 
         return myInstance;

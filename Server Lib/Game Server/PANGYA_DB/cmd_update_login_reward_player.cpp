@@ -1,6 +1,6 @@
-// Arquivo cmd_update_login_reward_player.cpp
-// Criado em 27/10/2020 as 20:21 por Acrisio
-// Implementa��o da classe CmdUpdateLoginRewardPlayer
+// File cmd_update_login_reward_player.cpp
+// Created on 27/10/2020 at 20:21 by Acrisio
+// Implementation of class CmdUpdateLoginRewardPlayer
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdUpdateLoginRewardPlayer::~CmdUpdateLoginRewardPlayer() {
 
 void CmdUpdateLoginRewardPlayer::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

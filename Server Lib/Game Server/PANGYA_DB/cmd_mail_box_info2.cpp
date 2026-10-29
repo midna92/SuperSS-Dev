@@ -1,6 +1,6 @@
-// Arquivo cmd_mail_box_info2.cpp
-// Criado em 13/01/2021 as 12:02 por Acrisio
-// Implementa��o da classe CmdMailBoxInfo2
+// File cmd_mail_box_info2.cpp
+// Created on 13/01/2021 at 12:02 by Acrisio
+// Implementation of the class CmdMailBoxInfo2
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -35,14 +35,14 @@ void CmdMailBoxInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index
 
 	if (it_email != m_emails.end()) {
 
-		// J� tem, add s� o item
+		// Already exists, add only the item
 		EmailInfo::item item{ 0 };
 
 		item._typeid = IFNULL(atoi, _result->data[7]);
 
 		if (item._typeid != 0) {
 
-			item.id = IFNULL(atoi, _result->data[6]); // ID vem antes de typeid na consulta
+			item.id = IFNULL(atoi, _result->data[6]); // ID comes before typeid in the query
 
 			item.flag_time = (unsigned char)IFNULL(atoi, _result->data[8]);
 			item.qntd = IFNULL(atoi, _result->data[9]);
@@ -61,7 +61,7 @@ void CmdMailBoxInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index
 	
 	}else {
 
-		// N�o tem, cria um novo
+		// Does not exist, create a new one
 		EmailInfoEx email{ 0u };
 
 		email.id = id;
@@ -78,7 +78,7 @@ void CmdMailBoxInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index
 				// Translate Msg From Encoded Char not printed
 				auto _msg = verifyAndTranslate(_result->data[3], 2/*fixed size*/);
 			
-				// !@ possivel erro de viola��o de acesso
+				// !@ possible access violation error
 				if (_msg.empty())
 #if defined(_WIN32)
 					memcpy_s(email.msg, sizeof(email.msg), _result->data[3], (strlen(_result->data[3]) > sizeof(email.msg) ? sizeof(email.msg) : strlen(_result->data[3])));
@@ -102,14 +102,14 @@ void CmdMailBoxInfo2::lineResult(result_set::ctx_res* _result, uint32_t /*_index
 
 		email.lida_yn = (unsigned char)IFNULL(atoi, _result->data[5]);
 
-		// add o item
+		// add the item
 		EmailInfo::item item{ 0 };
 
 		item._typeid = IFNULL(atoi, _result->data[7]);
 
 		if (item._typeid != 0) {
 
-			item.id = IFNULL(atoi, _result->data[6]); // ID vem antes de typeid na consulta
+			item.id = IFNULL(atoi, _result->data[6]); // ID comes before typeid in the query
 
 			item.flag_time = (unsigned char)IFNULL(atoi, _result->data[8]);
 			item.qntd = IFNULL(atoi, _result->data[9]);

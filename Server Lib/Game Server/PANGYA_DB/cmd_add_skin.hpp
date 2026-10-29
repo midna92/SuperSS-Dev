@@ -1,6 +1,6 @@
-// Arquivo cmd_add_skin.hpp
-// Criado em 20/05/2018 as 10:50 por Acrisio
-// Defini��o da classe CmdAddSkin
+// File cmd_add_skin.hpp
+// Created on 20/05/2018 at 10:50 by Acrisio
+// Definition of the class CmdAddSkin
 
 #pragma once
 #ifndef _STDA_CMD_ADD_SKIN_HPP

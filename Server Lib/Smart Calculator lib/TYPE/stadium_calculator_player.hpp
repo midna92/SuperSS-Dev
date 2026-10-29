@@ -1,6 +1,6 @@
-// Arquivo stadium_calculator_player.hpp
-// Criado em 21/11/2020 as 11:51 por Acrisio
-// Defini��o da classe StadiumCalculatorPlayer
+// File stadium_calculator_player.hpp
+// Created on 21/11/2020 at 11:51 by Acrisio
+// Definition of the class StadiumCalculatorPlayer
 
 #pragma once
 #ifndef _STDA_STADIUM_CALCULATOR_PLAYER_HPP

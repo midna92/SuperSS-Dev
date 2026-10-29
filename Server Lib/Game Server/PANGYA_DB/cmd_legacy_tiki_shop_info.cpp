@@ -1,6 +1,6 @@
-// Arquivo cmd_legacy_tiki_shop_info.cpp
-// Criado em 26/10/2020 as 15:21 por Acrisio
-// Implementa��o da classe CmdLegacyTikiShopInfo
+// File cmd_legacy_tiki_shop_info.cpp
+// Created on 26/10/2020 at 15:21 by Acrisio
+// Implementation of the class CmdLegacyTikiShopInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

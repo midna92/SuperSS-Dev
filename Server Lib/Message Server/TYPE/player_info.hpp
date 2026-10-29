@@ -1,6 +1,6 @@
-// Arquivo player_info.hpp
-// Criado em 29/07/2018 as 13:28 por Acrisio
-// Defini��o da classe PlayerInfo
+// File player_info.hpp
+// Created on 29/07/2018 at 13:28 by Acrisio
+// Definition of class PlayerInfo
 
 #pragma once
 #ifndef _STDA_PLAYER_INFO_HPP
@@ -19,7 +19,7 @@ namespace stdA {
 
 		public:
 			unsigned char m_state;
-			volatile uint32_t m_logout;	// Verifica se j� mandou pacote de deslogar
+			volatile uint32_t m_logout;	// Check whether the logout packet was already sent
 
 			ChannelPlayerInfo m_cpi;
 

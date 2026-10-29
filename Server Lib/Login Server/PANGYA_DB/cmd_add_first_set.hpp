@@ -1,6 +1,6 @@
-// Arquivo cmd_add_first_set.hpp
-// Criado em 01/04/2018 as 17:32 por Acrisio
-// Defini��o da classe CmdAddFirstSet
+// File cmd_add_first_set.hpp
+// Created on 01/04/2018 at 17:32 by Acrisio
+// Definition of the CmdAddFirstSet class
 
 #pragma once
 #ifndef _STDA_CMD_ADD_FIRST_SET_HPP

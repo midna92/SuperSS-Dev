@@ -1,5 +1,5 @@
 // Arquivo game.hpp
-// Criado em 11/08/2018 as 22:21 por Acrisio
+// Created on 11/08/2018 at 22:21 by Acrisio
 // Definição da classe base Game
 
 #pragma once
@@ -39,7 +39,7 @@ namespace stdA {
 
 			virtual void sendInitialData(player& _session);
 
-			// Envia os dados iniciais para quem entra depois no Game
+			// Send the initial data to whoever joins the Game later
 			virtual void sendInitialDataAfter(player& _session);
 
 		protected:
@@ -51,7 +51,7 @@ namespace stdA {
 		public:
 			PlayerGameInfo* getPlayerInfo(player *_session);
 
-			// Se _session for diferente de nullptr retorna todas as session, menos a que foi passada no _session
+			// If _session is different from nullptr returns all sessions, except the one passed in _session
 			std::vector< player* > getSessions(player *_session = nullptr);
 
 			virtual SYSTEMTIME& getTimeStart();
@@ -59,24 +59,24 @@ namespace stdA {
 			virtual void addPlayer(player& _session);
 			virtual bool deletePlayer(player* _session, int _option);
 
-			// Metôdos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestInitHole(player& _session, packet *_packet) = 0;
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) = 0;
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) = 0;
 			virtual void requestFinishHoleData(player& _session, packet *_packet) = 0;
 
-			// São implementados na suas classe base
+			// They are implemented in their base class
 
-			// Esses 2 Aqui é do modo VS
+			// These 2 here are from VS mode
 			//virtual void changeHole() = 0;
 			//virtual void finishHole() = 0;
 
-			// Esses 2 Aqui é do Modo Tourney
+			// These 2 here are from Tourney Mode
 			//virtual void changeHole(player& _session) = 0;
 			//virtual void finishHole(player& _session) = 0;
 
-			// Server enviou a resposta do InitShot para o cliente
-			// Esse aqui é exclusivo do VersusBase
+			// Server sent the InitShot reply to the client
+			// This one is exclusive to VersusBase
 			virtual void requestInitShotSended(player& _session, packet *_packet);
 
 			virtual void requestInitShot(player& _session, packet *_packet) = 0;
@@ -110,9 +110,9 @@ namespace stdA {
 			virtual void requestActiveEarcuff(player& _session, packet *_packet) = 0;
 			
 			virtual void requestActiveAutoCommand(player& _session, packet *_packet);	// Auto Comando [Especial Shot Help]
-			virtual void requestActiveAssistGreen(player& _session, packet *_packet);	// Olho mágico
+			virtual void requestActiveAssistGreen(player& _session, packet *_packet);	// Magic eye
 
-			// Esse Aqui só tem no VersusBase e derivados dele
+			// This one exists only in VersusBase and its derivatives
 			virtual void requestMarkerOnCourse(player& _session, packet *_packet);
 			virtual void requestLoadGamePercent(player& _session, packet *_packet);
 			virtual void requestStartTurnTime(player& _session, packet *_packet);
@@ -122,38 +122,38 @@ namespace stdA {
 			virtual void requestExecCCGChangeWind(player& _session, packet *_packet);
 			virtual void requestExecCCGChangeWeather(player& _session, packet *_packet);
 
-			// Continua o versus depois que o player saiu no 3 hole pra cima e se for de 18h o game
+			// Continue the versus after the player left from hole 3 onwards and if the game is 18h
 			virtual void requestReplyContinue();
 
-			// Esse Aqui só tem no TourneyBase e derivados dele
+			// This one exists only in TourneyBase and its derivatives
 			virtual bool requestUseTicketReport(player& _session, packet *_packet);
 
-			// Apenas no Practice que ele é implementado
+			// It is only implemented in Practice
 			virtual void requestChangeWindNextHoleRepeat(player& _session, packet *_packet);
 
-			// Exclusivo do Modo Tourney
+			// Exclusive to Tourney Mode
 			virtual void requestStartAfterEnter(job& _job);
 			virtual void requestEndAfterEnter();
 			virtual void requestUpdateTrofel();
 
-			// Excluviso do Modo Match
+			// Exclusive to Match Mode
 			virtual void requestTeamFinishHole(player& _session, packet *_packet);
 
 			// Game
 			virtual bool requestFinishGame(player& _session, packet *_packet) = 0;
 
-			// Pede o Hole que o player está, 
-			// se eles estiver jogando ou 0 se ele não está jogando
+			// Request the Hole the player is on, 
+			// if they are playing or 0 if he is not playing
 			virtual unsigned char requestPlace(player& _session);
 
-			// Verifica se o player já esteve na sala
+			// Check if the player has already been in the room
 			virtual bool isGamingBefore(uint32_t _uid);
 
-			// Exclusivo do Modo Tourney
+			// Exclusive to Tourney Mode
 			virtual void requestSendTimeGame(player& _session);
 			virtual void requestUpdateEnterAfterStartedInfo(player& _session, EnterAfterStartInfo& _easi);
 
-			// Exclusivo do Grand Zodiac Modo
+			// Exclusive to Grand Zodiac Mode
 			virtual void requestStartFirstHoleGrandZodiac(player& _session, packet *_packet);
 			virtual void requestReplyInitialValueGrandZodiac(player& _session, packet *_packet);
 
@@ -165,7 +165,7 @@ namespace stdA {
 			virtual stGameShotValue getGameShotValueToSmartCalculator(player& _session, unsigned char _club_index, unsigned char _power_shot_index);
 
 			// Tempo
-			// Start Time Tem sua definições
+			// Start Time Has its definitions
 			//virtual void startTime() = 0;
 
 			virtual bool stopTime();
@@ -173,7 +173,7 @@ namespace stdA {
 			virtual bool pauseTime();
 			virtual bool resumeTime();
 			
-			// time is over tem suas definições
+			// time is over has its definitions
 			//virtual void timeIsOver() = 0;
 
 			// Report Game
@@ -219,11 +219,11 @@ namespace stdA {
 
 			virtual unsigned char checkCharMotionItem(player& _session);
 
-			// Atualiza o Info do usuario, Info Trofel e Map Statistics do Course
-			// Opt 0 Envia tudo, -1 não envia o map statistics
+			// Update the user Info, Trophy Info and Course Map Statistics
+			// Opt 0 Sends everything, -1 does not send the map statistics
 			virtual void sendUpdateInfoAndMapStatistics(player& _session, int _option);
 
-			// Envia a message no char para todos player do Game que o player terminou o jogo
+			// Send the chat message to all Game players that the player finished the game
 			virtual void sendFinishMessage(player& _session);
 
 			virtual void requestCalculeRankPlace();
@@ -236,10 +236,10 @@ namespace stdA {
 			virtual bool AllCompleteGameAndClear();
 			virtual bool PlayersCompleteGameAndClear();
 
-			// Verifica se é o ultimo hole feito
+			// Check if it is the last hole done
 			virtual bool checkEndGame(player& _session);
 
-			// Retorna todos os player que entrou no jogo, exceto os que quitaram
+			// Return all players who entered the game, except those who quit
 			virtual uint32_t getCountPlayersGame();
 
 			// Inicializa Jogo e Finaliza Jogo
@@ -258,13 +258,13 @@ namespace stdA {
 			virtual void records_player_achievement(player& _session);
 			virtual void update_sync_shot_achievement(player& _session, Location& _last_location);
 			virtual void rain_hole_consecutivos_count(player& _session);
-			virtual void score_consecutivos_count(player& _session);	// 2 holes ou mais consecutivos
+			virtual void score_consecutivos_count(player& _session);	// 2 or more consecutive holes
 			virtual void rain_count(player& _session);
 
 			// Effect Active in Shot Player
 			virtual void setEffectActiveInShot(player& _session, uint64_t _effect);
 
-			// Limpa os dados que são usados para cada tacada, reseta ele para usar na próxima tacada
+			// Clear the data used for each shot, reset it to use in the next shot
 			virtual void clearDataEndShot(PlayerGameInfo* _pgi);
 
 			virtual void checkEffectItemAndSet(player& _session, uint32_t _typeid);
@@ -279,11 +279,11 @@ namespace stdA {
 		protected:
 			std::vector< player* > m_players;
 
-			std::map< player*, PlayerGameInfo* > m_player_info;		// Esse não excluí quando o player sai do jogo, esses dados o jogo precisa para mostrar depois
+			std::map< player*, PlayerGameInfo* > m_player_info;		// This one is not deleted when the player leaves the game, the game needs this data to show later
 
-			std::vector< PlayerGameInfo* > m_player_order;			// Lista de player do rank do jogo
+			std::vector< PlayerGameInfo* > m_player_order;			// List of players of the game rank
 
-			std::map< uint32_t/*UID*/, uint32_t/*UID*/ > m_player_report_game;		// UID do player que reportou o jogo
+			std::map< uint32_t/*UID*/, uint32_t/*UID*/ > m_player_report_game;		// UID of the player who reported the game
 
 			void makePlayerInfo(player& _session);
 
@@ -308,17 +308,17 @@ namespace stdA {
 			RoomInfoEx& m_ri;
 			RateValue m_rv;
 
-			int m_game_init_state;				// estado do jogo, 1 começou, 2 terminou, -1 nem começou
-			bool m_state;						// Estado da classe
+			int m_game_init_state;				// game state, 1 started, 2 finished, -1 not even started
+			bool m_state;						// Class state
 
 			SYSTEMTIME m_start_time;
-			timer *m_timer;						// Ponteiro do objeto da classe timer
+			timer *m_timer;						// Pointer to the timer class object
 
 			unsigned char m_channel_rookie;
 
-			volatile uint32_t m_sync_send_init_data;		// Valor para Sincronizar o inicial Send Data, do jogo
+			volatile uint32_t m_sync_send_init_data;		// Value to Synchronize the initial Send Data of the game
 
-			Course *m_course;	// Tem que ficar por ultimo, por que o construtor tem que inicializar as outras variáveis antes
+			Course *m_course;	// Must stay last, because the constructor has to initialize the other variables first
 	};
 }
 

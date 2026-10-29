@@ -1,6 +1,6 @@
-// Arquivo pangya_st.h
-// Criado em 05/12/2017 por Acrisio
-// Definição das estruturas padrões do pangya
+// File pangya_st.h
+// Created on 05/12/2017 by Acrisio
+// Definition of the standard pangya structures
 
 //#pragma pack(pop, 1)
 #if defined(_WIN32)
@@ -85,12 +85,12 @@
 #define LAST_ELEMENT_IN_ARRAY(_element_arr) ((_element_arr) + (sizeof((_element_arr)) / sizeof((_element_arr)[0])))
 
 // N ELEMENT IN ARRAY
-#define N_ELEMENT_IN_ARRAY(_element_arr, _n) (((_n) > (sizeof((_element_arr)) / sizeof((_element_arr)[0]))) ? /*Maior que o array passa o primeiro array element*/ (_element_arr) : ((_element_arr) + (sizeof((_element_arr)[0]) * (_n))))
+#define N_ELEMENT_IN_ARRAY(_element_arr, _n) (((_n) > (sizeof((_element_arr)) / sizeof((_element_arr)[0]))) ? /*Greater than the array, pass the first array element*/ (_element_arr) : ((_element_arr) + (sizeof((_element_arr)[0]) * (_n))))
 
 const unsigned int  angel_wings[]{ 134309888u, 134580224u, 134842368u, 135120896u, 135366656u, 135661568u, 135858176u, 136194048u, 136398848u, 136660992u, 137185294u, 137447424u, 138004480u };
 const unsigned int  gacha_angel_wings[]{ 134309903u, 134580239u, 134842383u, 135120911u, 135366671u, 135661583u, 135858191u, 136194063u, 136398863u, 136661007u, 136923153u, 137185284u, 137447436u, 138004492u };
 
-// Grand Prix Event Type Weekend(Final de semana)
+// Grand Prix Event Type Weekend
 constexpr uint32_t kGrandPrixEventTypeWeekend = 2u;
 
 namespace stdA {
@@ -99,85 +99,85 @@ namespace stdA {
 #pragma pack(1)
 #endif
 
-	//-------------------- Server Estruturas -----------------------------//
+	//-------------------- Server Structures -----------------------------//
 
-	// Union Flag, que guarda a estrutura de bits da flag do server
+	// Union Flag, which holds the bit structure of the server flag
 	union uFlag {
 		uFlag(uint64_t _ull = 0u) : ullFlag(_ull) {};
 		void clear() { ullFlag = 0u; };
 		uint64_t ullFlag;
 		struct {
 			uint64_t : 1;						// Unknown
-			uint64_t all_game : 1;				// Não pode jogar nada
-			uint64_t buy_and_gift_shop : 1;		// Não pode comprar no shop
-			uint64_t gift_shop : 1;				// Não pode enviar presente
-			uint64_t papel_shop : 1;			// Não pode jogar no Papel Shop
-			uint64_t personal_shop : 1;			// Não pode vender no personal shop
-			uint64_t stroke : 1;				// Não pode jogar Stroke
-			uint64_t match : 1;					// Não pode jogar Match
-			uint64_t tourney : 1;				// Não pode jogar Tourney
-			uint64_t team_tourney : 1;			// Não pode jogar Team Tourney(Agora é Short Game)
-			uint64_t guild_battle : 1;			// Não pode jogar Guild Battle
-			uint64_t pang_battle : 1;			// Não pode jogar Pang Battle
-			uint64_t approach : 1;				// Não pode jogar Approach
-			uint64_t lounge : 1;				// Não pode criar sala lounge e entrar sala lounge
-			uint64_t scratchy : 1;				// Não pode jogar no Scratchy System
+			uint64_t all_game : 1;				// Cannot play anything
+			uint64_t buy_and_gift_shop : 1;		// Cannot buy in the shop
+			uint64_t gift_shop : 1;				// Cannot send gifts
+			uint64_t papel_shop : 1;			// Cannot play in the Papel Shop
+			uint64_t personal_shop : 1;			// Cannot sell in the personal shop
+			uint64_t stroke : 1;				// Cannot play Stroke
+			uint64_t match : 1;					// Cannot play Match
+			uint64_t tourney : 1;				// Cannot play Tourney
+			uint64_t team_tourney : 1;			// Cannot play Team Tourney (now Short Game)
+			uint64_t guild_battle : 1;			// Cannot play Guild Battle
+			uint64_t pang_battle : 1;			// Cannot play Pang Battle
+			uint64_t approach : 1;				// Cannot play Approach
+			uint64_t lounge : 1;				// Cannot create a lounge room or enter a lounge room
+			uint64_t scratchy : 1;				// Cannot play in the Scratchy System
 			uint64_t : 1;						// Unknown
-			uint64_t rank_server : 1;			// Não pode abrir o rank server
-			uint64_t ticker : 1;				// Não pode mandar ticker
-			uint64_t mail_box : 1;				// Desabilita Mail Box
-			uint64_t grand_zodiac : 1;			// Acho que é o grand zodiac, se não for vai ser
-			uint64_t single_play : 1;			// Acho que é o Single Play, se não for vai ser
-			uint64_t grand_prix : 1;			// Acho que é o Grand Prix, se não for vai ser
+			uint64_t rank_server : 1;			// Cannot open the rank server
+			uint64_t ticker : 1;				// Cannot send ticker
+			uint64_t mail_box : 1;				// Disables Mail Box
+			uint64_t grand_zodiac : 1;			// I think this is grand zodiac, if not it will be
+			uint64_t single_play : 1;			// I think this is Single Play, if not it will be
+			uint64_t grand_prix : 1;			// I think this is Grand Prix, if not it will be
 			uint64_t : 2;						// Unknown
-			uint64_t guild : 1;					// Desabilita Guild
-			uint64_t ssc : 1;					// Não pode jogar Special Shuffle Course
+			uint64_t guild : 1;					// Disables Guild
+			uint64_t ssc : 1;					// Cannot play Special Shuffle Course
 			uint64_t : 2;						// Unknown
-			uint64_t memorial_shop : 1;			// Não pode jogar no Memorial Shop
-			uint64_t short_game : 1;			// Não pode jogar Short Game
-			uint64_t char_mastery : 1;			// Não pode mexer no Character Mastery System
+			uint64_t memorial_shop : 1;			// Cannot play in the Memorial Shop
+			uint64_t short_game : 1;			// Cannot play Short Game
+			uint64_t char_mastery : 1;			// Cannot use the Character Mastery System
 			uint64_t : 1;						// Unknown
-			uint64_t lolo_copound_card : 1;		// Não pode jogar no Lolo Copound Card System
-			uint64_t cadie_recycle : 1;			// Não pode usar o Caddie Recycle Item System
-			uint64_t legacy_tiki_shop : 1, : 0; // Não pode usar o Legacy Tiki Shop System
+			uint64_t lolo_copound_card : 1;		// Cannot play in the Lolo Copound Card System
+			uint64_t cadie_recycle : 1;			// Cannot use the Caddie Recycle Item System
+			uint64_t legacy_tiki_shop : 1, : 0; // Cannot use the Legacy Tiki Shop System
 		}stBit;
 	};
 
-	// Union Property, que guarda a estrutura de bits da propriedade do server
+	// Union Property, which holds the bit structure of the server property
 	union uProperty {
 		uProperty(unsigned int  _ul = 0u) : ulProperty(_ul) {};
 		void clear() { ulProperty = 0u; };
 		unsigned int  ulProperty;
 		struct {
 			unsigned int  : 4;					// Unknown
-			unsigned int  mantle : 1;			// Só GM ou pessoas autorizadas pode ver esse server
+			unsigned int  mantle : 1;			// Only GMs or authorized people can see this server
 			unsigned int  : 1;					// Unknown
-			unsigned int  only_rookie : 1;		// Só Rookie(Iniciante) Pode entrar
-			unsigned int  natural : 1;			// Natural modo
+			unsigned int  only_rookie : 1;		// Only Rookie (beginner) can enter
+			unsigned int  natural : 1;			// Natural mode
 			unsigned int  : 1;					// Unknown
-			unsigned int  verde : 1;			// Cor Verde
-			unsigned int  azul : 1;				// Cor Azul
+			unsigned int  verde : 1;			// Green color
+			unsigned int  azul : 1;				// Blue color
 			unsigned int  grand_prix : 1, : 0;	// Grand Prix
 		}stBit;
 	};
 
-	// Union Event Flag, que guarda a estrutura de bits do event flag do server
+	// Union Event Flag, which holds the bit structure of the server event flag
 	union uEventFlag {
 		uEventFlag(unsigned short _us = 0u) : usEventFlag(_us) {};
 		void clear() { usEventFlag = 0u; };
 		unsigned short usEventFlag;
 		struct {
 			unsigned short : 1;								// Unknown
-			unsigned short pang_x_plus : 1;					// Pang X2 e Maior que 2
+			unsigned short pang_x_plus : 1;					// Pang X2 and greater than 2
 			unsigned short exp_x2 : 1;						// Exp X2
-			unsigned short angel_wing : 1;					// Event Angel Wing(Diminui Quit a cada jogo)
-			unsigned short exp_x_plus : 1;					// Exp X3 e Maior que 3
+			unsigned short angel_wing : 1;					// Event Angel Wing (reduces Quit on every game)
+			unsigned short exp_x_plus : 1;					// Exp X3 and greater than 3
 			unsigned short : 2;								// Unknown
-			unsigned short club_mastery_x_plus : 1, : 0;	// Club Mastert X2 e Maior que 2
+			unsigned short club_mastery_x_plus : 1, : 0;	// Club Mastery X2 and greater than 2
 		}stBit;
 	};
 
-    // ServerInfo tem o nome, uid, porta, ip, propriedade e etc
+    // ServerInfo has the name, uid, port, ip, property, etc.
 	struct ServerInfo {
 		void clear() {
 			memset(this, 0, sizeof(ServerInfo));
@@ -196,7 +196,7 @@ namespace stdA {
 		uEventFlag event_flag;
 		__int16 event_map;
 		__int16 app_rate;
-		__int16 unknown;	// pode ser scratchy rate ou não
+		__int16 unknown;	// may or may not be scratchy rate
 		__int16 img_no;
 	};
 
@@ -217,13 +217,13 @@ namespace stdA {
 		unsigned short club_mastery;
 		unsigned short chuva;
 		unsigned short memorial_shop;
-		unsigned short grand_zodiac_event_time;			// Verifica se o evento do grand zodiac está ativado no server
-		unsigned short angel_event;						// Verifica se o Angel Event Quit Reduce está ativo no server
-		unsigned short grand_prix_event;				// Verifica se o Grand Prix evento está ativado no server
-		unsigned short golden_time_event;				// Verifica se o Golden Time está ativado no server
-		unsigned short login_reward_event;				// Verifica se o Login Reward está ativado no server
-		unsigned short bot_gm_event;					// Verifica se o Bot GM Event está ativado no server
-		unsigned short smart_calculator;				// Verifica se o Smart Calculator está ativado no server
+		unsigned short grand_zodiac_event_time;			// Check whether the grand zodiac event is enabled on the server
+		unsigned short angel_event;						// Check whether the Angel Event Quit Reduce is active on the server
+		unsigned short grand_prix_event;				// Check whether the Grand Prix event is enabled on the server
+		unsigned short golden_time_event;				// Check whether Golden Time is enabled on the server
+		unsigned short login_reward_event;				// Check whether Login Reward is enabled on the server
+		unsigned short bot_gm_event;					// Check whether the Bot GM Event is enabled on the server
+		unsigned short smart_calculator;				// Check whether the Smart Calculator is enabled on the server
 		unsigned int  countBitGrandPrixEvent() {
 
 			unsigned int  count = 0u;
@@ -268,8 +268,8 @@ namespace stdA {
 	};
 
 
-	// ServerInfoEx tem o tipo, version, rate pang, rate exp e etc
-	// só os que nao manda no pacote ServerInfo
+	// ServerInfoEx has the type, version, pang rate, exp rate, etc.
+	// only those that are not sent in the ServerInfo packet
 	struct ServerInfoEx : public ServerInfo {
 		void clear() {
 			memset(this, 0, sizeof(ServerInfoEx));
@@ -311,8 +311,8 @@ namespace stdA {
 				unsigned char L_BLOCK_SCRATCHY : 1;
 				unsigned char L_BLOCK_TICKER : 1;
 				unsigned char L_BLOCK_MEMORIAL_SHOP : 1;
-				unsigned char L_BLOCK_ALL_IP : 1;			// Bloquea todo IP que o player logar
-				unsigned char L_BLOCK_MAC_ADDRESS : 1;		// Bloquea o MAC Address
+				unsigned char L_BLOCK_ALL_IP : 1;			// Blocks every IP the player logs in from
+				unsigned char L_BLOCK_MAC_ADDRESS : 1;		// Blocks the MAC Address
 			};
 			uint64_t ull_IDState;
 			_stIDState st_IDState;
@@ -332,7 +332,7 @@ namespace stdA {
 		void setIDState(uint64_t _id_state) {
 			m_id_state = { _id_state };
 
-			// Block Recursos do player
+			// Block player resources
 			if ((m_id_state.id_state.st_IDState.L_BLOCK_LOUNGE/* & 4*/)) // Block Lounge
 				m_flag.stBit.lounge = 1u; // Block Lounge
 			if ((m_id_state.id_state.st_IDState.L_BLOCK_SHOP_LOUNGE/* & 8*/)) // Block Shop Lounge
@@ -408,16 +408,16 @@ namespace stdA {
 		unsigned char default_shirts;
 		unsigned char gift_flag;
 		unsigned char purchase;
-		int parts_typeid[24];				// Parts typeid, do 1 ao 24
-		int parts_id[24];					// Parts ID, do 1 ao 24
-		char cblank1[216];					// Não sei bem direito o que é aqui
-		int auxparts[5];					// Auxiliar Parts 5, aqui fica anel
-		int cut_in[4];						// Cut-in, no primeiro mas acho que pode ser cut-in no resto
-		unsigned char pcl[5];				// Aqui é o character stats, como controle, força, spin e etc
-		int mastery;						// Mastery, que aumenta os slot do stats do character
-		int card_character[4];				// 4 Slot de card Character
-		int card_caddie[4];				// 4 Slot de card Caddie
-		int card_NPC[4];					// 4 Slot de card NPC
+		int parts_typeid[24];				// Parts typeid, from 1 to 24
+		int parts_id[24];					// Parts ID, from 1 to 24
+		char cblank1[216];					// I am not quite sure what this is
+		int auxparts[5];					// Auxiliary Parts 5, the ring goes here
+		int cut_in[4];						// Cut-in, in the first one, but I think it may be cut-in in the rest
+		unsigned char pcl[5];				// Here are the character stats, such as control, power, spin, etc.
+		int mastery;						// Mastery, which increases the character stats slots
+		int card_character[4];				// 4 Character card slots
+		int card_caddie[4];				// 4 Caddie card slots
+		int card_NPC[4];					// 4 NPC card slots
 		char getSlotOfStatsFromCharEquipedPartItem(Stats __stat) {	// Get Slot of stats from Character equiped item
 
 			char value = 0;
@@ -460,7 +460,7 @@ namespace stdA {
 			// Set Effect Table
 			IFF::SetEffectTable *iff_SET = nullptr;
 
-			// Ids que já foram
+			// Ids that were already processed
 			std::vector< unsigned int  > check_id;
 
 			// Invalid Stats type, Unknown type Stats
@@ -474,15 +474,15 @@ namespace stdA {
 
 					iff_SET = sIff::getInstance().findFirstItemInSetEffectTable(parts_typeid[i]);
 
-					// O Item no Set Effect Table
+					// The Item in the Set Effect Table
 					if (iff_SET != nullptr) {
 
 						if (check_id.empty() || std::find(check_id.begin(), check_id.end(), iff_SET->id) == check_id.end()) {
 
-							// add id para o check
+							// add id for the check
 							check_id.push_back(iff_SET->id);
 
-							// Verifica sem tem todos os itens da tabela de efeito equipados
+							// Check whether all items from the effect table are equipped
 							ret = 1;
 
 							for (auto j = 0u; j < (sizeof(iff_SET->item._typeid) / sizeof(iff_SET->item._typeid[0])); ++j) {
@@ -493,7 +493,7 @@ namespace stdA {
 
 										if (!isPartEquiped(iff_SET->item._typeid[j])) {
 
-											// Não tem o outro item equipado
+											// The other item is not equipped
 											ret = 0;
 
 											break;
@@ -503,7 +503,7 @@ namespace stdA {
 
 										if (!isAuxPartEquiped(iff_SET->item._typeid[j])) {
 
-											// Não tem o outro item equipado
+											// The other item is not equipped
 											ret = 0;
 
 											break;
@@ -513,7 +513,7 @@ namespace stdA {
 								}
 							}
 
-							// Não tem todos os itens equipados
+							// Not all items are equipped
 							if (!ret)
 								continue;
 
@@ -538,15 +538,15 @@ namespace stdA {
 
 					iff_SET = sIff::getInstance().findFirstItemInSetEffectTable(auxparts[i]);
 
-					// O Item no Set Effect Table
+					// The Item in the Set Effect Table
 					if (iff_SET != nullptr) {
 
 						if (check_id.empty() || std::find(check_id.begin(), check_id.end(), iff_SET->id) == check_id.end()) {
 
-							// add id para o check
+							// add id for the check
 							check_id.push_back(iff_SET->id);
 
-							// Verifica sem tem todos os itens da tabela de efeito equipados
+							// Check whether all items from the effect table are equipped
 							ret = 1;
 
 							for (auto j = 0u; j < (sizeof(iff_SET->item._typeid) / sizeof(iff_SET->item._typeid[0])); ++j) {
@@ -557,7 +557,7 @@ namespace stdA {
 
 										if (!isPartEquiped(iff_SET->item._typeid[j])) {
 											
-											// Não tem o outro item equipado
+											// The other item is not equipped
 											ret = 0;
 											
 											break;
@@ -567,7 +567,7 @@ namespace stdA {
 									
 										if (!isAuxPartEquiped(iff_SET->item._typeid[j])) {
 
-											// Não tem o outro item equipado
+											// The other item is not equipped
 											ret = 0;
 
 											break;
@@ -577,7 +577,7 @@ namespace stdA {
 								}
 							}
 
-							// Não tem todos os itens equipados
+							// Not all items are equipped
 							if (!ret)
 								continue;
 
@@ -616,8 +616,8 @@ namespace stdA {
 		};
 		unsigned char AngelEquiped() {
 
-			// Spika não tem angel wings, mas tem a do gacha angel wings
-			// ((_typeid & 0x000000FF) == 10/*SPIKA não tem angel wings*/
+			// Spika has no angel wings, but has the gacha angel wings
+			// ((_typeid & 0x000000FF) == 10/*SPIKA has no angel wings*/
 
 			// Normal Angel Wings
 			auto angel = std::find_if(angel_wings, LAST_ELEMENT_IN_ARRAY(angel_wings), [&](auto& el) {
@@ -632,13 +632,13 @@ namespace stdA {
 			unsigned int  part_num = 0u;
 
 			if (angel != LAST_ELEMENT_IN_ARRAY(angel_wings) && (part_num = sIff::getInstance().getItemCharPartNumber(*angel)) >= 0u
-					&& parts_typeid[part_num] == *angel) // Está equipado com a Normal Angel Wings
-				return 1u;	// 1/* 3% icon rosa e drop chance a+ e treasure point a+*/ 
+					&& parts_typeid[part_num] == *angel) // Equipped with the Normal Angel Wings
+				return 1u;	// 1/* 3% pink icon and drop chance a+ and treasure point a+*/ 
 			else if (gacha_angel != LAST_ELEMENT_IN_ARRAY(gacha_angel_wings) && (part_num = sIff::getInstance().getItemCharPartNumber(*gacha_angel)) >= 0u
-					&& parts_typeid[part_num] == *gacha_angel) // Está equipado com a Gacha Angel Wings
-				return 2u; // 2/* gacha angel wings só da o drop chance a+ e treasure point a+*/ 
+					&& parts_typeid[part_num] == *gacha_angel) // Equipped with the Gacha Angel Wings
+				return 2u; // 2/* gacha angel wings only gives drop chance a+ and treasure point a+*/ 
 
-			return 0u;	// Não está equipado com nenhuma Angel Wings
+			return 0u;	// Not equipped with any Angel Wings
 		};
 		bool isEquipedPartSlotThirdCaddieCardSlot() {
 			
@@ -646,7 +646,7 @@ namespace stdA {
 
 			for (auto i = 0u; i < (sizeof(parts_typeid) / sizeof(parts_typeid[0])); ++i) {
 				if (parts_id[i] != 0 && (part = sIff::getInstance().findPart(parts_typeid[i])) != nullptr)
-					if (part->caddie_slot)	// Tem um Part que Libera o terceiro Caddie Card Slot
+					if (part->caddie_slot)	// There is a Part that unlocks the third Caddie Card Slot
 						return true;
 			}
 
@@ -693,7 +693,7 @@ namespace stdA {
 
 			return false;
 		};
-		void unequipPart(IFF::Part* _part) {	// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+		void unequipPart(IFF::Part* _part) {	// Unequip the character Part and put the Character Default Parts in its place
 
 			if (_part == nullptr) {
 				
@@ -704,7 +704,7 @@ namespace stdA {
 
 			for (auto i = 0u; i < (sizeof(parts_typeid) / sizeof(parts_typeid[0])); ++i) {
 
-				if (_part->position_mask.getSlot(i) == 1) {	// Coloca Def Parts
+				if (_part->position_mask.getSlot(i) == 1) {	// Put Def Parts
 
 					unsigned int  def_part = ((i | (unsigned int )(_typeid << 5)) << 13) | 0x8000400;
 
@@ -728,12 +728,12 @@ namespace stdA {
 				_smp::message_pool::getInstance().push(new message("[CharacterInfo::unequipPart][Error][WARNIG] Part[TYPEID=" + std::to_string(_typeid) 
 						+ "], mas ele nao existe no IFF_STRUCT do server, desequipa sem usar a funcao do character. Hacker ou Bug.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Não vai pegar todos os Slots que o Part ocupava para desequipar, desequipa o só onde tem o typeid
-				// ISSO É SÓ PARA DESEQUIPAR O PART QUE NÃO EXISTE NO SERVER
+				// Does not take all the Slots the Part occupied to unequip, only unequips where the typeid is
+				// THIS IS ONLY TO UNEQUIP THE PART THAT DOES NOT EXIST ON THE SERVER
 				for (auto i = 0u; i < (sizeof(parts_typeid) / sizeof(parts_typeid[0])); ++i) {
 
-					// Não vai pergar todos os 
-					if (parts_typeid[i] == _typeid) {	// Coloca Def Parts
+					// Does not take all the 
+					if (parts_typeid[i] == _typeid) {	// Put Def Parts
 
 						unsigned int  def_part = ((i | (unsigned int )(_typeid << 5)) << 13) | 0x8000400;
 
@@ -758,17 +758,17 @@ namespace stdA {
 
 					auxparts[i] = 0l;
 
-					// Já desequipou sai
+					// Already unequipped, exit
 					break;
 				}
 			}
 		};
-		void initComboDef() {	// Initialize o combo de roupas padrões do character
+		void initComboDef() {	// Initialize the character default clothes combo
 
 			if (_typeid == 0)
 				return;
 
-			// Limpa
+			// Clear
 			memset(parts_typeid, 0, sizeof(parts_typeid));
 			memset(parts_id, 0, sizeof(parts_id));
 
@@ -852,8 +852,8 @@ namespace stdA {
 		void clear() {
 			memset(this, 0, sizeof(CommandOtherServerHeader));
 		};
-		unsigned int  send_server_uid_or_type;	// Envia o comando para esse server (UID/TYPE)
-		unsigned short command_id;				// Comando ID
+		unsigned int  send_server_uid_or_type;	// Send the command to this server (UID/TYPE)
+		unsigned short command_id;				// Command ID
 	};
 
 	// Auth Server - Server Send Command to Other Server Header Ex
@@ -882,14 +882,14 @@ namespace stdA {
 
 					if (_size > 0u) {
 
-						// Inicializa o Size
+						// Initialize the Size
 						size = _size;
 
-						// Verifica se o buffer do comando já está inicializado, se sim destroi ele
+						// Check whether the command buffer is already initialized, and if so destroy it
 						if (buff != nullptr)
 							destroy();
 
-						// Alloca memória para o Buffer
+						// Allocate memory for the Buffer
 						buff = new unsigned char[size];
 
 						state = true;

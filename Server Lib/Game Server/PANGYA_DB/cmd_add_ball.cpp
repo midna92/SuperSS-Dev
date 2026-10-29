@@ -1,6 +1,6 @@
-// Arquivo cmd_add_ball.cpp
-// Criado em 31/05/2018 as 09:00 por Acrisio
-// Implementa��o da classe CmdAddBall
+// File cmd_add_ball.cpp
+// Created on 31/05/2018 at 09:00 by Acrisio
+// Implementation of the class CmdAddBall
 
 #if defined(_WIN32)
 #pragma pack(1)

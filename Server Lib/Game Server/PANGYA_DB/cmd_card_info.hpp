@@ -1,6 +1,6 @@
-// Arquivo cmd_card_info.hpp
-// Criado em 21/03/2018 ass 22:11 por Acrisio
-// Defini��o da classe CmdCardInfo
+// File cmd_card_info.hpp
+// Created on 21/03/2018 at 22:11 by Acrisio
+// Definition of the class CmdCardInfo
 
 #pragma once
 #ifndef _STDA_CMD_CARD_INFO_HPP

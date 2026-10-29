@@ -1,6 +1,6 @@
-// Arquivo socket.cpp
-// Criado em 14/11/2020 as 08:29 por Acrisio
-// Implementa��o da classe Socket
+// File socket.cpp
+// Created on 14/11/2020 at 08:29 by Acrisio
+// Implementation of the class Socket
 
 #if defined(_WIN32)
 #include <WinSock2.h>
@@ -245,13 +245,13 @@ bool Socket::isConnected() {
 
 	try {
 
-		// getConnectTime pode lan�ar exception
+		// getConnectTime can throw an exception
 		ret = (getConnectTime() >= 0);
 	
 	}catch (exception& e) {
 		UNREFERENCED_PARAMETER(e);
 
-		// Relan�a
+		// Rethrow
 		throw;
 	}
 
@@ -287,7 +287,7 @@ int Socket::getConnectTime() {
 		int rt_flg = fcntl(m_socket.fd, F_GETFL);
 
 		if (rt_flg == -1)
-			return (errno == EAGAIN | errno == EBADF | errno == EACCES) ? -1 : -2; // -1 socket is not connected, -2 Erro ao pegar status flag do socket
+			return (errno == EAGAIN | errno == EBADF | errno == EACCES) ? -1 : -2; // -1 socket is not connected, -2 Error getting the socket status flag
 
 		int error = 0;
 		socklen_t len = sizeof (error);

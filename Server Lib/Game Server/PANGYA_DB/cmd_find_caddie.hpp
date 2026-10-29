@@ -1,6 +1,6 @@
-// Arquivo cmd_find_caddie.hpp
-// Criado em 22/05/2018 as 21:01 por Acrisio
-// Defini��o da classe CmdFindCaddie
+// File cmd_find_caddie.hpp
+// Created on 22/05/2018 at 21:01 by Acrisio
+// Definition of the class CmdFindCaddie
 
 
 #pragma once

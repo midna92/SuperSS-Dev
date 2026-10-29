@@ -1,6 +1,6 @@
-// Arquivo club3d.cpp
-// Criado em 03/10/2020 as 15:28 por Acrisio
-// Implementa��o da classe Club3D
+// File club3d.cpp
+// Created on 03/10/2020 at 15:28 by Acrisio
+// Implementation of the Club3D class
 
 #if defined(_WIN32)
 #include <WinSock2.h>

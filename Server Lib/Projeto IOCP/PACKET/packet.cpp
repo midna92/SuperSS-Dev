@@ -1,8 +1,8 @@
-// Arquivo packet.cpp
-// Criado em 05/11/2017 por Acrisio
-// Implementação da classe packet
+// File packet.cpp
+// Created on 05/11/2017 by Acrisio
+// Implementation of class packet
 
-// Tem que ter o pack aqui se não da erro na hora da allocação do HEAP
+// The pack must be here, otherwise it causes an error at HEAP allocation time
 #if defined(_WIN32)
 #pragma pack(1)
 #endif
@@ -259,19 +259,19 @@ void packet::unMakeFull(unsigned char _key) {
 
 		readWord(&m_tipo);
 
-		m_plain.reset_read();	// Reseta para funcionar depois normal
+		m_plain.reset_read();	// Reset so it works normally afterwards
         
         switch (m_tipo) {
         case 0:
-			// Pacote Raw Login
+			// Raw Login Packet
 			if (ph.size == 0x0B && (m_maked.m_buf[index + 4] == 0 && m_maked.m_buf[index + 5] == 0 && m_maked.m_buf[index + 6] == 0))
 				return;
 			else
 				m_plain.reset_write();
             break;
-        case 0x2E:		// Pacote Raw MSN
-        case 0x3F:		// Pacote Raw Game
-        case 0x1388:	// Pacote Raw Rank
+        case 0x2E:		// Raw MSN Packet
+        case 0x3F:		// Raw Game Packet
+        case 0x1388:	// Raw Rank Packet
             return;
 		default:
 			m_plain.reset_write();
@@ -310,7 +310,7 @@ void packet::unMakeFull(unsigned char _key) {
         throw;
     }
 
-    index = 1;	// Depois de decryptado não usa a chave que fica
+    index = 1;	// After decrypting, the stored key is not used
 
     conversionByte cb(decrypt + index, CB_BASE_255);	index += sizeof(conversionByte::unionConvertido);
 
@@ -357,7 +357,7 @@ void packet::unMakeFull(unsigned char _key) {
         throw;
     }
 
-    // Libera memória alocada para o decrypt
+    // Free memory allocated for the decrypt
 	if (decrypt != nullptr) {
 
 		delete[] decrypt;
@@ -370,7 +370,7 @@ void packet::unMakeFull(unsigned char _key) {
 
     add_plain(decompress, decompress_size);
 
-    // Libera memória alocada para decompress
+    // Free memory allocated for the decompress
 	if (decompress != nullptr) {
 
 		delete[] decompress;
@@ -489,7 +489,7 @@ void packet::makeFull(unsigned char _key) {
     std::srand((uint32_t)std::time(nullptr) * 7 * ph.size);
 
     ph.low_key = std::rand() & 255;
-    // Fim Make Packet Head
+    // End Make Packet Head
 
 	_crypt = new crypt();
 
@@ -501,7 +501,7 @@ void packet::makeFull(unsigned char _key) {
 	m_maked.reset();
 
 	add_maked(&ph, sizeof(packet_head));
-	alloc(m_maked, ph.size);	// add size para escrita
+	alloc(m_maked, ph.size);	// add size for writing
 
     try {
         _crypt->encrypt(tmp, ph.size, &m_maked.m_buf[m_maked.m_index_w]);
@@ -571,7 +571,7 @@ void packet::unMakeRaw() {
     if (ph.size > m_maked.m_index_w)
         throw exception("Erro: Unknown Packet. packet::unMakeRaw()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET, 11, 0));
     
-    index++;	// Tira o byte com o valor zero que diz que é um pacote Raw
+    index++;	// Remove the byte with value zero that says it is a Raw packet
 
 	// Plain Reset
 	m_plain.reset();
@@ -586,7 +586,7 @@ void packet::makeRaw() {
 	if (m_plain.m_buf == nullptr)
 		throw exception("Error buf is nullptr em packet::makeRaw()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET, 15, 0));
 
-	ph.low_key = 0; // low part of key random - 0 nesse pacote porque ele é o primiero que passa a chave
+	ph.low_key = 0; // low part of random key - 0 in this packet because it is the first one that passes the key
 	ph.size = (unsigned short)(m_plain.m_index_w + 1);
 
 	// Maked Reset
@@ -594,7 +594,7 @@ void packet::makeRaw() {
 
 	add_maked(&ph, sizeof(packet_head));
 
-	int key = 0;	// byte com valor 0 para dizer que é um pacote raw
+	int key = 0;	// byte with value 0 to say it is a raw packet
 	add_maked(&key, 1);
 
 	add_maked(m_plain.m_buf, m_plain.m_index_w);
@@ -613,7 +613,7 @@ void packet::unMakeRawClient() {
 	if (phc.size > m_maked.m_index_w)
 		throw exception("Erro: Unknown Packet. packet::unMakeRawClient()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET, 11, 0));
 
-	index++;	// Tira o byte com o valor zero que diz que é um pacote Raw
+	index++;	// Remove the byte with value zero that says it is a Raw packet
 
 	// Plain Reset
 	m_plain.reset();
@@ -866,7 +866,7 @@ std::string packet::readString() {
     int16_t len = readInt16();
 
 	if (len <= 0)
-		return std::string("");	// String Vazia
+		return std::string("");	// Empty String
 
 	char* szString = new char[len + 1];
 
@@ -885,7 +885,7 @@ std::wstring packet::readWString() {
 	int16_t len = readInt16();
 
 	if (len <= 0)
-		return std::wstring(L"");		// String Vazia
+		return std::wstring(L"");		// Empty String
 
 	char* szString = new char[len + 1];
 

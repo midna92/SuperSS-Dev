@@ -1,6 +1,6 @@
-// Arquivo cmd_item_buff_info.hpp
-// Criado em 21/03/2018 as 22:43 por Acrisio
-// Defini��o da classe CmdItemBuffInfo
+// File cmd_item_buff_info.hpp
+// Created on 21/03/2018 at 22:43 by Acrisio
+// Definition of the class CmdItemBuffInfo
 
 #pragma once
 #ifndef _STDA_CMD_ITEM_BUFF_INFO_HPP

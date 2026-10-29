@@ -1,6 +1,6 @@
-// Arquivo cmd_update_chat_macro_user.hpp
-// Criado em 28/07/2018 as 20:37 por Acrisio
-// Defini��o da classe CmdUpdateChatMacroUser
+// File cmd_update_chat_macro_user.hpp
+// Created on 28/07/2018 at 20:37 by Acrisio
+// Definition of class CmdUpdateChatMacroUser
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHAT_MACRO_USER_HPP

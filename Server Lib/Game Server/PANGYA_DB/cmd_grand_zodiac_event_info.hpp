@@ -1,6 +1,6 @@
-// Arquivo cmd_grand_zodiac_event_info.hpp
-// Criado em 26/06/2020 as 13:31 por Acrisio
-// Defini��o da classe CmdGrandZodiacEventInfo
+// File cmd_grand_zodiac_event_info.hpp
+// Created on 26/06/2020 at 13:31 by Acrisio
+// Definition of the class CmdGrandZodiacEventInfo
 
 #pragma once
 #ifndef _STDA_CMD_GRAND_ZODIAC_EVENT_INFO_HPP

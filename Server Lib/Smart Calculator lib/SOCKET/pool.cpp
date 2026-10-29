@@ -1,6 +1,6 @@
-// Arquivo pool.cpp
-// Criado em 14/11/2020 as 10:00 por Acrisio
-// Implementa��o da classe Pool
+// File pool.cpp
+// Created on 14/11/2020 at 10:00 by Acrisio
+// Implementation of the class Pool
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -85,7 +85,7 @@ Pool::~Pool() {
 		close();
 
 	}catch (exception& e) {
-		// Garantir o no exception do destructor
+		// Ensure no exception from the destructor
 		
 		sLogger::getInstance().Log("[" + std::string(__FUNCTION__) + "][ErrorSystem] " + e.getFullMessageError(), eTYPE_LOG::TL_ERROR);
 	}
@@ -95,7 +95,7 @@ int Pool::initialize(FNPROCSCLOG _scLog, FNPROCRESPONSECALLBACK _responseCallBac
 	
 	try {
 
-		// Set o ID do server que carregou e inicializou a DLL
+		// Set the ID of the server that loaded and initialized the DLL
 		m_server_id = _server_id;
 
 		if (m_state && m_socket.isConnected())
@@ -255,23 +255,23 @@ void* Pool::translate() {
 						std::string hand_shk;
 						pckt >> hand_shk;
 
-						// N�o tem resposta para nenhum player isso � o login do sistema
+						// No response for any player, this is the system login
 						
-						// S� mostra Log
+						// Only shows Log
 						sLogger::getInstance().Log("[" + std::string(__FUNCTION__) + "][HAND_SHAKE][Log] " + hand_shk, eTYPE_LOG::TL_LOG);
 						break;
 					}
 					case ePACKET::REPLY_SERVER: {
 
-						// Resposta para o server ou comandos
+						// Response to the server or commands
 						std::string reply_or_cmd;
 						uint32_t uid = 0u;
 
 						pckt >> uid;
 						pckt >> reply_or_cmd;
 
-						// Envia a resposta ou o comando para o server
-						sLogger::getInstance().Response(uid, eTYPE_CALCULATOR_CMD::SMART_CALCULATOR/*Ignora esse o response SERVER*/, reply_or_cmd, eTYPE_RESPONSE::SERVER_RESPONSE);
+						// Send the response or the command to the server
+						sLogger::getInstance().Response(uid, eTYPE_CALCULATOR_CMD::SMART_CALCULATOR/*Ignore this SERVER response*/, reply_or_cmd, eTYPE_RESPONSE::SERVER_RESPONSE);
 
 						break;
 					}
@@ -315,7 +315,7 @@ void* Pool::translate() {
 		if (m_socket.isConnected())
 			m_socket.close();
 
-		m_state = false; // Desconectou
+		m_state = false; // Disconnected
 
 	}catch (exception& e) {
 
@@ -355,7 +355,7 @@ void Pool::close() {
 			m_sBuff.shrink_to_fit();
 		}
 
-		// Server ID que carregou a DLL
+		// ID of the server that loaded the DLL
 		m_server_id = 0u;
 
 	}catch (exception& e) {
@@ -389,7 +389,7 @@ int Pool::connect() {
 
 		if (m_thread == nullptr)
 			m_thread = new thread(1, Pool::_translate, this);
-		else if (!m_thread->isLive()) // Religa a thread
+		else if (!m_thread->isLive()) // Restart the thread
 			m_thread->init_thread();
 
 		if (!m_socket.isConnected())

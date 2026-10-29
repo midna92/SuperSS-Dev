@@ -1,6 +1,6 @@
-// Arquivo cmd_update_golden_time.cpp
-// Criado em 24/10/2020 as 03:32 por Acrisio
-// Implementa��o da classe CmdUpdateGoldenTime
+// File cmd_update_golden_time.cpp
+// Created on 24/10/2020 at 03:32 by Acrisio
+// Implementation of class CmdUpdateGoldenTime
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdUpdateGoldenTime::~CmdUpdateGoldenTime() {
 
 void CmdUpdateGoldenTime::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo versus.hpp
-// Criado em 20/10/2018 as 22:46 por Acrisio
-// Defini��o da classe Versus
+// File versus.hpp
+// Created on 20/10/2018 at 22:46 by Acrisio
+// Definition of the Versus class
 
 #pragma once
 #ifndef _STDA_VERSUS_HPP
@@ -18,7 +18,7 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Game->Course->Hole methods
 			//virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 
 			virtual void changeHole() override;
@@ -26,7 +26,7 @@ namespace stdA {
 
 			void finish_versus(int _option);
 
-			// Tempo
+			// Time
 			/*virtual void startTime(void* _quem) override;
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -34,7 +34,7 @@ namespace stdA {
 			virtual void timeIsOver(void* _quem) override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finish Game
 			virtual bool init_game() override;
 
 			virtual void requestFinishExpGame();

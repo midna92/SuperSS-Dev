@@ -1,6 +1,6 @@
-// Arquivo game_server.h
-// Criado em 17/12/2017 por Acrisio
-// Definição da classe game_server
+// File game_server.h
+// Created on 17/12/2017 by Acrisio
+// Definition of the game_server class
 
 
 #pragma once
@@ -136,11 +136,11 @@ namespace stdA {
 			// Update Daily Quest Info
 			void updateDailyQuest(DailyQuestInfo& _dqi);
 
-			// send Update Room Info, find room nos canais e atualiza o info
+			// send Update Room Info, find room in the channels and update the info
 			void sendUpdateRoomInfo(room *_r, int _option);
 
 		public:
-			// Auth Server Comandos
+			// Auth Server Commands
 			virtual void authCmdShutdown(int32_t _time_sec) override;
 			virtual void authCmdBroadcastNotice(std::string _notice) override;
 			virtual void authCmdBroadcastTicker(std::string _nickname, std::string _msg) override;
@@ -189,7 +189,7 @@ namespace stdA {
 			virtual void reload_systems();
 			virtual void reloadGlobalSystem(uint32_t _tipo);
 
-			// Update Rate e Event of Server
+			// Update Rate and Event of Server
 			virtual void updateRateAndEvent(uint32_t _tipo, uint32_t _qntd);
 
 			// Shutdown With Time
@@ -211,7 +211,7 @@ namespace stdA {
 			// Make Bot GM Event Room
 			virtual void makeBotGMEventRoom();
 
-			// Verifica e executa os comandos do Smart Calculator
+			// Check and execute the Smart Calculator commands
 			virtual bool checkSmartCalculatorCmd(player& _session, std::string& _msg, eTYPE_CALCULATOR_CMD _type);
 
 		public:
@@ -247,7 +247,7 @@ namespace stdA {
 #error Unknown pointer size or missing size macros!
 #endif
 
-			bool m_GameGuardAuth;	// Habilita ou desabilate o GameGuard Auth dos player
+			bool m_GameGuardAuth;	// Enables or disables the players' GameGuard Auth
 
 		private:
 			std::vector< channel* > v_channel;

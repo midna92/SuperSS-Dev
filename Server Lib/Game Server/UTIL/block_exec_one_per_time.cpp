@@ -1,6 +1,6 @@
-// Arquivo block_exec_one_per_time.cpp
-// Criado em 03/04/2020 as 17:44 por Acrisio
-// Implementa��o da classe SyncBlockExecOnePerTime
+// File block_exec_one_per_time.cpp
+// Created on 03/04/2020 at 17:44 by Acrisio
+// Implementation of the SyncBlockExecOnePerTime class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -26,7 +26,7 @@ ThreadSafeCS::ThreadSafeCS() : m_lock_spin(0l) {
 
 ThreadSafeCS::~ThreadSafeCS() {
 
-	// Libera se estiver bloqueado
+	// Releases if it is locked
 	if (m_lock_spin > 0l)
 		unlock();
 
@@ -55,7 +55,7 @@ bool ThreadSafeCS::try_lock() {
 #if defined(_WIN32)
 	if ((ret = TryEnterCriticalSection(&m_cs))) {
 #elif defined(__linux__)
-	int err_ret = 0; // provável erro EBUSY, mas pode ter outros erros menos provável
+	int err_ret = 0; // probably error EBUSY, but there may be other less likely errors
 
 	if ((err_ret = pthread_mutex_trylock(&m_cs)) == 0) {
 
@@ -71,7 +71,7 @@ void ThreadSafeCS::unlock() {
 
 	if (m_lock_spin <= 0l) {
 
-		// J� est� liberado
+		// Already released
 		_smp::message_pool::getInstance().push(new message("[ThreadSafeCS::unlock][WARNING] already unlock.", CL_FILE_LOG_AND_CONSOLE));
 
 		return;
@@ -282,7 +282,7 @@ IdentifyPacketKey SyncBlockExecOnePerTime::enter(uint32_t _uid, unsigned short _
 
 		if (it != m_mp_event_block.end()) {
 
-			// j� est� bloqueado, espera ele liberar
+			// already locked, waits for it to be released
 			if (it->second.active && it->second.thread_id != 
 #if defined(_WIN32)
 				GetCurrentThreadId()
@@ -306,7 +306,7 @@ IdentifyPacketKey SyncBlockExecOnePerTime::enter(uint32_t _uid, unsigned short _
 		
 		}else {
 
-			// Cria e bloquea
+			// Creates and locks
 			auto it_insert = m_mp_event_block.insert(std::make_pair(ipk, stState{ true, 
 #if defined(_WIN32)
 				GetCurrentThreadId() 
@@ -364,7 +364,7 @@ void SyncBlockExecOnePerTime::leave(IdentifyPacketKey* _ipk) {
 		// find Identify Packet Key
 		auto it = m_mp_event_block.find(*_ipk);
 
-		// libera
+		// releases
 		if (it != m_mp_event_block.end()) {
 
 			it->second.active = false;
@@ -400,7 +400,7 @@ EventCV* SyncBlockExecOnePerTime::getPlayer(uint32_t _uid) {
 
 		auto it = m_mp_player.find(_uid);
 
-		// Cria um novo
+		// Creates a new one
 		if (it == m_mp_player.end()) {
 
 			auto it_insert = m_mp_player.insert(std::make_pair(_uid, EventCV()));

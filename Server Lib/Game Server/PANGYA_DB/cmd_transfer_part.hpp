@@ -1,6 +1,6 @@
-// Arquivo cmd_transfer_part.hpp
-// Criado em 10/06/2018 as 11:37 por Acrisio
-// Defini��o da classe CmdTransferPart
+// File cmd_transfer_part.hpp
+// Created on 10/06/2018 at 11:37 by Acrisio
+// Definition of the class CmdTransferPart
 
 #pragma once
 #ifndef _STDA_CMD_TRANSFER_PART_HPP

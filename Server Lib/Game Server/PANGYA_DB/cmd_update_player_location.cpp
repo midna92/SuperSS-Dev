@@ -1,6 +1,6 @@
-// Arquivo cmd_update_player_location.cpp
-// Criado em 11/05/2019 as 17:38 por Acrisio
-// Implementação da classe CmdUpdatePlayerLocation
+// File cmd_update_player_location.cpp
+// Created on 11/05/2019 at 17:38 by Acrisio
+// Implementation of class CmdUpdatePlayerLocation
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdatePlayerLocation::~CmdUpdatePlayerLocation() {
 
 void CmdUpdatePlayerLocation::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 	
-	// Não usa por que é um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

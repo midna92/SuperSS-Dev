@@ -1,6 +1,6 @@
-// Arquivo puppet_to_text.cpp
-// Criado em 14/12/2022 as 14:04 por Acrisio
-// Definição e Implementação do Tradutor dos arquivos .pet, .mpet, .bpet e .apet do PangYa do PC todas as versões
+// File puppet_to_text.cpp
+// Created on 14/12/2022 at 14:04 by Acrisio
+// Definition and implementation of the translator for PangYa PC .pet, .mpet, .bpet and .apet files, all versions
 
 #include <iostream>
 #include <fstream>
@@ -626,7 +626,7 @@ struct Bone {
 	std::string name;
 	uint16_t parent;
 	Matrix matrix;
-	float orientation_flag; // valor novo da versão 1.3
+	float orientation_flag; // new value from version 1.3
 	std::string toString() {
 		return "name: " + name + ", parent: " + std::to_string(parent) + ", orientation_flag: " 
 			+ std::to_string(orientation_flag)
@@ -793,7 +793,7 @@ struct mpet_extra_value {
 	}
 };
 
-// Esse aqui a maioria que encontrei foi os ossos de animação de Asas
+// Most of the ones I found here were Wing animation bones
 struct Extra {
 	int16_t bone_id;
 	std::string toString() {
@@ -809,7 +809,7 @@ struct Mesh {
 	std::vector<Polygon> polygons;
 	std::vector<TextureIndex> texture_indexs;
 	std::vector<mpet_extra_value> mpet_extra_values;
-	std::vector<TextureIndex> texture_specular_indexs; // Versão 1.2 - Material Texture Specular Index
+	std::vector<TextureIndex> texture_specular_indexs; // Version 1.2 - Material Texture Specular Index
 	std::string toString() {
 		return "Vertice length: " + std::to_string(vertices.size()) 
 			+ ", Polygon length: " + std::to_string(polygons.size())
@@ -1116,7 +1116,7 @@ bool readPETModelBlock(FileObject& _fo, BlockModelCtx* _bmc) {
 	_bmc->model = pmh;
 	_bmc->index = _fo.index;
 
-	// pula bloco
+	// skip block
 	if (!_fo.jumpBlock(pmh.length))
 		return false;
 

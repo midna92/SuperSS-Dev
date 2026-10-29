@@ -1,6 +1,6 @@
-// Arquivo cmd_update_auth_key_login.cpp
-// Criado em 07/04/2018 as 18:15 por Acrisio
-// Implementação da classe CmdUpdateAuthKeyLogin
+// File cmd_update_auth_key_login.cpp
+// Created on 07/04/2018 at 18:15 by Acrisio
+// Implementation of class CmdUpdateAuthKeyLogin
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateAuthKeyLogin::~CmdUpdateAuthKeyLogin() {
 
 void CmdUpdateAuthKeyLogin::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-    // Não usa por que é um UPDATE
+    // Not used because it's an UPDATE
 }
 
 response* CmdUpdateAuthKeyLogin::prepareConsulta(database& _db) {

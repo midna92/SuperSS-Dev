@@ -1,6 +1,6 @@
-// Arquivo cmd_create_user.cpp
-// Criado em 31/03/2018 as 16:01 por Acrisio
-// implementa��o da classe CmdCreateUser
+// File cmd_create_user.cpp
+// Created on 31/03/2018 at 16:01 by Acrisio
+// implementation of the CmdCreateUser class
 
 #if defined(_WIN32)
 #pragma pack(1)

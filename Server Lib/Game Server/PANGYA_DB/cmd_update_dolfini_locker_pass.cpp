@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_pass.cpp
-// Criado em 02/06/2018 as 15:24 por Acrisio
-// Implementa��o da classe CmdUpdateDolfiniLockerPass
+// File cmd_update_dolfini_locker_pass.cpp
+// Created on 02/06/2018 at 15:24 by Acrisio
+// Implementation of class CmdUpdateDolfiniLockerPass
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateDolfiniLockerPass::~CmdUpdateDolfiniLockerPass() {
 
 void CmdUpdateDolfiniLockerPass::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// n�o usa por que � um UDPATE
+	// Not used because it is an UDPATE
 	return;
 }
 

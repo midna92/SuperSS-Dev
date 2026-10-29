@@ -1,6 +1,6 @@
-// Arquivo epoll.cpp
-// Criado em 05/03/2021 as 08:46 por Acrisio
-// Implementa��o da classe iocp linux
+// File epoll.cpp
+// Created on 05/03/2021 at 08:46 by Acrisio
+// Implementation of class iocp linux
 
 #include "epoll.hpp"
 #include <unistd.h>

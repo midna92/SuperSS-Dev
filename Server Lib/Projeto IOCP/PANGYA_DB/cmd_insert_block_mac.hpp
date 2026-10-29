@@ -1,6 +1,6 @@
-// Aruivo cmd_insert_block_mac.hpp
-// Criado em 22/08/2019 as 11:45 por Acrisio
-// Definição da classe CmdInsertBlockMac
+// File cmd_insert_block_mac.hpp
+// Created on 22/08/2019 at 11:45 by Acrisio
+// Definition of class CmdInsertBlockMac
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_BLOCK_MAC_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_tuto_event_clear.hpp
-// Criado em 28/06/2018 as 21:56 por Acrisio
-// Defini��o da classe CmdTutoEventClear
+// File cmd_tuto_event_clear.hpp
+// Created on 28/06/2018 at 21:56 by Acrisio
+// Definition of the class CmdTutoEventClear
 
 #pragma once
 #ifndef _STDA_CMD_TUTO_EVENT_CLEAR_HPP

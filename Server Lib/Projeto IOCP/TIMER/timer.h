@@ -1,6 +1,6 @@
-// Arquivo timer.h
-// Criado em 01/01/2018 por Acrisio
-// Definição da classe timer
+// File timer.h
+// Created on 01/01/2018 by Acrisio
+// Definition of class timer
 
 #pragma once
 #ifndef _STDA_TIMER_H
@@ -39,14 +39,14 @@ namespace stdA {
     class timer {
         public:
             enum TIMER_STATE : uint32_t {
-				STANDBY,				// Stand By, esperando a thread callback ser totalmente inicializada
-				RUNNING,				// Rodando
+				STANDBY,				// Stand By, waiting for the callback thread to be fully initialized
+				RUNNING,				// Running
                 STOP,					// Request
-				STOPPING,				// Executando o request
-				STOPPED,				// Executado o request
+				STOPPING,				// Executing the request
+				STOPPED,				// Request executed
 				PAUSE,					// Request
-				PAUSING,				// Executando o request
-                PAUSED,					// Executado o request
+				PAUSING,				// Executing the request
+                PAUSED,					// Request executed
             };
 
             enum TIMER_TYPE : uint32_t {

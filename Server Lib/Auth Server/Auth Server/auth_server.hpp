@@ -1,6 +1,6 @@
-// Arquivo auth_server.hpp
-// Criado em 02/12/2018 as 13:00 por Acrisio
-// Defini��o da classe auth_server
+// File auth_server.hpp
+// Created on 02/12/2018 at 13:00 by Acrisio
+// Definition of class auth_server
 
 #pragma once
 #ifndef _STDA_AUTH_SERVER_HPP

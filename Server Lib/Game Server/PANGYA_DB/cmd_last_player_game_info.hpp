@@ -1,6 +1,6 @@
-// Arquivo cmd_last_player_game_info.hpp
-// Criado em 24/03/2018 as 19:01 por Acrisio
-// Defini��o da classe CmdLastPlayerGameInfo
+// File cmd_last_player_game_info.hpp
+// Created on 24/03/2018 at 19:01 by Acrisio
+// Definition of the class CmdLastPlayerGameInfo
 
 #pragma once
 #ifndef _STDA_CMD_LAST_PLAYER_GAME_INFO_HPP

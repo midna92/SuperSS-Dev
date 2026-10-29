@@ -1,6 +1,6 @@
-// Arquivo pangya_gg_auth_st.hpp
-// Criado em 02/02/2021 as 17:07 por Acrisio
-// Definição das estruturas usadas no Game Guard Auth Server
+// File pangya_gg_auth_st.hpp
+// Created on 02/02/2021 at 17:07 by Acrisio
+// Definition of the structures used in the Game Guard Auth Server
 
 #pragma once
 #ifndef _STDA_PANGYA_GG_AUTH_ST_HPP

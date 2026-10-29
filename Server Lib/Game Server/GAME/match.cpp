@@ -1,6 +1,6 @@
-// Arquivo match.cpp
-// Criado em 02/11/2018 as 14:39 por Acrisio
-// Implementa��o da classe Match
+// File match.cpp
+// Created on 02/11/2018 at 14:39 by Acrisio
+// Implementation of the Match class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -39,12 +39,12 @@
 							  if (_packet == nullptr) \
 									throw exception("[Match::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MATCH, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[Match::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::MATCH, 1, 4)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_TEAM_INFO(_method, __session) Team *team = nullptr; \
 { \
 	auto __it = std::find_if(m_teans.begin(), m_teans.end(), [&](auto& _el) { \
@@ -61,7 +61,7 @@ using namespace stdA;
 Match::Match(std::vector<player*>& _players, RoomInfoEx & _ri, RateValue _rv, unsigned char _channel_rookie, std::vector< Team >& _teans)
 	: VersusBase(_players, _ri, _rv, _channel_rookie), m_team_win(0u), m_match_state(false), m_teans(_teans), m_team_turn(nullptr), m_thi_blue{0} {
 
-	// Atualiza Treasure Hunter System Course
+	// Updates Treasure Hunter System Course
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
@@ -74,14 +74,14 @@ Match::Match(std::vector<player*>& _players, RoomInfoEx & _ri, RateValue _rv, un
 		_smp::message_pool::getInstance().push(new message("[Match::Match][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 point for each game started
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info has to be initialized
 	initAllPlayerInfo();
 
-	// Inicializar as posi��es dos jogadores do team que n� sala ele pode ser diferente, a ordem que entrou no team
-	// Tem que sempre ficar na ordem da sala
+	// Initialize the positions of the team players, which in the room can be different, the order they joined the team
+	// It must always stay in the room order
 	init_team_player_position();
 
 	for (auto& el : m_players) {
@@ -98,10 +98,10 @@ Match::Match(std::vector<player*>& _players, RoomInfoEx & _ri, RateValue _rv, un
 
 Match::~Match() {
 
-	// Para o tempo do player Turn
+	// Stops the Player Turn time
 	stopTime();
 
-	// Salva os dados de todos os jogadores
+	// Saves the data of all players
 	for (auto& el : m_players)
 		finish_game(*el);
 
@@ -121,7 +121,7 @@ bool Match::deletePlayer(player* _session, int _option) {
 
 	try {
 
-		// Evitar deadlock com a thread checkVersusTurn - Bloqueia
+		// Avoid deadlock with the checkVersusTurn thread - Locks
 		m_state_vs.lock();
 
 #if defined(_WIN32)
@@ -133,51 +133,51 @@ bool Match::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left, Quit
 
 			INIT_PLAYER_INFO("deletePlayer", "tentou sair do jogo", _session);
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				INIT_TEAM_INFO("deletePlayer", _session);
 
 				packet p;
 
-				// Player Turn Para o tempo dele
+				// Player Turn Stops his time
 				if (m_player_turn == pgi)
 					stopTime();
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+				requestFinishItemUsedGame(*(*it));	// Saves items used in the Tourney
 
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				//pgi->flag = PlayerGameInfo::eFLAG_GAME::QUIT;
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Player Quitou, o time desiste
+				// Player Quit, the team gives up
 				team->setQuit(1u);
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Response Player left the Game, removes him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo MSG
+				// Response Player left the game MSG
 				p.init_plain((unsigned short)0x40);
 
-				p.addUint8(2);	// Player Saiu Msg
+				p.addUint8(2);	// Player Left Msg
 
 				p.addString((*it)->m_pi.nickname);
 
-				p.addUint16(0);	// size Msg, n�o precisa de msg o pangya j� manda na opt 2
+				p.addUint16(0);	// size Msg, no msg is needed, pangya already sends it in opt 2
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Salva Achievement do player
+				// Saves the player's Achievement
 
 				sendUpdateInfoAndMapStatistics(*_session, -1);
 
@@ -188,36 +188,36 @@ bool Match::deletePlayer(player* _session, int _option) {
 
 			}else if (m_game_init_state == 2 && !pgi->finish_game) {
 	
-				// Acabou
+				// Finished
 				requestSaveInfo(*(*it), 0);
 
-				// Salva Achievement tbm
+				// Saves Achievement too
 			}
 
-			// Deleta o player por give up ou time out, ele conta os achievements dele, tem o counter item 0x6C400004u Normal Game Complete
-			// Envia os achievements para ele para ficar igual ao original
-			if (m_game_init_state == 1/*Come�ou*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
+			// Deletes the player due to give up or time out, it counts his achievements, there is counter item 0x6C400004u Normal Game Complete
+			// Sends the achievements to him to match the original
+			if (m_game_init_state == 1/*Started*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
 
 				// Achievements
-				rain_hole_consecutivos_count(*_session);			// conta os achievement de chuva em holes consecutivas
+				rain_hole_consecutivos_count(*_session);			// counts the achievements for rain on consecutive holes
 
-				score_consecutivos_count(*_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player	
+				score_consecutivos_count(*_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)	
 
-				rain_count(*_session);								// Aqui achievement de rain count
+				rain_count(*_session);								// Here the rain count achievement
 
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-				// Achievement Aqui
+				// Achievement Here
 				pgi->sys_achieve.finish_and_update(*_session);
 
-				// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+				// Response that always exists when a game ends, I do not know what it is yet, only HIO Event does not have this one
 				packet p((unsigned short)0x244);
 
 				p.addUint32(0);	// OK
 
 				packet_func::session_send(p, _session, 1);
 
-				// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+				// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 				p.init_plain((unsigned short)0x24F);
 
 				p.addUint32(0);	// OK
@@ -236,21 +236,21 @@ bool Match::deletePlayer(player* _session, int _option) {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlocks
 		m_state_vs.unlock();
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[Match::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlocks
 		m_state_vs.unlock();
 	}
 
@@ -307,17 +307,17 @@ void Match::requestInitHole(player& _session, packet *_packet) {
 		// Update Team Location
 		team->setLocation(pgi->location);
 		
-		// N�mero do hole atual, que o player est� jogando
+		// Current hole number, which the player is playing
 		pgi->hole = ctx_hole.numero;
 
-		// Flag que marca se o player j� inicializou o primeiro hole do jogo
+		// Flag that marks whether the player has already initialized the first hole of the game
 		if (!pgi->init_first_hole)
 			pgi->init_first_hole = 1u;
 
 		// Update Team Hole
 		team->setHole(ctx_hole.numero);
 
-		// Gera degree para o player ou pega o degree sem gerar que � do modo do hole repeat
+		// Generates degree for the player or gets the degree without generating, which is from the hole repeat mode
 		team->setDegree((m_ri.modo == Hole::M_REPEAT) ? hole->getWind().degree.getDegree() : hole->getWind().degree.getShuffleDegree());
 
 		//pgi->degree = team->getDegree();
@@ -357,10 +357,10 @@ void Match::requestMoveBall(player& _session, packet* _packet) {
 
 		team->decrementPlayerStartHole();
 
-		// para o tempo do da tacada do player, que ele vai recolocar e come�a um novo tempo depois
+		// stops the player's shot time, which he will reset and a new time starts afterwards
 		stopTime();
 
-		// Resposta para Move Ball
+		// Response for Move Ball
 		p.init_plain((unsigned short)0x60);
 
 		p.addFloat(pgi->location.x);
@@ -393,12 +393,12 @@ void Match::changeHole() {
 
 	if (state || m_players.size() <= 0 || checkEndGame(**m_players.begin())) {
 
-		// Resposta para o player que terminou o ultimo hole do Game
+		// Response for the player who finished the last hole of the Game
 		packet p((unsigned short)0x199);
 
 		packet_func::game_broadcast(*this, p, 1);
 
-		// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+		// Made the Last Hole, Calculates Clear Bonus for the player
 		if (!sMap::getInstance().isLoad())
 			sMap::getInstance().load();
 
@@ -408,8 +408,8 @@ void Match::changeHole() {
 		auto clear_bonus = 0u;
 #endif // _DEBUG
 
-		// !!@@@ aqui pode ser que adicionar o clear bonus pros 2 mesmo que o outro n�o fez o ultimo hole,
-		// j� estou add, s� vou deixar coment�rio para causo de erro ou mude de ideia a frente
+		// !!@@@ here it may be that the clear bonus is added for both even if the other did not do the last hole,
+		// I am already adding it, I will just leave this comment in case of error or if I change my mind later
 		if (map == nullptr)
 			_smp::message_pool::getInstance().push(new message("[Match::changeHole][Error][WARNING] tentou pegar o Map dados estaticos do course[COURSE="
 					+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "], mas nao conseguiu encontra na classe do Server.", CL_FILE_LOG_AND_CONSOLE));
@@ -430,8 +430,8 @@ void Match::changeHole() {
 		finish_match(0);
 
 	}else if (m_players.size() > 0)
-		// Resposta terminou o hole
-		updateFinishHole();	// Terminou
+		// Response finished the hole
+		updateFinishHole();	// Finished
 }
 
 void Match::finishHole() {
@@ -460,7 +460,7 @@ void Match::finish_match(int _option) {
 
 	if (m_players.size() > 0 && m_game_init_state == 1) {
 
-		// All All Pang and Bonus Pang All players of teans
+		// All All Pang and Bonus Pang of All players of teams
 		requestUpdateTeamPang();
 
 		for (auto& el : m_players) {
@@ -574,7 +574,7 @@ stGameShotValue Match::getGameShotValueToSmartCalculator(player& _session, unsig
 		if (pwr_by_condition_actived && _session.m_pi.ei.char_info != nullptr
 			&& _session.m_pi.ei.char_info->isAuxPartEquiped(0x70210001u) && pgi->item_active_used_shot != 0u
 			&& pgi->item_active_used_shot == POWER_MILK_TYPEID)
-			pwr_by_condition_actived = false; // Usou Milk, encheu 1 ps perde a condi��o para ativar o efeito
+			pwr_by_condition_actived = false; // Used Milk, filled 1 ps loses the condition to activate the effect
 
 		auto power_extra = _session.m_pi.getExtraPower(pwr_by_condition_actived);
 
@@ -651,26 +651,26 @@ stGameShotValue Match::getGameShotValueToSmartCalculator(player& _session, unsig
 void Match::startTime(void* _quem) {
 
 	try {
-		// Aqui tem tem ser come�a o tempo do player do turno e soma +1 ao n�mero de tacadas dele
+		// Here the turn player's time has to start and add +1 to his number of shots
 		INIT_PLAYER_INFO("startTime", "tentou comecar o tempo do player turno no jogo", (player*)_quem);
 
 		INIT_TEAM_INFO("startTime", (player*)_quem);
 
-		// Soma +1 na tacada do player
+		// Adds +1 to the player's shot
 		pgi->data.tacada_num++;
 
 		team->incrementTacadaNum();
 
 		team->incrementPlayerStartHole();
 
-		// Para Tempo se j� estiver 1 timer
+		// Stops Time if there is already 1 timer
 		if (m_timer != nullptr)
 			stopTime();
 
 		job j(VersusBase::end_time, this, _quem);
 
 		/*if (sgs::gs != nullptr)*/
-			m_timer = sgs::gs::getInstance().makeTime(m_ri.time_vs/*milliseconds*/, j);	// j� est� em minutos milliseconds
+			m_timer = sgs::gs::getInstance().makeTime(m_ri.time_vs/*milliseconds*/, j);	// already in minutes milliseconds
 		/*else
 			_smp::message_pool::getInstance().push(new message("[Match::startTime][Error] tentou inicializar um timer, mas a variavel global estatica do Server eh invalida.", CL_FILE_LOG_AND_CONSOLE));*/
 
@@ -685,7 +685,7 @@ void Match::startTime(void* _quem) {
 
 void Match::timeIsOver(void* _quem) {
 
-	// Chama o timeIsOver da classe pai
+	// Calls timeIsOver of the parent class
 	VersusBase::timeIsOver(_quem);
 
 	if (_quem != nullptr) {
@@ -696,7 +696,7 @@ void Match::timeIsOver(void* _quem) {
 
 		INIT_TEAM_INFO("timeIsOver", p);
 
-		// set timeout do team
+		// set team timeout
 		team->setTimeout(1u);
 
 		pgi->tempo = 1u;
@@ -706,8 +706,8 @@ void Match::timeIsOver(void* _quem) {
 			pgi->tempo = 0u;
 
 			if (++pgi->data.time_out >= 3)
-				// 3 Time outs kika o jogado da sala
-				pgi->data.bad_condute = 3;	// Kika Player
+				// 3 Time outs kick the player from the room
+				pgi->data.bad_condute = 3;	// Kick Player
 
 			// Time Out
 			packet p((unsigned short)0x5C);
@@ -727,14 +727,14 @@ bool Match::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that saves the local system date
 		initGameTime();
 
-		// Aqui achievement de rain count
-		// Esse aqui tem que ser na hora que finaliza o jogo por que depende de quantos holes o player completou
+		// Here the rain count achievement
+		// This one has to be when the game finishes because it depends on how many holes the player completed
 		//rain_count_players();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_match_state = true;
 	}
@@ -780,13 +780,13 @@ void Match::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) {
 			team->setPang(_ssd.pang);
 			team->setBonusPang(_ssd.bonus_pang);
 
-			// J� s� na fun��o que come�a o tempo do player do turno
+			// Already only in the function that starts the turn player's time
 			//pgi->data.tacada_num++;
 
 			if (_ssd.state == ShotSyncData::OUT_OF_BOUNDS || _ssd.state == ShotSyncData::UNPLAYABLE_AREA) {
 				pgi->data.tacada_num++;
 
-				// Update Tacada Num Team
+				// Update Shot Num Team
 				team->incrementTacadaNum();
 			}
 
@@ -796,17 +796,17 @@ void Match::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) {
 				throw exception("[Match::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada no hole[NUMERO="
 						+ std::to_string((unsigned short)pgi->hole) + "], mas o numero do hole is invalid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 12, 0));
 
-			// Update Team Acerto Hole
+			// Update Team Hole Hit
 			team->setAcertoHole(_ssd.state_shot.display.stDisplay.acerto_hole);
 
-			// Conta j� a pr�xima tacada, no give up
+			// Already counts the next shot, on give up
 			if (!_ssd.state_shot.display.stDisplay.acerto_hole && hole->getPar().total_shot <= (pgi->data.tacada_num + 1)) {
 
-				// +1 que � giveup, s� add se n�o passou o n�mero de tacadas
+				// +1 because it is a giveup, only add if the number of shots has not been exceeded
 				if (pgi->data.tacada_num < hole->getPar().total_shot) {
 					pgi->data.tacada_num++;
 
-					// Update Tacada Num Team
+					// Update Shot Num Team
 					team->incrementTacadaNum();
 				}
 
@@ -815,14 +815,14 @@ void Match::requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) {
 				// Update Give Up Team
 				team->setGiveUp(1u);
 
-				// Soma +1 no Bad Condute
+				// Adds +1 to Bad Conduct
 				pgi->data.bad_condute++;
 
-				// Update Bad Condute Team
+				// Update Bad Conduct Team
 				team->incrementBadCondute();
 			}
 
-			// aqui os achievement de power shot int32_t putt beam impact e etc
+			// here the achievements for power shot int32_t putt beam impact etc
 			update_sync_shot_achievement(_session, last_location);
 		}
 
@@ -841,9 +841,9 @@ void Match::requestTranslateFinishHoleData(player& _session, UserInfoEx& _ui) {
 
 		pgi->ui = _ui;
 
-		// S� terminou o hole sem acerta se os 2 team n�o acertou o hole
+		// The hole only finishes without a hit if both teams did not hit the hole
 		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole
-			&& !m_teans[0].getAcertoHole() && !m_teans[1].getAcertoHole()) {	// Terminou o Hole sem acerta ele, Give Up
+			&& !m_teans[0].getAcertoHole() && !m_teans[1].getAcertoHole()) {	// Finished the Hole without hitting it, Give Up
 
 			INIT_TEAM_INFO("requestTranslateFinishHoleData", &_session);
 
@@ -853,28 +853,28 @@ void Match::requestTranslateFinishHoleData(player& _session, UserInfoEx& _ui) {
 				throw exception("[Match::requestFinishHoleData][Error] player[UID=" + std::to_string(pgi->uid) + "] tentou finalizar os dados do hole no jogo, mas o hole[NUMERO="
 						+ std::to_string(pgi->hole) + "] nao existe no course. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS, 400, 0));
 
-			// +1 que � giveup, s� add se n�o passou o n�mero de tacadas
+			// +1 because it is a giveup, only add if the number of shots has not been exceeded
 			if (pgi->data.tacada_num < hole->getPar().total_shot) {
 				pgi->data.tacada_num++;
 
 				team->setTacadaNum(pgi->data.tacada_num);
 			}
 
-			// Ainda n�o colocara o give up, o outro pacote, coloca nesse(muito dif�cil, n�o colocar s� se estiver com bug)
+			// Has not put the give up yet, the other packet, put it in this one (very difficult, do not put unless there is a bug)
 			if (!pgi->data.giveup) {
 				pgi->data.giveup = 1;
 
 				team->setGiveUp(1);
 			}
 
-			// Incrementa o Bad Condute
+			// Increments the Bad Conduct
 			//pgi->data.bad_condute++;
 
 			//team->setBadCondute(pgi->data.bad_condute);
 		}
 
-		// Aqui Salva os dados do Pgi, os best Chipin, Long putt e best drive(max dist�ncia)
-		// N�o sei se precisa de salvar aqui, j� que estou salvando no pgi User Info
+		// Here Saves the Pgi data, the best Chipin, Long putt and best drive (max distance)
+		// I do not know if it needs to be saved here, since I am saving it in the pgi User Info
 		pgi->progress.best_chipin = _ui.best_chip_in;
 		pgi->progress.best_long_puttin = _ui.best_long_putt;
 		pgi->progress.best_drive = _ui.best_drive;
@@ -889,7 +889,7 @@ bool Match::checkEndGame(player& _session) {
 	
 	INIT_PLAYER_INFO("checkEndGame", "tentou verificar se eh o final do jogo", &_session);
 
-	return (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole || ((m_players.size() % 2) == 1/*Quantidade de players impar na sala, acaba o jogo*/));
+	return (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole || ((m_players.size() % 2) == 1/*Odd number of players in the room, ends the game*/));
 }
 
 bool Match::checkAllClearHole() {
@@ -996,25 +996,25 @@ void Match::updateTreasureHunterPoint() {
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
-	// Calcule Treasure Pontos - s� do team Red(vermelho)
+	// Calculate Treasure Points - only for the Red team
 
 	// Red team
 	if (m_teans[0].getAcertoHole()) {
-		// S� se ele acertou o hole ele add mais treasure hunter point
+		// Only if he hit the hole does he add more treasure hunter points
 		auto hole = m_course->findHole(m_teans[0].getHole());
 
 		if (hole == nullptr)
 			throw exception("[VersusBase::updateTreasureHunterPoint][Error] tentou atualizar os pontos do Treasure Hunter no hole[NUMERO="
 					+ std::to_string((unsigned short)m_teans[0].getHole()) + "], mas o hole nao existe. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 30, 0));
 
-		// 2x o valor ganho por que s� ganha item do treasure hunter point do time RED(vermelho)
+		// 2x the value earned because it only gives treasure hunter point items to the RED team
 		/*m_thi.treasure_point += (TreasureHunterSystem::calcPointNormal(m_teans[0].getTacadaNum(), hole->getPar().par) + m_thi.getPoint(m_teans[0].getTacadaNum(), hole->getPar().par)) * 2;*/
 		m_thi.treasure_point += (sTreasureHunterSystem::getInstance().calcPointNormal(m_teans[0].getTacadaNum(), hole->getPar().par) + m_thi.getPoint(m_teans[0].getTacadaNum(), hole->getPar().par)) * 2;
 	}
 
 	// Blue team
 	if (m_teans[1].getAcertoHole()) {
-		// S� se ele acertou o hole ele add mais treasure hunter point
+		// Only if he hit the hole does he add more treasure hunter points
 		auto hole = m_course->findHole(m_teans[1].getHole());
 
 		if (hole == nullptr)
@@ -1025,20 +1025,20 @@ void Match::updateTreasureHunterPoint() {
 		m_thi_blue.treasure_point += (sTreasureHunterSystem::getInstance().calcPointNormal(m_teans[1].getTacadaNum(), hole->getPar().par) + m_thi_blue.getPoint(m_teans[1].getTacadaNum(), hole->getPar().par)) * 2;
 	}
 
-	// no Match passa 2x o pacote132 treasure Hunter point, varia um pouco a valor
-	// team Vermelho
-	// Team Azul e Vermelho
+	// in Match passes 2x the packet132 treasure Hunter point, the value varies a little
+	// Red team
+	// Blue and Red Team
 
-	// Mostra score board
+	// Shows score board
 	packet p((unsigned short)0x132);
 
 	p.addUint32(m_thi.treasure_point);
 
-	// No Modo Match passa outro valor tbm
+	// In Match Mode it also passes another value
 
 	packet_func::game_broadcast(*this, p, 1);
 
-	// Mostra score board dos 2 teans
+	// Shows score board of the 2 teams
 	p.init_plain((unsigned short)0x132);
 
 	// Red Team
@@ -1062,26 +1062,26 @@ bool Match::checkNextStepGame(player& _session) {
 			
 			if (m_player_turn == nullptr) {
 
-				// Player Turn ainda n�o foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 				
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn n�o est� mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
-				m_flag_next_step_game = 2;	// Termina o game
+				m_flag_next_step_game = 2;	// Ends the game
 		}
 
 	}catch (exception& e) {
@@ -1146,7 +1146,7 @@ void Match::requestFinishExpGame() {
 
 				hole_seq = (int)m_course->findHoleSeq(pgi->hole);
 
-				// Ele est� no primeiro hole e n�o acertou ele, s� da experi�ncia se ele tiver acertado o hole
+				// He is on the first hole and did not hit it, only gives experience if he hit the hole
 				if (hole_seq == 1 && !team.getAcertoHole())
 					hole_seq = 0;
 
@@ -1156,7 +1156,7 @@ void Match::requestFinishExpGame() {
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(pgi->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 					exp = (int)((float)exp * temp);
 
-					if (pgi->level < 70/*Ultimo level n�o ganha exp*/)
+					if (pgi->level < 70/*Last level does not gain exp*/)
 						pgi->data.exp = exp;
 				}
 
@@ -1174,7 +1174,7 @@ void Match::requestCalculeTeamWin() {
 	if (m_teans[0].getPoint() == m_teans[1].getPoint()) {
 
 		if (m_teans[0].getPang() == m_teans[1].getPang())
-			m_team_win = 2;	// Empate(Draw)
+			m_team_win = 2;	// Tie (Draw)
 		else if (m_teans[1].getPang() > m_teans[0].getPang())
 			m_team_win = 1;	// Blue
 
@@ -1199,13 +1199,13 @@ void Match::requestUpdateTeamPang() {
 
 void Match::finish() {
 
-	m_match_state = false;	// Terminou o versus
+	m_match_state = false;	// Finished the versus
 
-	m_game_init_state = 2; // Terminou o jogo
+	m_game_init_state = 2; // Finished the game
 
 	requestCalculeRankPlace();
 
-	// Calcula o team(time) que ganhou o Match
+	// Calculates the team that won the Match
 	requestCalculeTeamWin();
 
 	requestFinishExpGame();
@@ -1259,8 +1259,8 @@ void Match::requestFinishTeamHole() {
 		
 		el.setScore((el.getTacadaNum() - hole->getPar().par));
 
-		// !!!@@ N�o sei por que estou zerando aqui, no antigo, mas vamos testar
-		// Deu certo, mas vou deixar o coment�rio para duvidas futuras
+		// !!!@@ I do not know why I am zeroing here, in the old one, but let us test
+		// It worked, but I will leave the comment for future doubts
 		el.setPlayerStartHole(0u);
 		//el.setTacadaNum(0u);
 	}
@@ -1268,26 +1268,26 @@ void Match::requestFinishTeamHole() {
 
 void Match::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the achievements for rain on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Here the rain count achievement
 
-	//INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
+	//INIT_PLAYER_INFO("requestFinishData", "tried to finish game data", &_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Response Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 }
 
@@ -1312,8 +1312,8 @@ void Match::sendPlacar(player& _session) {
 		p.addUint64(team->getPang()/*pgi->data.pang*/);
 		p.addUint64(team->getBonusPang()/*pgi->data.bonus_pang*/);
 
-		// Valor que usa no Pang Battle, valor de pang que ganhou ou perdeu
-		// Como aqui � vs Base deixa o valor 0
+		// Value used in Pang Battle, amount of pang won or lost
+		// Since this is vs Base, leaves the value 0
 		p.addUint64(0ull);
 	}
 
@@ -1332,7 +1332,7 @@ void Match::sendFinishMessage(player& _session) {
 
 	packet p((unsigned short)0x40);
 
-	p.addUint8(16);	// Msg que terminou o game
+	p.addUint8(16);	// Msg that the game finished
 
 	p.addString(_session.m_pi.nickname);
 	p.addUint16(0);	// Size Msg
@@ -1358,27 +1358,27 @@ void Match::sendReplyFinishLoadHole() {
 
 		INIT_TEAM_INFO("requestFinishLoadHole", findSessionByPlayerGameInfo(pgi));
 
-		// Resposta de tempo do hole
+		// Response of the hole time
 		packet p((unsigned short)0x9E);
 
 		p.addUint16(hole->getWeather());
-		p.addUint8(0);	// Option do tempo, sempre peguei zero aqui dos pacotes que vi
+		p.addUint8(0);	// Time option, I always got zero here from the packets I saw
 
 		packet_func::game_broadcast(*this, p, 1);
 
 		auto wind_flag = initCardWindPlayer(m_player_turn, hole->getWind().wind);
 
-		// Resposta do vento do hole
+		// Response of the hole wind
 		p.init_plain((unsigned short)0x5B);
 
 		p.addUint8(hole->getWind().wind + wind_flag);
-		p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui � a qnd diminui o vento, 1 Vento azul
+		p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 		p.addUint16(team->getDegree()/*m_player_turn->degree*/);
-		p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+		p.addUint8(1/*Resets*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 		packet_func::game_broadcast(*this, p, 1);
 
-		// Resposta passa o oid do player que vai come�a o Hole
+		// Response passes the oid of the player who will start the Hole
 		p.init_plain((unsigned short)0x53);
 
 		if (m_player_turn == nullptr) {
@@ -1409,7 +1409,7 @@ void Match::sendReplyFinishCharIntro() {
 			el.setGiveUp(0u);
 		}
 
-		// Resposta para Finish Char Intro
+		// Response for Finish Char Intro
 		p.init_plain((unsigned short)0x90);
 
 		packet_func::game_broadcast(*this, p, 1);
@@ -1426,7 +1426,7 @@ int Match::checkEndShotOfHole(player& _session) {
 
 	try {
 
-		// Agora verifica o se ele acabou o hole e essas coisas
+		// Now checks whether he finished the hole and these things
 		INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 
 		//pgi->finish_shot = 1u;
@@ -1452,16 +1452,16 @@ int Match::checkEndShotOfHole(player& _session) {
 
 		//		}else if (m_flag_next_step_game == 2) {
 
-		//			// Finaliza o Game
+		//			// Finishes the Game
 		//			return 1;
 		//		}
 
-		//	}else if (m_player_turn->data.bad_condute >= 3) {	// Kika player deu 3 give up
+		//	}else if (m_player_turn->data.bad_condute >= 3) {	// Kick player made 3 give ups
 
-		//		// Tira o player da sala
+		//		// Removes the player from the room
 		//		return 2;
 
-		//	}else // Troca o Turno ou troca de hole ou termina o game
+		//	}else // Changes the Turn or changes the hole or ends the game
 		//		changeTurn();
 		//}
 
@@ -1482,7 +1482,7 @@ void Match::changeTurn() {
 		
 		INIT_TEAM_INFO("changeTurn", findSessionByPlayerGameInfo(m_player_turn));
 
-		// Para o tempo do player do turno
+		// Stops the turn player's time
 		stopTime();
 
 		auto hole_seq = m_course->findHoleSeq(m_player_turn->hole);
@@ -1491,7 +1491,7 @@ void Match::changeTurn() {
 
 		if (checkAllClearHole())
 			state = 1;
-		else if ((m_players.size() % 2) == 1/*Quantidade de player Impar acaba o jogo*/)
+		else if ((m_players.size() % 2) == 1/*Odd number of players ends the game*/)
 			state = 1;
 		else if (m_teans[0].getAcertoHole() && !m_teans[1].getTimeout() && (m_teans[0].getTacadaNum() < (m_teans[1].getTacadaNum() + 1)))
 			state = 1;
@@ -1502,15 +1502,15 @@ void Match::changeTurn() {
 		else if (m_teans[1].getAcertoHole() && !m_teans[0].getTimeout() && (m_teans[1].getTacadaNum() == (m_teans[0].getTacadaNum() + 1)) && (int)(m_teans[1].getPoint() - m_teans[0].getPoint()) > hole_diff)
 			state = 1;
 
-		// Limpa dados que usa para cada tacada
+		// Clears data used for each shot
 		clearDataEndShot(m_player_turn);
 
-		// Verifica se todos fizeram o hole, ou o outro team venceu por que chipo antes com menos tacada
+		// Checks whether everyone did the hole, or the other team won because it chipped in earlier with fewer shots
 		if (state) {
 		
 			clear_all_flag_sync();
 
-			// clear teans timeout flag
+			// clear teams timeout flag
 			for (auto& el : m_teans)
 				el.setTimeout(0u);
 
@@ -1519,19 +1519,19 @@ void Match::changeTurn() {
 
 			changeHole();
 	
-			// Clear Acerto hole e Give Up
-			// Aqui zera mesmo se j� zero, por que n�o sei se foi por all clear ou outras regras
+			// Clear Hole Hit and Give Up
+			// Zeroes here even if already zero, because I do not know whether it was due to all clear or other rules
 			clearAllClearHole();
 
-		}else {	// Troca o Turno
+		}else {	// Changes the Turn
 
 			clear_all_flag_sync();
 
-			// clear teans timeout flag
+			// clear teams timeout flag
 			for (auto& el : m_teans)
 				el.setTimeout(0u);
 
-			// Recalcula Turno
+			// Recalculates Turn
 			requestCalculePlayerTurn();
 
 			if (m_player_turn == nullptr)
@@ -1547,17 +1547,17 @@ void Match::changeTurn() {
 
 			auto wind_flag = initCardWindPlayer(m_player_turn, hole->getWind().wind);
 
-			// Resposta do vento do hole
+			// Response of the hole wind
 			packet p((unsigned short)0x5B);
 
 			p.addUint8(hole->getWind().wind + wind_flag);
-			p.addUint8((wind_flag < 0) ? 1 : 0);	// Flag de card de vento, aqui � a qnd diminui o vento, 1 Vento azul
+			p.addUint8((wind_flag < 0) ? 1 : 0);	// Wind card flag, this is when the wind decreases, 1 Blue wind
 			p.addUint16(team->getDegree()/*m_player_turn->degree*/);
-			p.addUint8(1/*Reseta*/);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original
+			p.addUint8(1/*Resets*/);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind
 
 			packet_func::game_broadcast(*this, p, 1);
 
-			// Resposta passa o oid do player que vai come�a o Hole
+			// Response passes the oid of the player who will start the Hole
 			p.init_plain((unsigned short)0x63);
 
 			if (m_player_turn == nullptr) {
@@ -1568,8 +1568,8 @@ void Match::changeTurn() {
 				p.addUint32(m_player_turn->oid);
 
 			// !!@@@
-			// Aqui tem 2 bytes a+, int16 de um valor, que acho que acontece de ver em quando, ou s� no pang battle isso estava escrito no meu outro
-			// acho que possa ser do pang battle, certaza, aqui acabei de ver na classe pang battle do antigo
+			// Here there are 2 extra bytes, an int16 of a value, which I think is seen from time to time, or only in pang battle, this was written in my other one
+			// I think it may be from pang battle, not sure, I just saw it here in the pang battle class of the old one
 
 			packet_func::game_broadcast(*this, p, 1);
 		}
@@ -1712,7 +1712,7 @@ bool Match::finish_game(player& _session, int option) {
 
 		INIT_PLAYER_INFO("finish_game", "tentou finalizar o jogo", &_session);
 
-		// Terminou o hole, finalizar o hole por ele
+		// Finished the hole, finishes the hole for him
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 			
 			requestFinishHole(_session, 0);
@@ -1722,11 +1722,11 @@ bool Match::finish_game(player& _session, int option) {
 
 		pgi->finish_game = 1u;
 
-		if (PlayersCompleteGameAndClear() || option == 2/*Termina o jogo*/) {
+		if (PlayersCompleteGameAndClear() || option == 2/*Ends the game*/) {
 
 			packet p;
 
-			// Verifica se � o primeiro hole e se nem todos terminaram o hole
+			// Checks whether it is the first hole and whether not everyone has finished the hole
 			if (m_course->findHoleSeq(pgi->hole) == 1 && !checkAllClearHole()) {
 
 				for (auto& el : m_players) {
@@ -1749,13 +1749,13 @@ bool Match::finish_game(player& _session, int option) {
 					}
 				}
 
-				m_game_init_state = 2;	// Acabou o Match
+				m_game_init_state = 2;	// Match finished
 
 				return true;
 
 			}else {
 
-				if (m_match_state)  // Deixa o cliente envia o pacote para finalizar o jogo, depois que ele mostrar os placares
+				if (m_match_state)  // Lets the client send the packet to finish the game, after it shows the scoreboards
 					finish_match(1);
 				else {
 
@@ -1767,51 +1767,51 @@ bool Match::finish_game(player& _session, int option) {
 
 							requestSaveInfo(*el, 0);
 
-							// D� Exp para o Caddie E Mascot Tamb�m
-							if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+							// Gives Exp to the Caddie And Mascot Too
+							if (pgi->data.exp > 0) {	// only adds exp if greater than 0
 
-								// Add Exp para o player
-								el->addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+								// Add Exp to the player
+								el->addExp(pgi->data.exp, false/*No packet needed to change level*/);
 
-								// D� Exp para o Caddie Equipado
-								if (el->m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+								// Gives Exp to the Equipped Caddie
+								if (el->m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 									el->addCaddieExp(pgi->data.exp);
 
-								// D� Exp para o Mascot Equipado
+								// Gives Exp to the Equipped Mascot
 								if (el->m_pi.ei.mascot_info != nullptr)
 									el->addMascotExp(pgi->data.exp);
 							}
 
 							sendUpdateInfoAndMapStatistics(*el, 0);
 
-							// Resposta Treasure Hunter Item
+							// Response Treasure Hunter Item
 							requestSendTreasureHunterItem(*el);
 
-							// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+							// Update Mascot Info ON GAME, if the player has an equipped mascot
 							if (el->m_pi.ei.mascot_info != nullptr) {
 								packet_func::pacote06B(p, el, &el->m_pi, 8);
 
 								packet_func::session_send(p, el, 1);
 							}
 
-							// Achievement Aqui
+							// Achievement Here
 							pgi->sys_achieve.finish_and_update(*el);
 
-							// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+							// Response that always exists when a game ends, I do not know what it is yet, only HIO Event does not have this one
 							p.init_plain((unsigned short)0x244);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+							// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 							p.init_plain((unsigned short)0x24F);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Resposta Update Pang
+							// Response Update Pang
 							p.init_plain((unsigned short)0xC8);
 
 							p.addUint64(el->m_pi.ui.pang);
@@ -1825,7 +1825,7 @@ bool Match::finish_game(player& _session, int option) {
 						}
 					}
 
-					m_game_init_state = 2;	// Acabou o Match
+					m_game_init_state = 2;	// Match finished
 
 					return true;
 				}
@@ -1841,7 +1841,7 @@ bool Match::sort_team_turn(TeamOrderTurnCtx& _totc1, TeamOrderTurnCtx& _totc2) {
 	auto diff = _totc1.hole->getPinLocation().diffXZ(const_cast<Location&>(_totc1.team->getLocation()));
 	auto diff2 = _totc1.hole->getPinLocation().diffXZ(const_cast<Location&>(_totc2.team->getLocation()));
 
-	// Os 2 Fez Give Up Ou Acerto o hole
+	// Both did Give Up Or hit the hole
 	if ((_totc1.team->getAcertoHole() || _totc1.team->getGiveUp()) && (_totc2.team->getAcertoHole() || _totc2.team->getGiveUp()))
 		return false;
 
@@ -1872,7 +1872,7 @@ void Match::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[Match::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

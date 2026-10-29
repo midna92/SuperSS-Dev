@@ -1,6 +1,6 @@
-// Arquivo cmd_papel_shop_item.hpp
-// Criado em 09/07/2018 as 20:27 por Acrisio
-// Defini��o da classe CmdPapelShopItem
+// File cmd_papel_shop_item.hpp
+// Created on 09/07/2018 at 20:27 by Acrisio
+// Definition of the class CmdPapelShopItem
 
 #pragma once
 #ifndef _STDA_CMD_PAPEL_SHOP_ITEM_HPP

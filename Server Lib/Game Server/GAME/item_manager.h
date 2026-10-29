@@ -1,6 +1,6 @@
-// Arquivo item_manager.h
-// Criado em 24/02/2018 as 19:05 por Acrisio
-// Definição da classe item_manager
+// File item_manager.h
+// Created on 24/02/2018 at 19:05 by Acrisio
+// Definition of class item_manager
 
 #pragma once
 #ifndef _STDA_ITEM_MANAGER_H

@@ -1,6 +1,6 @@
-// Arquivo cmd_trophy_special.hpp
-// Criado em 21/03/2018 as 23:00 por Acrisio
-// Defini��o da classe CmdTrophySpecial
+// File cmd_trophy_special.hpp
+// Created on 21/03/2018 at 23:00 by Acrisio
+// Definition of the class CmdTrophySpecial
 
 #pragma once
 #ifndef _STDA_CMD_TROPHY_SPECIAL_HPP

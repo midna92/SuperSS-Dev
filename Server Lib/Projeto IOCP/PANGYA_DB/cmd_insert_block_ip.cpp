@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_block_ip.cpp
-// Criado em 14/08/2019 as 11:37 por Acrisio
-// Implementa��o da classe CmdInsertBlockIP
+// File cmd_insert_block_ip.cpp
+// Created on 14/08/2019 at 11:37 by Acrisio
+// Implementation of class CmdInsertBlockIP
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdInsertBlockIP::~CmdInsertBlockIP() {
 
 void CmdInsertBlockIP::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used because it is an INSERT
 	return;
 }
 

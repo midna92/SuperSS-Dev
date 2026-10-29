@@ -1,6 +1,6 @@
-// Arquivo cmd_premium_ticket_info.hpp
-// Criado em 24/03/2018 as 19:20 por Acrisio
-// Defini��o da classe CmdPremiumTicketInfo
+// File cmd_premium_ticket_info.hpp
+// Created on 24/03/2018 at 19:20 by Acrisio
+// Definition of the class CmdPremiumTicketInfo
 
 #pragma once
 #ifndef _STDA_CMD_PREMIUM_TICKET_INFO_HPP

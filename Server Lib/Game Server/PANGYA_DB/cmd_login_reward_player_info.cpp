@@ -1,6 +1,6 @@
-// Arquivo cmd_login_reward_player_info.cpp
-// Criado em 27/10/2020 as 19:11 por Acrisio
-// Implementa��o da classe CmdLoginRewardPlayerInfo
+// File cmd_login_reward_player_info.cpp
+// Created on 27/10/2020 at 19:11 by Acrisio
+// Implementation of the class CmdLoginRewardPlayerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

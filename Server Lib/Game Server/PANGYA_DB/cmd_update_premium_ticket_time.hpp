@@ -1,6 +1,6 @@
-// Arquivo cmd_update_premium_ticket_time.hpp
-// Criado em 07/12/2019 as 13:01 por Acrisio
-// Defini��o da classe CmdUpdatePremiumTicketTime
+// File cmd_update_premium_ticket_time.hpp
+// Created on 07/12/2019 at 13:01 by Acrisio
+// Definition of class CmdUpdatePremiumTicketTime
 
 #ifndef _STDA_CMD_UPDATE_PREMIUM_TICKET_TIME_HPP
 #define _STDA_CMD_UPDATE_PREMIUM_TICKET_TIME_HPP

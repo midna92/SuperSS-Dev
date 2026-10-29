@@ -1,6 +1,6 @@
-// Arquivo cmd_add_character_hair_style.hpp
-// Criado em 25/03/2018 as 20:11 por Acrisio
-// Defini��o da classe CmdAddCharacterHairStyle
+// File cmd_add_character_hair_style.hpp
+// Created on 25/03/2018 at 20:11 by Acrisio
+// Definition of the class CmdAddCharacterHairStyle
 
 #pragma once
 #ifndef _STDA_CMD_ADD_CHARACTER_HAIR_STYLE_HPP

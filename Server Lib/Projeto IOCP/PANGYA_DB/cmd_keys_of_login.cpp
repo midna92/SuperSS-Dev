@@ -1,6 +1,6 @@
-// Arquivo cmd_keys_of_login.cpp
-// Criado em 18/03/2018 as 12:42 por Acrisio
-// Implementação da classe CmdKeysOfLogin
+// File cmd_keys_of_login.cpp
+// Created on 18/03/2018 at 12:42 by Acrisio
+// Implementation of class CmdKeysOfLogin
 
 #if defined(_WIN32)
 #pragma pack(1)

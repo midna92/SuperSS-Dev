@@ -1,6 +1,6 @@
-// Arquivo cmd_udpate_clubset_stats.hpp
-// Criado em 16/06/2018 as 21:58 por Acrisio
-// Defini��o da classe CmdUpdateClubSetStats
+// File cmd_udpate_clubset_stats.hpp
+// Created on 16/06/2018 at 21:58 by Acrisio
+// Definition of class CmdUpdateClubSetStats
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CLUBSET_STATS_HPP

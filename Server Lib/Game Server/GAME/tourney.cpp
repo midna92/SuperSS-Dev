@@ -1,6 +1,6 @@
-// Arquivo tourney.cpp
-// Criado em 22/09/2018 as 12:15 por Acrisio
-// Implementa��o da classe Tourney
+// File tourney.cpp
+// Created on 22/09/2018 at 12:15 by Acrisio
+// Implementation of the Tourney class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -38,7 +38,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[Tourney::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[Tourney::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 1, 4)); \
@@ -48,7 +48,7 @@ using namespace stdA;
 Tourney::Tourney(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie)
 	: TourneyBase(_players, _ri, _rv, _channel_rookie), m_tourney_state(false), m_pTimer_after_enter(nullptr) {
 
-	// Atualiza Treasure Hunter System Course
+	// Updates Treasure Hunter System Course
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
@@ -61,10 +61,10 @@ Tourney::Tourney(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _r
 		_smp::message_pool::getInstance().push(new message("[Tourney::Tourney][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 point for each game started
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
 	for (auto& el : m_players) {
@@ -120,9 +120,9 @@ bool Tourney::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left Quit
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
@@ -132,39 +132,39 @@ bool Tourney::deletePlayer(player* _session, int _option) {
 
 				if (pgi->flag != PlayerGameInfo::eFLAG_GAME::TICKET_REPORT) {
 
-					requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+					requestFinishItemUsedGame(*(*it));	// Saves items used in the Tourney
 
-					requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+					requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 					//pgi->flag = PlayerGameInfo::eFLAG_GAME::QUIT;
 					setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-					// Resposta Player saiu do Jogo, tira ele do list de score
+					// Response Player left the Game, removes him from the score list
 					p.init_plain((unsigned short)0x61);
 
 					p.addUint32((*it)->m_oid);
 
 					packet_func::vector_send(p, sessions, 1);
 
-					// Resposta Player saiu do jogo
+					// Response Player left the game
 					sendUpdateState(*_session, opt);
 
-					// Salva Achievement do player
+					// Saves the player's Achievement
 
 					if (AllCompleteGameAndClear())
-						ret = true;	// Termina o Tourney
+						ret = true;	// Finishes the Tourney
 
 				}else if (_option == 10) {	// Ticket Reporting
 					opt = 1;	// Ticket Reporting
 
-					// Resposta Player saiu do Jogo, tira ele do list de score
+					// Response Player left the Game, removes him from the score list
 					p.init_plain((unsigned short)0x61);
 
 					p.addUint32((*it)->m_oid);
 
 					packet_func::vector_send(p, sessions, 1);
 
-					// Resposta Player saiu com ticket reporting do jogo
+					// Response Player left the game with ticket reporting
 					p.init_plain((unsigned short)0x11B);
 
 					p.addUint32((*it)->m_oid);
@@ -191,7 +191,7 @@ bool Tourney::deletePlayer(player* _session, int _option) {
 
 		_smp::message_pool::getInstance().push(new message("[Tourney::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -208,28 +208,28 @@ void Tourney::deleteAllPlayer() {
 		deletePlayer(*m_players.begin(), 0);
 }
 
-// Met�dos do Game->Course->Hole
+// Game->Course->Hole methods
 bool Tourney::requestFinishLoadHole(player& _session, packet *_packet) {
 	REQUEST_BEGIN("FinishLoadHole");
 
 	packet p;
 
-	// Esse aqui � para Trocar Info da Sala
-	// para colocar a sala no modo que pode entrar depois de ter come�ado
+	// This one is to Change Room Info
+	// to put the room in the mode where players can enter after it has started
 	bool ret = false;
 
 	try {
 
-		// Chama a fun��o base para fazer a parte dela
+		// Calls the base function to do its part
 		ret = TourneyBase::requestFinishLoadHole(_session, _packet);
 
-		// Aqui come�a o tempo que os outros player pode entrar se a sala n�o for private
-		// Come��o o tempo de 5 ou 10min para entra no camp se n�o tiver senha
+		// Here starts the time during which other players can enter if the room is not private
+		// Starts the 5 or 10min time to enter the camp if there is no password
 		if (m_entra_depois_flag != 1 && m_ri.senha_flag == 1 && (m_ri.course & 0x7F) != RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE) {
 
-			// S� libera se for Tourney Normal, se for GM Event N�o libera
+			// Only releases if it is a Normal Tourney, if it is a GM Event it does not release
 			if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID && m_ri.max_player > 30 && m_ri.flag_gm && m_ri.state_flag == 0x100))
-				// Libera Entrar, mesmo depois de ter come�ado o Tourney
+				// Allows entering, even after the Tourney has started
 				ret = true;
 
 			m_entra_depois_flag = 1;
@@ -250,8 +250,8 @@ void Tourney::changeHole(player& _session) {
 	if (checkEndGame(_session))
 		finish_tourney(_session, 0);
 	else 
-		// Resposta terminou o hole
-		updateFinishHole(_session, 1);	// Terminou
+		// Response finished the hole
+		updateFinishHole(_session, 1);	// Finished
 }
 
 void Tourney::finishHole(player& _session) {
@@ -270,41 +270,41 @@ void Tourney::finish_tourney(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player won
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if he has assist on, and is above beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response finished the hole
 				updateFinishHole(_session, 1);
 
-				// Resposta Terminou o Jogo, ou Saiu
+				// Response Finished the Game, or Left
 				sendUpdateState(_session, 2);
 
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}else if (m_game_init_state == 1 && _option == 1) {	// Acabou o Tempo
+			}else if (m_game_init_state == 1 && _option == 1) {	// Time is up
 
-				requestFinishHole(_session, 1);		// Acabou o Tempo
+				requestFinishHole(_session, 1);		// Time is up
 
-				// adicionar as tacadas dos holes que ele n�o fez, por que acabou o tempo
-				// ------ O Original n�o soma as tacadas do resto dos holes que o player n�o jogou, quando o tempo acaba -------
+				// add the strokes of the holes he did not play, because time is up
+				// ------ The Original does not add the strokes of the rest of the holes the player did not play, when time runs out -------
 				//pgi->ui.tacada = pgi->data.total_tacada_num;
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response finished the hole
 				updateFinishHole(_session, 0);
 
-				// Resposta para acabou o tempo do Tourney
+				// Response for time up of the Tourney
 				sendTimeIsOver(_session);
 			}
 		}
@@ -315,7 +315,7 @@ void Tourney::finish_tourney(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game Ex: 0xCE, 0x79 etc
 	}
 }
 
@@ -332,33 +332,33 @@ bool Tourney::requestUseTicketReport(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&ui, sizeof(UserInfo));
 
-		// aqui o cliente passa mad_conduta com o hole_in, trocados, mad_conduto <-> hole_in
+		// here the client passes mad_conduta with hole_in, swapped, mad_conduto <-> hole_in
 
 		INIT_PLAYER_INFO("requestUseTicketReport", "tentou sair do jogo com ticket report", &_session);
 
 		pgi->ui = ui;
 
-		// Verifica se ele acabou todo o Tourney
+		// Checks if he finished the whole Tourney
 		if (pgi->flag != PlayerGameInfo::eFLAG_GAME::FINISH)
 			throw exception("[Tourney::requestUseTicketReport][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sair do jogo na sala[NUMERO="
 					+ std::to_string(m_ri.numero) + "] com Ticket Report, mas ele ainda nao terminou o Tourney[FLAG=" + std::to_string((unsigned short)pgi->flag) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 403, 0));
 
-		// Verifica se o Level do player � maior ou igual a Beginner E
+		// Checks if the player's Level is greater than or equal to Beginner E
 		if (_session.m_pi.level < PlayerInfo::enLEVEL::BEGINNER_E)
 			throw exception("[Tourney::requestUseTicketReport][Error] player[UID=" + std::to_string(_session.m_pi.uid) + ", LEVEL=" + std::to_string(_session.m_pi.level) 
 					+ "] tentou sair do jogo na sala[NUMERO=" + std::to_string(m_ri.numero) 
 					+ "] com Ticket Report, mas ele nao tem o level necessario[6=BEGINNER E] para usar o Ticket Report.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 405, 0));
 
-		// Verifica se o player tem o ticket report
+		// Checks if the player has the ticket report
 		auto pWi = _session.m_pi.findWarehouseItemByTypeid(TICKET_REPORT_TYPEID);
 
-		// N�o tem o item ou n�o tem a quantidade "� a mesma coisa, s� estou fazendo isso pra previnir bugs"
+		// Does not have the item or does not have the quantity "it is the same thing, I am only doing this to prevent bugs"
 		if (pWi == nullptr || pWi->STDA_C_ITEM_QNTD < 1)
 			throw exception("[Tourney::requestUseTicketReport][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sair do jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "] com Ticket Report, mas ele nao tem o item[TYPEID=" 
 					+ std::to_string(TICKET_REPORT_TYPEID) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 400, 0));
 
-		// Tira um Ticket Report dele
+		// Removes a Ticket Report from him
 		stItem item{ 0 };
 
 		item.type = 2;
@@ -377,29 +377,29 @@ bool Tourney::requestUseTicketReport(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[Tourney::requestUseTicketReport][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] sai do tourney na sala[NUMERO=" + std::to_string(m_ri.numero) + ", MASTER=" + std::to_string(m_ri.master) + "] com ticket report.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Respota para garantir que excluiu o ticket report mesmo do player
+		// Response to make sure the ticket report was really deleted from the player
 		packet_func::pacote0AA(p, &_session, v_item);
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Saiu com Ticket Report
+		// Left with Ticket Report
 		setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::TICKET_REPORT);
 
-		rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+		rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-		score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+		score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-		rain_count(_session);							// Aqui achievement de rain count
+		rain_count(_session);							// Here rain count achievement
 
 		finish_game(_session, 1);
 
-		ret = true;	// Confirma o sai da sala
+		ret = true;	// Confirms leaving the room
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[Tourney::requestUseTicketReport][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Reposta de erro aqui, tenho que arranjar um pacote para isso
+		// Error response here, I have to find a packet for this
 	}
 
 	return ret;
@@ -407,8 +407,8 @@ bool Tourney::requestUseTicketReport(player& _session, packet *_packet) {
 
 void Tourney::requestStartAfterEnter(job& _job) {
 
-	// Aqui come�a o tempo que os outros player pode entrar se a sala n�o for private
-	// Come��o o tempo de 5 ou 10min para entra no camp se n�o tiver senha
+	// Here starts the time during which other players can enter if the room is not private
+	// Starts the 5 or 10min time to enter the camp if there is no password
 
 	DWORD milliseconds = 0u;
 
@@ -418,7 +418,7 @@ void Tourney::requestStartAfterEnter(job& _job) {
 		milliseconds = 5 * 60000; // 5min
 
 	//if (sgs::gs != nullptr)
-		// Cria Timer
+		// Create Timer
 		m_pTimer_after_enter = sgs::gs::getInstance().makeTime(milliseconds, _job);
 	/*else
 		_smp::message_pool::getInstance().push(new message("[Tourney::requestStartAfterEnter][Error] tentou inicializar um timer, mas a variavel global estatica do Server eh invalida.", CL_FILE_LOG_AND_CONSOLE));*/
@@ -433,7 +433,7 @@ void Tourney::requestEndAfterEnter() {
 	// Limpa timer After Enter
 	clear_time_after_enter();
 
-	// Send Resposta para todos que acabou o tempo para entrar na sala
+	// Send Response to everyone that the time to enter the room is over
 	packet p((unsigned short)0x113);
 
 	p.addUint8(8);
@@ -456,11 +456,11 @@ void Tourney::timeIsOver() {
 
 		for (auto& el : m_player_info) {
 
-			// S� os que n�o acabaram
+			// Only those who did not finish
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				finish_tourney(*_session, 1/*Acabou Tempo*/);
+				finish_tourney(*_session, 1/*Time Up*/);
 			else if (el.second->flag == PlayerGameInfo::eFLAG_GAME::FINISH && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				// Resposta para acabou o tempo do Tourney
+				// Response for time up of the Tourney
 				sendTimeIsOver(*_session);
 		}
 
@@ -475,17 +475,17 @@ bool Tourney::init_game() {
 
 	if (m_players.size() > 0) {
 
-		// Cria o timer do Tourney
+		// Creates the Tourney timer
 		startTime();
 
-		// variavel que salva a data local do sistema
+		// variable that saves the system local date
 		initGameTime();
 
-		// Aqui achievement de rain count
-		// Esse aqui tem que ser na hora que finaliza o jogo por que depende de quantos holes o player completou
+		// Here rain count achievement
+		// This one has to be at the time the game finishes because it depends on how many holes the player completed
 		//rain_count_players();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_tourney_state = true;
 	}
@@ -495,7 +495,7 @@ bool Tourney::init_game() {
 
 void Tourney::clear_time_after_enter() {
 
-	// Garantir que qualquer exception derrube o server
+	// Ensure that any exception brings down the server
 
 	try {
 		
@@ -512,7 +512,7 @@ void Tourney::clear_time_after_enter() {
 
 void Tourney::requestFinishExpGame() {
 
-	// Bug Fix, ultimo player do camp sai e ou toma dc e n�o fica ningu�m na sala e calcula a exp do camp
+	// Bug Fix, last player of the camp leaves and or gets dc and nobody is left in the room and the camp exp is calculated
 	if (/*m_players.size()*/getCountPlayersGame() > 0) {
 
 		player *_session = nullptr;
@@ -523,7 +523,7 @@ void Tourney::requestFinishExpGame() {
 
 			hole_seq = (int)m_course->findHoleSeq(m_player_order[i]->hole);
 
-			// Ele est� no primeiro hole e n�o acertou ele, s� da experi�ncia se ele tiver acertado o hole
+			// He is on the first hole and did not hit it, only gives experience if he hit the hole
 			if (hole_seq == 1 && !m_player_order[i]->shot_sync.state_shot.display.stDisplay.acerto_hole)
 				hole_seq = 0;
 
@@ -535,7 +535,7 @@ void Tourney::requestFinishExpGame() {
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 					exp = (int)(exp * (1 - (i / m_player_info.size())));
 
-					if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+					if (m_player_order[i]->level < 70/*Last level does not get exp*/)
 						m_player_order[i]->data.exp = exp;
 				}
 
@@ -555,7 +555,7 @@ void Tourney::requestFinishExpGame() {
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 					exp = (int)(exp * (1 - (i / m_player_info.size())));
 
-					if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+					if (m_player_order[i]->level < 70/*Last level does not get exp*/)
 						m_player_order[i]->data.exp = exp;
 				}
 			}
@@ -568,7 +568,7 @@ void Tourney::requestFinishExpGame() {
 
 void Tourney::finish() {
 
-	m_game_init_state = 2;	// Acabou
+	m_game_init_state = 2;	// Finished
 
 	requestCalculeRankPlace();
 
@@ -584,8 +584,8 @@ void Tourney::finish() {
 
 	requestGiveMedalAndItens();
 
-	// [O pangya original, quando o player sai com ticket report do tourney,
-	// mesmo que ele fique entre os 3 primeiros no short game n�o conta o achievement de short game top 3 rank]
+	// [The original pangya, when the player leaves the tourney with ticket report,
+	// even if he is in the top 3 in the short game the short game top 3 rank achievement does not count]
 
 	for (auto& el : m_players) {
 
@@ -600,7 +600,7 @@ void Tourney::requestMakeMedal() {
 	
 	uint32_t all_player = getCountPlayersGame();
 
-	// Medalhas s� s�o liberadas apartir de 18 players no jogo
+	// Medals are only awarded from 18 players in the game
 	if (all_player >= 18) {
 
 		std::vector< PlayerGameInfo* > v_all_player;
@@ -611,11 +611,11 @@ void Tourney::requestMakeMedal() {
 		Lottery::LotteryCtx *ctx_lot = nullptr;
 		PlayerGameInfo *pgi = nullptr;
 
-		// Active Item que o player ganha
+		// Active Item that the player wins
 		for (auto i = 0u; i < 15u; ++i)
 			lot_active_item.push(200, (iff::ITEM << 26) + i);
 
-		// Preenche vector, e alimenta o lottery
+		// Fills the vector, and feeds the lottery
 		for (auto& el : m_player_info) {
 			if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT) {
 				
@@ -625,7 +625,7 @@ void Tourney::requestMakeMedal() {
 			}
 		}
 
-		// 1 Medalha da sorte
+		// 1 Lucky Medal
 		auto ctx = lottery.spinRoleta();
 
 		if (ctx == nullptr || ctx->value == 0)
@@ -643,7 +643,7 @@ void Tourney::requestMakeMedal() {
 			pgi->medal_win.stMedal.lucky = 1;
 		}
 
-		// 2 Medalha Mais r�pido
+		// 2 Fastest Medal
 		std::sort(v_all_player.begin(), v_all_player.end(), Tourney::speediest_sort);
 
 		pgi = *v_all_player.begin();
@@ -657,7 +657,7 @@ void Tourney::requestMakeMedal() {
 
 		pgi->medal_win.stMedal.speediest = 1;
 
-		// 3 Medalha Melhor drive (Dist�ncia tacada)
+		// 3 Best drive Medal (Shot distance)
 		std::sort(v_all_player.begin(), v_all_player.end(), Tourney::best_drive_sort);
 
 		pgi = *v_all_player.begin();
@@ -671,7 +671,7 @@ void Tourney::requestMakeMedal() {
 
 		pgi->medal_win.stMedal.best_drive = 1;
 
-		// 4 Melha Melhor Chip-in
+		// 4 Best Chip-in Medal
 		std::sort(v_all_player.begin(), v_all_player.end(), Tourney::best_chipin_sort);
 
 		pgi = *v_all_player.begin();
@@ -685,7 +685,7 @@ void Tourney::requestMakeMedal() {
 
 		pgi->medal_win.stMedal.best_chipin = 1;
 
-		// 5 Medalha Melhor Long Puttin
+		// 5 Best Long Putting Medal
 		std::sort(v_all_player.begin(), v_all_player.end(), Tourney::best_long_puttin_sort);
 
 		pgi = *v_all_player.begin();
@@ -699,7 +699,7 @@ void Tourney::requestMakeMedal() {
 
 		pgi->medal_win.stMedal.best_long_puttin = 1;
 
-		// 6 Medalha Melhor Recupera��o (S� da se for 18h)
+		// 6 Best Recovery Medal (Only given if 18h)
 		if (m_ri.qntd_hole == 18) {
 			std::sort(v_all_player.begin(), v_all_player.end(), Tourney::best_recovery);
 
@@ -737,17 +737,17 @@ void Tourney::requestMakeTrofel() {
 	Lottery lottery((uint64_t)this);
 	Lottery::LotteryCtx *ctx = nullptr;
 
-	// Active Cummon Item
+	// Active Common Item
 	for (i = 0u; i < 15u; ++i)
 		lottery.push(200, (iff::ITEM << 26) + i);
 
 	if (m_ri.qntd_hole == 18 && all_player >= 10) {
 		// --- 18 Holes Tourney ----
 		// 10-14 = 1 bronze
-		// 15-18 = 1 silver e 1 bronze
-		// 19-22 = 1 gold, 1 silver e 1 bronze
-		// 23-26 = 1 gold, 1 silver e 2 bronze
-		// 27-30 = 1 gold, 2 silver e 3 bronze
+		// 15-18 = 1 silver and 1 bronze
+		// 19-22 = 1 gold, 1 silver and 1 bronze
+		// 23-26 = 1 gold, 1 silver and 2 bronze
+		// 27-30 = 1 gold, 2 silver and 3 bronze
 
 		if (all_player <= 14u)
 			count_trofel = 1u;
@@ -763,8 +763,8 @@ void Tourney::requestMakeTrofel() {
 	}else if (m_ri.qntd_hole == 9 && all_player >= 15) {
 		// --- 9 Holes Tourney ---
 		// 15-18 = 1 bronze
-		// 19-26 = 1 silver e 1 bronze
-		// 27-30 = 1 gold, 1 silver e 1 bronze
+		// 19-26 = 1 silver and 1 bronze
+		// 27-30 = 1 gold, 1 silver and 1 bronze
 
 		if (all_player <= 18u)
 			count_trofel = 1u;
@@ -774,7 +774,7 @@ void Tourney::requestMakeTrofel() {
 			count_trofel = 3u;
 	}
 
-	// Novo item commun e trof�u
+	// New common item and trophy
 	std::vector< PlayerGameInfo* > trofeus;
 
 	if (!trofeus.empty())
@@ -782,13 +782,13 @@ void Tourney::requestMakeTrofel() {
 
 	for (auto& el : m_player_info)
 		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT
-				&& (el.first != nullptr && el.first->m_pi.ui.getQuitRate() < QUITER_ICON_2/*Quiter 1 ainda ganha trofel e item commum*/))	// menos os que quitaram e os QUITER_ICON_2
+				&& (el.first != nullptr && el.first->m_pi.ui.getQuitRate() < QUITER_ICON_2/*Quiter 1 still gets trophy and common item*/))	// except those who quit and the QUITER_ICON_2
 			trofeus.push_back(el.second);
 
 	// sort
 	std::sort(trofeus.begin(), trofeus.end(), Game::sort_player_rank);
 
-	// give trofeus
+	// give trophies
 	if (!trofeus.empty()) {
 
 		if (trofeus.size() < count_trofel) {
@@ -803,7 +803,7 @@ void Tourney::requestMakeTrofel() {
 					m_medal[i].item_typeid = (uint32_t)ctx->value;
 			}
 
-			// S� da os trofeus se n�o for Evento GM
+			// Only gives the trophies if it is not a GM Event
 			if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID && m_ri.flag_gm && m_ri.max_player > 30 && m_ri.state_flag == 0x100)) {
 
 				switch (count_trofel) {
@@ -847,7 +847,7 @@ void Tourney::requestMakeTrofel() {
 					m_medal[i].item_typeid = (uint32_t)ctx->value;
 			}
 
-			// S� da os trofeus se n�o for Evento GM
+			// Only gives the trophies if it is not a GM Event
 			if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID && m_ri.flag_gm && m_ri.max_player > 30 && m_ri.state_flag == 0x100)) {
 				
 				switch (count_trofel) {
@@ -891,7 +891,7 @@ void Tourney::requestMakeTrofel() {
 			m_medal[i].item_typeid = ctx->value;
 	}
 
-	// S� da os trofeus se n�o for Evento GM
+	// Only gives trophies if not a GM Event
 	if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID && m_ri.flag_gm && m_ri.max_player > 30 && m_ri.state_flag == 0x100)) {
 		switch (count_trofel) {
 		case 1:
@@ -925,7 +925,7 @@ void Tourney::requestMakeTrofel() {
 
 void Tourney::requestSaveTicketReport() {
 
-	// Adiciona o Ticket Report do Tourney
+	// Adds the Tourney Ticket Report
 	CmdInsertTicketReport cmd_itr(m_ri.trofel, RoomInfo::TIPO::TOURNEY, true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_itr, nullptr, nullptr);
@@ -953,7 +953,7 @@ void Tourney::requestSaveTicketReport() {
 		trd.premium = el.second->premium_flag;
 		trd.score = el.second->data.score;
 		trd.state = (el.second->flag == PlayerGameInfo::eFLAG_GAME::QUIT ? 4/*QUIT*/ : 0) | el.second->enter_after_started;
-		trd.trofel = el.second->trofel;	// Rank, Ouro, Prata e Bronze
+		trd.trofel = el.second->trofel;	// Rank, Gold, Silver and Bronze
 		trd.finish_time = el.second->time_finish;
 
 		snmdb::NormalManagerDB::getInstance().add(1, new CmdInsertTicketReportData(m_tri.id, trd), Tourney::SQLDBResponse, this);
@@ -964,7 +964,7 @@ void Tourney::requestSaveTicketReport() {
 
 void Tourney::requestSendTicketReport() {
 
-	if (m_tri.id != -1) {	// Tem Ticket Report o Tourney
+	if (m_tri.id != -1) {	// Tourney has Ticket Report
 
 		stItem item{ 0 };
 		player* _session = nullptr;
@@ -980,17 +980,17 @@ void Tourney::requestSendTicketReport() {
 		item.c[2] = (short)(m_tri.id % 0x8000);
 		
 		item.flag = 0x20;
-		item.flag_time = 0x20;		// Horas
-		item.STDA_C_ITEM_TIME = 24;	// 24 Horas
+		item.flag_time = 0x20;		// Hours
+		item.STDA_C_ITEM_TIME = 24;	// 24 Hours
 
 		for (auto& el : m_player_info) {
 
-			// S� para os que sairam com Ticket Report
+			// Only for those who left with Ticket Report
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::TICKET_REPORT) {
 				
 				item.id = -1;
 
-				// Envia para os players online
+				// Sends to the online players
 				//if (sgs::gs != nullptr) {
 					if ((_session = sgs::gs::getInstance().findPlayer(el.second->uid)) != nullptr) {
 
@@ -1001,14 +1001,14 @@ void Tourney::requestSendTicketReport() {
 							throw exception("[Tourney::requestSendTicketReport][Error] player[UID=" + std::to_string(el.second->uid) + "], nao conseguiu adicionar o Ticket Report Item[TYPEID="
 									+ std::to_string(item._typeid) + "] para o player.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY, 1, 0));
 
-						// Reposta para o Ticket Report Treasure Hunter Item(ns)
+						// Response for the Ticket Report Treasure Hunter Item(s)
 						p.init_plain((unsigned short)0x11C);
 
 						p.addUint8(1);	// OK
 
 						packet_func::session_send(p, _session, 1);
 
-						// Update UserInfo, TrofelInfo e MapStatistics
+						// Update UserInfo, TrofelInfo and MapStatistics
 						sendUpdateInfoAndMapStatistics(*_session, 0);
 
 						if (rt != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH) {
@@ -1021,7 +1021,7 @@ void Tourney::requestSendTicketReport() {
 							packet_func::session_send(p, _session, 1);
 						}
 
-					}else {	// Player Est� OFFLINE
+					}else {	// Player is OFFLINE
 
 						auto rt = item_manager::RetAddItem::T_INIT_VALUE;
 
@@ -1047,7 +1047,7 @@ void Tourney::requestGiveMedalAndItens() {
 	std::vector< stItem > v_item;
 	stItem item{ 0 };
 
-	// Preenche vector, e alimenta o lottery
+	// Fills the vector, and feeds the lottery
 	for (auto& el : m_player_info) {
 		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)
 			all_player.push_back(el.second);
@@ -1055,7 +1055,7 @@ void Tourney::requestGiveMedalAndItens() {
 
 	for (auto i = 0u; i < (sizeof(m_medal) / sizeof(m_medal[0])); ++i) {
 
-		// Alguem ganhou algo
+		// Someone won something
 		if (m_medal[i].oid != -1) {
 
 			v_item.clear();
@@ -1070,8 +1070,8 @@ void Tourney::requestGiveMedalAndItens() {
 
 			v_item.push_back(item);
 
-			// Medalhas
-			if (i < 6) {	// Medalhas
+			// Medals
+			if (i < 6) {	// Medals
 				item.type = 2;
 				item.id = -1;
 				item._typeid = (i == 0 ? 0x1A0000F5u : 0x1A0000F0u + (i - 1));
@@ -1091,20 +1091,20 @@ void Tourney::requestGiveMedalAndItens() {
 				continue;
 			}
 
-			if ((map_it = map_item.find(*it)) != map_item.end())	// J� tem o player no Map, add s� os itens
+			if ((map_it = map_item.find(*it)) != map_item.end())	// The player is already in the Map, add only the items
 				map_it->second.insert(map_it->second.end(), v_item.begin(), v_item.end());
 			else
 				map_item[*it] = v_item;
 		}
 	}
 
-	/// Send Itens e Trofel
+	/// Send Items and Trophy
 	player *_session = nullptr;
 
 	packet p;
 
 	for (auto& el : map_item) {
-		// Itens
+		// Items
 		if (!el.second.empty()) {
 
 			// Player Online
@@ -1115,7 +1115,7 @@ void Tourney::requestGiveMedalAndItens() {
 				if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
 					_smp::message_pool::getInstance().push(new message("[Tourney::requestGiveMedalAndItens][Error] player[UID=" + std::to_string(el.first->uid) + "] nao conseguiu adicionar os itens que ele ganhou com medalhas e trofeus.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Resposta Add Item para o player
+				// Response Add Item to the player
 				if (el.second.size() > 0) {
 
 					packet_func::pacote0AA(p, _session, el.second);
@@ -1131,7 +1131,7 @@ void Tourney::requestGiveMedalAndItens() {
 			}
 		}
 
-		// Trofeus
+		// Trophies
 		if (m_ri.trofel != 0 && el.first->trofel != 0) {
 			
 			// Player Online
@@ -1139,28 +1139,28 @@ void Tourney::requestGiveMedalAndItens() {
 				
 				_session->m_pi.updateTrofelInfo(m_ri.trofel, el.first->trofel);
 
-				// Update Tofel do player no jogo
+				// Update the player's Trophy in the game
 				sendUpdateInfoAndMapStatistics(*_session, 0);
 
 			}else	// Player Offline
 				PlayerInfo::updateTrofelInfo(el.first->uid, m_ri.trofel, el.first->trofel);
 		}
 
-		// Madelhas - Ganhou medalhas
+		// Medals - Won medals
 		if (el.first->medal_win.ucMedal != 0u) {
 
 			// Player Online
 			if ((_session = sgs::gs::getInstance().findPlayer(el.first->uid)) != nullptr) {
 
-				// Update Medal do player
+				// Update the player's Medal
 				_session->m_pi.updateMedal(el.first->medal_win);
 
-				// Update Medal do player no jogo
+				// Update the player's Medal in the game
 				sendUpdateInfoAndMapStatistics(*_session, 0);
 			
 			}else { // Player Offline
 
-				// Update Medal do player
+				// Update the player's Medal
 				PlayerInfo::updateMedal(el.first->uid, el.first->medal_win);
 				
 			}
@@ -1170,32 +1170,32 @@ void Tourney::requestGiveMedalAndItens() {
 
 void Tourney::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	// Tourney GM n�o tem treasure Hunter Item
+	// GM Tourney has no treasure Hunter Item
 	if (!(m_ri.trofel == TROFEL_GM_EVENT_TYPEID && m_ri.max_player > 30 && m_ri.flag_gm && m_ri.state_flag == 0x100))
 		requestDrawTreasureHunterItem(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Here rain count achievement
 	
-	achievement_top_3_1st(_session);				// Se o Player ficou em Top 3 add +1 ao contador de top 3, e se ele ficou em primeiro add +1 ao do primeiro
+	achievement_top_3_1st(_session);				// If the Player finished in the Top 3 add +1 to the top 3 counter, and if he finished first add +1 to the first one
 
 	//INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Response Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 }
 
@@ -1204,7 +1204,7 @@ void Tourney::requestCalculeShotSpinningCube(player& _session, ShotSyncData& _ss
 
 	try {
 
-		// S� calcula se n�o for short game
+		// Only calculates if it is not short game
 		if (!m_ri.natural.stBit.short_game)
 			calcule_shot_to_spinning_cube(_session, _ssd);
 
@@ -1219,7 +1219,7 @@ void Tourney::requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) {
 
 	try {
 
-		// S� calcula se n�o for short game
+		// Only calculates if it is not short game
 		if (!m_ri.natural.stBit.short_game)
 			calcule_shot_to_coin(_session, _ssd);
 
@@ -1281,34 +1281,34 @@ bool Tourney::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 6/*packet06 pacote que termina o game*/) {
+		if (option == 6/*packet06 packet that ends the game*/) {
 
 			if (m_tourney_state)
-				finish_tourney(_session, 1);	// Termina sem ter acabado de jogar
+				finish_tourney(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
-			// N�o terminou o Jogo a tempo, add as tacadas dos outros holes que ele nao conseguiu terminar
-			// ------ O Original n�o soma as tacadas do resto dos holes que o player n�o jogou, quando o tempo acaba -------
+			// Did not finish the Game in time, add the strokes of the other holes he could not finish
+			// ------ The Original does not add the strokes of the rest of the holes the player did not play, when time runs out -------
 			//if (pgi->flag == PlayerGameInfo::eFLAG_GAME::END_GAME)
 				//pgi->ui.tacada = pgi->data.total_tacada_num;
 
-			// Salve o record se o camp acabou e o player n�o terminou todos os holes tbm tem que salvar o record [OK][Feito]
+			// Save the record if the camp ended and the player did not finish all the holes, the record must also be saved [OK][Done]
 			requestSaveRecordCourse(_session, 0/*Normal Game*/, (m_ri.qntd_hole == 18 && (m_course->findHoleSeq(pgi->hole) == 18 || pgi->flag == PlayerGameInfo::eFLAG_GAME::END_GAME)) ? 1 : 0);
 
 			requestSaveInfo(_session, 0);
 
-			// D� Exp para o Caddie E Mascot Tamb�m
-			if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+			// Gives Exp to the Caddie AND Mascot Too
+			if (pgi->data.exp > 0) {	// only add exp if greater than 0
 
-				// Add Exp para o player
-				_session.addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+				// Add Exp to the player
+				_session.addExp(pgi->data.exp, false/*No need for the packet to change level*/);
 
-				// D� Exp para o Caddie Equipado
-				if (_session.m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+				// Gives Exp to the Equipped Caddie
+				if (_session.m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 					_session.addCaddieExp(pgi->data.exp);
 
-				// D� Exp para o Mascot Equipado
+				// Gives Exp to the Equipped Mascot
 				if (_session.m_pi.ei.mascot_info != nullptr)
 					_session.addMascotExp(pgi->data.exp);
 			}
@@ -1316,34 +1316,34 @@ bool Tourney::finish_game(player& _session, int option) {
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Resposta Treasure Hunter Item
+			// Response Treasure Hunter Item
 			requestSendTreasureHunterItem(_session);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+			// Response that is always sent when a game ends, I do not know what it is yet, only HIO Event does not have it
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+			// This one is new from JP, it has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
@@ -1352,32 +1352,32 @@ bool Tourney::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means he finished the camp
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
-			m_game_init_state = 2;	// ACABOU
+			// Flag of the game that finished
+			m_game_init_state = 2;	// FINISHED
 
 		}else if (option == 1/*Ticket Report*/) {
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
-			// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+			// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 			requestFinishItemUsedGame(_session);
 
 			requestSaveDrop(_session);
 
 			requestDrawTreasureHunterItem(_session);
 
-			// Aqui que vem esse aqui, o Save record course e o save info
+			// This is where this one comes, the Save record course and the save info
 			requestSaveRecordCourse(_session, 0/*Normal Game*/, (m_ri.qntd_hole == 18 && m_course->findHoleSeq(pgi->hole) == 18) ? 1 : 0);
 
 			requestSaveInfo(_session, 0);
 
-			// Resposta Treasure Hunter Item Draw
+			// Response Treasure Hunter Item Draw
 			sendTreasureHunterItemDrawGUI(_session);
 
-			// Resposta de Sai com Ticket Report
+			// Response of Leaves with Ticket Report
 			p.init_plain((unsigned short)0x12A);
 
 			p.addUint32(0);	// OK
@@ -1387,42 +1387,42 @@ bool Tourney::finish_game(player& _session, int option) {
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Resposta terminou game - Drop Itens
+			// Response finished game - Drop Items
 			sendDropItem(_session);
 
-			// Pacote dizendo para sair da sala e voltar para a Lobby normal por que Ticket report s� pode user em Tourney
-			// Sa� da sala, visual
+			// Packet telling to leave the room and return to the normal Lobby because Ticket report can only be used in Tourney
+			// Left the room, visual
 			packet_func::pacote04C(p, &_session, -1);
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Envia os itens ganhos no Treasure Hunter
+			// Response Sends the items won in the Treasure Hunter
 			requestSendTreasureHunterItem(_session);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+			// Response that is always sent when a game ends, I do not know what it is yet, only HIO Event does not have it
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+			// This one is new from JP, it has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);

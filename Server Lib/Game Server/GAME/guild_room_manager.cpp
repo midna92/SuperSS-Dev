@@ -1,6 +1,6 @@
-// Arquivo guild_room_manager.cpp
-// Criado em 26/12/2019 as 21:19 por Acrisio
-// Implementa��o da classe GuildRoomManager
+// File guild_room_manager.cpp
+// Created on 26/12/2019 at 21:19 by Acrisio
+// Implementation of class GuildRoomManager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -228,7 +228,7 @@ void GuildRoomManager::init_duplas() {
 
 int GuildRoomManager::isGoodToStart() {
 
-	// S� tem uma ou nenhuma guild na sala
+	// There is only one or no guild in the room
 	if (v_guilds.size() <= 1)
 		return 0;
 
@@ -244,7 +244,7 @@ int GuildRoomManager::isGoodToStart() {
 
 	for (auto& el : v_guilds) {
 		
-		// Não tem o mesmo número de jogadores na sala as guilds
+		// The guilds do not have the same number of players in the room
 		if (last_players != -1l && last_players != el.numPlayers()) {
 			
 			ret = -1;
@@ -254,7 +254,7 @@ int GuildRoomManager::isGoodToStart() {
 
 		last_players = (int)el.numPlayers();
 
-		// Uma Guild tem menos que 2 jogadores na sala
+		// One Guild has fewer than 2 players in the room
 		if (last_players < 2) {
 			
 			ret = -2;
@@ -412,7 +412,7 @@ void GuildRoomManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, vo
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just leaves, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[GuildRoomManager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

@@ -1,6 +1,6 @@
-// Arquivo gbin_to_text.cpp
-// Criado em 03/07/2023 as 18:25 por Acrisio
-// Definição e Implementação do Tradutor dos arquivos .gbin, .sgbin e .aibin do PangYa do PC todas as versões
+// File gbin_to_text.cpp
+// Created on 03/07/2023 at 18:25 by Acrisio
+// Definition and implementation of the translator for PangYa PC .gbin, .sgbin and .aibin files, all versions
 
 #include <iostream>
 #include <fstream>
@@ -59,7 +59,7 @@ std::string BufferToHexString(unsigned char* buffer, size_t size) {
 		}
 	}
 
-	// Resto
+	// Remainder
 	if((size % 16) != 0) {
 		for(i = 0; i < (16 - (size % 16)); i++) {
 			ss << std::uppercase << std::hex << std::setw(2) << std::setfill('-');
@@ -1000,7 +1000,7 @@ struct ElementV72 : public ElementV71 {
     }
 };
 
-// Esse aqui é do Grand Zodiac, tem o Green tipo 1, e Tee Shot tipo 2
+// This one is from Grand Zodiac, it has Green type 1 and Tee Shot type 2
 struct NewElementV72 {
     ExtraValueV72 extra_value;
     char name[64];

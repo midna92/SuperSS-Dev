@@ -1,6 +1,6 @@
-// Arquivo cmd_finish_quest_user.cpp
-// Criado em 15/04/2018 as 23:44 por Acrisio
-// Implementa��o da classe CmdFinishQuestUser
+// File cmd_finish_quest_user.cpp
+// Created on 15/04/2018 at 23:44 by Acrisio
+// Implementation of the class CmdFinishQuestUser
 
 #if defined(_WIN32)
 #pragma pack(1)

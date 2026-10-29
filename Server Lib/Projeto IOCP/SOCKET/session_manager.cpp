@@ -1,6 +1,6 @@
-// Arquivo session_manager.cpp
-// Criado em 01/11/2018 as 17:52 por Acrisio
-// Implementação da classe session_manager
+// File session_manager.cpp
+// Created on 01/11/2018 at 17:52 by Acrisio
+// Implementation of class session_manager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -37,7 +37,7 @@ bool session_manager::m_is_init = false;
 
 session_manager::session_manager(threadpool& _threadpool, uint32_t _max_session) : m_threadpool(_threadpool), m_max_session(_max_session), m_TTL(0u) {
 
-	// Carrega as config do arquivo server.ini
+	// Load the config from the server.ini file
 	config_init();
 
 #if defined(_WIN32)
@@ -66,11 +66,11 @@ session_manager::~session_manager() {
 
 void session_manager::clear() {
 
-	// Limpa as session para deletar
+	// Clear the sessions to be deleted
 	if (!m_session_del.empty())
 		m_session_del.clear();
 
-	// Não Vazias
+	// Not empty
 	if (!m_sessions.empty()) {
 		
 		for (auto i = 0u; i < m_sessions.size(); ++i)
@@ -162,7 +162,7 @@ bool session_manager::deleteSession(session* _session) {
 #endif
 	) {
 		
-		// Se não liberar aqui da deadlock
+		// If not released here it deadlocks
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -340,7 +340,7 @@ session* session_manager::getSessionToDelete(DWORD _dwMilliseconds) {
 		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::LIST_ASYNC, 2/*TIME OUT*/))
 			throw;
 
-		// Time out error coloca o s == nullptr, para confirma que deu time out
+		// On timeout error set s == nullptr, to confirm that a timeout occurred
 		if (s != nullptr)
 			s = nullptr;
 	}

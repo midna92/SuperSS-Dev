@@ -1,6 +1,6 @@
-// Arquivo cmd_rank_registry_character_info.hpp
-// Criado em 16/06/2020 as 18:11 por Acrisio
-// Defini��o da classe CmdRankRegistryCharacterInfo
+// File cmd_rank_registry_character_info.hpp
+// Created on 16/06/2020 at 18:11 by Acrisio
+// Definition of the class CmdRankRegistryCharacterInfo
 
 #pragma once
 #ifndef _STDA_CMD_RANK_REGISTRY_CHARACTER_INFO_HPP

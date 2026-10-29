@@ -1,6 +1,6 @@
-// Arquivo cmd_attendance_reward_item_info.cpp
-// Criado em 14/11/2018 as 22:03 por Acrisio
-// Implementa��o da classe CmdAttendanceRewardItemInfo
+// File cmd_attendance_reward_item_info.cpp
+// Created on 14/11/2018 at 22:03 by Acrisio
+// Implementation of the class CmdAttendanceRewardItemInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

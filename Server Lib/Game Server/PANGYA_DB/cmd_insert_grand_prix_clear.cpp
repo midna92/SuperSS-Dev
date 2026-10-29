@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_grand_prix_clear.cpp
-// Criado em 14/06/2019 as 10:17 por Acrisio
-// Implementa��o da classe CmdInsertGrandPrixClear
+// File cmd_insert_grand_prix_clear.cpp
+// Created on 14/06/2019 at 10:17 by Acrisio
+// Implementation of the class CmdInsertGrandPrixClear
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdInsertGrandPrixClear::~CmdInsertGrandPrixClear() {
 
 void CmdInsertGrandPrixClear::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

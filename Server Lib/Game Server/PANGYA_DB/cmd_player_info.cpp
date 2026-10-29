@@ -1,6 +1,6 @@
-// Arquivo cmd_player_info.cpp
-// Criado em 18/03/2018 as 11:53 por Acrisio
-// Implementação da classe CmdPlayerInfo
+// File cmd_player_info.cpp
+// Created on 18/03/2018 at 11:53 by Acrisio
+// Implementation of the class CmdPlayerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -43,7 +43,7 @@ response* CmdPlayerInfo::prepareConsulta(database& _db) {
     
     m_pi.clear();
 
-	// UID caso ele não consigar achar no DB
+	// UID in case it cannot be found in the DB
 	m_pi.uid = (uint32_t)~0u;
 
     auto r = procedure(_db, m_szConsulta, std::to_string(m_uid));

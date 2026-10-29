@@ -1,6 +1,6 @@
-// Arquivo cmd_update_caddie_equiped.hpp
-// Criado em 25/03/2018 as 10:35 por Acrisio
-// Defini��o da classe CmdUpdateCaddieEquiped
+// File cmd_update_caddie_equiped.hpp
+// Created on 25/03/2018 at 10:35 by Acrisio
+// Definition of class CmdUpdateCaddieEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CADDIE_EQUIPED_HPP

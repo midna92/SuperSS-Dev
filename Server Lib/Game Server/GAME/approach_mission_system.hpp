@@ -1,6 +1,6 @@
-// Arquivo approach_mission_system.hpp
-// Criado em 14/06/2020 as 17:28 por Acrisio
-// Defini��o da classe ApproachMissionSystem
+// File approach_mission_system.hpp
+// Created on 14/06/2020 at 17:28 by Acrisio
+// Definition of class ApproachMissionSystem
 
 #pragma once
 #ifndef _STDA_APPROACH_MISSION_SYSTEM_HPP

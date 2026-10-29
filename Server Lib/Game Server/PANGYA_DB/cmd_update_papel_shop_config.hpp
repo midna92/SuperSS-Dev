@@ -1,6 +1,6 @@
-// Arquivo cmd_udpdate_papel_shop_config.hpp
-// Criado em 08/12/2018 as 15:09 por Acrisio
-// Defini��o da classe CmdUpdatePapelShopConfig
+// File cmd_udpdate_papel_shop_config.hpp
+// Created on 08/12/2018 at 15:09 by Acrisio
+// Definition of class CmdUpdatePapelShopConfig
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_PAPEL_SHOP_CONFIG_HPP

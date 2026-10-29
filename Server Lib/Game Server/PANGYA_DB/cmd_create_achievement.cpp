@@ -1,6 +1,6 @@
-// Arquivo cmd_create_achievement.cpp
-// Criado em 31/03/2018 as 21:56 por Acrisio
-// Implementa��o da classe CmdCreateAchievement
+// File cmd_create_achievement.cpp
+// Created on 31/03/2018 at 21:56 by Acrisio
+// Implementation of the class CmdCreateAchievement
 
 #if defined(_WIN32)
 #pragma pack(1)

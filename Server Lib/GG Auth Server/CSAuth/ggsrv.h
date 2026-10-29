@@ -63,7 +63,7 @@ typedef struct _GG_VERSION
 
 typedef struct _GG_AUTH_PROTOCOL *PGG_AUTH_PROTOCOL;
 
-// ggauth.dll�� Path
+// Path of ggauth.dll
 GGAUTHS_API DWORD __CDECL InitGameguardAuth(char* sGGPath, DWORD dwNumActive, BOOL useTimer, int useLog);
 GGAUTHS_API void  __CDECL CleanupGameguardAuth();
 GGAUTHS_API DWORD __CDECL GGAuthUpdateTimer(); //useTimer �� true �� ��� ȣ��.

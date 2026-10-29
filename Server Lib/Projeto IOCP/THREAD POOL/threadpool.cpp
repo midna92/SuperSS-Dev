@@ -1,6 +1,6 @@
-// Arquivo threadpool.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe threadpool
+// File threadpool.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of class threadpool
 
 #if defined(_WIN32)
 #include <WinSock2.h>
@@ -25,7 +25,7 @@
 #if defined(_WIN32)
 #include <DbgHelp.h>
 #elif defined(__linux__)
-	// !@ ainda não pequisei, para ver se tem o Debug dump exception para linux
+	// !@ have not researched yet, to see if there is a Debug dump exception for linux
 #endif
 
 using namespace stdA;
@@ -95,7 +95,7 @@ threadpool::threadpool(size_t _num_thread_workers_io, size_t _num_thread_workers
 
 	// Workers Send Threads
 	for (i = 0; i < _num_thread_workers_logical; i++) {
-		m_threads.push_back(new thread(TT_WORKER_SEND, threadpool::_worker_send, (LPVOID)new threadpool_and_index{ this, (uint32_t)i }, THREAD_PRIORITY_ABOVE_NORMAL));	// Estava ABOVE
+		m_threads.push_back(new thread(TT_WORKER_SEND, threadpool::_worker_send, (LPVOID)new threadpool_and_index{ this, (uint32_t)i }, THREAD_PRIORITY_ABOVE_NORMAL));	// It was ABOVE
 		//m_threads.push_back(new thread(TT_WORKER_SEND, threadpool::_worker_send, (LPVOID)new threadpool_and_index{ this, i }, THREAD_PRIORITY_ABOVE_NORMAL));	// Estava ABOVE
 	}
 };
@@ -141,7 +141,7 @@ void* threadpool::_worker_io(LPVOID lpParameter)
 
 	result = pTP->m_threadpool->worker_io(pTP->m_index);
 
-	delete pTP;	// Libera memória allocada para threadpool_and_index
+	delete pTP;	// Release memory allocated for threadpool_and_index
 
 	END_THREAD_SETUP("worker_io()")
 };
@@ -169,7 +169,7 @@ void* threadpool::_worker_io_send(LPVOID lpParameter)
 
 	result = pTP->m_threadpool->worker_io_send(pTP->m_index);
 
-	delete pTP;	// Libera memória allocada para threadpool_and_index
+	delete pTP;	// Release memory allocated for threadpool_and_index
 
 	END_THREAD_SETUP("worker_io_send()");
 };
@@ -184,7 +184,7 @@ void* threadpool::_worker_io_recv(LPVOID lpParameter)
 
 	result = pTP->m_threadpool->worker_io_recv(pTP->m_index);
 
-	delete pTP;	// Libera memória allocada para threadpool_and_index
+	delete pTP;	// Release memory allocated for threadpool_and_index
 
 	END_THREAD_SETUP("worker_io_recv()");
 };
@@ -199,7 +199,7 @@ void* threadpool::_worker_logical(LPVOID lpParameter)
 
 	result = pTP->m_threadpool->worker_logical(pTP->m_index);
 
-	delete pTP;	// Libera memória allocada para threadpool_and_index
+	delete pTP;	// Release memory allocated for threadpool_and_index
 
 	END_THREAD_SETUP("worker_logical()")
 };
@@ -214,7 +214,7 @@ void* threadpool::_worker_send(LPVOID lpParameter)
 
 	result = pTP->m_threadpool->worker_send(pTP->m_index);
 
-	delete pTP;	// Libera memória allocada para threadpool_and_index
+	delete pTP;	// Release memory allocated for threadpool_and_index
 
 	END_THREAD_SETUP("worker_send()")
 };
@@ -290,20 +290,20 @@ void* threadpool::worker_io(DWORD _index)
 							throw exception("[threadpool::worker_io][Error] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 									+ std::to_string(flags_over) + " que retornou da operacao no iocp. session[IP=" + _session->getIP() + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 255, last_err));
 
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Marks in the session that the socket got disconnected (DC), it reached the TCP retransmission limit when transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets past this I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[threadpool::worker_io][WARNING] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 								+ std::to_string(flags_over) + " que retornou da operacao no iocp[WSAError=" + std::to_string(last_err) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Se for STDA_OT_SEND_COMPLETED reseta o send
+						// If it is STDA_OT_SEND_COMPLETED reset the send
 						if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 							_session->releaseSend();
 
-						// Zera para desconectar a session
-						// e post no recv para ele desconnectar a session
+						// Zero to disconnect the session
+						// and post on recv so it disconnects the session
 						dwIOsize = 0u;
 						
 						if (lpBuffer != nullptr)
@@ -375,37 +375,37 @@ void* threadpool::worker_io(DWORD _index)
 
 				_session = reinterpret_cast< session* >(ep_ev.data.ptr);
 
-				// Pega esse só para excluir a session se tiver erro
+				// Catch this one only to delete the session if there is an error
 				lpBuffer = &_session->m_buff_r.buff;
 
 				// error
 				if ((ep_ev.events & EPOLLERR) == EPOLLERR) {
 
-					int err_socket = 1234; // Padrão error
+					int err_socket = 1234; // Default error
 					socklen_t len_err_sock = sizeof(int);
 
-					// Ignora retorno
+					// Ignore return
 					int rt_err = ::getsockopt(_session->m_sock.fd, SOL_SOCKET, SO_ERROR, &err_socket, &len_err_sock);
 
 					// KeepAlive DC(disconnect)
 					if (err_socket == ETIMEDOUT) {
 						
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Marks in the session that the socket got disconnected (DC), it reached the TCP retransmission limit when transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets past this I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[threadpool::worker_io][WARNING] exception ERROR_SEM_TIMEOUT no iocp[socket_error=" 
 								+ std::to_string(err_socket) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Zera para desconectar a session
-						// e post no recv para ele desconnectar a session
+						// Zero to disconnect the session
+						// and post on recv so it disconnects the session
 						postIoOperationR(_session, lpBuffer, 0, STDA_OT_RECV_COMPLETED);
 
-						// volta para o começo do while
+						// go back to the start of the while
 						continue;
 					
-					}else	// Relança qualquer outro error
+					}else	// Rethrow any other error
 						throw exception("[threadpool::worker_io][Error] ep_ev events[EVENTS=" + std::to_string(ep_ev.events) 
 							+ ", SESSION=" + std::to_string((uintptr_t)_session) + ", IP=" + _session->getIP() + "] err_socket: " + std::to_string(err_socket) 
 							+ ", ret_epoll_wait: " + std::to_string(ret_epoll_wait), STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 5000, err_socket));
@@ -417,11 +417,11 @@ void* threadpool::worker_io(DWORD _index)
 					// Disconnect session
 					postIoOperationR(_session, lpBuffer, 0, STDA_OT_RECV_COMPLETED);
 
-					// volta para o começo do while
+					// go back to the start of the while
 					continue;
 				}
 
-				// Disponível para read
+				// Available for read
 				if ((ep_ev.events & EPOLLIN) == EPOLLIN) {
 					
 					lpBuffer = &_session->m_buff_r.buff;
@@ -429,13 +429,13 @@ void* threadpool::worker_io(DWORD _index)
 					_session->requestRecvBuffer();
 				}
 
-				// Disponível para escrever no socket
+				// Available to write to the socket
 				if ((ep_ev.events & EPOLLOUT) == EPOLLOUT) {
 
 					lpBuffer = &_session->m_buff_s.buff;
 
-					// postIoOperation em vez de postIoOperationS, por que ele ainda vai chamar a função send so socket, 
-					// aqui no IOCP já é depois de enviar para o outro peer
+					// postIoOperation instead of postIoOperationS, because it will still call the socket send function, 
+					// here in the IOCP it is already after sending to the other peer
 					postIoOperation(_session, lpBuffer, 0, STDA_OT_SEND_REQUEST);
 				}
 #endif
@@ -448,31 +448,31 @@ void* threadpool::worker_io(DWORD _index)
 		//			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#endif
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
-				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Desconecta a session*/);
+				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Disconnect the session*/);
 
 			}catch (std::exception& e) {
 				
 				_smp::message_pool::getInstance().push(new message(std::string("[threadpool::worker_io][ErrorSystem][STD] ") + e.what(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
-				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Desconecta a session*/);
+				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Disconnect the session*/);
 
 			}catch (...) {
 
 				std::cout << "worker_io() ->while Exception (...) c++ nao tratada ou uma excessao de C(nullptr e etc)\n";
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					_session->releaseSend();
 
-				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Desconecta a session*/);
+				postIoOperationR(_session, lpBuffer, 0/*disconnect*/, STDA_OT_RECV_COMPLETED/* Disconnect the session*/);
 			}
 		}
 	}catch (exception& e) {
@@ -538,11 +538,11 @@ void* threadpool::worker_io_accept()
 							throw exception("[threadpool::worker_io_accept][Error] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 									+ std::to_string(flags_over) + " que retornou da operacao no iocp. sock id=" + std::to_string((uint32_t)listener), STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 255, last_err));
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets past this I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[threadpool::worker_io_accept][WARNING] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 								+ std::to_string(flags_over) + " que retornou da operacao no iocp[WSAError=" + std::to_string(last_err) + "]. sock id=" + std::to_string((uint32_t)listener), CL_FILE_LOG_AND_CONSOLE));
 
-						// Aqui no accept não faz diferença que ele muda ali em baixo, por que é o accept
+						// Here in accept it makes no difference that it changes down there, because it's the accept
 						dwIOsize = STDA_SYSTEM_ERROR_DECODE(e.getCodeError());
 
 						// clear myOver Buffer
@@ -569,7 +569,7 @@ void* threadpool::worker_io_accept()
 						throw;
 					}
 
-					// Trata no tranlate dele
+					// Handled in its translate
 					dwIOsize = STDA_SYSTEM_ERROR_DECODE(e.getCodeError());
 				}
 
@@ -610,23 +610,23 @@ void* threadpool::worker_io_accept()
 				// error
 				if ((ep_ev.events & EPOLLERR) == EPOLLERR) {
 
-					int err_socket = 1234; // Padrão error
+					int err_socket = 1234; // Default error
 					socklen_t len_err_sock = sizeof(int);
 
-					// Ignora retorno
+					// Ignore return
 					int rt_err = ::getsockopt(ep_ev.data.fd, SOL_SOCKET, SO_ERROR, &err_socket, &len_err_sock);
 
 					throw exception("[threadpool::worker_io_accept][Error] ep_ev events[FD=" + std::to_string(ep_ev.data.fd) + "] err_socket: " + std::to_string(err_socket) 
 						+ ", EVENTS=" + std::to_string(ep_ev.events) + ", ret_epoll_wait: " + std::to_string(ret_epoll_wait), STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 5000, err_socket));
 				}
 
-				// Shutdown, (mas esse socket está escutando e não conectado) acho que esse erro ele não dá
+				// Shutdown, (but this socket is listening and not connected) I think it doesn't give this error
 				if ((ep_ev.events & EPOLLHUP) == EPOLLHUP) {
 
-					int err_socket = 1234; // Padrão error
+					int err_socket = 1234; // Default error
 					socklen_t len_err_sock = sizeof(int);
 
-					// Ignora retorno
+					// Ignore return
 					int rt_err = ::getsockopt(ep_ev.data.fd, SOL_SOCKET, SO_ERROR, &err_socket, &len_err_sock);
 
 					throw exception("[threadpool::worker_io_accept][Error] shutdown ep_ev events[FD=" + std::to_string(ep_ev.data.fd) + "] err_socket: " + std::to_string(err_socket)
@@ -746,19 +746,19 @@ void* threadpool::worker_io_send(DWORD _index)
 							throw exception("[threadpool::worker_io_send][Error] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 									+ std::to_string(flags_over) + " que retornou da operacao no iocp. session[IP=" + _session->getIP() + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 255, last_err));
 
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Marks in the session that the socket got disconnected (DC), it reached the TCP retransmission limit when transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se for STDA_OT_SEND_COMPLETED reseta o send
+						// If it is STDA_OT_SEND_COMPLETED reset the send
 						if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 							_session->releaseSend();
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets past this I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[threadpool::worker_io_send][WARNING] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over=" 
 								+ std::to_string(flags_over) + " que retornou da operacao no iocp[WSAError=" + std::to_string(last_err) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Zera para desconectar a session
+						// Zero to disconnect the session
 						dwIOsize = 0u;
 
 					}else if (!(STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) == ERROR_NETNAME_DELETED || STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) == ERROR_CONNECTION_ABORTED
@@ -785,7 +785,7 @@ void* threadpool::worker_io_send(DWORD _index)
 
 				}catch (exception& e) {
 
-					// Diferente de timeout
+					// Different from timeout
 					if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::LIST_FIFO, 2))
 						throw;
 				}
@@ -818,7 +818,7 @@ void* threadpool::worker_io_send(DWORD _index)
 		//			_smp::message_pool::getInstance().push(new message(e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 //#endif
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					if (_session != nullptr)
 						_session->releaseSend();
@@ -829,7 +829,7 @@ void* threadpool::worker_io_send(DWORD _index)
 				
 				_smp::message_pool::getInstance().push(new message(std::string("[threadpool::worker_io_send][ErrorSystem][STD] ") + e.what(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					if (_session != nullptr)
 						_session->releaseSend();
@@ -840,7 +840,7 @@ void* threadpool::worker_io_send(DWORD _index)
 				
 				std::cout << "worker_io_send() ->while Exception (...) c++ nao tratada ou uma excessao de C(nullptr e etc)\n";
 
-				// Se for STDA_OT_SEND_COMPLETED reseta o send
+				// If it is STDA_OT_SEND_COMPLETED reset the send
 				if (lpBuffer != nullptr && (lpBuffer->getOperation() == STDA_OT_SEND_COMPLETED || lpBuffer->getOperation() == STDA_OT_SEND_RAW_COMPLETED))
 					if (_session != nullptr)
 						_session->releaseSend();
@@ -903,15 +903,15 @@ void* threadpool::worker_io_recv(DWORD _index)
 							throw exception("[threadpool::worker_io_recv][Error] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 									+ std::to_string(flags_over) + " que retornou da operacao no iocp. session[IP=" + _session->getIP() + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::THREADPOOL, 255, last_err));
 
-						// Marca na session que o socket, levou DC, chegou ao limit de retramission do TCP para transmitir os dados
+						// Marks in the session that the socket got disconnected (DC), it reached the TCP retransmission limit when transmitting data
 						// TCP sockets is that the maximum retransmission count and timeout have been reached on a bad(or broken) link
 						_session->m_connection_timeout = true;
 
-						// Se passar tenho que colocar o dwIOsize para zero para ele ser disconnectado
+						// If it gets past this I have to set dwIOsize to zero so it gets disconnected
 						_smp::message_pool::getInstance().push(new message("[threadpool::worker_io_recv][WARNING] exception ERROR_SEM_TIMEOUT dwIOsize=" + std::to_string(dwIOsize) + ", Flags_Over="
 								+ std::to_string(flags_over) + " que retornou da operacao no iocp[WSAError=" + std::to_string(last_err) + "]. session[IP=" + _session->getIP() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-						// Zera para desconectar a session
+						// Zero to disconnect the session
 						dwIOsize = 0u;
 
 					}else if (!(STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) == ERROR_NETNAME_DELETED || STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) == ERROR_CONNECTION_ABORTED
@@ -938,7 +938,7 @@ void* threadpool::worker_io_recv(DWORD _index)
 
 				}catch (exception& e) {
 
-					// Diferente de timeout
+					// Different from timeout
 					if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::LIST_FIFO, 2))
 						throw;
 				}
@@ -1027,7 +1027,7 @@ void* threadpool::worker_logical(DWORD _index)
 #if defined(_WIN32)
 				operation = ~0;
 
-				m_iocp_logical.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// Esse tinha Index, era um array de 16 iocp
+				m_iocp_logical.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// This one had Index, it was an array of 16 iocp
 
 				if (_session == nullptr)
 					break;
@@ -1125,7 +1125,7 @@ void* threadpool::worker_send(DWORD _index)
 #if defined(_WIN32)
 				operation = ~0;
 
-				m_iocp_send.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// Esse tinha Index, era um array de 16 iocp
+				m_iocp_send.getStatus((PULONG_PTR)&_session, &dwIOsize, (LPOVERLAPPED*)&lpMyOver);		// This one had Index, it was an array of 16 iocp
 
 				if (_session == nullptr)
 					break;
@@ -1233,7 +1233,7 @@ void* threadpool::_job()
 
 		while (1) {
 			if ((_job = m_job_pool.getJob()) == nullptr)
-				break;	// Sai da thread job
+				break;	// Exit the job thread
 			
 			try {
 				if (_job->execute_job() != 0)
@@ -1318,7 +1318,7 @@ void threadpool::send_new(session *_session, Buffer *lpBuffer, DWORD operation) 
 
 		_session->setSend();
 
-		// Seta operação
+		// Set operation
 		lpBuffer->setOperation(operation);
 
 		if (_session->devolve()) {
@@ -1334,7 +1334,7 @@ void threadpool::send_new(session *_session, Buffer *lpBuffer, DWORD operation) 
 
 	}catch (exception& e) {
 		
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error ao usar session*/)) {
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error when using session*/)) {
 			
 			if (_session->devolve()) {
 
@@ -1381,7 +1381,7 @@ void threadpool::send_new(session *_session, Buffer *lpBuffer, DWORD operation) 
 		}
 	}
 #elif defined(__linux__)
-	// Verifica se tem algo para enviar
+	// Check whether there is something to send
 	try {
 
 		if ((int)lpBuffer->getWSABufToSend()->len <= 0) {
@@ -1403,7 +1403,7 @@ void threadpool::send_new(session *_session, Buffer *lpBuffer, DWORD operation) 
 		
 	} catch(exception& e) {
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error ao usar session*/)) {
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::SESSION, 6/*Error when using session*/)) {
 			
 			if (_session->devolve()) {
 
@@ -1569,7 +1569,7 @@ void threadpool::postIoOperation(session *_session, Buffer* lpBuffer, DWORD dwIO
 	
 #if defined(_WIN32)
 	UNREFERENCED_PARAMETER(dwIOsize);
-	m_iocp_send.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);	// Esse tinha Index[session->m_key], era um array de 16 iocp
+	m_iocp_send.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);	// This one had Index[session->m_key], it was an array of 16 iocp
 #elif defined(__linux__)
 	m_iocp_send.push(new stThreadpoolMessage(_session, (Buffer*)tmp, dwIOsize));
 #endif
@@ -1583,7 +1583,7 @@ void threadpool::postIoOperationL(session *_session, Buffer* lpBuffer, DWORD ope
 	tmp->buffer = lpBuffer;
 
 #if defined(_WIN32)
-	m_iocp_logical.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);	// Esse tinha Index[session->m_key], era um array de 16 iocp
+	m_iocp_logical.postStatus((ULONG_PTR)_session, 0, (LPOVERLAPPED)tmp);	// This one had Index[session->m_key], it was an array of 16 iocp
 #elif defined(__linux__)
 	m_iocp_logical.push(new stThreadpoolMessage(_session, (Buffer*)tmp, 0));
 #endif
@@ -1591,7 +1591,7 @@ void threadpool::postIoOperationL(session *_session, Buffer* lpBuffer, DWORD ope
 
 void threadpool::postIoOperationS(session *_session, Buffer *lpBuffer, DWORD dwIOsize, DWORD operation) {
 #if defined(_WIN32)
-	memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zera
+	memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Reset
 
 	lpBuffer->setOperation(operation);
 
@@ -1607,7 +1607,7 @@ void threadpool::postIoOperationS(session *_session, Buffer *lpBuffer, DWORD dwI
 
 void threadpool::postIoOperationR(session * _session, Buffer *lpBuffer, DWORD dwIOsize, DWORD operation) {
 #if defined(_WIN32)
-	memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Zera
+	memset(lpBuffer, 0, sizeof(OVERLAPPED));	// Reset
 
 	lpBuffer->setOperation(operation);
 

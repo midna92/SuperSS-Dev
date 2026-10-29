@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_ranking.cpp
-// Criado em 29/12/2019 as 15:47 por Acrisio
-// Implementa��o da classe CmdUpdateGuildRanking
+// File cmd_update_guild_ranking.cpp
+// Created on 29/12/2019 at 15:47 by Acrisio
+// Implementation of class CmdUpdateGuildRanking
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -18,7 +18,7 @@ CmdUpdateGuildRanking::~CmdUpdateGuildRanking() {
 
 void CmdUpdateGuildRanking::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

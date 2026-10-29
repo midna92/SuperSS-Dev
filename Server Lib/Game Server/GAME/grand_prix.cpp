@@ -1,6 +1,6 @@
 // Arquivo grand_prix.cpp
-// Criado em 18/06/2019 as 08:33 por Acrisio
-// Implementa��o da classe GrandPrix
+// Created on 18/06/2019 at 08:33 by Acrisio
+// Implementation of the GrandPrix class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -33,12 +33,12 @@ using namespace stdA;
 							  if (_packet == nullptr) \
 									throw exception("[GrandPrix::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_PRIX, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[GrandPrix::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_PRIX, 1, 4)); \
 
-// S� deixa a fun��o ser acessada 1x por tacada
+// Only lets the function be accessed 1x per shot
 #define ONCE_PER_SHOT(_method, _msg, _flag, _ret) INIT_PLAYER_INFO((_method), (_msg), &_session); \
 \
 	m_lock_manager.lock(&_session); \
@@ -80,13 +80,13 @@ GrandPrix::GrandPrix(std::vector< player* >& _players, RoomInfoEx& _ri, RateValu
 	else
 		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
 	// Load Grand Prix Rank Reward from iff
 	m_gp_reward = sIff::getInstance().findGrandPrixRankReward(m_gp.typeid_link);
 
-	// Classifica o GrandPrixRankReward do menor rank para o maior
+	// Sort the GrandPrixRankReward from the lowest rank to the highest
 	std::sort(m_gp_reward.begin(), m_gp_reward.end(), [](auto& _1, auto& _2) {
 		return _1.rank < _2.rank;
 	});
@@ -133,7 +133,7 @@ GrandPrix::GrandPrix(std::vector< player* >& _players, RoomInfoEx& _ri, RateValu
 			pgi->sys_achieve.incrementCounter(class_gp_counter_typeid);
 	}
 
-	// Consome os Tickets dos player que v�o jogar o Grand Prix
+	// Consume the Tickets of the players who will play the Grand Prix
 	consomeTicket();
 
 	// inicializa o jogo
@@ -204,7 +204,7 @@ void GrandPrix::sendInitialData(player& _session) {
 
 			packet_func::game_broadcast(*this, p, 1);
 
-			// Aqui � os bots do GP
+			// Here are the GP bots
 			p.init_plain((unsigned short)0x256);
 
 			p.addUint32(0u);	// OK [Option Error]
@@ -257,33 +257,33 @@ bool GrandPrix::deletePlayer(player* _session, int _option) {
 
 			INIT_PLAYER_INFO("deletePlayer", "tentou sair do jogo", _session);
 
-			// Para o tempo do hole do player
+			// Stop the player's hole time
 			stopTime(_session);
 			stopTimeRule(_session);
 
 			packet p;
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+				requestFinishItemUsedGame(*(*it));	// Save items used in Tourney
 
-				// Rookie Grand Prix n�o altera o info do player s� achievement
+				// Rookie Grand Prix does not change the player info, only achievement
 				if (!(sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid)))
-					requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+					requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				//pgi->flag = PlayerGameInfo::eFLAG_GAME::QUIT;
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Reply Player left the Game, remove him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo
+				// Reply Player left the game
 				sendUpdateState(*_session, opt);
 
 				if (AllCompleteGameAndClear())
@@ -295,35 +295,35 @@ bool GrandPrix::deletePlayer(player* _session, int _option) {
 
 				// Acabou
 				
-				// Rookie Grand Prix n�o altera o info do player s� achievement
+				// Rookie Grand Prix does not change the player info, only achievement
 				if (!(sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid)))
 					requestSaveInfo(*(*it), 0);
 			}
 
-			// Deleta o player por give up ou time out, ele conta os achievements dele, tem o counter item 0x6C400004u Normal Game Complete
-			// Envia os achievements para ele para ficar igual ao original
-			if (m_game_init_state == 1/*Come�ou*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out > 0 || pgi->data.giveup > 0)) {
+			// Delete the player for give up or time out, it counts his achievements, there is the counter item 0x6C400004u Normal Game Complete
+			// Send the achievements to him to match the original
+			if (m_game_init_state == 1/*Started*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out > 0 || pgi->data.giveup > 0)) {
 
 				// Achievements
-				rain_hole_consecutivos_count(*_session);			// conta os achievement de chuva em holes consecutivas
+				rain_hole_consecutivos_count(*_session);			// count the rain achievements in consecutive holes
 
-				score_consecutivos_count(*_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+				score_consecutivos_count(*_session);				// count the player's back-to-back achievements (2 or more consecutive equal scores)
 
-				rain_count(*_session);								// Aqui achievement de rain count
+				rain_count(*_session);								// Here the rain count achievement
 
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-				// Achievement Aqui
+				// Achievement Here
 				pgi->sys_achieve.finish_and_update(*_session);
 
-				// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+				// Reply always sent when a game ends, I do not know what it is yet, only HIO Event does not have this one
 				packet p((unsigned short)0x244);
 
 				p.addUint32(0);	// OK
 
 				packet_func::session_send(p, _session, 1);
 
-				// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+				// This one is new from JP, has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 				p.init_plain((unsigned short)0x24F);
 
 				p.addUint32(0);	// OK
@@ -336,7 +336,7 @@ bool GrandPrix::deletePlayer(player* _session, int _option) {
 		}else
 			_smp::message_pool::getInstance().push(new message("[GrandPrix::deletePlayer][WARNING] player ja foi excluido do game.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Aqui se n�o for true tem que ver se todos terminaram o hole e enviar o pacote255
+		// Here, if it is not true, check if everyone finished the hole and send packet255
 		if (!ret && checkAllClearHoleAndClear())
 			sendAllToNextHole();
 
@@ -350,7 +350,7 @@ bool GrandPrix::deletePlayer(player* _session, int _option) {
 
 		_smp::message_pool::getInstance().push(new message("[GrandPrix::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Aqui se n�o for true tem que ver se todos terminaram o hole e enviar o pacote255
+		// Here, if it is not true, check if everyone finished the hole and send packet255
 		if (!ret && checkAllClearHoleAndClear())
 			sendAllToNextHole();
 
@@ -378,20 +378,20 @@ void GrandPrix::requestFinishCharIntro(player& _session, packet *_packet) {
 
 	try {
 
-		// Chama a base para ela fazer a parte dela
+		// Call the base so it does its part
 		TourneyBase::requestFinishCharIntro(_session, _packet);
 
 		INIT_PLAYER_INFO("requestFinishCharIntro", "tentou finalizar o character intro do player", &_session);
 
 		m_lock_manager.lock(&_session);
 
-		// Aqui zera a flag finish hole2 do player
+		// Here the player's finish hole2 flag is zeroed
 		pgi->finish_hole2 = 0u;
 		pgi->finish_hole3 = 0u;
 
 		m_lock_manager.unlock(&_session);
 
-		// Aqui come�a o tempo do hole do player
+		// Here the player's hole time starts
 		if (m_gp.time_hole > 0u)
 			startTime(&_session);
 
@@ -413,8 +413,8 @@ void GrandPrix::requestActiveBooster(player& _session, packet *_packet) {
 
 #define TIME_BOOSTER_VELOCIDADE 3.f
 
-		// 3.f Velociade 2x Padr�o do Time Booster, o player est� gastando o dele ou ele � premium user
-		// 2.f < 3.f Velocidade do Booster 1.5x do Grand Prix que ele d� de gra�a. Porem no Pangya JP n�o tem esse Booster no Grand Prix
+		// 3.f Speed 2x Default of the Time Booster, the player is using his own or he is a premium user
+		// 2.f < 3.f Speed of the 1.5x Grand Prix Booster that it gives for free. However, Pangya JP does not have this Booster in Grand Prix
 		float velocidade = _packet->readFloat();
 
 		INIT_PLAYER_INFO("requestActiveBooster", "tentou ativar Time Booster no jogo", &_session);
@@ -422,7 +422,7 @@ void GrandPrix::requestActiveBooster(player& _session, packet *_packet) {
 		// Booster Normal
 		if (velocidade >= TIME_BOOSTER_VELOCIDADE) {
 
-			if (_session.m_pi.m_cap.stBit.premium_user == 0) { // (n�o �)!PREMIUM USER
+			if (_session.m_pi.m_cap.stBit.premium_user == 0) { // (is not)!PREMIUM USER
 
 				auto pWi = _session.m_pi.findWarehouseItemByTypeid(TIME_BOOSTER_TYPEID);
 
@@ -447,7 +447,7 @@ void GrandPrix::requestActiveBooster(player& _session, packet *_packet) {
 				// Add +1 ao item passive usado
 				it->second.count++;
 
-			}else { // Soma +1 no contador de counter item do booster do player e passive item
+			}else { // Add +1 to the player's booster counter item and passive item counter
 
 				pgi->sys_achieve.incrementCounter(0x6C400075u/*Passive Item*/);
 
@@ -456,7 +456,7 @@ void GrandPrix::requestActiveBooster(player& _session, packet *_packet) {
 		
 		}
 
-		// Resposta para Active Booster
+		// Reply to Active Booster
 		p.init_plain((unsigned short)0xC7);
 
 		p.addFloat(velocidade);
@@ -484,7 +484,7 @@ void GrandPrix::requestStartTurnTime(player& _session, packet *_packet) {
 
 		m_lock_manager.unlock(&_session);
 
-		// Come�a o tempo do Rule do Grand Prix
+		// Start the Grand Prix Rule time
 		if (m_gp.rule > 0)
 			startTimeRule(&_session);
 
@@ -507,7 +507,7 @@ void GrandPrix::changeHole(player& _session) {
 		// Resposta terminou o hole
 		updateFinishHole(_session, 1);	// Terminou
 
-		// Troquei o clear hole e giveup pelo a flag finish hole. Agora est� OK
+		// I replaced clear hole and giveup with the finish hole flag. Now it is OK
 		if (checkAllClearHole()) {
 
 			clearAllClearHole();
@@ -526,19 +526,19 @@ void GrandPrix::finishHole(player& _session) {
 
 		m_lock_manager.lock(&_session);
 
-		// Para o tempo do player
+		// Stop the player's time
 		stopTime(&_session);
 		stopTimeRule(&_session);
 
-		// Se o player estiver feito give up ou dado time out, n�o soma as penalidade que ele j� fez o score max�mo
+		// If the player gave up or timed out, do not add the penalties, as he already got the maximum score
 		if (pgi->data.time_out == 0u && pgi->data.giveup == 0u)
-			// Adiciona as penalidade para as tacadas do player
+			// Add the penalties to the player's shots
 			pgi->data.tacada_num += pgi->data.penalidade;
 		
-		// finaliza os dados do hole Game::requestfinishHole
+		// finalize the hole data Game::requestfinishHole
 		requestFinishHole(_session, 0);
 
-		// update itens usados no jogo
+		// update items used in the game
 		requestUpdateItemUsedGame(_session);
 
 		// Limpa flags das tacadas
@@ -549,9 +549,9 @@ void GrandPrix::finishHole(player& _session) {
 		// Libera
 		m_lock_manager.unlock(&_session);
 
-		// Aqui j� tem uma sincroniza��o de todos players do game, 
-		// se eu colocar para o locker do player liberar depois dele pode d� deadlock
-		// Player terminou o hole agora pode trocar de hole
+		// Here there is already a synchronization of all players in the game, 
+		// if I make the player's locker release after it, it can cause a deadlock
+		// Player finished the hole, can now change hole
 		setClearHole(pgi);
 
 	}catch (exception& e) {
@@ -573,13 +573,13 @@ void GrandPrix::requestInitShot(player& _session, packet *_packet) {
 
 		ONCE_PER_SHOT("requestInitShot", "tentou iniciar tacada no jogo", init_shot, return);
 		
-		// Para(Stop) o tempo rule dele que acabou de tacar
+		// Stop the rule time of the one who just hit
 		stopTimeRule(&_session);
 
-		// Chama o fun��o da classe pai
+		// Call the parent class function
 		TourneyBase::requestInitShot(_session, _packet);
 
-		// Verifica se as tr�s tacadas foram recebidas e para para o proximo turno outro troca o hole
+		// Check if the three shots were received and go to the next turn, otherwise change the hole
 		//changeTurn(_session);
 
 	}catch (exception& e) {
@@ -668,43 +668,43 @@ void GrandPrix::finish_grand_prix(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player earned
 			requestCalculePang(_session);
 
-			// Rookie Grand Prix s� da 1/3 dos pangs ganhos
+			// Rookie Grand Prix only gives 1/3 of the pangs earned
 			if (sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid)) {
 				pgi->data.pang = (uint64_t)(pgi->data.pang * (1.f / 3.f));
 				pgi->data.bonus_pang = (uint64_t)(pgi->data.bonus_pang * (1.f / 3.f));
 			}
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if assist is on and the level is above Beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response: hole finished
 				updateFinishHole(_session, 1);
 
-				// Resposta Terminou o Jogo, ou Saiu
+				// Response: finished the game, or left
 				sendUpdateState(_session, 2);
 
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}else if (m_game_init_state == 1 && _option == 1) {	// Acabou o Tempo
+			}else if (m_game_init_state == 1 && _option == 1) {	// Time is up
 
-				requestFinishHole(_session, 1);		// Acabou o Tempo
+				requestFinishHole(_session, 1);		// Time is up
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response: hole finished
 				updateFinishHole(_session, 0);
 
-				// Resposta para acabou o tempo do Tourney
+				// Response for Tourney time is up
 				sendTimeIsOver(_session);
 			}
 		}
@@ -714,7 +714,7 @@ void GrandPrix::finish_grand_prix(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if (AllCompleteGameAndClear() && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game, e.g.: 0xCE, 0x79, etc
 	}
 }
 
@@ -726,10 +726,10 @@ void GrandPrix::startTime(void* _quem) {
 
 			player *p = reinterpret_cast< player* >(_quem);
 
-			// Para Tempo se j� estiver 1 timer
+			// Stops the timer if there is already one
 			auto timer = m_timer_manager.findTimer(p);
 
-			// N�o tem um timer criado ainda, cria um para ele
+			// There is no timer created yet, creates one for it
 			if (timer == nullptr || timer->m_timer == nullptr) {
 
 				if (timer == nullptr && (timer = m_timer_manager.insertTimer(p, nullptr)) == nullptr)
@@ -738,7 +738,7 @@ void GrandPrix::startTime(void* _quem) {
 
 				job j(GrandPrix::end_time, this, _quem);
 
-				timer->m_timer = sgs::gs::getInstance().makeTime(m_gp.time_hole * 1000/*milliseconds*/, j);	// j� est� em minutos milliseconds
+				timer->m_timer = sgs::gs::getInstance().makeTime(m_gp.time_hole * 1000/*milliseconds*/, j);	// already in minutes milliseconds
 
 #ifdef _DEBUG
 				_smp::message_pool::getInstance().push(new message("[GrandPrix::startTime][Log] Criou o Timer[Tempo=" + std::to_string(m_gp.time_hole) + "seg"
@@ -747,13 +747,13 @@ void GrandPrix::startTime(void* _quem) {
 			
 			}else {
 
-				// J� tem um timer, reseta ele e inicia novamente
+				// There is already a timer, resets it and starts again
 				if (timer->m_timer != nullptr) {
 					
 					if (timer->m_timer->getState() != timer::TIMER_STATE::STOPPED)
 						timer->m_timer->stop();
 
-					// inicia ele novamente
+					// starts it again
 					timer->m_timer->start();
 
 #ifdef _DEBUG
@@ -821,14 +821,14 @@ void GrandPrix::timeIsOver(void* _quem) {
 
 				if (timer != nullptr && timer->m_timer != nullptr) {
 
-					// Para o tempo se ele n�o estiver parado
+					// Stops the timer if it is not stopped
 					if (timer->m_timer->getState() != timer::TIMER_STATE::STOPPED)
 						timer->m_timer->stop();
 
-					// Atualiza os dados do player que ele fez give up por que o tempo do hole  dele acabou
+					// Updates the player's data: he gave up because his hole time ran out
 					INIT_PLAYER_INFO("timeIsOver", "acabou o tempo do hole do player", s);
 
-					// Player ainda n�o terminou o hole
+					// Player has not finished the hole yet
 					if (pgi->finish_hole2 == 0u && pgi->finish_hole3 == 0u) {
 						
 						auto hole = m_course->findHole(pgi->hole);
@@ -839,7 +839,7 @@ void GrandPrix::timeIsOver(void* _quem) {
 
 						pgi->data.tacada_num = hole->getPar().total_shot;	// Give up
 				
-						// Fez time out
+						// Timed out
 						pgi->data.time_out = 1;
 						//pgi->data.giveup = 1;
 
@@ -848,7 +848,7 @@ void GrandPrix::timeIsOver(void* _quem) {
 								+ ", STATE=" + std::to_string(timer->m_timer->getState()) + "] do Player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 		#endif // _DEBUG
 
-						// Envia para o player que o tempo do hole acabou
+						// Sends to the player that the hole time is up
 						packet p((unsigned short)0x259);
 
 						p.addUint32(0);	// OK
@@ -857,16 +857,16 @@ void GrandPrix::timeIsOver(void* _quem) {
 					}
 				}
 
-				// Libera
+				// Release
 				m_lock_manager.unlock(s);
 
 			}catch (exception& e) {
 				UNREFERENCED_PARAMETER(e);
 
-				// Libera
+				// Release
 				m_lock_manager.unlock(s);
 
-				// Relan�a para o outro try..catch exibir a mensagem no log
+				// Rethrows so the outer try..catch shows the message in the log
 				throw;
 			}
 
@@ -884,10 +884,10 @@ void GrandPrix::requestCalculeRankPlace() {
 		m_player_order.clear();
 
 	for (auto& el : m_player_info)
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// except those who quit
 			m_player_order.push_back(el.second);
 
-	// Add os Bots
+	// Add the Bots
 	for (auto& el : m_bot)
 		m_player_order.push_back(&el.pi);
 
@@ -898,10 +898,10 @@ bool GrandPrix::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that stores the system local date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_grand_prix_state = true;
 	}
@@ -911,27 +911,27 @@ bool GrandPrix::init_game() {
 
 int GrandPrix::checkEndShotOfHole(player& _session) {
 
-	// Agora verifica o se ele acabou o hole e essas coisas
+	// Now checks whether he finished the hole and such
 	INIT_PLAYER_INFO("checkEndShotOfHole", "tentou verificar a ultima tacada do hole no jogo", &_session);
 
 	if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 
-		if (pgi->data.bad_condute >= 3) {	// Kika player deu 3 give up
+		if (pgi->data.bad_condute >= 3) {	// Kicks the player, he gave up 3 times
 
 			// !!@@@
-			// Tira o player da sala
+			// Removes the player from the room
 			return 2;
 		}
 
-		// Verifica se o player terminou jogo, fez o ultimo hole
+		// Checks whether the player finished the game, did the last hole
 		if (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole) {
 
-			// Resposta para o player que terminou o ultimo hole do Game
+			// Response for the player who finished the last hole of the Game
 			packet p((unsigned short)0x199);
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+			// Did the Last Hole, calculates Clear Bonus for the player
 			if (pgi->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 				if (!sMap::getInstance().isLoad())
@@ -962,7 +962,7 @@ void GrandPrix::requestTranslateSyncShotData(player& _session, ShotSyncData& _ss
 
 	try {
 
-		// !@ Teste
+		// !@ Test
 		//Sleep(5000);
 
 		auto s = findSessionByOID(_ssd.oid);
@@ -971,7 +971,7 @@ void GrandPrix::requestTranslateSyncShotData(player& _session, ShotSyncData& _ss
 			throw exception("[GrandPrix::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada do player[OID="
 					+ std::to_string(_ssd.oid) + "], mas o player nao existe nessa jogo. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_PRIX, 200, 0));
 
-		// Bloquea o player o tempo
+		// Blocks the player for the time
 		m_lock_manager.lock(&_session);
 
 		// Update Sync Shot Player
@@ -992,14 +992,14 @@ void GrandPrix::requestTranslateSyncShotData(player& _session, ShotSyncData& _ss
 			pgi->data.pang = _ssd.pang;
 			pgi->data.bonus_pang = _ssd.bonus_pang;
 
-			// J� s� na fun��o que come�a o tempo do player do turno
+			// Already only in the function that starts the player's turn time
 			pgi->data.tacada_num++;
 
 			if (_ssd.state == ShotSyncData::OUT_OF_BOUNDS || _ssd.state == ShotSyncData::UNPLAYABLE_AREA)
 				pgi->data.tacada_num++;
 
-			// Verifica se o Grand Prix tem regras especiais e se a regra � de n�o poder fazer uma tacada especial
-			// Se sim a penalidade � +1 na tacada do player
+			// Checks whether the Grand Prix has special rules and whether the rule forbids special shots
+			// If so, the penalty is +1 on the player's shot
 			if (m_gp.rule == eRULE::SPECIAL_SHOT && _ssd.state_shot.display.stDisplay.special_shot)
 				pgi->data.penalidade++;
 
@@ -1010,40 +1010,40 @@ void GrandPrix::requestTranslateSyncShotData(player& _session, ShotSyncData& _ss
 				throw exception("[GrandPrix::requestTranslateSyncShotData][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou sincronizar tacada no hole[NUMERO="
 						+ std::to_string((unsigned short)pgi->hole) + "], mas o numero do hole is invalid. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_PRIX, 12, 0));
 
-			// Conta j� a pr�xima tacada, no give up
+			// Counts the next shot already, on give up
 			if (!_ssd.state_shot.display.stDisplay.acerto_hole && hole->getPar().total_shot <= (pgi->data.tacada_num + 1)) {
 
-				// +1 que � give up, s� add se n�o passou o n�mero de tacadas
+				// +1 for give up, only add if the number of shots was not exceeded
 				if (pgi->data.tacada_num < hole->getPar().total_shot)
 					pgi->data.tacada_num++;
 
 				pgi->data.giveup = 1;
 
-				// Soma +1 no Bad Condute
+				// Adds +1 to Bad Conduct
   				pgi->data.bad_condute++;
 			}
 
-			// Acabou o hole para o tempo do hole do player
+			// The hole is over for the player's hole time
 			if (_ssd.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 
-				// seta flag finish hole2 do player
+				// sets the player's finish hole2 flag
 				pgi->finish_hole2 = 1u;
 
-				// Para o tempo do player
+				// Stops the player's time
 				stopTime(&_session);
 				stopTimeRule(&_session);
 			}
 
-			// aqui os achievement de power shot int32_t putt beam impact e etc
+			// achievements for power shot, int32_t putt, beam impact, etc here
 			update_sync_shot_achievement(_session, last_location);
 		}
 
-		// Libera
+		// Release
 		m_lock_manager.unlock(&_session);
 
 	}catch (exception& e) {
 
-		// Libera
+		// Release
 		m_lock_manager.unlock(&_session);
 
 		_smp::message_pool::getInstance().push(new message("[GrandPrix::requestTranslateSyncShotData][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -1056,7 +1056,7 @@ void GrandPrix::init_bots() {
 	uint32_t bots_counter_typeid = 0u;
 
 	if (m_players.size() == 30)
-		bots_counter_typeid = 0x6C4000B8u;	// No AI, All player
+		bots_counter_typeid = 0x6C4000B8u;	// No AI, All players
 	else if (m_players.size() == 1)
 		bots_counter_typeid = 0x6C4000B7u;	// All AI, 1 player
 
@@ -1070,13 +1070,13 @@ void GrandPrix::init_bots() {
 		}
 	}
 
-	// Inicializa os bots
+	// Initializes the bots
 	if (m_players.size() < 30) {
 
-		// Media score(Avg. Score) dos player(s) da sala
+		// Average score (Avg. Score) of the room's player(s)
 		auto mediaScoreAllPlayerRoom = std::accumulate(m_players.begin(), m_players.end(), 0.f, [](float _sum, player* _player) -> float {
 			
-			// invalid player, pula ele
+			// invalid player, skips it
 			if (_player == nullptr)
 				return _sum;
 
@@ -1084,7 +1084,7 @@ void GrandPrix::init_bots() {
 			return _sum + _player->m_pi.ui.getMediaScore();
 		}) / m_players.size();
 
-		// Function lambda que atualiza o bot score com base do Avg.Score da sala
+		// Lambda function that updates the bot score based on the room's Avg.Score
 		auto lambdaBotScoreByFactorAvgScoreRoom = [](IFF::GrandPrixData& _gp, float _room_avg_score) -> IFF::GrandPrixData::BOT {
 
 			IFF::GrandPrixData::BOT bot;
@@ -1132,7 +1132,7 @@ void GrandPrix::init_bots() {
 
 		}
 
-		// Verifica se tem a quantidade necessária de bots para sortear
+		// Checks whether there are enough bots to draw
 		if ((lottery.getLimitProbilidade() / 1000u) < qntd) {
 
 			auto rest_qntd = (qntd - (lottery.getLimitProbilidade() / 1000u));
@@ -1151,7 +1151,7 @@ void GrandPrix::init_bots() {
 			}
 		}
 
-		// Sortea os Bots e configura eles
+		// Draws the Bots and configures them
 		Lottery::LotteryCtx *lc = nullptr;
 		Lottery lottery_score((uint64_t)this);
 
@@ -1165,24 +1165,24 @@ void GrandPrix::init_bots() {
 		uint64_t pang = 0u;
 		uint64_t bonus_pang = 0u;
 
-		// Media do bot se ele fizer par em todos os holes
+		// Bot average if he makes par on all holes
 		float media_all_par_hole = m_course->getMediaAllParHolesBySeq(m_ri.qntd_hole);
 
-		// multiplicador de probabilidade depedendo do vento e do tipo
+		// probability multiplier depending on the wind and type
 		auto lambdaWindFactor = [](Hole& _hole, Bot::eTYPE_SCORE _type, bool _same_type) -> uint32_t {
 
 			uint32_t factor = 1u;
 
-			if (_hole.getWind().wind >= 0 && _hole.getWind().wind < 3 && _type == Bot::eTYPE_SCORE::MAX_SCORE)		// fraco
+			if (_hole.getWind().wind >= 0 && _hole.getWind().wind < 3 && _type == Bot::eTYPE_SCORE::MAX_SCORE)		// weak
 				factor = 2u;
-			else if (_hole.getWind().wind >= 3 && _hole.getWind().wind < 6 && _type == Bot::eTYPE_SCORE::MED_SCORE)	// medio
+			else if (_hole.getWind().wind >= 3 && _hole.getWind().wind < 6 && _type == Bot::eTYPE_SCORE::MED_SCORE)	// medium
 				factor = 4u;
-			else if (_hole.getWind().wind >= 6 && _hole.getWind().wind < 8 && _type == Bot::eTYPE_SCORE::MIN_SCORE)	// forte
+			else if (_hole.getWind().wind >= 6 && _hole.getWind().wind < 8 && _type == Bot::eTYPE_SCORE::MIN_SCORE)	// strong
 				factor = 6u;
 			else if (_hole.getWind().wind >= 8 && _type == Bot::eTYPE_SCORE::MIN_SCORE)								// super wind
 				factor = 7u;
 
-			// Chuva ou Neve
+			// Rain or Snow
 			if (_hole.getWeather() == 2 && (_type == Bot::eTYPE_SCORE::MED_SCORE || _type == Bot::eTYPE_SCORE::MIN_SCORE))
 				factor += 2u;
 
@@ -1196,7 +1196,7 @@ void GrandPrix::init_bots() {
 
 			if ((lc = lottery.spinRoleta(true)) != nullptr) {
 
-				// Clear Bot para new data
+				// Clear Bot for new data
 				bot.clear();
 
 				bot.id = (uint32_t)lc->value;
@@ -1210,10 +1210,10 @@ void GrandPrix::init_bots() {
 									);
 
 				bot.max_record = (bot.type_score == Bot::eTYPE_SCORE::MAX_SCORE 
-									? bot_score.score_max + (int)(sRandomGen::getInstance().rIbeMt19937_64_chrono() % 3)				// Esse pode variar 3 para baixo
+									? bot_score.score_max + (int)(sRandomGen::getInstance().rIbeMt19937_64_chrono() % 3)				// This one can vary 3 down
 									: (bot.type_score == Bot::eTYPE_SCORE::MED_SCORE
-										? bot_score.score_med + (int)(sRandomGen::getInstance().rIbeMt19937_64_chronoRange(0, 6) - 3)	// Esse pode variar 3 para cima e 3 para baixo
-										: bot_score.score_min + (int)(sRandomGen::getInstance().rIbeMt19937_64_chronoRange(0, 5) - 3)	// Esse pode variar 2 para cima e 3 para baixo
+										? bot_score.score_med + (int)(sRandomGen::getInstance().rIbeMt19937_64_chronoRange(0, 6) - 3)	// This one can vary 3 up and 3 down
+										: bot_score.score_min + (int)(sRandomGen::getInstance().rIbeMt19937_64_chronoRange(0, 5) - 3)	// This one can vary 2 up and 3 down
 									  )
 								);
 
@@ -1228,18 +1228,18 @@ void GrandPrix::init_bots() {
 
 						min_shot = (hole->getPar().par + ((m_ri.natural.stBit.short_game) ? -2/*Short Game*/ : hole->getPar().range_score[0]));
 
-						if (min_shot >= bot.med_shot_per_hole)	// Limite de menor score do hole
+						if (min_shot >= bot.med_shot_per_hole)	// Lower score limit of the hole
 							score = min_shot - hole->getPar().par;
-						else if (bot.med_shot_per_hole >= hole->getPar().total_shot) // Limite de maior score do hole
+						else if (bot.med_shot_per_hole >= hole->getPar().total_shot) // Upper score limit of the hole
 							score = hole->getPar().total_shot - hole->getPar().par;
 						else {
 
 							lottery_score.clear();
 
-							// Margem que tem para fazer um score melhor
+							// Margin available to make a better score
 							diff_min_shot = (bot.med_shot_per_hole - min_shot);
 
-							// Margem que tem para fazer um score pior
+							// Margin available to make a worse score
 							diff_max_shot = (hole->getPar().total_shot - bot.med_shot_per_hole);
 
 							if (bot.med_shot_per_hole < hole->getPar().par) {
@@ -1298,14 +1298,14 @@ void GrandPrix::init_bots() {
 							}
 						}
 
-						// Pang e Bonus pang
+						// Pang and Bonus pang
 						pang = sRandomGen::getInstance().rIbeMt19937_64_chrono() % (351ull * (hole->getWeather() == 2 ? 2 : 1));
 						bonus_pang = sRandomGen::getInstance().rIbeMt19937_64_chrono() % 200ull;
 
-						// Insere o Hole (i) do Bot
+						// Inserts the Bot's Hole (i)
 						bot.hole.push_back(Bot::Hole(m_ri.course & 0x7Fu, hole->getNumero(), score, pang, bonus_pang));
 
-						// Incrementa no total
+						// Increments the total
 						bot.record += score;
 						bot.pang_total += pang;
 						bot.bonus_pang_total += bonus_pang;
@@ -1333,7 +1333,7 @@ void GrandPrix::init_bots() {
 						+ std::to_string(bot.id) + ", MAX_RECORD: " + std::to_string(bot.max_record) + ", RECORD: " + std::to_string(bot.record) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-				// Add bot ao vector
+				// Add bot to the vector
 				m_bot.push_back(bot);
 
 			}	// If lottery.spinRoleta
@@ -1341,7 +1341,7 @@ void GrandPrix::init_bots() {
 		}	// For Rest of Bot
 
 		// Sort Bot
-		// Ordena os Bots pelo menor record e maior pang
+		// Sorts the Bots by lowest record and highest pang
 		std::sort(m_bot.begin(), m_bot.end(), [](auto& _1, auto& _2) {
 
 			if (_1.record == _2.record)
@@ -1361,7 +1361,7 @@ void GrandPrix::consomeTicket() {
 		
 		try {
 
-			// Tira o ticket Grand Prix do player
+			// Removes the Grand Prix ticket from the player
 			pWi = el->m_pi.findWarehouseItemByTypeid(m_gp.ticket._typeid);
 
 			if (pWi == nullptr)
@@ -1392,7 +1392,7 @@ void GrandPrix::consomeTicket() {
 					+ "], mas nao conseguiu excluir o Ticket[TYPEID=" + std::to_string(item._typeid) + "] do player. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GRAND_PRIX, 11, 0x5900203));
 
 
-			// Update Grand Prix Ticket do player no jogo
+			// Update the player's Grand Prix Ticket in the game
 			packet p((unsigned short)0x216);
 
 			p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -1427,7 +1427,7 @@ void GrandPrix::requestFinishExpGame() {
 		float stars = m_course->getStar();
 		int32_t exp = 0;
 
-		// Exp padr�o de hole do Grand Prix
+		// Default hole exp of the Grand Prix
 		switch (m_ri.qntd_hole) {
 		case 3:
 			exp = 6;
@@ -1452,7 +1452,7 @@ void GrandPrix::requestFinishExpGame() {
 
 		exp = (int)(exp * stars);
 
-		// Grand Prix Rookie d� um pouco menos de experi�ncia
+		// Grand Prix Rookie gives a little less experience
 		if (sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid))
 			exp = (int)(exp * 0.92f);
 
@@ -1462,11 +1462,11 @@ void GrandPrix::requestFinishExpGame() {
 				&& m_player_order[i]->flag == PlayerGameInfo::eFLAG_GAME::FINISH 
 				&& (_session = findSessionByUID(m_player_order[i]->uid)) != nullptr) {
 
-				// Rate do player e do server
+				// Player and server rate
 				exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 
-				// Exp que o player ganhou
-				if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+				// Exp the player earned
+				if (m_player_order[i]->level < 70/*Last level does not gain exp*/)
 					m_player_order[i]->data.exp = exp;
 
 				_smp::message_pool::getInstance().push(new message("[GrandPrix::requestFinishExpGame][Log] player[UID=" + std::to_string(m_player_order[i]->uid)
@@ -1513,13 +1513,13 @@ void GrandPrix::requestMakeRankPlayerDisplayCharacter() {
 #endif
 				}
 
-				// Add para o vector
+				// Add to the vector
 				m_rank_player_display_char.push_back(rpdc);
 			}
 		}
 	}
 
-	// Classifica do menor para o maior
+	// Sorts from lowest to highest
 	std::sort(m_rank_player_display_char.begin(), m_rank_player_display_char.end(), [](auto& _1, auto& _2) {
 		return _1.rank < _2.rank;
 	});
@@ -1527,9 +1527,9 @@ void GrandPrix::requestMakeRankPlayerDisplayCharacter() {
 
 void GrandPrix::finish() {
 
-	m_game_init_state = 2;	// Acabou
+	m_game_init_state = 2;	// Finished
 
-	// J� est� com os bots incluso, fiz um overide dessa fun��o
+	// Already includes the bots, I overrode this function
 	requestCalculeRankPlace();
 
 	requestMakeRankPlayerDisplayCharacter();
@@ -1547,38 +1547,38 @@ void GrandPrix::finish() {
 
 void GrandPrix::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now handled directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Rain count achievement here
 
-	achievement_top_3_1st(_session);				// Se o Player ficou em Top 3 add +1 ao contador de top 3, e se ele ficou em primeiro add +1 ao do primeiro
+	achievement_top_3_1st(_session);				// If the Player placed in the Top 3 add +1 to the top 3 counter, and if he placed first add +1 to the first place counter
 
 	INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response game finished - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response game finished - Scoreboard
 	sendPlacar(_session);
 
-	// Aqui � os 3 player do podio, mas s� player bot n�o vai n�o
+	// Here are the 3 podium players, but bot players are not included
 	sendRankPlayerDisplayCharacter(_session);
 
-	// Trof�u que o player ganhou
+	// Trophy the player won
 	sendTrofel(_session);
 
-	// Envia os pr�mios que o player ganhou no Grand Prix
+	// Sends the prizes the player won in the Grand Prix
 	sendRewardRankAndGrandPrix(_session);
 
-	// Verifica se o player concluiu esse Grand Prix em um posi��o melhor, 
-	// se sim atualiza no server, db e no jogo
+	// Checks whether the player completed this Grand Prix in a better position, 
+	// if so, updates on the server, db and in the game
 	requestSaveGrandPrixClear(_session);
 }
 
@@ -1595,10 +1595,10 @@ void GrandPrix::requestSaveGrandPrixClear(player& _session) {
 
 		auto position = std::distance(m_player_order.begin(), it) + 1;
 
-		// Atualiza Grand Prix Clear do player
+		// Updates the player's Grand Prix Clear
 		if (_session.m_pi.updateGrandPrixClear(m_gp.typeid_link, (int)position)) {
 
-			// Atualizou o player ficou em um posi��o melhor no Grand Prix
+			// Updated, the player placed in a better position in the Grand Prix
 			_smp::message_pool::getInstance().push(new message("[GrandPrix::requestSaveGrandPrixClear][Log] Player[UID=" + std::to_string(position) 
 					+ "] ficou em um posicao melhor no Grand Prix[TYPEID=" + std::to_string(m_gp._typeid) + ", TYPEID_LINK=" 
 					+ std::to_string(m_gp.typeid_link) + ", POSITION=" + std::to_string(position) + "].", CL_FILE_LOG_AND_CONSOLE));
@@ -1638,7 +1638,7 @@ void GrandPrix::sendTrofel(player& _session) {
 		return;
 	}
 
-	// D� os Trof�us para os 3 primeiros Player, bots est�o exclu�dos
+	// Gives the Trophies to the first 3 Players, bots are excluded
 	if (!m_gp_reward.empty()) {
 
 		IFF::GrandPrixRankReward gprr{ 0 };
@@ -1654,10 +1654,10 @@ void GrandPrix::sendTrofel(player& _session) {
 
 			try {
 
-				// Esse aqui se n�o tiver o index ele lan�a exception::out_of_range
+				// This one throws exception::out_of_range if the index does not exist
 				gprr = m_gp_reward.at(std::distance(m_player_order.begin(), it));
 
-				// Inicializa o Trof�u
+				// Initializes the Trophy
 				item.type = 2;
 				item.id = -1;
 				item._typeid = gprr.trophy_typeid;
@@ -1667,11 +1667,11 @@ void GrandPrix::sendTrofel(player& _session) {
 				// Update on Server and Database
 				if (item_manager::addItem(item, _session, 0, 0) >= item_manager::RetAddItem::TYPE::T_SUCCESS) {
 
-					// Adicionou o Trof�u com sucesso para o player
+					// Trophy successfully added to the player
 					_smp::message_pool::getInstance().push(new message("[GrandPrix::sendTrofel][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 							+ "] ganhou Grand Prix Trofel[TYPEID=" + std::to_string(gprr.trophy_typeid) + "] na Posicao[RANK=" + std::to_string(gprr.rank) + "].", CL_FILE_LOG_AND_CONSOLE));
 
-					// Update Trof�u on Game
+					// Update Trophy on Game
 					p.init_plain((unsigned short)0x25C);
 
 					p.addUint32(0);	// OK;
@@ -1680,7 +1680,7 @@ void GrandPrix::sendTrofel(player& _session) {
 
 					packet_func::session_send(p, &_session, 1);
 
-					// Update Item on Game (Trof�u)
+					// Update Item on Game (Trophy)
 					p.init_plain((unsigned short)0x216);
 
 					p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -1717,7 +1717,7 @@ void GrandPrix::sendTrofel(player& _session) {
 
 void GrandPrix::sendRankPlayerDisplayCharacter(player& _session) {
 
-	// 3 Players do P�dio
+	// 3 Podium Players
 	packet p((unsigned short)0x258);
 
 	p.addUint32(0u); // OK
@@ -1735,7 +1735,7 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 	if (m_player_order.size() <= 0)
 		requestCalculeRankPlace();
 
-	// Encontra o player no vector de rank do Game
+	// Finds the player in the Game's rank vector
 	auto it = std::find_if(m_player_order.begin(), m_player_order.end(), [&](auto& _el) {
 		return _el->uid == _session.m_pi.uid;
 	});
@@ -1760,9 +1760,9 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 
 					item.qntd = 1;
 					item.STDA_C_ITEM_QNTD = 1;
-					item.STDA_C_ITEM_TIME = (short)m_gp.reward.time[i]; // Time em dias
-					item.flag_time = 4;	// Dias
-					item.flag = 0x40;	// Dias
+					item.STDA_C_ITEM_TIME = (short)m_gp.reward.time[i]; // Time in days
+					item.flag_time = 4;	// Days
+					item.flag = 0x40;	// Days
 
 				}else {
 
@@ -1770,16 +1770,16 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 					item.STDA_C_ITEM_QNTD = (short)item.qntd;
 				}
 
-				// Verifica se j� possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
+				// Checks whether the player already has the item; for a caddie item, checks for the caddie first and then for the caddie item
 				if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(item._typeid)) {
 							
 					if (item_manager::isSetItem(item._typeid)) {
 								
-						auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*N�o verifica o Level*/);
+						auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Does not check the Level*/);
 
 						if (!v_stItem.empty()) {
 							
-							// Verifica se pode ter mais de 1 item e se n�o ver se n�o tem o item
+							// Checks whether more than 1 item is allowed, and if not, checks that the player does not have the item
 							for (auto& el : v_stItem)
 								if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 									v_item.push_back(el);
@@ -1788,7 +1788,7 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 
 					}else {
 
-						// Add o Item Normal
+						// Add the Normal Item
 						v_item.push_back(item);
 					}
 
@@ -1801,7 +1801,7 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 
 		try {
 
-			// Lan�a uma exception::out_of_range se o index do rank n�o existir
+			// Throws exception::out_of_range if the rank index does not exist
 			gprr = m_gp_reward.at(std::distance(m_player_order.begin(), it));
 
 			for (auto i = 0u; i < 5u; ++i) {
@@ -1818,9 +1818,9 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 
 						item.qntd = 1;
 						item.STDA_C_ITEM_QNTD = 1;
-						item.STDA_C_ITEM_TIME = (short)gprr.reward.time[i];	// Time em dias
-						item.flag_time = 4;	// Dias
-						item.flag = 0x40;	// Dias
+						item.STDA_C_ITEM_TIME = (short)gprr.reward.time[i];	// Time in days
+						item.flag_time = 4;	// Days
+						item.flag = 0x40;	// Days
 
 					}else {
 
@@ -1828,16 +1828,16 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 						item.STDA_C_ITEM_QNTD = (short)item.qntd;
 					}
 
-					// Verifica se j� possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
+					// Checks whether the player already has the item; for a caddie item, checks for the caddie first and then for the caddie item
 					if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(item._typeid)) {
 							
 						if (item_manager::isSetItem(item._typeid)) {
 								
-							auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*N�o verifica o Level*/);
+							auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Does not check the Level*/);
 
 							if (!v_stItem.empty()) {
 							
-								// Verifica se pode ter mais de 1 item e se n�o ver se n�o tem o item
+								// Checks whether more than 1 item is allowed, and if not, checks that the player does not have the item
 								for (auto& el : v_stItem)
 									if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 										v_item.push_back(el);
@@ -1846,7 +1846,7 @@ void GrandPrix::sendRewardRankAndGrandPrix(player& _session) {
 
 						}else {
 
-							// Add o Item Normal
+							// Add the Normal Item
 							v_item.push_back(item);
 						}
 
@@ -1905,25 +1905,25 @@ int GrandPrix::changeTurn(player& _session) {
 
 			INIT_PLAYER_INFO("changeTurn", "tentou trocar o turno do player", &_session);
 
-			// Agora verifica o se ele acabou o hole e essas coisas
+			// Now checks whether he finished the hole and such
 			if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup || pgi->data.time_out) {
 
-				if (pgi->data.bad_condute >= 3) {	// Kika player deu 3 give up
+				if (pgi->data.bad_condute >= 3) {	// Kicks the player, he gave up 3 times
 
 					// !!@@@
-					// Tira o player da sala
+					// Removes the player from the room
 					return 2;
 				}
 
-				// Verifica se o player terminou jogo, fez o ultimo hole
+				// Checks whether the player finished the game, did the last hole
 				if (m_course->findHoleSeq(pgi->hole) == m_ri.qntd_hole) {
 
-					// Resposta para o player que terminou o ultimo hole do Game
+					// Response for the player who finished the last hole of the Game
 					packet p((unsigned short)0x199);
 
 					packet_func::session_send(p, &_session, 1);
 
-					// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+					// Did the Last Hole, calculates Clear Bonus for the player
 					if (pgi->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 						if (!sMap::getInstance().isLoad())
@@ -1946,7 +1946,7 @@ int GrandPrix::changeTurn(player& _session) {
 			}else
 				clearAllShotPacket(_session);
 
-		} // Wait ele ainda n�o terminou de enviar todos os pacotes da tacada
+		} // Wait, he has not finished sending all the shot packets yet
 
 	}catch (exception& e) {
 
@@ -1986,7 +1986,7 @@ void GrandPrix::clearAllShotPacket(player& _session) {
 		
 		INIT_PLAYER_INFO("clearAllShotPacket", "tentou limpar as flag de sincronizacao de tacada do player", &_session);
 
-		// Limpa as veriaveis da tacada
+		// Clears the shot variables
 		m_lock_manager.lock(&_session);
 
 		pgi->init_shot = 0u;
@@ -2132,7 +2132,7 @@ void GrandPrix::clear_all_clear_hole() {
 
 			pgi->finish_hole = 0u;
 
-			// Zera o acerta hole tbm que ele terminou o hole
+			// Also zeroes the hole-hit flag since he finished the hole
 			pgi->shot_sync.state_shot.display.stDisplay.acerto_hole = 0u;
 			pgi->data.giveup = 0u;
 
@@ -2171,7 +2171,7 @@ void GrandPrix::clear_timers() {
 		m_timer_manager_rule.unlock();
 		// End Time Rule
 
-		// Limpa os timers
+		// Clears the timers
 		m_timer_manager.clear();
 		m_timer_manager_rule.clear();
 
@@ -2189,7 +2189,7 @@ void GrandPrix::requestCalculeShotSpinningCube(player& _session, ShotSyncData& _
 
 	try {
 
-		// S� calcula se n�o for short game e n�o for grand prix rookie
+		// Only calculates if it is not short game and not grand prix rookie
 		if (!m_ri.natural.stBit.short_game && !(sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid)))
 			calcule_shot_to_spinning_cube(_session, _ssd);
 
@@ -2204,7 +2204,7 @@ void GrandPrix::requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) {
 
 	try {
 
-		// S� calcula se n�o for short game e n�o for grand prix rookier
+		// Only calculates if it is not short game and not grand prix rookie
 		if (!m_ri.natural.stBit.short_game && !(sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid)))
 			calcule_shot_to_coin(_session, _ssd);
 
@@ -2226,33 +2226,33 @@ bool GrandPrix::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 6/*packet06 pacote que termina o game*/) {
+		if (option == 6/*packet06 packet that ends the game*/) {
 
 			if (m_grand_prix_state)
-				finish_grand_prix(_session, 1);	// Termina sem ter acabado de jogar
+				finish_grand_prix(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
-			// Rookie Grand Prix n�o altera o info do player s� achievement
+			// Rookie Grand Prix does not change the player's info, only achievements
 			if (!(sIff::getInstance().getGrandPrixAba(m_gp._typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE && sIff::getInstance().isGrandPrixNormal(m_gp._typeid))) {
 				
-				// Salve o record se o camp acabou e o player n�o terminou todos os holes tbm tem que salvar o record [OK][Feito]
+				// Save the record if the camp ended and the player did not finish all holes, the record must also be saved [OK][Done]
 				requestSaveRecordCourse(_session, 52/*Grand Prix*/, (m_ri.qntd_hole == 18 && (m_course->findHoleSeq(pgi->hole) == 18 || pgi->flag == PlayerGameInfo::eFLAG_GAME::END_GAME)) ? 1 : 0);
 
 				requestSaveInfo(_session, 0);
 			}
 
-			// D� Exp para o Caddie E Mascot Tamb�m
-			if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+			// Gives Exp to the Caddie AND Mascot too
+			if (pgi->data.exp > 0) {	// only add exp if greater than 0
 
-				// Add Exp para o player
-				_session.addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+				// Add Exp to the player
+				_session.addExp(pgi->data.exp, false/*Does not need the packet to change level*/);
 
-				// D� Exp para o Caddie Equipado
-				if (_session.m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+				// Gives Exp to the Equipped Caddie
+				if (_session.m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 					_session.addCaddieExp(pgi->data.exp);
 
-				// D� Exp para o Mascot Equipado
+				// Gives Exp to the Equipped Mascot
 				if (_session.m_pi.ei.mascot_info != nullptr)
 					_session.addMascotExp(pgi->data.exp);
 			}
@@ -2260,31 +2260,31 @@ bool GrandPrix::finish_game(player& _session, int option) {
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+			// Response sent every time a game ends, I do not know what it is yet, only the HIO Event does not have this one
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+			// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not check whether the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
@@ -2293,11 +2293,11 @@ bool GrandPrix::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means he finished the camp
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
-			m_game_init_state = 2;	// ACABOU
+			// Flag of the game that finished
+			m_game_init_state = 2;	// FINISHED
 
 		}
 	}
@@ -2311,7 +2311,7 @@ int GrandPrix::end_time(void* _arg1, void* _arg2) {
 
 	try {
 		
-		// Tempo hole acabou
+		// Hole time is up
 		game->timeIsOver(_arg2);
 
 	}catch (exception& e) {
@@ -2328,7 +2328,7 @@ int GrandPrix::end_time_rule(void* _arg1, void* _arg2) {
 
 	try {
 
-		// Tempo rule acabou
+		// Rule time is up
 		game->timeRuleIsOver(_arg2);
 
 	}catch (exception& e) {
@@ -2349,10 +2349,10 @@ void GrandPrix::startTimeRule(void* _quem) {
 
 			player *p = reinterpret_cast< player* >(_quem);
 
-			// Para Tempo se j� estiver 1 timer
+			// Stops the timer if there is already one
 			auto timer = m_timer_manager_rule.findTimer(p);
 
-			// N�o tem um timer criado ainda, cria um para ele
+			// There is no timer created yet, creates one for it
 			if (timer == nullptr || timer->m_timer == nullptr) {
 
 				if (timer == nullptr && (timer = m_timer_manager_rule.insertTimer(p, nullptr)) == nullptr)
@@ -2362,8 +2362,8 @@ void GrandPrix::startTimeRule(void* _quem) {
 				// Job
 				job j(GrandPrix::end_time_rule, this, _quem);
 
-				// Cria o timer rule
-				timer->m_timer = sgs::gs::getInstance().makeTime(time_milli * 1000/*milliseconds*/, j);	// j� est� em minutos milliseconds
+				// Creates the rule timer
+				timer->m_timer = sgs::gs::getInstance().makeTime(time_milli * 1000/*milliseconds*/, j);	// already in minutes milliseconds
 
 #ifdef _DEBUG
 				_smp::message_pool::getInstance().push(new message("[GrandPrix::startTimeRule][Log] Criou o Timer Rule[Tempo=" + std::to_string(time_milli) + "seg"
@@ -2372,13 +2372,13 @@ void GrandPrix::startTimeRule(void* _quem) {
 			
 			}else {
 
-				// J� tem um timer, reseta ele e inicia novamente
+				// There is already a timer, resets it and starts again
 				if (timer->m_timer != nullptr) {
 					
 					if (timer->m_timer->getState() != timer::TIMER_STATE::STOPPED)
 						timer->m_timer->stop();
 
-					// inicia ele novamente
+					// starts it again
 					timer->m_timer->start();
 
 #ifdef _DEBUG
@@ -2448,14 +2448,14 @@ void GrandPrix::timeRuleIsOver(void* _quem) {
 
 				if (timer != nullptr && timer->m_timer != nullptr) {
 
-					// Para o tempo se ele n�o estiver parado
+					// Stops the timer if it is not stopped
 					if (timer->m_timer->getState() != timer::TIMER_STATE::STOPPED)
 						timer->m_timer->stop();
 
-					// Atualiza os dados do player que o tempo de Rule acabou
+					// Updates the player's data: the Rule time ran out
 					INIT_PLAYER_INFO("timeRuleIsOver", "acabou o tempo do hole do player", s);
 
-					// Penalidade por que ele n�o tacou antes de acabar o tempo Rule
+					// Penalty because he did not shoot before the Rule time ran out
 					if (m_game_init_state == 1 && pgi->init_shot == 0u)
 						pgi->data.penalidade++;
 
@@ -2474,7 +2474,7 @@ void GrandPrix::timeRuleIsOver(void* _quem) {
 
 				m_lock_manager.unlock(s);
 
-				// Relan�a para o outro try..catch para mandar a msg no log
+				// Rethrows to the outer try..catch to send the msg to the log
 				throw;
 			}
 

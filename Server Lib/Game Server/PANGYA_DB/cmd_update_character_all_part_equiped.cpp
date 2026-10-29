@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_all_part_equiped.cpp
-// Criado em 25/03/2018 as 13:17 por Acrisio
-// Implementa��o da classe CmdUpdateCharacterAllPartEquiped
+// File cmd_update_character_all_part_equiped.cpp
+// Created on 25/03/2018 at 13:17 by Acrisio
+// Implementation of class CmdUpdateCharacterAllPartEquiped
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCharacterAllPartEquiped::~CmdUpdateCharacterAllPartEquiped() {
 
 void CmdUpdateCharacterAllPartEquiped::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa aqui por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 
@@ -44,7 +44,7 @@ response* CmdUpdateCharacterAllPartEquiped::prepareConsulta(database& _db) {
 	for (is = 0u; is < (sizeof(m_ci.auxparts) / sizeof(m_ci.auxparts[0])); ++is)
 		q += "|" + std::to_string(m_ci.auxparts[is]);
 
-	// Depois o Cutin tem que colocar os 4, aqui s� est� 1 que era o antigo, que eu fiz
+	// Later the Cutin has to set all 4, here there is only 1, which was the old one, which I made
 	for (is = 0u; is < (sizeof(m_ci.cut_in) / sizeof(m_ci.cut_in[0])); ++is)
 		q += "|" + std::to_string(m_ci.cut_in[is]);
 

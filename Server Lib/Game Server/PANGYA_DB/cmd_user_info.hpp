@@ -1,6 +1,6 @@
-// Arquivo cmd_user_info.hpp
-// Criado em 18/03/2018 as 13:34 por Acrisio
-// Definição da classe CmdUserInfo
+// File cmd_user_info.hpp
+// Created on 18/03/2018 at 13:34 by Acrisio
+// Definition of class CmdUserInfo
 
 #pragma once
 #ifndef _STDA_CMD_USER_INFO_HPP

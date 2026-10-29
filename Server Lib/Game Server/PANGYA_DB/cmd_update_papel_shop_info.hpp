@@ -1,6 +1,6 @@
-// Arquivo cmd_update_papel_shop_info.hpp
-// Criado em 09/07/2018 as 21:44 por Acrisio
-// Defini��o da classe CmdUpdatePapelShopInfo
+// File cmd_update_papel_shop_info.hpp
+// Created on 09/07/2018 at 21:44 by Acrisio
+// Definition of class CmdUpdatePapelShopInfo
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_PAPEL_SHOP_INFO_HPP

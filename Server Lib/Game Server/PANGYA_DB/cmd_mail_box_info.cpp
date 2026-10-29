@@ -1,6 +1,6 @@
-// Arquivo cmd_mail_box_info.cpp
-// Criado em 24/03/2018 as 14:49 por Acrisio
-// Implementa��o da classe CmdMailBoxInfo
+// File cmd_mail_box_info.cpp
+// Created on 24/03/2018 at 14:49 by Acrisio
+// Implementation of the class CmdMailBoxInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -42,7 +42,7 @@ void CmdMailBoxInfo::lineResult(result_set::ctx_res* _result, uint32_t _index_re
 				// Translate Msg From Encoded Char not printed
 				auto _msg = verifyAndTranslate(_result->data[2], 2/*fixed size*/);
 
-				// !@ Provav�l erro de vila��o de acesso
+				// !@ Probable access violation error
 				if (_msg.empty())
 #if defined(_WIN32)
 					memcpy_s(mb.msg, sizeof(mb.msg), _result->data[2], (strlen(_result->data[2]) > sizeof(mb.msg) ? sizeof(mb.msg) : strlen(_result->data[2])));
@@ -87,7 +87,7 @@ void CmdMailBoxInfo::lineResult(result_set::ctx_res* _result, uint32_t _index_re
 		m_total_page = IFNULL(atoi, _result->data[0]);
 
 		// Calcule page from emails
-		m_total_page = (m_total_page % 20u == 0) /* Valor exato de p�ginas*/
+		m_total_page = (m_total_page % 20u == 0) /* Exact number of pages*/
 							? (m_total_page / 20u) 
 							: (m_total_page / 20u + 1u);
 	}

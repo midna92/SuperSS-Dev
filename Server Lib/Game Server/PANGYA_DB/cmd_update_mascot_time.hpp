@@ -1,6 +1,6 @@
-// Arquivo cmd_update_mascot_time.hpp
-// Criado em 29/05/2018 as 21:23 por Acrisio
-// Definie��o da classe CmdUpdateMascotTime
+// File cmd_update_mascot_time.hpp
+// Created on 29/05/2018 at 21:23 by Acrisio
+// Definition of class CmdUpdateMascotTime
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_MASCOT_TIME_HPP

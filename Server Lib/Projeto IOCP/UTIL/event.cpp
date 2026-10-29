@@ -1,6 +1,6 @@
-// Arquivo event.cpp
-// Criado em 12/03/2021 as 09:45 por Acrisio
-// Implementação da classe Event
+// File event.cpp
+// Created on 12/03/2021 at 09:45 by Acrisio
+// Implementation of the class Event
 
 #include "event.hpp"
 
@@ -100,8 +100,8 @@ bool Event::pulse() {
     if (!is_good())
         return false;
 
-    // No Windows API essa função está deprecated, só tem para suporte de versões antigas do Windows
-    // Então só vou setar o evento
+    // In the Windows API this function is deprecated, it only exists to support old Windows versions
+    // So I will just set the event
     return set();
 };
 
@@ -117,7 +117,7 @@ uint32_t Event::waitMultipleEvent(uint32_t _count, std::vector< Event* > _events
     timespec ts;
 
     if (_waitForAll)
-        _dwMilliseconds = INFINITE; // Espera por todos
+        _dwMilliseconds = INFINITE; // Wait for all
 
     try {
 
@@ -189,7 +189,7 @@ uint32_t Event::waitMultipleEvent(uint32_t _count, std::vector< Event* > _events
 
     }catch (...) {
 
-        // Fail, exception c+(acho que o linux pega também, ou é signal)
+        // Fail, c++ exception (I think Linux catches it too, or it is a signal)
         dwWait = WAIT_FAILED;
     }
 

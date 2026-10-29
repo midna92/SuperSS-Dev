@@ -1,6 +1,6 @@
-// Arquivo cmd_add_card.hpp
-// Criado em 19/05/2018 as 15:23 por Acrisio
-// Defini��o da classe CmdAddCard
+// File cmd_add_card.hpp
+// Created on 19/05/2018 at 15:23 by Acrisio
+// Definition of the class CmdAddCard
 
 #pragma once
 #ifndef _STDA_CMD_ADD_CARD_HPP

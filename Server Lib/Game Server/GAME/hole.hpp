@@ -1,6 +1,6 @@
-// Arquivo hole.hpp
-// Criado em 12/08/2018 as 10:44 por Acrisio
-// Defini��o da classe Hole
+// File hole.hpp
+// Created on 12/08/2018 at 10:44 by Acrisio
+// Definition of class Hole
 
 #pragma once
 #ifndef _STDA_HOLE_HPP

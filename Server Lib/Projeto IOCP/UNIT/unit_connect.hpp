@@ -1,6 +1,6 @@
-// Arquivo unit_connect.hpp
-// Criado em 02/12/2018 as 14:28 por Acrisio
-// Definição da classe unit_connect
+// File unit_connect.hpp
+// Created on 02/12/2018 at 14:28 by Acrisio
+// Definition of the class unit_connect
 
 #pragma once
 #ifndef _STDA_UNIT_CONNECT_HPP
@@ -168,7 +168,7 @@ namespace stdA {
 
 			virtual void start();
 
-			// Está conectado com o Auth Server
+			// Is connected to the Auth Server
 			virtual bool isLive();
 
 		protected:

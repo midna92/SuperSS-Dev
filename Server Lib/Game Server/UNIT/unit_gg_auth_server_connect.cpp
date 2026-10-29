@@ -1,6 +1,6 @@
-// Arquivo unit_gg_auth_server_connect.cpp
-// Criado em 02/02/2021 as 23:48 por Acrisio
-// Implementação da classe unit_gg_auth_server_connect
+// File unit_gg_auth_server_connect.cpp
+// Created on 02/02/2021 at 23:48 by Acrisio
+// Implementation of the unit_gg_auth_server_connect class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -32,7 +32,7 @@
 }, this); \
 
 #define INIT_PACKET_SERVER_FAZ_NADA(_num) funcs_sv.addPacketCall((_num), [](void* _arg1, void* _arg2) { \
-		/* Não faz nada */ \
+		/* Does nothing */ \
 	return 0; \
 }, this); \
 
@@ -48,7 +48,7 @@ unit_gg_auth_server_connect::unit_gg_auth_server_connect(IUnitGGAuthServer& _own
 
 	try {
 
-		// Inicializar Config do arquivo ini
+		// Initialize Config from the ini file
 		config_init();
 
 		/// ---------- Packets ---------
@@ -158,23 +158,23 @@ unit_gg_auth_server_connect::unit_gg_auth_server_connect(IUnitGGAuthServer& _own
 
 		END_PACKET_INIT("00E");*/
 
-		/// ----------- Pacotes -----------
+		// ----------- Packets -----------
 
 		INIT_PACKET_SERVER_FAZ_NADA(0x01);
 
-		// Pacote002
+		// Packet002
 		INIT_PACKET_SERVER_FAZ_NADA(0x02);
 
-		// Pacote003
+		// Packet003
 		INIT_PACKET_SERVER_FAZ_NADA(0x3);
 
-		// Pacote004
+		// Packet004
 		INIT_PACKET_SERVER_FAZ_NADA(0x4);
 
-		// Pacote005
+		// Packet005
 		INIT_PACKET_SERVER_FAZ_NADA(0x5);
 
-		// Pacote006
+		// Packet006
 		INIT_PACKET_SERVER_FAZ_NADA(0x6);
 
 		/*// Pacote007
@@ -381,7 +381,7 @@ void unit_gg_auth_server_connect::sendCheckAnswer(uint32_t _socket_id, GG_AUTH_D
 
 void unit_gg_auth_server_connect::onHeartBeat() {
 
-	// Aqui Faz a verificação se está connectado com o Game Guard auth server
+	// Here it checks whether it is connected to the Game Guard auth server
 	try {
 
 		if (m_state != STATE::INITIALIZED)
@@ -445,6 +445,6 @@ void unit_gg_auth_server_connect::config_init() {
 	m_unit_ctx.ip = m_reader_ini.readString("GGAUTHSERVER", "IP");
 	m_unit_ctx.port = m_reader_ini.readInt("GGAUTHSERVER", "PORT");
 
-	// Carregou com sucesso
+	// Loaded successfully
 	m_unit_ctx.state = true;
 }

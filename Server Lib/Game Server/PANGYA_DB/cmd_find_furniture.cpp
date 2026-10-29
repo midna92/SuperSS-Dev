@@ -1,6 +1,6 @@
-// Arquivo cmd_find_furniture.cpp
-// Criado em 26/05/2018 as 14:06 por Acrisio
-// Implementa��o da classe CmdFindFurniture
+// File cmd_find_furniture.cpp
+// Created on 26/05/2018 at 14:06 by Acrisio
+// Implementation of the class CmdFindFurniture
 
 #if defined(_WIN32)
 #pragma pack(1)

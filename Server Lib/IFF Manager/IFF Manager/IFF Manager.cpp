@@ -1,4 +1,4 @@
-// IFF Manager.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
+// IFF Manager.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #if defined(_WIN32)
@@ -71,7 +71,7 @@ int main(int argc, char* argv[]) {
 
 		if (escolha == 1) {
 
-			// Gera Lista de Item Base que estão ativos nos shop
+			// Generates List of Base Items that are active in the shop
 			for (auto& el : iff.getBall())
 				if (el.second.shop.flag_shop.uFlagShop.stFlagShop.is_saleable)
 					all.insert(std::make_pair(el.second._typeid, el.second));
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
 			
 			std::ofstream out("data.raw", std::ofstream::binary);
 
-			// Verifica se abriu o arquivo, para salvar os dados
+			// Checks if the file was opened, to save the data
 			if (out.good()) {
 
 				out.write((const char*)&head, sizeof(IFF::Head));
@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
 				for (auto& el : all)
 					out.write((const char*)&el.second, sizeof(IFF::Base));
 
-				// Fecha o arquivo que terminou de salvar
+				// Closes the file that finished saving
 				out.close();
 			}
 
@@ -144,10 +144,10 @@ int main(int argc, char* argv[]) {
 			IFF::Head head{ 0 };
 			IFF::Base base{ 0 };
 
-			// Ler lista e modifica no iff
+			// Reads the list and modifies the iff
 			std::ifstream in("data.raw", std::ifstream::binary);
 
-			// Verifica se abriu o arquivo, para poder recuperar os dados nele
+			// Checks if the file was opened, to be able to recover the data from it
 			if (in.good()) {
 
 				in.read((char*)&head, sizeof(IFF::Head));
@@ -166,7 +166,7 @@ int main(int argc, char* argv[]) {
 								+ "] no data.raw e diferente do numero do cabecario[" + std::to_string(head.count_element) + "].", CL_FILE_LOG_AND_CONSOLE));
 				}
 
-				// Fecha o arquivo que terminou de recuperar os dados dele
+				// Closes the file that finished recovering its data
 				in.close();
 			}
 
@@ -181,10 +181,10 @@ int main(int argc, char* argv[]) {
 						// Flag Shop
 						common->shop.flag_shop.uFlagShop.us_flag_shop = el.second.shop.flag_shop.uFlagShop.us_flag_shop;
 						
-						// Desconto Shop
+						// Shop Discount
 						common->shop.sale_price = el.second.shop.sale_price;
 						
-						// Preço Shop
+						// Shop Price
 						common->shop.price = el.second.shop.price;
 
 					}else
@@ -192,25 +192,25 @@ int main(int argc, char* argv[]) {
 								+ "(0x" + hex_util::ltoaToHex(el.second._typeid) + ")]", CL_FILE_LOG_AND_CONSOLE));
 				}
 
-				// Save todas as modificações no iff de volta
+				// Save all the modifications back to the iff
 				iff.saveAll();
 			}
 		
 		}else if (escolha == 3) {
 
-			// Tirar todas as datas dos SetItem no shop
+			// Remove all dates from the SetItems in the shop
 			for (auto& el : iff.getSetItem())
 				if (el.second.shop.flag_shop.uFlagShop.stFlagShop.is_saleable && iff.getItemSubGroupIdentify21(el.second._typeid) == 1/*Set Character Shop*/)
 					el.second.date.clear();
 
-			// Salva
+			// Saves
 			iff.saveAll();
 		
 		}else if (escolha == 4) {
 		
 			ItemPrice item_price{ 0 };
 
-			// Gera Lista de preços de Itens de tempo que estão ativos no shop
+			// Generates List of prices of timed Items that are active in the shop
 			for (auto& el : iff.getCaddieItem()) {
 				
 				if (el.second.shop.flag_shop.uFlagShop.stFlagShop.is_saleable) {
@@ -229,7 +229,7 @@ int main(int argc, char* argv[]) {
 
 			for (auto& el : iff.getItem()) {
 
-				// Item por tempo ativo no shop
+				// Timed item active in the shop
 				if (el.second.shop.flag_shop.uFlagShop.stFlagShop.is_saleable 
 						&& (el.second.shop.flag_shop.time_shop.active || el.second.shop.flag_shop.time_shop.dia > 0)) {
 
@@ -287,7 +287,7 @@ int main(int argc, char* argv[]) {
 
 			std::ofstream out("data_price.raw", std::ofstream::binary);
 
-			// Verifica se abriu o arquivo, para salvar os dados
+			// Checks if the file was opened, to save the data
 			if (out.good()) {
 
 				out.write((const char*)&head, sizeof(IFF::Head));
@@ -295,7 +295,7 @@ int main(int argc, char* argv[]) {
 				for (auto& el : all_price)
 					out.write((const char*)&el.second, sizeof(ItemPrice));
 
-				// Fecha o arquivo que terminou de salvar
+				// Closes the file that finished saving
 				out.close();
 			}
 
@@ -304,10 +304,10 @@ int main(int argc, char* argv[]) {
 			IFF::Head head{ 0 };
 			ItemPrice item_price{ 0 };
 
-			// Ler lista e modifica no iff
+			// Reads the list and modifies the iff
 			std::ifstream in("data_price.raw", std::ifstream::binary);
 
-			// Verifica se abriu o arquivo, para poder recuperar os dados nele
+			// Checks if the file was opened, to be able to recover the data from it
 			if (in.good()) {
 
 				in.read((char*)&head, sizeof(IFF::Head));
@@ -326,7 +326,7 @@ int main(int argc, char* argv[]) {
 								+ "] no data_price.raw e diferente do numero do cabecario[" + std::to_string(head.count_element) + "].", CL_FILE_LOG_AND_CONSOLE));
 				}
 
-				// Fecha o arquivo que terminou de recuperar os dados dele
+				// Closes the file that finished recovering its data
 				in.close();
 			}
 
@@ -415,7 +415,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
-				// Save todas as modificações no iff de volta
+				// Save all the modifications back to the iff
 				iff.saveAll();
 			}
 		
@@ -427,7 +427,7 @@ int main(int argc, char* argv[]) {
 			for (auto& el : iff.getCadieMagicBox())
 				el.seq = ++seq;
 
-			// Salva as modificações no CaddieMagicBox.iff e salva o .iff
+			// Saves the modifications in CaddieMagicBox.iff and saves the .iff
 			iff.saveCadieMagicBox();
 		
 		}else if (escolha == 7) {
@@ -746,7 +746,7 @@ int main(int argc, char* argv[]) {
 			// Save JSON
 			auto newlineReplace = [](std::string _s) {
 
-				// Check Barra inversa
+				// Check Backslash
 				auto index = _s.find('\\');
 
 				while (index != std::string::npos) {
@@ -764,7 +764,7 @@ int main(int argc, char* argv[]) {
 					index = _s.find('\n', index + 2);
 				}
 
-				// Check Aspas composta
+				// Check Compound quote
 				index = _s.find('\"');
 
 				while (index != std::string::npos) {
@@ -1053,7 +1053,7 @@ int main(int argc, char* argv[]) {
 						disable_ps.push_back(tmp);
 				}
 
-				// Ativa card Volume 2 ao personal shop
+				// Enables card Volume 2 in the personal shop
 				if (el.second.volume == 2 || el.second._typeid == 0x7C40003B || el.second._typeid == 0x7C800009 || el.second._typeid == 0x7C800047)
 					el.second.shop.flag_shop.uFlagShop.stFlagShop.can_send_mail_and_personal_shop = 1u;
 
@@ -1179,7 +1179,7 @@ int main(int argc, char* argv[]) {
 							+ std::to_string(common->_typeid) + ", 1, 0)", CL_FILE_LOG_TEST_AND_CONSOLE));
 			}
 
-			// Itens db json
+			// Items db json
 			IFF::Desc *desc = nullptr;
 			IFF::Base *common = nullptr;
 
@@ -1300,7 +1300,7 @@ int main(int argc, char* argv[]) {
 			// Save JSON
 			auto newlineReplace = [](std::string _s) {
 
-				// Check Barra inversa
+				// Check Backslash
 				auto index = _s.find('\\');
 
 				while (index != std::string::npos) {
@@ -1318,7 +1318,7 @@ int main(int argc, char* argv[]) {
 					index = _s.find('\n', index + 2);
 				}
 
-				// Check Aspas composta
+				// Check Compound quote
 				index = _s.find('\"');
 
 				while (index != std::string::npos) {
@@ -1417,7 +1417,7 @@ int main(int argc, char* argv[]) {
 				"common_flush_02", "common_flush_01", "common_fc_z28_02", "common_fc_z28_01", "common_fc_z22-02", "common_fc_z22-01", "common_fc_z18", "common_fc_a_z37-03", "common_fc_a_z37-02", "common_fc_a_z37-01", "common_black_devilear"
 			};
 
-			// Encontra all PartItem by Icon name
+			// Finds all PartItem by Icon name
 			auto lambda_find_all_item_by_icon = [&iff](std::string& _icon) -> std::vector< IFF::Part* > {
 
 				std::vector< IFF::Part* > v_part;
@@ -1493,16 +1493,16 @@ int main(int argc, char* argv[]) {
 	return 0;
 }
 
-// Executar programa: Ctrl + F5 ou Menu Depurar > Iniciar Sem Depuração
-// Depurar programa: F5 ou menu Depurar > Iniciar Depuração
+// Run program: Ctrl + F5 or Menu Debug > Start Without Debugging
+// Debug program: F5 or menu Debug > Start Debugging
 
-// Dicas para Começar: 
-//   1. Use a janela do Gerenciador de Soluções para adicionar/gerenciar arquivos
-//   2. Use a janela do Team Explorer para conectar-se ao controle do código-fonte
-//   3. Use a janela de Saída para ver mensagens de saída do build e outras mensagens
-//   4. Use a janela Lista de Erros para exibir erros
-//   5. Ir Para o Projeto > Adicionar Novo Item para criar novos arquivos de código, ou Projeto > Adicionar Item Existente para adicionar arquivos de código existentes ao projeto
-//   6. No futuro, para abrir este projeto novamente, vá para Arquivo > Abrir > Projeto e selecione o arquivo. sln
+// Tips for Getting Started: 
+//   1. Use the Solution Explorer window to add/manage files
+//   2. Use the Team Explorer window to connect to source control
+//   3. Use the Output window to see build output and other messages
+//   4. Use the Error List window to view errors
+//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
+//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
 
 
 //int erro = 0, flag_zip = ZIP_FL_ENC_UTF_8;
@@ -1514,12 +1514,12 @@ int main(int argc, char* argv[]) {
 //
 //std::string s_tmp, arq_name;
 //	
-//// copia o path copia para string de wstring
+//// copies the path copy to string from wstring
 //s_tmp.assign(path_copy.begin(), path_copy.end());
 //
-//// cria os arquivo zip, se já tiver pula para o próximo
+//// creates the zip files, if it already has one skips to the next
 //for (unsigned int i = 0; i < list_tmp.size(); i++) {
-//	std::cout << "Zipando arquivo: " << list_tmp[i] << std::endl;
+//	std::cout << "Zipping file: " << list_tmp[i] << std::endl;
 //	arq_name = list_tmp[i].substr(list_tmp[i].find_last_of("/\\")+1);
 //	list_tmp[i] = s_tmp + list_tmp[i];
 //
@@ -1528,7 +1528,7 @@ int main(int argc, char* argv[]) {
 //			if (s != NULL)
 //				zip_source_free(s);
 //			else
-//				std::cout << "Erro ao criar um arquivo zip. File: " << list_tmp[i] << std::endl;
+//				std::cout << "Error creating a zip file. File: " << list_tmp[i] << std::endl;
 //	}else
 //		std::cout << "ErroZip : " << erro << "File: " << list_tmp[i] << std::endl;
 //

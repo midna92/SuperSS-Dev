@@ -1,6 +1,6 @@
-// Arquivo guild_room_manager.hpp
-// Criado em 26/12/2019 as 20:51 por Acrisio
-// Defini��o da classe GuildRoomManager
+// File guild_room_manager.hpp
+// Created on 26/12/2019 at 20:51 by Acrisio
+// Definition of class GuildRoomManager
 
 #pragma once
 #ifndef STDA_GUILD_ROOM_MANAGER_HPP
@@ -49,13 +49,13 @@ namespace stdA {
 
 			void init_duplas();
 
-			// Verifica se tem a quantidade de jogadores para come�ar o Guild Battle
+			// Checks whether there are enough players to start the Guild Battle
 			int isGoodToStart();
 
-			// Verifica se sobrou s� players de uma guild s�
+			// Checks whether only players of a single guild are left
 			bool oneGuildRest();
 
-			// update dados guilds
+			// update guilds data
 			void update();
 
 			void calcGuildWin();

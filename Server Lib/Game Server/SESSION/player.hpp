@@ -1,6 +1,6 @@
-// Arquivo player.hpp
-// Criado em 07/03/2018 as 21:58 por Acrisio
-// Definição da classe player polimofismo
+// File player.hpp
+// Created on 07/03/2018 at 21:58 by Acrisio
+// Definition of class player polymorphism
 
 #pragma once
 #ifndef _STDA_PLAYER_HPP
@@ -32,16 +32,16 @@ namespace stdA {
 			virtual char* getNickname() override;
 			virtual char* getID() override;
 
-			// Exp para o player
+			// Exp for the player
 			virtual void addExp(uint32_t _exp, bool _upt_on_game = false);
 
-			// Add (Soma) Exp para Caddie equipado
+			// Add (Sum) Exp to the equipped Caddie
 			virtual void addCaddieExp(uint32_t _exp);
 
-			// Add (Soma) Exp para o Mascot equipado
+			// Add (Sum) Exp to the equipped Mascot
 			virtual void addMascotExp(uint32_t _exp);
 
-			// Add Exp Estático
+			// Add Static Exp
 			static void addExp(uint32_t _uid, uint32_t _exp);
 
 			// Pang
@@ -56,13 +56,13 @@ namespace stdA {
 			virtual void addMoeda(uint64_t _pang, uint64_t _cookie);
 			virtual void consomeMoeda(uint64_t _pang, uint64_t _cookie);
 
-			// Salva o Log no banco de dados de Gastos"Agora tem CP Pouch(ganha)" de CP(Cookie Point)
+			// Saves the Log in the database of Spending "Now has CP Pouch (earned)" of CP (Cookie Point)
 			virtual void saveCPLog(CPLog& _cp_log);
 
-			// Salva o Log no banco de dados de Gastos"Agora tem CP Pouch(ganha)" de CP(Cookie Point)
+			// Saves the Log in the database of Spending "Now has CP Pouch (earned)" of CP (Cookie Point)
 			static void saveCPLog(uint32_t _uid, CPLog& _cp_log);
 
-			// Verifica se Character os itens equipados são validos
+			// Checks whether the Character's equipped items are valid
 			bool checkCharacterEquipedPart(CharacterInfo& ci);
 			bool checkCharacterEquipedAuxPart(CharacterInfo& ci);
 			bool checkCharacterEquipedCutin(CharacterInfo& ci);
@@ -83,14 +83,14 @@ namespace stdA {
 			void equipDefaultBall(UserEquip& _ue);
 			void equipDefaultBallPremiumUser(UserEquip& _ue);
 
-			// Verifica se um AuxPart está equipado em todos Characters do player
-			// Retorna um vector com ponteiro para cada Character Info se ele estiver equipado
-			// Retorna vector vazio se ele não estiver equipado em nenhum character do player
+			// Checks whether an AuxPart is equipped on any of the player's Characters
+			// Returns a vector with a pointer to each Character Info if it is equipped
+			// Returns an empty vector if it is not equipped on any of the player's characters
 			std::vector< CharacterInfo* > isAuxPartEquiped(uint32_t _typeid);
 
-			// Verifica se um Part está equipado em algum Character do player
-			// Retorna um ponteiro para o Character Info se ele estiver equipo
-			// Retorna nullptr se ele não estiver equipado
+			// Checks whether a Part is equipped on any of the player's Characters
+			// Returns a pointer to the Character Info if it is equipped
+			// Returns nullptr if it is not equipped
 			CharacterInfo* isPartEquiped(uint32_t _typeid);
 
 		protected:

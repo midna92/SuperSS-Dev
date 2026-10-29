@@ -1,6 +1,6 @@
-// Arquivo guild_battle.cpp
-// Criado em 28/12/2019 as 17:37 por Acrisio
-// Implementa��o da classe GuildBattle
+// File guild_battle.cpp
+// Created on 28/12/2019 at 17:37 by Acrisio
+// Implementation of class GuildBattle
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -20,7 +20,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[GuildBattle::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GUILD_BATTLE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[GuildBattle::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GUILD_BATTLE, 1, 4)); \
@@ -30,7 +30,7 @@ using namespace stdA;
 GuildBattle::GuildBattle(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie, GuildRoomManager& _guild_manager)
 	: TourneyBase(_players, _ri, _rv, _channel_rookie), m_guild_manager(_guild_manager) {
 
-	// Atualiza Treasure Hunter System Course
+	// Updates Treasure Hunter System Course
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
@@ -40,9 +40,9 @@ GuildBattle::GuildBattle(std::vector< player* >& _players, RoomInfoEx& _ri, Rate
 		_smp::message_pool::getInstance().push(new message("[GuildBattle::GuildBattle][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
 	for (auto& el : m_players) {
@@ -51,18 +51,18 @@ GuildBattle::GuildBattle(std::vector< player* >& _players, RoomInfoEx& _ri, Rate
 
 		initAchievement(*el);
 
-		// Counter Item do Team Tournament, para n�o ficar sem fazer esse achievement por que n�o tem team tournament no Fresh UP!
-		// Vou colocar para o player fazer esse achievement com o Guild Battle, j� que ele � um tournament de team tamb�m
+		// Team Tournament Counter Item, so that this achievement is not impossible to get because there is no team tournament in Fresh UP!
+		// I will let the player do this achievement with Guild Battle, since it is also a team tournament
 		pgi->sys_achieve.incrementCounter(0x6C40003Au/*Team Tournament*/);
 
-		// Counter Item do Guild Battle
+		// Guild Battle Counter Item
 		pgi->sys_achieve.incrementCounter(0x6C40003Bu/*Guild Battle*/);
 	}
 
-	// inicializa as duplas do Guild Battle
+	// initializes the Guild Battle duplas
 	init_duplas();
 
-	// Inicializa o Guild Battle
+	// Initializes the Guild Battle
 	m_guild_battle_state = init_game();
 }
 
@@ -105,12 +105,12 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left, Quit
 
 			Dupla *dup = nullptr;
 			uint32_t dup_p_index = 0u;
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
@@ -118,13 +118,13 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Guild Battle
+				requestFinishItemUsedGame(*(*it));	// Saves items used in Guild Battle
 
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Update dados da dupla
+				// Update dupla data
 				dup = m_guild_manager.findDupla(*_session);
 
 				if (dup != nullptr) {
@@ -141,7 +141,7 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 						}
 					}
 
-					// Atualiza dados do GuildRoomManager
+					// Updates GuildRoomManager data
 					m_guild_manager.update();
 
 					// send update player dupla guild
@@ -151,21 +151,21 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 					_smp::message_pool::getInstance().push(new message("[GuildBattle::deletePlayer][WARNING] Player[UID=" + std::to_string(_session->m_pi.uid) 
 							+ "], nao esta em nenhuma dupla no Guild Battle na sala[NUMERO=" + std::to_string(m_ri.numero) + "]. Bug.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Response Player left the Game, removes him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo
+				// Response Player left the game
 				sendUpdateState(*_session, opt);
 
-				// Att dados de mapas e info do player
+				// Updates map data and player info
 				sendUpdateInfoAndMapStatistics(*_session, -1);
 
 			}else
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1);
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1);
 
 			// Delete Player
 			m_players.erase(it);
@@ -181,12 +181,12 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 #endif
 						&& el.first != _session && el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING
 						&& findSessionByUID(el.second->uid) != nullptr)
-						finish_guild_battle(*el.first, 0);	// Acabou o Guild Battle
+						finish_guild_battle(*el.first, 0);	// The Guild Battle is over
 
-				ret = true;	// Termina o Guild Battle
+				ret = true;	// Ends the Guild Battle
 			
-			}else if (dup != nullptr) // Termina o jogo para o outro player da dupla
-				finish_guild_battle(*dup->p[!dup_p_index], 0/*Termina o jogo para o outro player da dupla*/);
+			}else if (dup != nullptr) // Ends the game for the other player of the dupla
+				finish_guild_battle(*dup->p[!dup_p_index], 0/*Ends the game for the other player of the dupla*/);
 
 		}else
 			_smp::message_pool::getInstance().push(new message("[GuildBattle::deletePlayer][WARNING] player ja foi excluido do game.", CL_FILE_LOG_AND_CONSOLE));
@@ -201,7 +201,7 @@ bool GuildBattle::deletePlayer(player *_session, int _option) {
 
 		_smp::message_pool::getInstance().push(new message("[GuildBattle::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -230,7 +230,7 @@ void GuildBattle::sendInitialData(player& _session) {
 		if (__atomic_add_fetch(&m_sync_send_init_data, 1u, __ATOMIC_RELAXED) == m_players.size()) {
 #endif
 
-			// Zera Variavel Volatile(atomic)
+			// Zeroes Volatile(atomic) Variable
 #if defined(_WIN32)
 			InterlockedExchange(&m_sync_send_init_data, 0u);
 #elif defined(__linux__)
@@ -248,7 +248,7 @@ void GuildBattle::sendInitialData(player& _session) {
 			//packet_func::session_send(p, &_session, 1);
 			packet_func::game_broadcast(*this, p, 1);
 
-			// Guild Battle Duplas
+			// Guild Battle duplas
 			m_guild_manager.initPacketDuplas(p);
 
 			packet_func::game_broadcast(*this, p, 1);
@@ -297,8 +297,8 @@ void GuildBattle::changeHole(player& _session) {
 	if (checkEndGame(_session))
 		finish_guild_battle(_session, 0);
 	else
-		// Resposta terminou o hole
-		updateFinishHole(_session, 1);	// Terminou
+		// Response: hole finished
+		updateFinishHole(_session, 1);	// Finished
 }
 
 void GuildBattle::finishHole(player& _session) {
@@ -321,27 +321,27 @@ void GuildBattle::finish_guild_battle(player& _session, int _option) {
 
 		if (pgi->flag == PlayerGameInfo::eFLAG_GAME::PLAYING) {
 
-			// Calcula os pangs que o player ganhou
+			// Calculates the pangs the player earned
 			requestCalculePang(_session);
 
-			// Atualizar os pang do player se ele estiver com assist ligado, e for maior que beginner E
+			// Update the player's pang if assist is on and the level is above Beginner E
 			updatePlayerAssist(_session);
 
 			if (m_game_init_state == 1 && _option == 0) {
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response: hole finished
 				updateFinishHole(_session, 1);
 
-				// Resposta Terminou o Jogo, ou Saiu
+				// Response: finished the game, or left
 				sendUpdateState(_session, 2);
 
 				// Achievement Counter
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-			}else if (m_game_init_state == 1 && _option == 1) {	// Acabou o Tempo
+			}else if (m_game_init_state == 1 && _option == 1) {	// Time is up
 
 				auto dup = m_guild_manager.findDupla(_session);
 
@@ -359,22 +359,22 @@ void GuildBattle::finish_guild_battle(player& _session, int _option) {
 							dup->dados[!dup_p_index][i].score = 2;
 					}
 
-					// Atualiza dados das guilds
+					// Updates guild data
 					m_guild_manager.update();
 
-					// Finish hole Dupla
+					// Finish hole dupla
 					sendFinishHoleDupla(_session);
 				}
 
-				requestFinishHole(_session, 1);		// Acabou o Tempo
+				requestFinishHole(_session, 1);		// Time is up
 
-				// Mostra msg que o player terminou o jogo
+				// Shows msg that the player finished the game
 				sendFinishMessage(_session);
 
-				// Resposta terminou o hole
+				// Response: hole finished
 				updateFinishHole(_session, 0);
 
-				// Resposta para acabou o tempo do Guild Battle
+				// Response for Guild Battle time is up
 				sendTimeIsOver(_session);
 			
 			}
@@ -386,7 +386,7 @@ void GuildBattle::finish_guild_battle(player& _session, int _option) {
 		GetLocalTime(&pgi->time_finish);
 
 		if ((AllCompleteGameAndClear() || AllTeamQuit()) && m_game_init_state == 1)
-			finish();	// Envia os pacotes que termina o jogo Ex: 0xCE, 0x79 e etc
+			finish();	// Sends the packets that end the game, e.g.: 0xCE, 0x79, etc
 	}
 }
 
@@ -398,11 +398,11 @@ void GuildBattle::timeIsOver() {
 
 		for (auto& el : m_player_info) {
 
-			// S� os que n�o acabaram
+			// Only those who did not finish
 			if (el.second->flag == PlayerGameInfo::eFLAG_GAME::PLAYING && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				finish_guild_battle(*_session, 1/*Acabou Tempo*/);
+				finish_guild_battle(*_session, 1/*Time Up*/);
 			else if (el.second->flag == PlayerGameInfo::eFLAG_GAME::FINISH && (_session = findSessionByUID(el.second->uid)) != nullptr)
-				// Resposta para acabou o tempo do Guild Battle
+				// Response for Guild Battle time is up
 				sendTimeIsOver(*_session);
 		}
 
@@ -417,13 +417,13 @@ bool GuildBattle::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// Cria o timer do Guild Battle
+		// Creates the Guild Battle timer
 		startTime();
 
-		// variavel que salva a data local do sistema
+		// variable that stores the system local date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_guild_battle_state = true;
 	}
@@ -443,7 +443,7 @@ void GuildBattle::requestFinishExpGame() {
 
 			hole_seq = (int)m_course->findHoleSeq(m_player_order[i]->hole);
 
-			// Ele est� no primeiro hole e n�o acertou ele, s� da experi�ncia se ele tiver acertado o hole
+			// He is on the first hole and did not hit it, only gives experience if he hit the hole
 			if (hole_seq == 1 && !m_player_order[i]->shot_sync.state_shot.display.stDisplay.acerto_hole)
 				hole_seq = 0;
 
@@ -455,7 +455,7 @@ void GuildBattle::requestFinishExpGame() {
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 					exp = (int)(exp * (1 - (i / m_player_info.size())));
 
-					if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+					if (m_player_order[i]->level < 70/*Last level does not gain exp*/)
 						m_player_order[i]->data.exp = exp;
 				}
 
@@ -467,7 +467,7 @@ void GuildBattle::requestFinishExpGame() {
 					exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 					exp = (int)(exp * (1 - (i / m_player_info.size())));
 
-					if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+					if (m_player_order[i]->level < 70/*Last level does not gain exp*/)
 						m_player_order[i]->data.exp = exp;
 				}
 			}
@@ -482,13 +482,13 @@ void GuildBattle::requestFinishExpGame() {
 
 void GuildBattle::finish() {
 
-	m_game_init_state = 2;	// Acabou
+	m_game_init_state = 2;	// Finished
 
 	requestCalculeRankPlace();
 
 	m_guild_manager.calcGuildWin();
 
-	requestSaveGuildData();					// Salva os dados da guild
+	requestSaveGuildData();					// Saves the guild data
 
 	requestFinishExpGame();
 
@@ -516,29 +516,29 @@ bool GuildBattle::AllTeamQuit() {
 
 void GuildBattle::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now handled directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Rain count achievement here
 
-	achievement_top_3_1st(_session);				// Se o Player ficou em Top 3 add +1 ao contador de top 3, e se ele ficou em primeiro add +1 ao do primeiro
+	achievement_top_3_1st(_session);				// If the Player placed in the Top 3 add +1 to the top 3 counter, and if he placed first add +1 to the first place counter
 
-	// Resposta terminou game - Drop Itens
+	// Response game finished - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response game finished - Scoreboard
 	sendPlacar(_session);
 }
 
 void GuildBattle::requestSaveGuildData() {
 
-	// Salva os dados das Guild que jogaram o Guild Battle
+	// Saves the data of the Guilds that played the Guild Battle
 	m_guild_manager.saveGuildsData();
 }
 
@@ -586,15 +586,15 @@ void GuildBattle::sendPlacar(player& _session) {
 
 	p.addUint32(m_ri.trofel);
 
-	p.addUint8(0u);	// Trofel Que o Player Ganhou
-	p.addUint8(m_guild_manager.getGuildWin());	// Team Win, 0 - vermelho, 1 - Azul, 2 nenhum
+	p.addUint8(0u);	// Trophy the Player Won
+	p.addUint8(m_guild_manager.getGuildWin());	// Team Win, 0 - red, 1 - Blue, 2 none
 
 	auto dup = m_guild_manager.findDupla(_session);
 
 	if (dup != nullptr) {
 		p.addUint32((dup->p[0] == &_session) ? dup->pang_win[0] : dup->pang_win[1]);
 		p.addUint32((dup->p[0] == &_session) ? dup->sumScoreP1() : dup->sumScoreP2());
-	}else // 2 valores de int32 com o valor 0
+	}else // 2 int32 values with value 0
 		p.addUint64(0u);
 
 	auto guild = m_guild_manager.findGuildByTeam(Guild::eTEAM::RED);
@@ -611,11 +611,11 @@ void GuildBattle::sendPlacar(player& _session) {
 	else
 		p.addUint32(0u);
 
-	// Medalhas
+	// Medals
 	for (auto i = 0u; i < (sizeof(m_medal) / sizeof(m_medal[0])); ++i)
 		p.addBuffer(&m_medal[i], sizeof(Medal));
 
-	// N�o sei se � a geral ou se � s� a do Tourney, (DEIXEI A GERAL) todas as medalhas que ele tem
+	// I do not know whether it is the general one or only the Tourney one, (I LEFT THE GENERAL ONE) all the medals he has
 	p.addBuffer(&_session.m_pi.ui.medal, sizeof(stMedal));
 
 	packet_func::session_send(p, &_session, 1);
@@ -633,26 +633,26 @@ bool GuildBattle::finish_game(player& _session, int option) {
 
 		packet p;
 
-		if (option == 6/*packet06 pacote que termina o game*/) {
+		if (option == 6/*packet06 packet that ends the game*/) {
 
 			if (m_guild_battle_state)
-				finish_guild_battle(_session, 1);	// Termina sem ter acabado de jogar
+				finish_guild_battle(_session, 1);	// Ends without having finished playing
 
 			INIT_PLAYER_INFO("finish_game", "tentou terminar o jogo", &_session);
 
 			requestSaveInfo(_session, 0);
 
-			// D� Exp para o Caddie E Mascot Tamb�m
-			if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+			// Gives Exp to the Caddie AND Mascot too
+			if (pgi->data.exp > 0) {	// only add exp if greater than 0
 
-				// Add Exp para o player
-				_session.addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+				// Add Exp to the player
+				_session.addExp(pgi->data.exp, false/*Does not need the packet to change level*/);
 
-				// D� Exp para o Caddie Equipado
-				if (_session.m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+				// Gives Exp to the Equipped Caddie
+				if (_session.m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 					_session.addCaddieExp(pgi->data.exp);
 
-				// D� Exp para o Mascot Equipado
+				// Gives Exp to the Equipped Mascot
 				if (_session.m_pi.ei.mascot_info != nullptr)
 					_session.addMascotExp(pgi->data.exp);
 			}
@@ -660,34 +660,34 @@ bool GuildBattle::finish_game(player& _session, int option) {
 			// Update Info Map Statistics
 			sendUpdateInfoAndMapStatistics(_session, 0);
 
-			// Resposta Treasure Hunter Item
+			// Response Treasure Hunter Item
 			requestSendTreasureHunterItem(_session);
 
-			// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+			// Update Mascot Info ON GAME, if the player has a mascot equipped
 			if (_session.m_pi.ei.mascot_info != nullptr) {
 				packet_func::pacote06B(p, &_session, &_session.m_pi, 8);
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Achievement Aqui
+			// Achievement Here
 			pgi->sys_achieve.finish_and_update(_session);
 
-			// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+			// Response sent every time a game ends, I do not know what it is yet, only the HIO Event does not have this one
 			p.init_plain((unsigned short)0x244);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+			// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not check whether the others have it too
 			p.init_plain((unsigned short)0x24F);
 
 			p.addUint32(0);	// OK
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta Update Pang
+			// Response Update Pang
 			p.init_plain((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
@@ -696,11 +696,11 @@ bool GuildBattle::finish_game(player& _session, int option) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Colocar o finish_game Para 1 quer dizer que ele acabou o camp
+			// Setting finish_game to 1 means he finished the camp
 			pgi->finish_game = 1;
 
-			// Flag do game que terminou
-			m_game_init_state = 2;	// ACABOU
+			// Flag of the game that finished
+			m_game_init_state = 2;	// FINISHED
 
 		}
 	}

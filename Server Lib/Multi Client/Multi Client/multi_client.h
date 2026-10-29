@@ -1,6 +1,6 @@
-// Arquivo multi_client.h
-// Criado em 19/12/2017 por Acrisio
-// Definição da classe multi_client
+// File multi_client.h
+// Created on 19/12/2017 by Acrisio
+// Definition of class multi_client
 
 #pragma once
 #ifndef _STDA_MULTI_CLIENT

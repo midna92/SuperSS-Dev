@@ -1,6 +1,6 @@
-// Arquivo cmd_add_login_reward_player.hpp
-// Criado em 27/10/2020 as 19:24 por Acrisio
-// Defini��o da classe CmdAddLoginRewardPlayer
+// File cmd_add_login_reward_player.hpp
+// Created on 27/10/2020 at 19:24 by Acrisio
+// Definition of the class CmdAddLoginRewardPlayer
 
 #pragma once
 #ifndef _STDA_CMD_ADD_LOGIN_REWARD_PLAYER_HPP

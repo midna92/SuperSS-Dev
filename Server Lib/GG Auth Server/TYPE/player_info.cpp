@@ -1,6 +1,6 @@
-// Arquivo player_info.cpp
-// Criado em 02/02/2021 as 17:12 por Acrisio
-// Implementação da classe PlayerInfo
+// File player_info.cpp
+// Created on 02/02/2021 at 17:12 by Acrisio
+// Implementation of class PlayerInfo
 
 #pragma pack(1)
 #include "player_info.hpp"

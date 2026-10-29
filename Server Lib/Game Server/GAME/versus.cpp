@@ -1,6 +1,6 @@
-// Arquivo versus.cpp
-// Criado em 20/10/2018 as 22:49 por Acrisio
-// Implementa��o da classe Versus
+// File versus.cpp
+// Created on 20/10/2018 at 22:49 by Acrisio
+// Implementation of the Versus class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -30,7 +30,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[Versus::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[Versus::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 1, 4)); \
@@ -40,7 +40,7 @@ using namespace stdA;
 Versus::Versus(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie)
 	: VersusBase(_players, _ri, _rv, _channel_rookie), m_versus_state(false) {
 
-	// Atualiza Treasure Hunter System Course
+	// Updates Treasure Hunter System Course
 	/*if (!TreasureHunterSystem::isLoad())
 		TreasureHunterSystem::load();*/
 	if (!sTreasureHunterSystem::getInstance().isLoad())
@@ -53,13 +53,13 @@ Versus::Versus(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv,
 		_smp::message_pool::getInstance().push(new message("[Versus::Versus][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		//TreasureHunterSystem::updateCoursePoint(*course, -1);	// -1 point for each game started
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info must be initialized
 	initAllPlayerInfo();
 
-	// Last 5 Players Play, tem que salvar no server e no DB, and Achievement
+	// Last 5 Players Play, must be saved on the server and in the DB, and Achievement
 	for (auto& el : m_players) {
 
 		// Achievement
@@ -68,7 +68,7 @@ Versus::Versus(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv,
 		initAchievement(*el);
 
 		pgi->sys_achieve.incrementCounter(0x6C40001Du/*Versus*/);
-		// Fim de init Achievement
+		// End of init Achievement
 
 		for (auto& el2 : m_players) {
 
@@ -85,10 +85,10 @@ Versus::Versus(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv,
 
 Versus::~Versus() {
 
-	// Para o tempo do player Turn
+	// Stops the player Turn time
 	stopTime();
 
-	// Salva os dados de todos os jogadores
+	// Saves the data of all players
 	for (auto& el : m_players)
 		finish_game(*el);
 
@@ -104,7 +104,7 @@ bool Versus::deletePlayer(player* _session, int _option) {
 
 	try {
 
-		// Evitar deadlock com a thread checkVersusTurn - Bloqueia
+		// Avoid deadlock with the checkVersusTurn thread - Lock
 		m_state_vs.lock();
 
 #if defined(_WIN32)
@@ -116,42 +116,42 @@ bool Versus::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left Quit
 
 			INIT_PLAYER_INFO("deletePlayer", "tentou sair do jogo", _session);
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
-				// Player Turn Para o tempo dele
+				// Player Turn Stops his time
 				if (m_player_turn == pgi)
 					stopTime();
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+				requestFinishItemUsedGame(*(*it));	// Saves items used in the Tourney
 
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				//pgi->flag = PlayerGameInfo::eFLAG_GAME::QUIT;
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Response Player left the Game, removes him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo MSG
+				// Response Player left the game MSG
 				p.init_plain((unsigned short)0x40);
 
-				p.addUint8(2);	// Player Saiu Msg
+				p.addUint8(2);	// Player Left Msg
 
 				p.addString((*it)->m_pi.nickname);
 
-				p.addUint16(0);	// size Msg, n�o precisa de msg o pangya j� manda na opt 2
+				p.addUint16(0);	// size Msg, no need for a msg, pangya already sends it in opt 2
 
 				packet_func::vector_send(p, sessions, 1);
 
@@ -161,34 +161,34 @@ bool Versus::deletePlayer(player* _session, int _option) {
 
 			}else if (m_game_init_state == 2 && !pgi->finish_game) {
 	
-				// Acabou
+				// Finished
 				requestSaveInfo(*(*it), 0);
 			}
 			
-			// Deleta o player por give up ou time out, ele conta os achievements dele, tem o counter item 0x6C400004u Normal Game Complete
-			// Envia os achievements para ele para ficar igual ao original
-			if (m_game_init_state == 1/*Come�ou*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
+			// Deletes the player for give up or time out, counts his achievements, has the counter item 0x6C400004u Normal Game Complete
+			// Sends the achievements to him to be the same as the original
+			if (m_game_init_state == 1/*Started*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
 
 				// Achievements
-				rain_hole_consecutivos_count(*_session);			// conta os achievement de chuva em holes consecutivas
+				rain_hole_consecutivos_count(*_session);			// counts the rain achievements on consecutive holes
 
-				score_consecutivos_count(*_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+				score_consecutivos_count(*_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-				rain_count(*_session);								// Aqui achievement de rain count
+				rain_count(*_session);								// Here rain count achievement
 
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-				// Achievement Aqui
+				// Achievement Here
 				pgi->sys_achieve.finish_and_update(*_session);
 
-				// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+				// Response that is always sent when a game ends, I do not know what it is yet, only HIO Event does not have it
 				packet p((unsigned short)0x244);
 
 				p.addUint32(0);	// OK
 
 				packet_func::session_send(p, _session, 1);
 
-				// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+				// This one is new from JP, it has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 				p.init_plain((unsigned short)0x24F);
 
 				p.addUint32(0);	// OK
@@ -207,21 +207,21 @@ bool Versus::deletePlayer(player* _session, int _option) {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlock
 		m_state_vs.unlock();
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[Versus::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlock
 		m_state_vs.unlock();
 	}
 
@@ -242,8 +242,8 @@ void Versus::changeHole() {
 	if (m_players.size() <= 0 || checkEndGame(**m_players.begin()))
 		finish_versus(0);
 	else if (m_players.size() > 0)
-		// Resposta terminou o hole
-		updateFinishHole();	// Terminou
+		// Response finished the hole
+		updateFinishHole();	// Finished
 }
 
 void Versus::finishHole() {
@@ -291,7 +291,7 @@ void Versus::finish_versus(int _option) {
 
 void Versus::timeIsOver(void* _quem) {
 
-	// Chama o timeIsOver da classe pai
+	// Calls timeIsOver of the parent class
 	VersusBase::timeIsOver(_quem);
 
 	if (_quem != nullptr) {
@@ -307,8 +307,8 @@ void Versus::timeIsOver(void* _quem) {
 			pgi->tempo = 0u;
 
 			if (++pgi->data.time_out >= 3)
-				// 3 Time outs kika o jogado da sala
-				pgi->data.bad_condute = 3;	// Kika Player
+				// 3 Time outs kick the player from the room
+				pgi->data.bad_condute = 3;	// Kick Player
 
 			// Time Out
 			packet p((unsigned short)0x5C);
@@ -328,14 +328,14 @@ bool Versus::init_game() {
 
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that saves the system local date
 		initGameTime();
 
-		// Aqui achievement de rain count
-		// Esse aqui tem que ser na hora que finaliza o jogo por que depende de quantos holes o player completou
+		// Here rain count achievement
+		// This one has to be at the time the game finishes because it depends on how many holes the player completed
 		//rain_count_players();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_versus_state = true;
 	}
@@ -355,7 +355,7 @@ void Versus::requestFinishExpGame() {
 
 			hole_seq = (int)m_course->findHoleSeq(m_player_order[i]->hole);
 
-			// Ele est� no primeiro hole e n�o acertou ele, s� da experi�ncia se ele tiver acertado o hole
+			// He is on the first hole and did not hit it, only gives experience if he hit the hole
 			if (hole_seq == 1 && !m_player_order[i]->shot_sync.state_shot.display.stDisplay.acerto_hole)
 				hole_seq = 0;
 			
@@ -365,7 +365,7 @@ void Versus::requestFinishExpGame() {
 				exp = (int)(exp * TRANSF_SERVER_RATE_VALUE(m_player_order[i]->used_item.rate.exp) * TRANSF_SERVER_RATE_VALUE(m_rv.exp));
 				exp = (int)((float)exp * (float)(1.f - (i * 0.1f)));
 
-				if (m_player_order[i]->level < 70/*Ultimo level n�o ganha exp*/)
+				if (m_player_order[i]->level < 70/*Last level does not get exp*/)
 					m_player_order[i]->data.exp = exp;
 			}
 
@@ -377,9 +377,9 @@ void Versus::requestFinishExpGame() {
 
 void Versus::finish() {
 
-	m_versus_state = false;	// Terminou o versus
+	m_versus_state = false;	// Versus finished
 
-	m_game_init_state = 2; // Terminou o jogo
+	m_game_init_state = 2; // Game finished
 
 	requestCalculeRankPlace();
 
@@ -399,26 +399,26 @@ void Versus::finish() {
 
 void Versus::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the rain achievements on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Here rain count achievement
 
 	//INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Response Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 }
 
@@ -434,7 +434,7 @@ bool Versus::finish_game(player& _session, int option) {
 
 		INIT_PLAYER_INFO("finish_game", "tentou finalizar o jogo", &_session);
 
-		// Terminou o hole, finalizar o hole por ele
+		// Finished the hole, finish the hole for him
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 			
 			requestFinishHole(_session, 0);
@@ -444,12 +444,12 @@ bool Versus::finish_game(player& _session, int option) {
 
 		pgi->finish_game = 1u;
 
-		if (PlayersCompleteGameAndClear() || option == 2/*Termina o jogo*/) {
+		if (PlayersCompleteGameAndClear() || option == 2/*Ends the game*/) {
 
 			packet p;
 
-			// Verifica se � o primeiro hole e se nem todos terminaram o hole
-			if (m_course->findHoleSeq(pgi->hole) == 1 && !checkAllClearHole() && (pgi->progress.hole <= 0 || pgi->progress.finish_hole[pgi->progress.hole - 1] == 0/*N�o terminou o hole*/)) {
+			// Checks if it is the first hole and if not everyone finished the hole
+			if (m_course->findHoleSeq(pgi->hole) == 1 && !checkAllClearHole() && (pgi->progress.hole <= 0 || pgi->progress.finish_hole[pgi->progress.hole - 1] == 0/*Did not finish the hole*/)) {
 
 				for (auto& el : m_players) {
 
@@ -471,13 +471,13 @@ bool Versus::finish_game(player& _session, int option) {
 					}
 				}
 
-				m_game_init_state = 2;	// Acabou o VS
+				m_game_init_state = 2;	// VS ended
 
 				return true;
 
 			}else {
 
-				if (m_versus_state) // Deixa o cliente envia o pacote para finalizar o jogo, depois que ele mostrar os placares
+				if (m_versus_state) // Lets the client send the packet to finish the game, after it shows the scoreboards
 					finish_versus(1);
 				else {
 
@@ -491,51 +491,51 @@ bool Versus::finish_game(player& _session, int option) {
 
 							requestSaveInfo(*el, 0);
 
-							// D� Exp para o Caddie E Mascot Tamb�m
-							if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+							// Gives Exp to the Caddie AND Mascot Too
+							if (pgi->data.exp > 0) {	// only add exp if greater than 0
 
-								// Add Exp para o player
-								el->addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+								// Add Exp to the player
+								el->addExp(pgi->data.exp, false/*No need for the packet to change level*/);
 
-								// D� Exp para o Caddie Equipado
-								if (el->m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+								// Gives Exp to the Equipped Caddie
+								if (el->m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 									el->addCaddieExp(pgi->data.exp);
 
-								// D� Exp para o Mascot Equipado
+								// Gives Exp to the Equipped Mascot
 								if (el->m_pi.ei.mascot_info != nullptr)
 									el->addMascotExp(pgi->data.exp);
 							}
 
 							sendUpdateInfoAndMapStatistics(*el, 0);
 
-							// Resposta Treasure Hunter Item
+							// Response Treasure Hunter Item
 							requestSendTreasureHunterItem(*el);
 
-							// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+							// Update Mascot Info ON GAME, if the player has a mascot equipped
 							if (el->m_pi.ei.mascot_info != nullptr) {
 								packet_func::pacote06B(p, el, &el->m_pi, 8);
 
 								packet_func::session_send(p, el, 1);
 							}
 
-							// Achievement Aqui
+							// Achievement Here
 							pgi->sys_achieve.finish_and_update(*el);
 
-							// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+							// Response that is always sent when a game ends, I do not know what it is yet, only HIO Event does not have it
 							p.init_plain((unsigned short)0x244);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+							// This one is new from JP, it has Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 							p.init_plain((unsigned short)0x24F);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Resposta Update Pang
+							// Response Update Pang
 							p.init_plain((unsigned short)0xC8);
 
 							p.addUint64(el->m_pi.ui.pang);
@@ -549,7 +549,7 @@ bool Versus::finish_game(player& _session, int option) {
 						}
 					}
 
-					m_game_init_state = 2;	// Acabou o VS
+					m_game_init_state = 2;	// VS ended
 
 					return true;
 				}
@@ -567,7 +567,7 @@ void Versus::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) 
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just leaves, I will add another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[Versus::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

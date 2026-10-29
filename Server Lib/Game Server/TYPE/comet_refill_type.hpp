@@ -1,6 +1,6 @@
-// Arquivo comet_refill_type.hpp
-// Criado em 08/07/2018 as 22:08 por Acrisio
-// Definições de tipos para a classe CometRefillSystem
+// File comet_refill_type.hpp
+// Created on 08/07/2018 at 22:08 by Acrisio
+// Type definitions for class CometRefillSystem
 
 #pragma once
 #ifndef _STDA_COMET_REFILL_TYPE_HPP
@@ -16,7 +16,7 @@ namespace stdA {
 #pragma pack(1)
 #endif
 
-	// Contexto de Comet Refill
+	// Comet Refill context
 	struct ctx_comet_refill {
 		void clear() { memset(this, 0, sizeof(ctx_comet_refill)); };
 		uint32_t _typeid;

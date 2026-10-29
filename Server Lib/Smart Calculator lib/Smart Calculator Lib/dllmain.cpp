@@ -1,4 +1,4 @@
-// dllmain.cpp : Define o ponto de entrada para o aplicativo DLL.
+// dllmain.cpp : Defines the entry point for the DLL application.
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo rank_registry.cpp
-// Criado em 16/06/2020 as 14:50 por Acrisio
-// Implementa��o da classe RankRegistry
+// File rank_registry.cpp
+// Created on 16/06/2020 at 14:50 by Acrisio
+// Implementation of the class RankRegistry
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -46,16 +46,16 @@ void RankRegistry::toPacket(packet& _packet) {
 
 void RankRegistry::toCompactPacket(packet& _packet) {
 
-	// Aqui se o rank passar de 10 mil zera, por que o pangya s� conta o top 10 mil
-	// Mas no banco de dados ele conta normal, que no toPacket completo ele manda o rank mesmo se for maior que 10 mil
-	// P�gina ele s� envia 5 mil, ele s� mostra as p�ginas de 5 mil ranks (Registros)
+	// Here if the rank goes over 10 thousand it is zeroed, because pangya only counts the top 10 thousand
+	// But in the database it counts normally, since in the full toPacket it sends the rank even if it is greater than 10 thousand
+	// Page, it only sends 5 thousand, it only shows pages of 5 thousand ranks (Records)
 
-	// Vou fazer assim.
-	// Se o rank atual passou de 10 mil, zera os 2
-	// Se o rank atual for menor ou igual a 10 mil, envia o lest position mesmo se ele for maior que 10 mil
+	// I will do it this way.
+	// If the current rank is over 10 thousand, zero both
+	// If the current rank is less than or equal to 10 thousand, send the last position even if it is greater than 10 thousand
 
 	if (CHECK_LIMIT_RANK_POSITION_COMPACT_PACKET(m_current_position))
-		_packet.addZeroByte(8u);	// Envia Zeros no Current Position e Last Position, por que o current position � maior que 10 mil
+		_packet.addZeroByte(8u);	// Send zeros in Current Position and Last Position, because the current position is greater than 10 thousand
 	else {
 		_packet.addUint32(m_current_position);
 		_packet.addUint32(m_last_position);

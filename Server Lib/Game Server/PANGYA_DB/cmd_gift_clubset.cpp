@@ -1,6 +1,6 @@
-// Arquivo cmd_gift_clubset.cpp
-// Criado em 31/05/2018 as 22:15 por Acrisio
-// Implementa��o da classe CmdGiftClubSet
+// File cmd_gift_clubset.cpp
+// Created on 31/05/2018 at 22:15 by Acrisio
+// Implementation of the class CmdGiftClubSet
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdGiftClubSet::~CmdGiftClubSet() {
 
 void CmdGiftClubSet::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 }
 
 response* CmdGiftClubSet::prepareConsulta(database& _db) {

@@ -1,6 +1,6 @@
-// Arquivo cmd_first_set_check.hpp
-// Criado em 30/03/2018 as 20:30 por Acrisio
-// Defini��o da classe CmdFirstSetCheck
+// File cmd_first_set_check.hpp
+// Created on 30/03/2018 at 20:30 by Acrisio
+// Definition of the CmdFirstSetCheck class
 
 #pragma once
 #ifndef _STDA_CMD_FIRST_SET_CHECK_HPP

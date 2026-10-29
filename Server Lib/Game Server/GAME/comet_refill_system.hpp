@@ -1,6 +1,6 @@
 // Arquivo comet_refill_system.hpp
-// Criado em 08/07/2018 as 21:57 por Acrisio
-// Defini��o da classe CometRefillSystem
+// Created on 08/07/2018 at 21:57 by Acrisio
+// Definition of the CometRefillSystem class
 
 #pragma once
 #ifndef _STDA_COMET_REFILL_SYSTEM_HPP
@@ -38,7 +38,7 @@ namespace stdA {
 			/*static*/ void clear();
 
 		private:
-			/*static*/ std::map< uint32_t, ctx_comet_refill > m_comet_refill;	// Todos os Comet Refill Item Conhecido do Server no DB
+			/*static*/ std::map< uint32_t, ctx_comet_refill > m_comet_refill;	// All Comet Refill Items known to the Server in the DB
 			
 			/*static*/ bool m_load;													// Load Server
 

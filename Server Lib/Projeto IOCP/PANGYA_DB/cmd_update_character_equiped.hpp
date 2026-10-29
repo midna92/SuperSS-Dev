@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_equiped.hpp
-// Criado em 25/03/2018 as 11:27 por Acrisio
-// Defini��o da classe CmdUpdateCharacterEquiped
+// File cmd_update_character_equiped.hpp
+// Created on 25/03/2018 at 11:27 by Acrisio
+// Definition of class CmdUpdateCharacterEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHARACTER_EQUIPED_HPP

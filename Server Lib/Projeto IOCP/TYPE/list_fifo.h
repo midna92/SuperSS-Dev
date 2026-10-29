@@ -1,6 +1,6 @@
-// Arquivo list_fifo.h
-// Criado em 03/06/2017 por Acrisio
-// Definição e Implementação da classe template list_fifo_asyc
+// File list_fifo.h
+// Created on 03/06/2017 by Acrisio
+// Definition and implementation of the template class list_fifo_asyc
 
 #pragma once
 #ifndef _STDA_LIST_FIFO_H
@@ -60,7 +60,7 @@ namespace stdA {
 #endif
     };
 
-	// Implementação da classe template list_fifo_asyc
+	// Implementation of the class template list_fifo_asyc
 	template<class _TA> list_fifo_asyc<_TA>::list_fifo_asyc() {
 		init();
 	};

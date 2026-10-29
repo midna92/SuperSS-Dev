@@ -1,6 +1,6 @@
-// Arquivo cmd_update_mascot_info.hpp
-// Criado em 23/03/2018 as 20:42 por Acrisio
-// Defini��o da classe CmdUpdateMascotInfo
+// File cmd_update_mascot_info.hpp
+// Created on 23/03/2018 at 20:42 by Acrisio
+// Definition of class CmdUpdateMascotInfo
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_MASCOT_INFO_HPP

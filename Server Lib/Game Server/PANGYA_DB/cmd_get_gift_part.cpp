@@ -1,6 +1,6 @@
-// Arquivo cmd_get_gift_part.cpp
-// Criado em 31/05/2018 as 22:46 por Acrisio
-// Implementa��o da classe CmdGetGiftPart
+// File cmd_get_gift_part.cpp
+// Created on 31/05/2018 at 22:46 by Acrisio
+// Implementation of the class CmdGetGiftPart
 
 #if defined(_WIN32)
 #pragma pack(1)

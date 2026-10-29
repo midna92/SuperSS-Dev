@@ -1,6 +1,6 @@
-// Arquivo papel_shop_system.cpp
-// Criado em 09/07/2018 as 18:43 por Acrisio
-// Implementa��o da classe PapelShopSystem
+// File papel_shop_system.cpp
+// Created on 09/07/2018 at 18:43 by Acrisio
+// Implementation of the PapelShopSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -36,7 +36,7 @@
 
 using namespace stdA;
 
-// Papel Shop com redução do limite de vezes que poder jogar no dia
+// Papel Shop with a reduced limit of times one can play per day
 // 1 ON, 0 OFF
 #define _PS_COM_REDUCE_LIMIT 0
 
@@ -88,7 +88,7 @@ PapelShopSystem::PapelShopSystem() : m_load(false), m_ctx_ps{ 0 }, m_ctx_psc{}, 
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initializes
 	initialize();
 }
 
@@ -149,14 +149,14 @@ void PapelShopSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[PapelShopSystem::initialize][Log] Papel Shop System Carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif
 
-	// Carregado com sucesso!
+	// Loaded successfully!
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relança para o server toma as providências
+	// Rethrows so the server can take action
 	throw;
 
 	END_CHECK;
@@ -221,7 +221,7 @@ bool PapelShopSystem::checkUpdate() {
 
 bool PapelShopSystem::checkUpdate(SYSTEMTIME& _st) {
 
-	// Verifica se é vazio, se for retorna true por que é diferente
+	// Checks whether it is empty, if so returns true because it is different
 	if (isEmpty(_st))
 		return true;
 
@@ -328,7 +328,7 @@ void PapelShopSystem::updateDia() {
 
 	if (checkUpdate()) {
 		
-		// Update Dia do Papel Shop
+		// Update Papel Shop Day
 		GetLocalTime(&m_ctx_ps.update_date);
 
 		CmdUpdatePapelShopConfig cmd_upsc(m_ctx_ps, true);	// Waiter
@@ -343,10 +343,10 @@ void PapelShopSystem::updateDia() {
 			
 			_smp::message_pool::getInstance().push(new message("[PapelShopSystem::updateDia][ErrorSystem] " + cmd_upsc.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-			return;	// Error Sai da função
+			return;	// Error, exits the function
 		}
 
-		// Update Aqui por que outro sistema atualizou primeiro no banco de dados
+		// Update Here because another system updated first in the database
 		if (cmd_upsc.isUpdated())
 			_smp::message_pool::getInstance().push(new message("[PapelShopSystem::updateDia][Log] Atualizou Papel Shop Config[" + cmd_upsc.getInfo().toString() 
 					+ "] com sucesso", CL_FILE_LOG_AND_CONSOLE));
@@ -374,10 +374,10 @@ void PapelShopSystem::updateDiaPlayer(player& _session) {
 	GetLocalTime(&_session.m_pi.mi.papel_shop_last_update);
 
 #if _PS_COM_REDUCE_LIMIT == 1
-	// Atualiza o contador de quantas vez o player pode jogar no dia
+	// Updates the counter of how many times the player can play per day
 	_session.m_pi.mi.papel_shop.remain_count = _session.m_pi.mi.papel_shop.limit_count;
 
-	// Só aumenta o limite, se o player não jogou todo o seu limite
+	// Only increases the limit if the player did not use up his whole limit
 	if (_session.m_pi.mi.papel_shop.current_count < _session.m_pi.mi.papel_shop.limit_count) {
 
 		if (_session.m_pi.mi.papel_shop.limit_count < 50)
@@ -385,11 +385,11 @@ void PapelShopSystem::updateDiaPlayer(player& _session) {
 		else if (_session.m_pi.mi.papel_shop.limit_count < 100)
 			_session.m_pi.mi.papel_shop.limit_count = 100;
 	}
-#else // Sem limit
+#else // No limit
 	_session.m_pi.mi.papel_shop.remain_count = _session.m_pi.mi.papel_shop.limit_count = 100;
 #endif
 
-	// Reseta o Atual Contador do player
+	// Resets the player's Current counter
 	_session.m_pi.mi.papel_shop.current_count = 0;
 
 	// Log
@@ -418,9 +418,9 @@ void PapelShopSystem::updatePlayerCount(player& _session) {
 		_session.m_pi.mi.papel_shop.current_count++;
 
 #if _PS_COM_REDUCE_LIMIT == 1
-		if (--_session.m_pi.mi.papel_shop.remain_count == 0) {	// Zerou tira 50 do limite do player
+		if (--_session.m_pi.mi.papel_shop.remain_count == 0) {	// Reached zero, removes 50 from the player's limit
 
-			// Não diminui o limite deixa ele em 100 por dia mesmo
+			// Does not decrease the limit, keeps it at 100 per day
 			if (_session.m_pi.mi.papel_shop.limit_count > 50)
 				_session.m_pi.mi.papel_shop.limit_count = 50;
 			if (_session.m_pi.mi.papel_shop.limit_count > 30)
@@ -428,7 +428,7 @@ void PapelShopSystem::updatePlayerCount(player& _session) {
 			else
 				_session.m_pi.mi.papel_shop.limit_count = 30;
 		}
-#else // Sem limit
+#else // No limit
 		--_session.m_pi.mi.papel_shop.remain_count;
 #endif // _PS_COM_LIMIT
 
@@ -539,7 +539,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBalls(player& _session) 
 
 	Lottery lottery((uint64_t)&m_ctx_psi);
 
-	// Pega o Rate do Game Server
+	// Gets the Rate from the Game Server
 	auto rate_cookie_server = sgs::gs::getInstance().getInfo().rate.papel_shop_cookie_item / 100.f;
 	auto rate_rare_server = sgs::gs::getInstance().getInfo().rate.papel_shop_rare_item / 100.f;
 
@@ -547,7 +547,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBalls(player& _session) 
 		if (el.active && (el.numero == -1 || el.numero == m_ctx_ps.numero))
 			lottery.push((uint32_t)(el.probabilidade * (el.tipo == PST_COOKIE ? rate_cookie_server : (el.tipo == PST_RARE ? rate_rare_server : /*(NORMAL)*/1.f))), (size_t)&el);
 
-	// Número de balls
+	// Number of balls
 	unsigned char num_ball = PAPEL_SHOP_MIN_BALL + (sRandomGen::getInstance().rIbeMt19937_64_chrono() % (PAPEL_SHOP_MAX_BALL - PAPEL_SHOP_MIN_BALL + 1));
 
 	Lottery::LotteryCtx *lc = nullptr;
@@ -556,7 +556,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBalls(player& _session) 
 
 		CHECK_SESSION("dropBalls");
 
-		// Sortea um valor
+		// Draws a value
 		lc = lottery.spinRoleta();
 
 		if (lc == nullptr)
@@ -566,14 +566,14 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBalls(player& _session) 
 
 		auto ctx_psi = (ctx_papel_shop_item*)lc->value;
 
-		// Player já tem o item, e nao pode ter duplicate, sortea um novo para ele
+		// Player already has the item, and cannot have duplicates, draws a new one for him
 		if ((!sIff::getInstance().IsCanOverlapped(ctx_psi->_typeid) || sIff::getInstance().getItemGroupIdentify(ctx_psi->_typeid) == iff::CAD_ITEM) && _session.m_pi.ownerItem(ctx_psi->_typeid))
 			continue;
 
 		// Color
 		ctx_b.color = PAPEL_SHOP_BALL_COLOR(sRandomGen::getInstance().rIbeMt19937_64_chrono() % (PAPEL_SHOP_BALL_COLOR::PSBC_RED + 1));
 
-		// Raro Item Sempre é a qntd minima
+		// Rare Item is always the minimum quantity
 		if (ctx_psi->tipo == PST_RARE)
 			ctx_b.qntd = PAPEL_SHOP_ITEM_MIN_QNTD;
 		else
@@ -582,10 +582,10 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBalls(player& _session) 
 		// Item
 		ctx_b.ctx_psi = *ctx_psi;
 
-		// Add Ball ao vector de bolas dropadas
+		// Adds Ball to the vector of dropped balls
 		v_ball.push_back(ctx_b);
 
-		// Decrementa o num_ball, que uma bola já foi dropada
+		// Decrements num_ball, since one ball has already been dropped
 		num_ball--;
 
 	} while (num_ball > 0);
@@ -611,7 +611,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 
 	Lottery lottery((uint64_t)&m_ctx_psi);
 
-	// Pega o Rate do Game Server
+	// Gets the Rate from the Game Server
 	auto rate_cookie_server = sgs::gs::getInstance().getInfo().rate.papel_shop_cookie_item / 100.f;
 	auto rate_rare_server = sgs::gs::getInstance().getInfo().rate.papel_shop_rare_item / 100.f;
 
@@ -619,7 +619,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 		if (el.active && (el.numero == -1 || el.numero == m_ctx_ps.numero))
 			lottery.push((uint32_t)(el.probabilidade * (el.tipo == PST_COOKIE ? rate_cookie_server : (el.tipo == PST_RARE ? rate_rare_server : 1.f))), (size_t)&el);
 
-	// Número de balls
+	// Number of balls
 	unsigned char num_ball = PAPEL_SHOP_BIG_BALL;
 
 	Lottery::LotteryCtx *lc = nullptr;
@@ -628,7 +628,7 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 
 		CHECK_SESSION("dropBigBall");
 
-		// Sortea um valor
+		// Draws a value
 		lc = lottery.spinRoleta();
 
 		if (lc == nullptr)
@@ -638,14 +638,14 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 
 		auto ctx_psi = (ctx_papel_shop_item*)lc->value;
 
-		// Player já tem o item, e nao pode ter duplicate, sortea um novo para ele
+		// Player already has the item, and cannot have duplicates, draws a new one for him
 		if ((!sIff::getInstance().IsCanOverlapped(ctx_psi->_typeid) || sIff::getInstance().getItemGroupIdentify(ctx_psi->_typeid) == iff::CAD_ITEM) && _session.m_pi.ownerItem(ctx_psi->_typeid))
 			continue;
 
 		// Color
 		ctx_b.color = PAPEL_SHOP_BALL_COLOR(sRandomGen::getInstance().rIbeMt19937_64_chrono() % (PAPEL_SHOP_BALL_COLOR::PSBC_RED + 1));
 
-		// Raro Item Sempre é a qntd minima
+		// Rare Item is always the minimum quantity
 		if (ctx_psi->tipo == PST_RARE)
 			ctx_b.qntd = PAPEL_SHOP_ITEM_MIN_QNTD;
 		else
@@ -654,10 +654,10 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 		// Item
 		ctx_b.ctx_psi = *ctx_psi;
 
-		// Add Ball ao vector de bolas dropadas
+		// Adds Ball to the vector of dropped balls
 		v_ball.push_back(ctx_b);
 
-		// Decrementa o num_ball, que uma bola já foi dropada
+		// Decrements num_ball, since one ball has already been dropped
 		num_ball--;
 
 	} while (num_ball > 0);
@@ -673,13 +673,13 @@ std::vector< ctx_papel_shop_ball > PapelShopSystem::dropBigBall(player& _session
 void PapelShopSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 
 #ifdef _DEBUG
-	// Classe estatica não pode passar o ponteiro dela, por ser estática, então passa nullptr
+	// A static class cannot pass its pointer, since it is static, so it passes nullptr
 	if (_arg == nullptr)
 		// Static class
 		_smp::message_pool::getInstance().push(new message("[PapelShopSystem::SQLDBResponse][WARNING] _arg is nullptr", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, I will do another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[PapelShopSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -694,7 +694,7 @@ void PapelShopSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, voi
 			_smp::message_pool::getInstance().push(new message("[PapelShopSystem::SQLDBResponse][Log] Atualizou Papel Shop Config[" + cmd_upsc->getInfo().toString() + "] com sucesso", CL_FILE_LOG_AND_CONSOLE));
 		else {
 
-			// Não conseguiu atualizar papel shop config, por que outro sistema atualizou primeiro, atualiza o papel shop config com os dados retornados
+			// Could not update papel shop config, because another system updated first, updates the papel shop config with the returned data
 			sPapelShopSystem::getInstance().updateConfig(cmd_upsc->getInfo());
 
 			_smp::message_pool::getInstance().push(new message("[PapelShopSystem::SQLDBResposne][Log] Atualizou Papel Shop Config[" 
@@ -705,12 +705,12 @@ void PapelShopSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, voi
 	}
 	case 2:	// Update Papel Shop Player Info
 	{
-		// Aqui não usa por que é um update
+		// Not used here because it is an update
 		break;
 	}
-	case 3:	// Update Papel Shop Last Day Update do player
+	case 3:	// Update Papel Shop Last Day Update of the player
 	{
-		// Aqui não usa por que é um update
+		// Not used here because it is an update
 		break;
 	}
 	case 0:

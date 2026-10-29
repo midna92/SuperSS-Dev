@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_furniture.hpp
-// Criado em 16/06/2018 as 13:21 po Acrisio
-// Defini��o da classe CmdDeleteFurniture
+// File cmd_delete_furniture.hpp
+// Created on 16/06/2018 at 13:21 by Acrisio
+// Definition of the class CmdDeleteFurniture
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_FURNITURE_HPP

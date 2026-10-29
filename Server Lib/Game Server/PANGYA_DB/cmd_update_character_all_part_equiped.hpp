@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_all_part_equiped.hpp
-// Criado em 25/03/2018 as 13:12 por Acrisio
-// Defini��o da classe CmdUpdateCharacterAllPartEquiped
+// File cmd_update_character_all_part_equiped.hpp
+// Created on 25/03/2018 at 13:12 by Acrisio
+// Definition of class CmdUpdateCharacterAllPartEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHARACTER_ALL_PART_EQUIPED_HPP

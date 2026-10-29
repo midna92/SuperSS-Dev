@@ -1,6 +1,6 @@
-// Arquivo hex_util.h
-// Criado em 10/06/2017 por Acrisio
-// Definição da classe hex
+// File hex_util.h
+// Created on 10/06/2017 by Acrisio
+// Definition of the class hex
 
 #pragma once
 #ifndef STDA_HEX_UTIL_H

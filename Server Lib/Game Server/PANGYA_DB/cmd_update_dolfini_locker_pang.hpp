@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_pang.hpp
-// Criado em 02/06/2018 as 21:39 por Acrisio
-// Defini��o da classe CmdUpdateDolfiniLockerPang
+// File cmd_update_dolfini_locker_pang.hpp
+// Created on 02/06/2018 at 21:39 by Acrisio
+// Definition of class CmdUpdateDolfiniLockerPang
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_DOLFINI_LOCKER_PANG_HPP

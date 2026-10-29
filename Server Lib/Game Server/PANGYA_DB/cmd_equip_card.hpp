@@ -1,6 +1,6 @@
-// Arquivo cmd_equip_card.hpp
-// Criado em 17/06/2018 as 18:41 por Acrisio
-// Defini��o da classe CmdEquipCard
+// File cmd_equip_card.hpp
+// Created on 17/06/2018 at 18:41 by Acrisio
+// Definition of the class CmdEquipCard
 
 #pragma once
 #ifndef _STDA_CMD_EQUIP_CARD_HPP

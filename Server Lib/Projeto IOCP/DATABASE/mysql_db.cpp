@@ -1,6 +1,6 @@
-// Arquivo mysql_db.cpp
-// Criado em 23/07/2017 por Acrisio
-// Implementação da classe mysql_db
+// File mysql_db.cpp
+// Created on 23/07/2017 by Acrisio
+// Implementation of class mysql_db
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -155,7 +155,7 @@ response* mysql_db::ExecQuery(std::string _query) {
 
 	if (!m_state || !m_connected || m_mysql == nullptr)
 		throw exception("[mysql_db::ExecQuery][Error] Nao pode executar query, porque nao esta conectado com o banco de dados.", 
-				STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_HANDLE, 0)); /*0x1040000 DB ERRO ou AVISO*/
+				STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_HANDLE, 0)); /*0x1040000 DB ERROR or WARNING*/
 
 	if (_query.empty())
 		throw exception("[mysql_db::ExecQuery][Error] _query empty.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_PARAMETER, 0));
@@ -193,7 +193,7 @@ response* mysql_db::ExecQuery(std::string _query) {
 		res->setRowsAffected(numRows);
 
 		if (numResults > 0) {
-			if ((r = mysql_use_result(m_mysql)) != nullptr) { // Antes era mysql_store_result
+			if ((r = mysql_use_result(m_mysql)) != nullptr) { // It used to be mysql_store_result
 				row = mysql_fetch_row(r);
 
 				if (row != nullptr) {
@@ -258,7 +258,7 @@ response* mysql_db::ExecProc(std::string _proc_name, std::string _proc_params) {
 
 	if (!m_state || !m_connected || m_mysql == nullptr)
 		throw exception("[mysql_db::ExecProc][Error] Nao pode executar query, porque nao esta conectado com o banco de dados.", 
-				STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_HANDLE, 0)); /*0x1040000 DB ERRO ou AVISO*/
+				STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_HANDLE, 0)); /*0x1040000 DB ERROR or WARNING*/
 
 	if (_proc_name.empty())
 		throw exception("[mysql_db::ExecProc][Error] _proc_name empty.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::_MYSQL, INVALID_PARAMETER, 1));
@@ -296,7 +296,7 @@ response* mysql_db::ExecProc(std::string _proc_name, std::string _proc_params) {
 		res->setRowsAffected(numRows);
 
 		if (numResults > 0) {
-			if ((r = mysql_use_result(m_mysql)) != nullptr) { // Antes era mysql_store_result
+			if ((r = mysql_use_result(m_mysql)) != nullptr) { // It used to be mysql_store_result
 				row = mysql_fetch_row(r);
 
 				if (row != nullptr) {

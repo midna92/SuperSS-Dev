@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_ip.hpp
-// Crido em 30/03/2018 as 09:52 por Acrisio
-// Defini��o da classe CmdVerifyIP
+// File cmd_verify_ip.hpp
+// Created on 30/03/2018 at 09:52 by Acrisio
+// Definition of the CmdVerifyIP class
 
 #pragma once
 #ifndef _STDA_CMD_VERIFY_IP_HPP

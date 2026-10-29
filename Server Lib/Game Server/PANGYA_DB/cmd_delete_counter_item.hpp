@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_counter_item.hpp
-// Criado em 14/04/2018 as 14:14 por Acrisio
-// Defini��o da classe CmdDeleteCounterItem
+// File cmd_delete_counter_item.hpp
+// Created on 14/04/2018 at 14:14 by Acrisio
+// Definition of the class CmdDeleteCounterItem
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_COUNTER_ITEM_HPP

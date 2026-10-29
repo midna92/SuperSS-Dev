@@ -1,6 +1,6 @@
-// Arquivo cmd_add_furniture.cpp
-// Criado em 12/06/2018 as 20:50 por Acrisio
-// Implementa��o da classe CmdAddFurniture
+// File cmd_add_furniture.cpp
+// Created on 12/06/2018 at 20:50 by Acrisio
+// Implementation of the class CmdAddFurniture
 
 #if defined(_WIN32)
 #pragma pack(1)

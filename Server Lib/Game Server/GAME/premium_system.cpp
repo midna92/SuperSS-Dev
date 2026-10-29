@@ -1,6 +1,6 @@
-// Arquivo premium_system.cpp
-// Criado em 28/10/2020 as 16:40 por Acrisio
-// Implementa��o da classe PremiumSystem
+// File premium_system.cpp
+// Created on 28/10/2020 at 16:40 by Acrisio
+// Implementation of the PremiumSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,23 +21,23 @@
 #define CHECK_SESSION_BEGIN(method) if (!_session.getState()) \
 										throw exception("[PremiumSystem" + std::string((method)) +"][Error] player nao esta connectado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PREMIUM_SYSTEM, 1, 0)); \
 
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_TICKET_TYPEID = 0x1A100002u;
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_2_TICKET_TYPEID = 0x1A100003u;
 
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_BALL_TYPEID = 0x140000D8u;
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_2_BALL_TYPEID = 0x140000E9u; // Sakura (Premium)
 
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_2_CLUBSET_TYPEID = 0x100000F7u; // Rank D(0x1000005D), Rank S(0x1000006B), (Premium)
 
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_2_AUTO_CALIPER_TYPEID = 0x1A000040u;
 
-// !@ tempor�rio
+// !@ temporary
 constexpr uint32_t PREMIUM_2_MASCOT_TYPEID = 0x4000004Bu; // Lolo (Premium)
 
 using namespace stdA;
@@ -69,7 +69,7 @@ void PremiumSystem::checkEndTimeTicket(player& _session) {
 					return;
 				}
 
-				// Add o Ticket Premium User para o map do player, para poder excluir ele
+				// Adds the Premium User Ticket to the player's map, so it can be deleted
 				_session.m_pi.mp_wi.insert(std::make_pair(ticket.id, ticket));
 
 			}else
@@ -97,7 +97,7 @@ void PremiumSystem::checkEndTimeTicket(player& _session) {
 			packet_func::pacote26D(p, &_session, _session.m_pi.pt.unix_end_date);
 			packet_func::session_send(p, &_session, 0);
 
-			// Zera o Premium User Ticket que ele j� n�o tem mais
+			// Zeroes the Premium User Ticket, which he no longer has
 			_session.m_pi.pt.clear();
 		}
 
@@ -112,17 +112,17 @@ void PremiumSystem::addPremiumUser(player& _session, WarehouseItemEx& _ticket, u
 
 	try {
 
-		// Inicializa o PremiumTicket estrutura do player
+		// Initializes the player's PremiumTicket structure
 		_session.m_pi.pt.id = _ticket.id;
 		_session.m_pi.pt._typeid = _ticket._typeid;
 		_session.m_pi.pt.unix_end_date = _ticket.end_date_unix_local;
-		_session.m_pi.pt.unix_sec_date = _ticket.end_date_unix_local - (uint32_t)GetLocalTimeAsUnix();	// Difer�ncia em segundo, quanto tempo ainda tem para acabar o ticket premium
+		_session.m_pi.pt.unix_sec_date = _ticket.end_date_unix_local - (uint32_t)GetLocalTimeAsUnix();	// Difference in seconds, how much time is left for the premium ticket to end
 
-		// add Comet para o player
+		// add Comet to the player
 		_smp::message_pool::getInstance().push(new message("[PremiumSystem::addPremiumUser][Log] Add Comet Premium e set Capability do player[UID=" + std::to_string(_session.m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 		_smp::message_pool::getInstance().push(new message("[PremiumSystem::addPremiumUser][Log] Agora o Player[UID=" + std::to_string(_session.m_pi.uid) + "] eh um Premium User por (" + std::to_string(_time) + ") Dias", CL_FILE_LOG_AND_CONSOLE));
 
-		// Add comet e outros itens e atualizar no SERVER, DB e GAME
+		// Add comet and other items and update on SERVER, DB and GAME
 		std::vector< stItem > add_itens;
 
 		// Flag Premium User
@@ -135,7 +135,7 @@ void PremiumSystem::addPremiumUser(player& _session, WarehouseItemEx& _ticket, u
 			throw exception("[PremiumSystem::addPremiumUser][Error] Player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] nao conseguiu adicionar a Premium Ball.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PREMIUM_SYSTEM, 300, 0));
 
-		// Add Ball para o jogo
+		// Add Ball to the game
 		add_itens.push_back(new_ball);
 
 		if (isPremium2(_session.m_pi.pt._typeid)) {
@@ -147,7 +147,7 @@ void PremiumSystem::addPremiumUser(player& _session, WarehouseItemEx& _ticket, u
 				throw exception("[PremiumSystem::addPremiumUser][Error] Player[UID=" + std::to_string(_session.m_pi.uid)
 						+ "] nao conseguiu adicionar o Premium ClubSet.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PREMIUM_SYSTEM, 300, 0));
 
-			// o ClubSet atualiza com o pacote073
+			// the ClubSet updates with packet073
 
 			// Add Mascot
 			auto new_mascot = addPremiumMascot(_session, _time);
@@ -156,7 +156,7 @@ void PremiumSystem::addPremiumUser(player& _session, WarehouseItemEx& _ticket, u
 				throw exception("[PremiumSystem::addPremiumUser][Error] Player[UID=" + std::to_string(_session.m_pi.uid)
 						+ "] nao conseguiu adicionar o Premium Mascot.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PREMIUM_SYSTEM, 300, 0));
 
-			// Add Mascot para o jogo
+			// Add Mascot to the game
 			add_itens.push_back(new_mascot);
 
 			packet pp;
@@ -165,7 +165,7 @@ void PremiumSystem::addPremiumUser(player& _session, WarehouseItemEx& _ticket, u
 				packet_func::session_send(pp, &_session, 1);
 		}
 
-		// Atualiza Capability do player
+		// Updates the player's Capability
 		packet p((unsigned short)0x9A);
 
 		p.addUint32(_session.m_pi.m_cap.ulCapability);
@@ -209,17 +209,17 @@ void PremiumSystem::removePremiumUser(player& _session) {
 		// Remove Premium Ball
 		removePremiumBall(_session);
 
-		// Tira capacidade de premium user do player
+		// Removes the player's premium user capability
 		_session.m_pi.m_cap.stBit.premium_user = 0u;
 
 		packet_func::pacote09A(p, &_session, &_session.m_pi);
 		packet_func::session_send(p, &_session, 1);
 
-		// UPDATE ON GAME - Mostra a mensagem que acabou o tempo do ticket premium
+		// UPDATE ON GAME - Shows the message that the premium ticket time ran out
 		packet_func::pacote26D(p, &_session, _session.m_pi.pt.unix_end_date);
 		packet_func::session_send(p, &_session, 0);
 
-		// Zera o Premium User Ticket que ele j� n�o tem mais
+		// Zeroes the Premium User Ticket, which he no longer has
 		_session.m_pi.pt.clear();
 
 		// Log
@@ -247,12 +247,12 @@ stItem PremiumSystem::addPremiumBall(player& _session) {
 		new_wi.ano = -1;
 		new_wi._typeid = ball;	// Premium Ball
 		new_wi.STDA_C_ITEM_QNTD = 1;
-		new_wi.type = 0x6A;		// Item time Premium
+		new_wi.type = 0x6A;		// Premium item time
 		new_wi.clubset_workshop.level = -1;
 
 		auto it = _session.m_pi.mp_wi.insert(std::make_pair(new_wi.id, new_wi));
 
-		// Coloca a premium ball nos itens equipados
+		// Puts the premium ball in the equipped items
 		_session.m_pi.ue.ball_typeid = ball;
 
 		// Warehouse Item on Map Player
@@ -286,7 +286,7 @@ stItem PremiumSystem::addPremiumClubSet(player& _session, uint32_t _time) {
 		uint32_t clubset = getPremiumClubSetByTicket(_session.m_pi.pt._typeid);
 
 		// Add ClubSet
-		// Aqui add com o item_manager::addItem
+		// Here adds with item_manager::addItem
 		BuyItem bi{ 0u };
 
 		bi.id = -1;
@@ -326,7 +326,7 @@ stItem PremiumSystem::addPremiumMascot(player& _session, uint32_t _time) {
 		uint32_t mascot = getPremiumMascotByTicket(_session.m_pi.pt._typeid);
 
 		// Add Mascot
-		// Aqui add com o item_manager::addItem
+		// Here adds with item_manager::addItem
 		BuyItem bi{ 0u };
 
 		bi.id = -1;
@@ -361,7 +361,7 @@ void PremiumSystem::removePremiumBall(player& _session) {
 
 		uint32_t ball = getPremiumBallByTicket(_session.m_pi.pt._typeid);
 
-		// Tira primeiro a Ball
+		// Removes the Ball first
 		auto pWi = _session.m_pi.findWarehouseItemItByTypeid(ball);
 
 		// Delete Premium Ball
@@ -378,9 +378,9 @@ void PremiumSystem::removePremiumBall(player& _session) {
 			item.stat.qntd_dep = 0;
 			item.flag_time = 0x6A;		// PREMIUM ITEM, /*0x6A expired time*/
 
-			// Remove do Server, que esse item n�o tem no DB, 
-			// � s� do server um item que ganha quando � premium user quando loga
-			// !@ Aqui pode d� erro por que ent� rodando no loob o map mp_wi, e aqui est� excluindo um iterator do map
+			// Removes from the Server, since this item is not in the DB, 
+			// it is only on the server, an item that is gained when premium user logs in
+			// !@ This may cause an error because the map mp_wi is being looped here, and here an iterator of the map is being erased
 			_session.m_pi.mp_wi.erase(pWi);
 
 			packet p((unsigned short)0x216);
@@ -424,7 +424,7 @@ void PremiumSystem::updatePremiumUser(player& _session) {
 
 		add_itens.push_back(new_ball);
 
-		// Atualiza Capability do player
+		// Updates the player's Capability
 		packet p((unsigned short)0x9A);
 
 		p.addUint32(_session.m_pi.m_cap.ulCapability);

@@ -1,6 +1,6 @@
-// Arquivo session_pool.cpp
-// Criado em 17/06/2017 por Acrisio
-// Definição da classe session_pool
+// File session_pool.cpp
+// Created on 17/06/2017 by Acrisio
+// Definition of class session_pool
 
 #include <WinSock2.h>
 #include "session_pool.h"
@@ -77,10 +77,10 @@ session* session_pool::addSession(SOCKET _sock, SOCKADDR_IN _addr, unsigned char
 		}catch (exception& e) {
 			UNREFERENCED_PARAMETER(e);
 
-			// Libera a critical section
+			// Release the critical section
 			LeaveCriticalSection(&cs);
 
-			throw;	// relança
+			throw;	// rethrow
 		}
 
 		s = &m_sessions[m_session_free];
@@ -89,7 +89,7 @@ session* session_pool::addSession(SOCKET _sock, SOCKADDR_IN _addr, unsigned char
 	if (s->m_sock != INVALID_SOCKET)
 		throw exception("Erro session ja esta sendo usada. session_pool::addSession()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SESSION_POOL, 1, 0));
 
-	// Limpa sessao aqui
+	// Clear session here
 	s->lock();
 
 	s->clear();
@@ -164,7 +164,7 @@ void session_pool::findNextSessionFree() {
 std::vector< session* > session_pool::getChannelSessions(unsigned char _channel, unsigned char _lobby) {
 	std::vector< session* > channel_sessions;
 
-	// Option unsigned char _channel == ~0, retorna todas as sessions do server
+	// Option unsigned char _channel == ~0, returns all sessions of the server
 	for (size_t i = 0; i < m_max_session; ++i)
 		if (m_sessions[i].m_sock != INVALID_SOCKET && (_channel == (unsigned char)~0 || m_sessions[i].m_channel == _channel) 
 			&& (_lobby == (unsigned char)~0 || m_sessions[i].m_lobby == _lobby))

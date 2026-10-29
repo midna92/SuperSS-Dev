@@ -1,6 +1,6 @@
-// Arquivo cmd_add_character.cpp
-// Criado em 25/03/2018 as 18:05 por Acrisio
-// Implementa��o da classe CmdAddCharacter
+// File cmd_add_character.cpp
+// Created on 25/03/2018 at 18:05 by Acrisio
+// Implementation of class CmdAddCharacter
 
 #if defined(_WIN32)
 #pragma pack(1)

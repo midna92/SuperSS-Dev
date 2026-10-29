@@ -1,6 +1,6 @@
-// Arquivo cmd_get_gift_part.hpp
-// Criado em 31/05/2018 as 22:41 por Acrisio
-// Defini��o da classe CmdGetGiftPart
+// File cmd_get_gift_part.hpp
+// Created on 31/05/2018 at 22:41 by Acrisio
+// Definition of the class CmdGetGiftPart
 
 #pragma once
 #ifndef _STDA_CMD_GET_GIFT_PART_HPP

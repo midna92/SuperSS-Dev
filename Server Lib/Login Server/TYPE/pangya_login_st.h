@@ -1,6 +1,6 @@
-// Arquivo pangya_login_st.h
-// Criado em 23/07/2017 por Acrisio
-// Definição das estruturas usadas no pangya login
+// File pangya_login_st.h
+// Created on 23/07/2017 by Acrisio
+// Definition of the structures used in the pangya login
 
 #pragma once
 #ifndef _STDA_PANGYA_LOGIN_ST_H

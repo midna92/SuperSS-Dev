@@ -1,6 +1,6 @@
-// Arquivo cmd_equip_card.cpp
-// Criado em 17/06/2018 as 18:46 por Acrisio
-// Implementa��o da classe CmdEquipCard
+// File cmd_equip_card.cpp
+// Created on 17/06/2018 at 18:46 by Acrisio
+// Implementation of the class CmdEquipCard
 
 #if defined(_WIN32)
 #pragma pack(1)

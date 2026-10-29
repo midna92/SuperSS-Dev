@@ -1,6 +1,6 @@
-// Arquivo cmd_find_character.hpp
-// Criado em 20/05/2018 as 23:13 Acrisio
-// Defini��o da classe CmdFindCharacter
+// File cmd_find_character.hpp
+// Created on 20/05/2018 at 23:13 by Acrisio
+// Definition of the class CmdFindCharacter
 
 #pragma once
 #ifndef _STDA_CMD_FIND_CHARACTER_HPP

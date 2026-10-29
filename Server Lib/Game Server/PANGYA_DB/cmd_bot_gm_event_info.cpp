@@ -1,6 +1,6 @@
-// Arquivo cmd_bot_gm_event_info.cpp
-// Criado em 03/11/2020 as 20:59 por Acrisio
-// Implementa��o da classe CmdBotGMEventInfo
+// File cmd_bot_gm_event_info.cpp
+// Created on 03/11/2020 at 20:59 by Acrisio
+// Implementation of the class CmdBotGMEventInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

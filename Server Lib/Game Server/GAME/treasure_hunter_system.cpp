@@ -1,6 +1,6 @@
-// Arquivo treasure_hunter_system.cpp
-// Criado em 06/06/2018 as 18::22 por Acrisio
-// Implementa��o da classe TreasureHunterSystem
+// File treasure_hunter_system.cpp
+// Created on 06/06/2018 at 18::22 by Acrisio
+// Implementation of the TreasureHunterSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -63,10 +63,10 @@ bool TreasureHunterSystem::m_load;
 std::time_t TreasureHunterSystem::m_time = 0ull;
 uint32_t TreasureHunterSystem::m_rate = 100u;*/
 
-#define TREASURE_HUNTER_TIME_UPDATE (30 * 60)		// 30 minutos
-#define TREASURE_HUNTER_LIMIT_POINT_COURSE 1000		// 1000 limite de pontos do course
-#define TREASURE_HUNTER_INCREASE_POINT	50			// 50 pontos que soma a cada 10 minutos para todos course pontos
-#define TREASURE_HUNTER_BOX_PER_POINT	100			// 100 pontos por uma box
+#define TREASURE_HUNTER_TIME_UPDATE (30 * 60)		// 30 minutes
+#define TREASURE_HUNTER_LIMIT_POINT_COURSE 1000		// 1000 course points limit
+#define TREASURE_HUNTER_INCREASE_POINT	50			// 50 points added every 10 minutes to all course points
+#define TREASURE_HUNTER_BOX_PER_POINT	100			// 100 points per box
 
 TreasureHunterSystem::TreasureHunterSystem() : m_thi{}, m_thItem(), m_load(false), m_time(0ull) {
 
@@ -78,7 +78,7 @@ TreasureHunterSystem::TreasureHunterSystem() : m_thi{}, m_thItem(), m_load(false
 	DESTROY_PTHREAD_MUTEXATTR_RECURSIVE;
 #endif
 
-	// Inicializa
+	// Initializes
 	initialize();
 }
 
@@ -118,7 +118,7 @@ void TreasureHunterSystem::initialize() {
 		m_thi[i->course] = *i;
 #endif
 
-	// Item Treasure Hunter
+	// Treasure Hunter Item
 	CmdTreasureHunterItem cmd_thItem(true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_thItem, nullptr, nullptr);
@@ -142,14 +142,14 @@ void TreasureHunterSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::initialize][Log] Treasure Hunter System carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrows so the server takes action
 	throw;
 
 	END_CHECK;
@@ -165,8 +165,8 @@ void TreasureHunterSystem::clear() {
 
 	memset(m_thi, 0, sizeof(m_thi));
 
-	// Limpa a lista de itens do Treasure Hunter System
-	// n�o faz o shrink_to_fit por que pode preencher ela novamente
+	// Clears the Treasure Hunter System item list
+	// does not do shrink_to_fit because it may be filled again
 	if (!m_thItem.empty())
 		m_thItem.clear();
 
@@ -185,7 +185,7 @@ float TreasureHunterSystem::getCourseRate(unsigned char _course) {
 
 	TRY_CHECK;
 
-	// Prote��o contra o Random Map, que usa o negatico do 'char'
+	// Protection against Random Map, which uses the negative of 'char'
 	auto course = findCourse(_course & 0x7F);
 
 	auto point = (course != nullptr ? course->point : 0u);
@@ -253,7 +253,7 @@ TreasureHunterInfo* TreasureHunterSystem::getAllCoursePoint() {
 
 TreasureHunterInfo* TreasureHunterSystem::findCourse(unsigned char _course) {
 
-	// Prote��o contra o Random Map, que usa o negatico do 'char'
+	// Protection against Random Map, which uses the negative of 'char'
 	if ((_course & 0x7F) >= MS_NUM_MAPS)
 		throw exception("[TreasureHunterSystem::findCourse][Error] _course is invalid[VALUE=" 
 				+ std::to_string((unsigned short)_course & 0x7F) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TREASURE_HUNTER_SYSTEM, 2, 0));
@@ -266,7 +266,7 @@ TreasureHunterInfo* TreasureHunterSystem::findCourse(unsigned char _course) {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// Prote��o contra o Random Map, que usa o negatico do 'char'
+	// Protection against Random Map, which uses the negative of 'char'
 	thi = &m_thi[_course & 0x7F];
 
 #if defined(_WIN32)
@@ -361,7 +361,7 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawItem(uint32_t _point
 
 	uint32_t box = (uint32_t)(rate / TREASURE_HUNTER_BOX_PER_POINT);
 
-	// Pelo menos uma box sortea
+	// At least one box is drawn
 	if (box == 0)
 		box = 1u;
 
@@ -374,9 +374,9 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawItem(uint32_t _point
 
 	Lottery::LotteryCtx *ctx = nullptr;
 
-	for (auto i = 0u; i < box; /*Incrementa no final do loop for*/) {
+	for (auto i = 0u; i < box; /*Incremented at the end of the for loop*/) {
 
-		// Sorteia item
+		// Draws item
 		if ((ctx = lottery.spinRoleta()) == nullptr) {
 			_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::drawItem][WARNING] nao conseguiu sortear o item. Bug", CL_FILE_LOG_AND_CONSOLE));
 			continue;
@@ -384,14 +384,14 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawItem(uint32_t _point
 
 		pThi = (TreasureHunterItem*)ctx->value;
 
-		// Verifica se o item existe no IFF_STRUCT do server, para n�o da erro mais tarde
+		// Checks if the item exists in the server's IFF_STRUCT, to avoid an error later
 		if (sIff::getInstance().findCommomItem(pThi->_typeid) == nullptr) {
 			_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::drawItem][WARNING] nao conseguiu encontrar o Item[TYPEID="
 					+ std::to_string(pThi->_typeid) + "] no IFF_STRUCT do server. Bug", CL_FILE_LOG_AND_CONSOLE));
 			continue;
 		}
 
-		// Sorteia quantidade
+		// Draws quantity
 		if (pThi->qntd > 1 && pThi->_typeid != PANG_POUCH_TYPEID/*PANG POUCH*/)
 			pThi->qntd = 1 + (sRandomGen::getInstance().rIbeMt19937_64_chrono() % pThi->qntd);
 
@@ -402,7 +402,7 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawItem(uint32_t _point
 
 		v_item.push_back(*pThi);
 
-		// Incrementa o index
+		// Increments the index
 		i++;
 	}
 
@@ -428,7 +428,7 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawApproachBox(uint32_t
 
 	uint32_t box = (uint32_t)(_num_box * sgs::gs::getInstance().getInfo().rate.treasure * rate_course / 100.f);
 
-	// _num box � maior que zero, box n�o pode ser 0, tem que ser pelo menos 1
+	// _num box is greater than zero, box cannot be 0, it has to be at least 1
 	if (box == 0u)
 		box = 1u;
 
@@ -439,9 +439,9 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawApproachBox(uint32_t
 
 	Lottery::LotteryCtx *ctx = nullptr;
 
-	for (auto i = 0u; i < box; /*Incrementa no final do loop for*/) {
+	for (auto i = 0u; i < box; /*Incremented at the end of the for loop*/) {
 
-		// Sorteia item
+		// Draws item
 		if ((ctx = lottery.spinRoleta()) == nullptr) {
 			_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::drawApproachBox][WARNING] nao conseguiu sortear o item. Bug", CL_FILE_LOG_AND_CONSOLE));
 			continue;
@@ -449,14 +449,14 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawApproachBox(uint32_t
 
 		pThi = (TreasureHunterItem*)ctx->value;
 
-		// Verifica se o item existe no IFF_STRUCT do server, para n�o da erro mais tarde
+		// Checks if the item exists in the server's IFF_STRUCT, to avoid an error later
 		if (sIff::getInstance().findCommomItem(pThi->_typeid) == nullptr) {
 			_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::drawApprochBox][WARNING] nao conseguiu encontrar o Item[TYPEID=" 
 					+ std::to_string(pThi->_typeid) + "] no IFF_STRUCT do server. Bug", CL_FILE_LOG_AND_CONSOLE));
 			continue;
 		}
 
-		// Sorteia quantidade
+		// Draws quantity
 		if (pThi->qntd > 1 && pThi->_typeid != PANG_POUCH_TYPEID/*PANG POUCH*/)
 			pThi->qntd = 1 + (sRandomGen::getInstance().rIbeMt19937_64_chrono() % pThi->qntd);
 
@@ -467,7 +467,7 @@ std::vector< TreasureHunterItem > TreasureHunterSystem::drawApproachBox(uint32_t
 
 		v_item.push_back(*pThi);
 
-		// Incrementa o index
+		// Increments the index
 		i++;
 	}
 
@@ -483,7 +483,7 @@ bool TreasureHunterSystem::checkUpdateTimePointCourse() {
 
 	TRY_CHECK;
 
-	// Adiciona +100 pontos para o course de 30 e 30 minutos o TEMPO certo est� no TREASURE_HUNTER_TIME_UPDATE
+	// Adds +100 points to the course every 30 minutes, the right TIME is in TREASURE_HUNTER_TIME_UPDATE
 	if ((std::time(nullptr) - m_time) >= TREASURE_HUNTER_TIME_UPDATE) {
 
 		for (auto i = 0; i < MS_NUM_MAPS; i++)
@@ -534,7 +534,7 @@ void TreasureHunterSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just leaves, I will add another kind of handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[TreasureHunterSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

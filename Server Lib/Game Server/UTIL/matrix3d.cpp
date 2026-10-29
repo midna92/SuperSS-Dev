@@ -1,6 +1,6 @@
-// Arquivo matrix3d.cpp
-// Criado em 03/10/2020 as 18:12 por Acrisio
-// Implementação da classe Martix3D
+// File matrix3d.cpp
+// Created on 03/10/2020 at 18:12 by Acrisio
+// Implementation of the Martix3D class
 
 #include "matrix3d.hpp"
 

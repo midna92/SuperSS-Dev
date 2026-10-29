@@ -1,6 +1,6 @@
-// Arquivo cmd_golden_time_round.hpp
-// Criado em 24/10/2020 as 02:31 por Acrisio
-// Defini��o da classe CmdGoldenTimeRound
+// File cmd_golden_time_round.hpp
+// Created on 24/10/2020 at 02:31 by Acrisio
+// Definition of the class CmdGoldenTimeRound
 
 #pragma once
 #ifndef _STDA_CMD_GOLDEN_TIME_ROUND_HPP

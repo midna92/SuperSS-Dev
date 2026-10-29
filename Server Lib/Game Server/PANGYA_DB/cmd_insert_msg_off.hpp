@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_msg_off.hpp
-// Criado em 11/08/2018 as 13:35 por Acrisio
-// Defini��o da classe CmdInsertMsgOff
+// File cmd_insert_msg_off.hpp
+// Created on 11/08/2018 at 13:35 by Acrisio
+// Definition of the class CmdInsertMsgOff
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_MSG_OFF_HPP

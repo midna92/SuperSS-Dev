@@ -1,6 +1,6 @@
-// Arquivo cmd_daily_quest_info.hpp
-// Criado em 07/04/2018 as 20:008 por Acrisio
-// Defini��o da classe CmdDailyQuestInfo
+// File cmd_daily_quest_info.hpp
+// Created on 07/04/2018 at 20:008 by Acrisio
+// Definition of the class CmdDailyQuestInfo
 
 #pragma once
 #ifndef _STDA_CMD_DAILY_QUEST_INFO_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_add_clubset.hpp
-// Criado em 19/05/2018 as 14:02 por Acrisio
-// Defini��o da classe CmdAddClubSet
+// File cmd_add_clubset.hpp
+// Created on 19/05/2018 at 14:02 by Acrisio
+// Definition of the class CmdAddClubSet
 
 #pragma once
 #ifndef _STDA_CMD_ADD_CLUBSET_HPP

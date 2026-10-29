@@ -1,6 +1,6 @@
-// Arquivo pang_battle.cpp
-// Criado em 09/01/2020 as 15:10 por Acrisio
-// Implementa��o da classe PangBattle
+// File pang_battle.cpp
+// Created on 09/01/2020 at 15:10 by Acrisio
+// Implementation of the PangBattle class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[PangBattle::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANG_BATTLE, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[PangBattle::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANG_BATTLE, 1, 4)); \
@@ -41,9 +41,9 @@ PangBattle::PangBattle(std::vector< player* >& _players, RoomInfoEx& _ri, RateVa
 		_smp::message_pool::getInstance().push(new message("[PangBattle::PangBattle][Error] tentou pegar o course do Treasure Hunter System, mas o course[COURSE="
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) + "] nao existe no sistema", CL_FILE_LOG_AND_CONSOLE));
 	else
-		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 ponto a cada jogo iniciado
+		sTreasureHunterSystem::getInstance().updateCoursePoint(*course, -1);	// -1 point for each game started
 
-	// Aqui tem que inicializar os players info
+	// Here the players info has to be initialized
 	initAllPlayerInfo();
 
 	// Initialize the Achievement of player
@@ -62,10 +62,10 @@ PangBattle::PangBattle(std::vector< player* >& _players, RoomInfoEx& _ri, RateVa
 
 PangBattle::~PangBattle() {
 
-	// Para o tempo do player Turn
+	// Stops the Player Turn time
 	stopTime();
 
-	// Salva os dados de todos os jogadores
+	// Saves the data of all players
 	for (auto& el : m_players)
 		finish_game(*el);
 
@@ -86,7 +86,7 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 
 	try {
 
-		// Evitar deadlock com a thread checkVersusTurn - Bloqueia
+		// Avoid deadlock with the checkVersusTurn thread - Locks
 		m_state_vs.lock();
 
 #if defined(_WIN32)
@@ -98,23 +98,23 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 		auto it = std::find(m_players.begin(), m_players.end(), _session);
 
 		if (it != m_players.end()) {
-			unsigned char opt = 3;	// Saiu Quitou
+			unsigned char opt = 3;	// Left, Quit
 
 			INIT_PLAYER_INFO("deletePlayer", "tentou sair do jogo", _session);
 
-			if (m_game_init_state == 1/*Come�ou*/) {
+			if (m_game_init_state == 1/*Started*/) {
 
 				packet p;
 
-				// Player Turn Para o tempo dele
+				// Player Turn Stops his time
 				if (m_player_turn == pgi)
 					stopTime();
 
 				auto sessions = getSessions(*it);
 
-				requestFinishItemUsedGame(*(*it));	// Salva itens usados no Tourney
+				requestFinishItemUsedGame(*(*it));	// Saves items used in the Tourney
 
-				// Aqui atualizar os pangs do Pang Battle que o player saiu
+				// Here updates the Pang Battle pangs for the player who left
 				if (m_pbd.m_hole > 0 && m_pbd.m_hole <= (short)m_pbd.v_player_win.size()) {
 
 					pgi->data.pang_pang_battle -= (m_pbd.v_player_win[m_pbd.m_hole - 1].pang * m_pbd.v_player_win[m_pbd.m_hole - 1].vezes);
@@ -123,7 +123,7 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 
 						uint64_t div = pgi->data.pang_pang_battle / (m_players.size() - 1);
 
-						// Zera ele n�o perde nenhum pang por que ele estava ganhando
+						// Zeroes it, he does not lose any pang because he was winning
 						pgi->data.pang_pang_battle = 0ll;
 
 						for (auto& ell : m_players) {
@@ -154,33 +154,33 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 					m_pbd.v_player_win[m_pbd.m_hole - 1].pang_extra += (m_pbd.v_player_win[m_pbd.m_hole - 1].pang * m_pbd.v_player_win[m_pbd.m_hole - 1].vezes);
 				}
 
-				// Player saiu do Pang Battle tira 1
+				// Player left the Pang Battle, removes 1
 				pgi->data.pang_battle_run_hole = -1;
 
 				// Log
 				_smp::message_pool::getInstance().push(new message("[PangBattle::deletePlayer][Log] Player[UID=" + std::to_string((*it)->m_pi.uid) 
 						+ "] Correu do Pang Battle, perdeu " + std::to_string(pgi->data.pang_pang_battle) + " Pang(s).", CL_FILE_LOG_AND_CONSOLE));
 
-				// Salva info do player
-				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*N�o conta quit*/ : 1); // Quitou ou tomou DC
+				// Saves player info
+				requestSaveInfo(*(*it), (_option == 0x800) ? 5/*Does not count quit*/ : 1); // Quit or got DC
 
 				setGameFlag(pgi, PlayerGameInfo::eFLAG_GAME::QUIT);
 
-				// Resposta Player saiu do Jogo, tira ele do list de score
+				// Response Player left the Game, removes him from the score list
 				p.init_plain((unsigned short)0x61);
 
 				p.addUint32((*it)->m_oid);
 
 				packet_func::vector_send(p, sessions, 1);
 
-				// Resposta Player saiu do jogo MSG
+				// Response Player left the game MSG
 				p.init_plain((unsigned short)0x40);
 
-				p.addUint8(8);	// Player Saiu Msg (8 = Pang Battle, 2 = Versus e Match)
+				p.addUint8(8);	// Player Left Msg (8 = Pang Battle, 2 = Versus and Match)
 
 				p.addString((*it)->m_pi.nickname);
 
-				p.addUint16(0);	// size Msg, n�o precisa de msg o pangya j� manda na opt 2
+				p.addUint16(0);	// size Msg, no msg is needed, pangya already sends it in opt 2
 
 				packet_func::vector_send(p, sessions, 1);
 
@@ -190,34 +190,34 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 
 			}else if (m_game_init_state == 2 && !pgi->finish_game) {
 	
-				// Acabou
+				// Finished
 				requestSaveInfo(*(*it), 0);
 			}
 			
-			// Deleta o player por give up ou time out, ele conta os achievements dele, tem o counter item 0x6C400004u Normal Game Complete
-			// Envia os achievements para ele para ficar igual ao original
-			if (m_game_init_state == 1/*Come�ou*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
+			// Deletes the player due to give up or time out, it counts his achievements, there is counter item 0x6C400004u Normal Game Complete
+			// Sends the achievements to him to match the original
+			if (m_game_init_state == 1/*Started*/ && pgi->data.bad_condute >= 3 && (pgi->data.time_out >= 3 || pgi->data.giveup >= 3)) {
 
 				// Achievements
-				rain_hole_consecutivos_count(*_session);			// conta os achievement de chuva em holes consecutivas
+				rain_hole_consecutivos_count(*_session);			// counts the achievements for rain on consecutive holes
 
-				score_consecutivos_count(*_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+				score_consecutivos_count(*_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-				rain_count(*_session);								// Aqui achievement de rain count
+				rain_count(*_session);								// Here the rain count achievement
 
 				pgi->sys_achieve.incrementCounter(0x6C400004u/*Normal game complete*/);
 
-				// Achievement Aqui
+				// Achievement Here
 				pgi->sys_achieve.finish_and_update(*_session);
 
-				// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+				// Response that always exists when a game ends, I do not know what it is yet, only HIO Event does not have this one
 				packet p((unsigned short)0x244);
 
 				p.addUint32(0);	// OK
 
 				packet_func::session_send(p, _session, 1);
 
-				// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+				// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 				p.init_plain((unsigned short)0x24F);
 
 				p.addUint32(0);	// OK
@@ -236,21 +236,21 @@ bool PangBattle::deletePlayer(player* _session, int _option) {
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlocks
 		m_state_vs.unlock();
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[PangBattle::deletePlayer][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Libera Critical Section
+		// Releases Critical Section
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
 		pthread_mutex_unlock(&m_cs);
 #endif
 
-		// Evitar deadlock com a thread checkVersusTurn - Libera
+		// Avoid deadlock with the checkVersusTurn thread - Unlocks
 		m_state_vs.unlock();
 	}
 
@@ -269,12 +269,12 @@ void PangBattle::requestInitHole(player& _session, packet *_packet) {
 
 	try {
 
-		// Chama a base para inicializar o hole do player
+		// Calls the base to initialize the player's hole
 		VersusBase::requestInitHole(_session, _packet);
 
 		INIT_PLAYER_INFO("requestInitHole", "tentou inicializar o hole", &_session);
 
-		// Aqui atualiza a sequ�ncia do hole do Pang Battle dados
+		// Here updates the Pang Battle hole sequence data
 		auto seq_hole = m_course->findHoleSeq(pgi->hole);
 
 		if (m_pbd.m_hole == -1 || m_pbd.m_count_finish_hole < m_pbd.v_player_win.size())
@@ -283,7 +283,7 @@ void PangBattle::requestInitHole(player& _session, packet *_packet) {
 			
 			m_pbd.m_hole_extra = seq_hole;
 
-			m_pbd.m_hole_extra_flag = true;	// Entrou no hole extra
+			m_pbd.m_hole_extra_flag = true;	// Entered the extra hole
 		}
 
 	}catch (exception& e) {
@@ -297,13 +297,13 @@ void PangBattle::changeHole() {
 	if (m_players.size() <= 0 || checkEndGame(**m_players.begin()))
 		finish_pang_battle(0);
 	else if (m_players.size() > 0)
-		// Resposta terminou o hole
-		updateFinishHole();	// Terminou
+		// Response finished the hole
+		updateFinishHole();	// Finished
 }
 
 void PangBattle::finishHole() {
 
-	// Mais um hole finalizado, soma os hole extra tamb�m se tiver
+	// One more hole finished, also adds the extra holes if any
 	m_pbd.m_count_finish_hole++;
 
 #if defined(_WIN32)
@@ -364,12 +364,12 @@ void PangBattle::requestInitShot(player& _session, packet *_packet) {
 #endif
 
 		// Stop time turn
-		pgi->bar_space.setState(0);	// Volta para 1 depois que taca, era esse meu coment�rio no antigo
+		pgi->bar_space.setState(0);	// Goes back to 1 after the shot, this was my comment in the old one
 
-		// para o tempo da tacada ele acabou de tacar
+		// stops the shot time, he just finished shooting
 		stopTime();
 
-		pgi->tempo = 0;	// Reseta o tempo
+		pgi->tempo = 0;	// Resets the time
 		// end
 
 		ShotDataEx sd{ 0 };
@@ -395,7 +395,7 @@ void PangBattle::requestInitShot(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("Log Shot Data Ex:\n\r" + sd.toString(), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Aqui n�o manda resposta no TourneyBase ou Practice, mas outro modos(VS, MATCH) manda e outros tamb�m n�o(TOURNEY)
+		// Here it does not send a response in TourneyBase or Practice, but other modes (VS, MATCH) send it and others do not either (TOURNEY)
 		p.init_plain((unsigned short)0x55);
 
 		p.addUint32(_session.m_oid);
@@ -431,7 +431,7 @@ void PangBattle::finish_pang_battle(int _option) {
 
 void PangBattle::timeIsOver(void* _quem) {
 
-	// Chama o timeIsOver da classe pai
+	// Calls timeIsOver of the parent class
 	VersusBase::timeIsOver(_quem);
 
 	if (_quem != nullptr) {
@@ -447,8 +447,8 @@ void PangBattle::timeIsOver(void* _quem) {
 			pgi->tempo = 0u;
 
 			if (++pgi->data.time_out >= 3)
-				// 3 Time outs kika o jogado da sala
-				pgi->data.bad_condute = 3;	// Kika Player
+				// 3 Time outs kick the player from the room
+				pgi->data.bad_condute = 3;	// Kick Player
 
 			// Time Out
 			packet p((unsigned short)0x5C);
@@ -468,10 +468,10 @@ bool PangBattle::init_game() {
 	
 	if (m_players.size() > 0) {
 
-		// variavel que salva a data local do sistema
+		// variable that saves the local system date
 		initGameTime();
 
-		m_game_init_state = 1;	// Come�ou
+		m_game_init_state = 1;	// Started
 
 		m_pang_battle_state = true;
 	}
@@ -488,9 +488,9 @@ void PangBattle::requestTranslateFinishHoleData(player& _session, UserInfoEx& _u
 
 		pgi->ui = _ui;
 
-		// Verifica se ele fez giveup mesmo, porque Pang Battle � que nem Match se um player ganhar antes de o outro terminar o hole, 
-		// passa para o pr�ximo hole e esse fica sem fazer o hole
-		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole && (m_pbd.m_hole <= 0 || m_pbd.v_player_win[m_pbd.m_hole -1].player_win == -3)) {	// Terminou o Hole sem acerta ele, Give Up
+		// Checks whether he really gave up, because Pang Battle is like Match, if a player wins before the other finishes the hole, 
+		// it moves on to the next hole and this one is left without doing the hole
+		if (!pgi->shot_sync.state_shot.display.stDisplay.acerto_hole && (m_pbd.m_hole <= 0 || m_pbd.v_player_win[m_pbd.m_hole -1].player_win == -3)) {	// Finished the Hole without hitting it, Give Up
 
 			auto hole = m_course->findHole(pgi->hole);
 
@@ -498,21 +498,21 @@ void PangBattle::requestTranslateFinishHoleData(player& _session, UserInfoEx& _u
 				throw exception("[PangBattle::requestFinishHoleData][Error] player[UID=" + std::to_string(pgi->uid) + "] tentou finalizar os dados do hole no jogo, mas o hole[NUMERO="
 						+ std::to_string(pgi->hole) + "] nao existe no course. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS, 400, 0));
 
-			// +1 que � giveup, s� add se n�o passou o n�mero de tacadas
+			// +1 because it is a giveup, only add if the number of shots has not been exceeded
 			if (pgi->data.tacada_num < hole->getPar().total_shot)
 				pgi->data.tacada_num++;
 
-			// Ainda n�o colocara o give up, o outro pacote, coloca nesse(muito dif�cil, n�o colocar s� se estiver com bug)
+			// Has not put the give up yet, the other packet, put it in this one (very difficult, do not put unless there is a bug)
 			if (!pgi->data.giveup) {
 				pgi->data.giveup = 1;
 
-				// Incrementa o Bad Condute
+				// Increments the Bad Conduct
 				pgi->data.bad_condute++;
 			}
 		}
 
-		// Aqui Salva os dados do Pgi, os best Chipin, Long putt e best drive(max dist�ncia)
-		// N�o sei se precisa de salvar aqui, j� que estou salvando no pgi User Info
+		// Here Saves the Pgi data, the best Chipin, Long putt and best drive (max distance)
+		// I do not know if it needs to be saved here, since I am saving it in the pgi User Info
 		pgi->progress.best_chipin = _ui.best_chip_in;
 		pgi->progress.best_long_puttin = _ui.best_long_putt;
 		pgi->progress.best_drive = _ui.best_drive;
@@ -536,8 +536,8 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 	try {
 
-		// Aqui dados do jogo ele passa o holein no lugar do mad_conduta <-> holein, agora quando ele passa o info user � invertido(Normal)
-		// Inverte para salvar direito no banco de dados
+		// Here game data, it passes holein in place of bad_conduct <-> holein, now when it passes the user info it is inverted (Normal)
+		// Inverts to save correctly in the database
 		auto tmp_holein = pgi->ui.hole_in;
 
 #ifdef _DEBUG
@@ -547,22 +547,22 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 		pgi->ui.hole_in = pgi->ui.mad_conduta;
 		pgi->ui.mad_conduta = tmp_holein;
 
-		// Total score do player
+		// Player's total score
 		int32_t score = 0;
 
-		for (auto it = 0u; it < (unsigned short)m_pbd.m_hole && it < m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it)
+		for (auto it = 0u; it < (unsigned short)m_pbd.m_hole && it < m_ri.qntd_hole/*9h or 18h it checks*/; ++it)
 			score += pgi->progress.score[it];
-		// Fim de total score
+		// End of total score
 
-		// Player saiu ou algu�m saiu do Pang Battle
+		// Player left or someone left the Pang Battle
 		pgi->ui.skin_run_hole = pgi->data.pang_battle_run_hole;
 
-		// Pangs que o player ganhou ou perdeu no Pang Battle
+		// Pangs the player won or lost in the Pang Battle
 		pgi->ui.skin_pang = pgi->data.pang_pang_battle;
 
-		if (option == 0) { // Terminou VS
+		if (option == 0) { // Finished VS
 
-			// Verifica se o Angel Event est� ativo de tira 1 quit do player que conclu� o jogo
+			// Checks whether the Angel Event is active and removes 1 quit from the player who completed the game
 			if (m_ri.angel_event) {
 				
 				pgi->ui.quitado = -1;
@@ -575,11 +575,11 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 			pgi->ui.combo = 1;
 			pgi->ui.jogado = 1;
 
-			// Pang Battle o score est� em progress struct
+			// Pang Battle the score is in the progress struct
 			pgi->ui.media_score = score; //pgi->data.score;
 
-			// Os valores que eu n�o colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui � o contador de jogos que o player come�ou � o mesmo do jogado, s� que esse aqui usa para o disconnect
+			// The values I did not put in
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as the played one, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -588,9 +588,9 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 1) { // Quitou ou tomou DC
+		}else if (option == 1) { // Quit or got DC
 			
-			// Quitou ou saiu n�o ganha pangs
+			// Quit or left does not win pangs
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
 
@@ -598,16 +598,16 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 			pgi->ui.combo = DECREASE_COMBO_VALUE * -1;
 			pgi->ui.jogado = 1;
 			
-			// Verifica se tomou DC ou Quitou, ai soma o membro certo
+			// Checks whether got DC or Quit, then adds to the right member
 			if (!_session.m_connection_timeout)
 				pgi->ui.quitado = 1;
 			else
 				pgi->ui.disconnect = 1;
 
-			// Os valores que eu n�o colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui � o contador de jogos que o player come�ou � o mesmo do jogado, s� que esse aqui usa para o disconnect
+			// The values I did not put in
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as the played one, but this one is used for disconnect
 
-			// Pang Battle o score est� em progress struct
+			// Pang Battle the score is in the progress struct
 			pgi->ui.media_score = score; //pgi->data.score;
 
 			auto diff = getLocalTimeDiff(m_start_time);
@@ -617,7 +617,7 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 2) { // N�o terminou o hole 1, alguem saiu ai volta para sala sem contar o combo, s� conta o jogo que come�ou
+		}else if (option == 2) { // Did not finish hole 1, someone left so it goes back to the room without counting the combo, only counts the game that started
 
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
@@ -625,8 +625,8 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 			pgi->ui.exp = 0;
 			pgi->ui.jogado = 1;
 
-			// Os valores que eu n�o colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui � o contador de jogos que o player come�ou � o mesmo do jogado, s� que esse aqui usa para o disconnect
+			// The values I did not put in
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as the played one, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -639,7 +639,7 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.clear();
 
-			// Verifica se o Angel Event est� ativo de tira 1 quit do player que conclu� o jogo
+			// Checks whether the Angel Event is active and removes 1 quit from the player who completed the game
 			if (m_ri.angel_event) {
 
 				pgi->ui.quitado = -1;
@@ -653,8 +653,8 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 			pgi->ui.jogado = 1;
 			pgi->ui.media_score = 0;
 
-			// Os valores que eu n�o colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui � o contador de jogos que o player come�ou � o mesmo do jogado, s� que esse aqui usa para o disconnect
+			// The values I did not put in
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as the played one, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -663,20 +663,20 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 5/*N�o conta quit*/) {
+		}else if (option == 5/*Does not count quit*/) {
 
-			// Quitou ou saiu n�o ganha pangs
+			// Quit or left does not win pangs
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
 
 			pgi->ui.exp = 0;
 			pgi->ui.jogado = 1;
 			
-			// Pang Battle o score est� em progress struct
+			// Pang Battle the score is in the progress struct
 			pgi->ui.media_score = score; //pgi->data.score;
 
-			// Os valores que eu n�o colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui � o contador de jogos que o player come�ou � o mesmo do jogado, s� que esse aqui usa para o disconnect
+			// The values I did not put in
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as the played one, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -689,7 +689,7 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 		// Achievement Records
 		records_player_achievement(_session);
 
-		// Soma com os pangs que ele ganhou no Pang Battle, se o player ganhou o Pang Battle tira 5% dos pangs que ele ganhou
+		// Adds to the pangs he won in the Pang Battle, if the player won the Pang Battle removes 5% of the pangs he won
 		int64_t total_pang = pgi->data.pang + pgi->data.bonus_pang + (m_pbd.m_player_win_pb == pgi->oid ? (int64_t)(pgi->data.pang_pang_battle * 0.95f) : pgi->data.pang_pang_battle);
 
 		// UPDATE ON SERVER AND DB
@@ -698,7 +698,7 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 		if (total_pang > 0)
 			_session.m_pi.addPang(total_pang);				// add Pang
 		else if (total_pang < 0)
-			_session.m_pi.consomePang(total_pang * -1);		// Consome Pangs
+			_session.m_pi.consomePang(total_pang * -1);		// Consumes Pangs
 
 		// Game Combo
 		if (_session.m_pi.ui.combo > 0)
@@ -711,13 +711,13 @@ void PangBattle::requestSaveInfo(player& _session, int option) {
 
 void PangBattle::finish() {
 
-	m_pang_battle_state = false;	// Terminou o versus
+	m_pang_battle_state = false;	// Finished the versus
 
-	m_game_init_state = 2; // Terminou o jogo
+	m_game_init_state = 2; // Finished the game
 
 	requestCalculeRankPlace();
 
-	calculePlayerWinPangBattle();		// Calcula que ganhou o Pang Battle
+	calculePlayerWinPangBattle();		// Calculates who won the Pang Battle
 
 	requestDrawTreasureHunterItem();
 
@@ -732,26 +732,26 @@ void PangBattle::finish() {
 
 void PangBattle::requestFinishData(player& _session) {
 
-	// Finish Artefact Frozen Flame agora � direto no Finish Item Used Game
+	// Finish Artefact Frozen Flame is now directly in Finish Item Used Game
 	requestFinishItemUsedGame(_session);
 
 	requestSaveDrop(_session);
 
-	rain_hole_consecutivos_count(_session);			// conta os achievement de chuva em holes consecutivas
+	rain_hole_consecutivos_count(_session);			// counts the achievements for rain on consecutive holes
 
-	score_consecutivos_count(_session);				// conta os achievement de back-to-back(2 ou mais score iguais consecutivos) do player
+	score_consecutivos_count(_session);				// counts the player's back-to-back achievements (2 or more equal consecutive scores)
 
-	rain_count(_session);							// Aqui achievement de rain count
+	rain_count(_session);							// Here the rain count achievement
 
-	//INIT_PLAYER_INFO("requestFinishData", "tentou finalizar dados do jogo", &_session);
+	//INIT_PLAYER_INFO("requestFinishData", "tried to finish game data", &_session);
 
-	// Resposta Treasure Hunter Item Draw
+	// Response Treasure Hunter Item Draw
 	sendTreasureHunterItemDrawGUI(_session);
 
-	// Resposta terminou game - Drop Itens
+	// Response finished game - Drop Items
 	sendDropItem(_session);
 
-	// Resposta terminou game - Placar
+	// Response finished game - Scoreboard
 	sendPlacar(_session);
 }
 
@@ -768,15 +768,15 @@ void PangBattle::requestFinishHole(player& _session, int option) {
 	char score_hole = 0;
 	uint32_t tacada_hole = 0u;
 
-	// Finish Hole Dados
+	// Finish Hole Data
 	if (option == 0) {
 
 		pgi->data.total_tacada_num += pgi->data.tacada_num;
 
-		// Score do hole
+		// Hole score
 		score_hole = (char)(pgi->data.tacada_num - hole->getPar().par);
 
-		// Tacadas do hole
+		// Hole shots
 		tacada_hole = pgi->data.tacada_num;
 
 		// Achievement Score
@@ -793,26 +793,26 @@ void PangBattle::requestFinishHole(player& _session, int option) {
 #endif // _DEBUG
 
 
-		// Zera dados
+		// Zeroes data
 		pgi->data.time_out = 0u;
 
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole
+		// Zeroes the hole penalties
 		pgi->data.penalidade = 0u;
 
-	}else if (option == 1) {	// N�o acabou o hole ent�o faz os calculos para o jogo todo
+	}else if (option == 1) {	// The hole was not finished so it does the calculations for the whole game
 
 		auto pair = m_course->findRange(pgi->hole);
 
-		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it) {
+		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h or 18h it checks*/; ++it) {
 			pgi->data.total_tacada_num += it->second.getPar().total_shot;
 
 			pgi->data.score += it->second.getPar().range_score[1];	// Max Score
 		}
 
-		// Zera dados
+		// Zeroes data
 		pgi->data.time_out = 0u;
 
 		pgi->data.tacada_num = 0u;
@@ -820,20 +820,20 @@ void PangBattle::requestFinishHole(player& _session, int option) {
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole do player
+		// Zeroes the player's hole penalties
 		pgi->data.penalidade = 0u;
 	}
 
-	// Aqui tem que atualiza o PGI direitinho com outros dados
+	// Here the PGI has to be updated properly with other data
 	pgi->progress.hole = (short)m_course->findHoleSeq(pgi->hole);
 
-	// Dados Game Progress do Player
+	// Player's Game Progress Data
 	if (option == 0) {
 		
 		if (pgi->progress.hole > 0) {
 
 			if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole)
-				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Terminou o hole
+				pgi->progress.finish_hole[pgi->progress.hole - 1] = 1;	// Finished the hole
 
 			pgi->progress.par_hole[pgi->progress.hole - 1] = hole->getPar().par;
 			pgi->progress.score[pgi->progress.hole - 1] = score_hole;
@@ -844,9 +844,9 @@ void PangBattle::requestFinishHole(player& _session, int option) {
 
 		auto pair = m_course->findRange(pgi->hole);
 
-		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it) {
+		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h or 18h it checks*/; ++it) {
 			
-			pgi->progress.finish_hole[it->first - 1] = 0;	// n�o terminou
+			pgi->progress.finish_hole[it->first - 1] = 0;	// did not finish
 
 			pgi->progress.par_hole[it->first - 1] = it->second.getPar().par;
 
@@ -875,61 +875,61 @@ bool PangBattle::checkNextStepGame(player& _session) {
 
 			if (m_player_turn == nullptr) {
 
-				// Player Turn ainda n�o foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 				
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn n�o est� mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
-				m_flag_next_step_game = 2;	// Termina o game
+				m_flag_next_step_game = 2;	// Ends the game
 		
-		}else if (m_players.size() == 1) {	// Player quitou mesmo sendo o ultimo no jogo
+		}else if (m_players.size() == 1) {	// Player quit even though he was the last in the game
 
 			if (m_player_turn == nullptr) {
 
-				// Player Turn ainda n�o foi decidido, termina o jogo
+				// Player Turn has not been decided yet, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else if (m_player_turn == pgi) {
 				
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 			
 			}else if (!checkPlayerTurnExistOnGame()) {
 
-				// Player Turn n�o est� mais no jogo, termina o jogo
+				// Player Turn is no longer in the game, ends the game
 				m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-				ret = true;	// Termina o Game
+				ret = true;	// Ends the Game
 
 			}else
 				m_flag_next_step_game = 2;
 		
 		}else if(m_player_turn == nullptr) {
 
-			// Player Turn ainda n�o foi decidido, termina o jogo
+			// Player Turn has not been decided yet, ends the game
 			m_state_vs.setStateWithLock(STATE_VERSUS::WAIT_END_GAME);
 
-			ret = true;	// Termina o Game
+			ret = true;	// Ends the Game
 
 		}else
-			m_flag_next_step_game = 3;	// Player quitou
+			m_flag_next_step_game = 3;	// Player quit
 
 	}catch (exception& e) {
 
@@ -942,15 +942,15 @@ bool PangBattle::checkNextStepGame(player& _session) {
 bool PangBattle::checkAllClearHole() {
 	
 	bool draw = false;
-	uint32_t best_shot = 100u;	// Melhor tacada de quem n�o fez o hole ou deu giveup
+	uint32_t best_shot = 100u;	// Best shot of whoever did not make the hole or gave up
 	PlayerGameInfo *p = nullptr;
 
-	// Verifica se esse hola j� tem um vencedor ou se empatou, que pode chamar esse fun��o mais de uma vez quando o player sai no primeiro hole
+	// Checks whether this hole already has a winner or a tie, since this function can be called more than once when the player leaves on the first hole
 	if (m_pbd.m_hole <= (short)m_pbd.v_player_win.size() && m_pbd.v_player_win[m_pbd.m_hole - 1].player_win >= 0 
 			|| (m_pbd.v_player_win[m_pbd.m_hole - 1].player_win == -1/*Draw*/ && !m_pbd.m_hole_extra_flag))
-		return true; // Esse hole j� tem um vencedor ou empatou
+		return true; // This hole already has a winner or a tie
 
-	// Verifica se est� no hole extra, Approach Game
+	// Checks whether it is on the extra hole, Approach Game
 	if (m_pbd.m_hole == m_pbd.v_player_win.size() && m_pbd.m_hole_extra_flag) {
 
 		// Approach Game
@@ -958,7 +958,7 @@ bool PangBattle::checkAllClearHole() {
 		// Initialize player order top shot approach
 		auto v_player_order = init_player_order_top_shot_approach();
 
-		// N�o conseguiu inicializar os players order top shot aprroach, termina o jogo
+		// Could not initialize the players order top shot approach, ends the game
 		if (v_player_order.empty()) {
 
 			_smp::message_pool::getInstance().push(new message("[PangBattle::checkAllClearHole][Error][WARNING] nao conseguiu inicializar os players order top shot approach, terminando o jogo. Bug", 
@@ -969,7 +969,7 @@ bool PangBattle::checkAllClearHole() {
 
 		try {
 
-			// Quantos player tacaram uma ou mais vezes
+			// How many players shot one or more times
 			uint32_t count_player_shot = 0u;
 
 #if defined(_WIN32)
@@ -993,7 +993,7 @@ bool PangBattle::checkAllClearHole() {
 						count_player_shot++;
 
 					if (_el.pgi->shot_sync.isMakeHole() && p == nullptr)
-						draw = true;	// Empatou, todos chiparam
+						draw = true;	// Tied, everyone chipped in
 					else if (!_el.pgi->shot_sync.isMakeHole() && p == nullptr)
 						p = _el.pgi;
 
@@ -1003,7 +1003,7 @@ bool PangBattle::checkAllClearHole() {
 				}
 			});
 
-			// Verifica se o hole est� ok
+			// Checks whether the hole is ok
 			if (m_pbd.m_hole <= 0)
 				_smp::message_pool::getInstance().push(new message("[PangBattle::checkAllClearHole][Error][WARNING] nao conseguiu atualizar os dados do pang battle por que o hole is invalid(" 
 						+ std::to_string(m_pbd.m_hole) + "). Bug.", CL_FILE_LOG_AND_CONSOLE));
@@ -1012,9 +1012,9 @@ bool PangBattle::checkAllClearHole() {
 				// Hole Pang Battle Data
 				auto& ph = m_pbd.v_player_win[m_pbd.m_hole - 1];
 
-				// D� os premios para quem ganhou ou se empatou s� passa para o pr�ximo hole
+				// Gives the prizes to the winner or if tied just moves on to the next hole
 
-				// Verifica o Draw primeiro, que se ele estiver ativo, empatou
+				// Checks Draw first, if it is active, it is a tie
 				if (count_player_shot == v_player_order.size() && draw) {	// Draw
 
 					// Draw
@@ -1026,7 +1026,7 @@ bool PangBattle::checkAllClearHole() {
 
 					if (m_pbd.m_hole < (short)m_pbd.v_player_win.size() && !m_pbd.m_hole_extra_flag) {
 
-						// Passa o valor para o pr�ximo hole que empatou esse hole
+						// Passes the value to the next hole since this hole was tied
 						m_pbd.v_player_win[m_pbd.m_hole].pang += ph.pang;
 						m_pbd.v_player_win[m_pbd.m_hole].vezes = (ph.vezes < 8) ? ph.vezes * 2u : 8u;
 						m_pbd.v_player_win[m_pbd.m_hole].pang_extra = ph.pang_extra;
@@ -1046,7 +1046,7 @@ bool PangBattle::checkAllClearHole() {
 							+ "] Ganhou o hole[NUMERO=" + std::to_string(p->hole) + "][EXTRA]", CL_FILE_LOG_AND_CONSOLE));
 	#endif // _DEBUG
 
-					// Tira os pangs dos outros players
+					// Removes the pangs from the other players
 					for (auto& el : m_players) {
 
 						if (el != nullptr && el->m_pi.uid != p->uid) {
@@ -1066,7 +1066,7 @@ bool PangBattle::checkAllClearHole() {
 					}
 
 				}else if (count_player_shot != v_player_order.size() && p != nullptr) {
-					// N�o terminou o jogo(Approach) ainda, falta player tacar
+					// The game (Approach) has not finished yet, a player still has to shoot
 					p = nullptr;
 					draw = false;
 				}
@@ -1133,7 +1133,7 @@ bool PangBattle::checkAllClearHole() {
 
 						if (p != nullptr) {
 
-							// Player pode empatar
+							// Player can tie
 							if ((_el->data.tacada_num + 1) <= p->data.tacada_num)
 								p = nullptr;
 
@@ -1146,7 +1146,7 @@ bool PangBattle::checkAllClearHole() {
 				}
 			});
 
-			// Verifica se o hole est� ok
+			// Checks whether the hole is ok
 			if (m_pbd.m_hole <= 0)
 				_smp::message_pool::getInstance().push(new message("[PangBattle::checkAllClearHole][Error][WARNING] nao conseguiu atualizar os dados do pang battle por que o hole is invalid(" 
 						+ std::to_string(m_pbd.m_hole) + "). Bug.", CL_FILE_LOG_AND_CONSOLE));
@@ -1155,9 +1155,9 @@ bool PangBattle::checkAllClearHole() {
 				// Hole Pang Battle Data
 				auto& ph = m_pbd.v_player_win[m_pbd.m_hole - 1];
 
-				// D� os premios para quem ganhou ou se empatou s� passa para o pr�ximo hole
+				// Gives the prizes to the winner or if tied just moves on to the next hole
 
-				// Verifica o Draw primeiro, que se ele estiver ativo, empatou
+				// Checks Draw first, if it is active, it is a tie
 				if (draw) {	// Draw
 
 					// Draw
@@ -1169,7 +1169,7 @@ bool PangBattle::checkAllClearHole() {
 
 					if (m_pbd.m_hole < (short)m_pbd.v_player_win.size()) {
 
-						// Passa o valor para o pr�ximo hole que empatou esse hole
+						// Passes the value to the next hole since this hole was tied
 						m_pbd.v_player_win[m_pbd.m_hole].pang += ph.pang;
 						m_pbd.v_player_win[m_pbd.m_hole].vezes = (ph.vezes < 8) ? ph.vezes * 2u : 8u;
 						m_pbd.v_player_win[m_pbd.m_hole].pang_extra = ph.pang_extra;
@@ -1189,7 +1189,7 @@ bool PangBattle::checkAllClearHole() {
 							+ "] Ganhou o hole[NUMERO=" + std::to_string(p->hole) + "]", CL_FILE_LOG_AND_CONSOLE));
 	#endif // _DEBUG
 
-					// Tira os pangs dos outros players
+					// Removes the pangs from the other players
 					for (auto& el : m_players) {
 
 						if (el != nullptr && el->m_pi.uid != p->uid) {
@@ -1236,7 +1236,7 @@ void PangBattle::updateFinishHole() {
 
 	packet p((unsigned short)0x65);
 
-	// OID do player que ganhou ou -1 se empatou
+	// OID of the player who won or -1 if tied
 	int32_t player_win = (m_pbd.m_hole <= 0 || (short)m_pbd.v_player_win.size() < m_pbd.m_hole ? -1 : m_pbd.v_player_win[m_pbd.m_hole - 1].player_win);
 
 	p.addInt32(player_win);
@@ -1255,25 +1255,25 @@ void PangBattle::sendPlayerTurn() {
 		throw exception("[PangBattle::sendPlayerTurn][Error] player[UID=" + std::to_string(m_player_turn->uid) + "] tentou encontrar o hole[NUMERO="
 				+ std::to_string(m_player_turn->hole) + "] do course no jogo, mas nao foi encontrado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 101, 0));
 
-	// Troca o vento
+	// Changes the wind
 	auto wind = m_course->shuffleWind((uint32_t)(size_t)m_player_turn * 777u);
 
-	// Toda hora o Pang Battle troca o vento e o angulo
+	// Pang Battle changes the wind and the angle all the time
 	m_player_turn->degree = wind.degree.getShuffleDegree();
 
 	auto wind_flag = initCardWindPlayer(m_player_turn, wind.wind);
 
-	// Resposta do vento do hole
+	// Response of the hole wind
 	packet p((unsigned short)0x5B);
 
 	p.addUint8(wind.wind + wind_flag);
-	p.addUint8(1u);	// Flag de card de vento, aqui � a qnd diminui o vento, 1 Vento azul, no Pang Battle n�o tem card de vento, mas toda hora ele troca o vento e o angulo
+	p.addUint8(1u);	// Wind card flag, this is when the wind decreases, 1 Blue wind, in Pang Battle there is no wind card, but it changes the wind and the angle all the time
 	p.addUint16(m_player_turn->degree);
-	p.addUint8(0u);	// Flag do vento, 1 Reseta o Vento, 0 soma o vento que nem o comando gm \wind do pangya original, , Tamb�m � flag para trocar o vento no Pang Battle se mandar o valor 0
+	p.addUint8(0u);	// Wind flag, 1 Resets the Wind, 0 adds to the wind like the original pangya gm command \wind, , Also a flag to change the wind in Pang Battle if the value 0 is sent
 
 	packet_func::game_broadcast(*this, p, 1);
 
-	// Resposta passa o oid do player que vai come�a o Hole
+	// Response passes the oid of the player who will start the Hole
 	p.init_plain((unsigned short)0x63);
 
 	if (m_player_turn == nullptr) {
@@ -1293,21 +1293,21 @@ void PangBattle::changeTurn() {
 	if (m_player_turn == nullptr)
 		throw exception("[PangBattle::changeTurn][Error] PlayerGameInfo *m_player_turn is invalid(nullptr). Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::VERSUS_BASE, 100, 0));
 
-	// Para o tempo do player do turno
+	// Stops the turn player's time
 	stopTime();
 
 	// Check Player Turn finish last hole
 	if (m_player_turn->shot_sync.state_shot.display.stDisplay.acerto_hole || m_player_turn->data.giveup) {
 
-		// Verifica se o player terminou jogo, fez o ultimo hole
+		// Checks whether the player finished the game, made the last hole
 		if (m_course->findHoleSeq(m_player_turn->hole) == m_ri.qntd_hole) {
 
-			// Resposta para o player que terminou o ultimo hole do Game
+			// Response for the player who finished the last hole of the Game
 			packet p((unsigned short)0x199);
 
 			packet_func::game_broadcast(*this, p, 1);
 
-			// Fez o Ultimo Hole, Calcula Clear Bonus para o player
+			// Made the Last Hole, Calculates Clear Bonus for the player
 			if (m_player_turn->shot_sync.state_shot.display.stDisplay.clear_bonus) {
 
 				if (!sMap::getInstance().isLoad())
@@ -1324,22 +1324,22 @@ void PangBattle::changeTurn() {
 		}
 	}
 
-	// Limpa dados que usa para cada tacada
+	// Clears data used for each shot
 	clearDataEndShot(m_player_turn);
 
-	// Verifica se todos fizeram o hole
+	// Checks whether everyone did the hole
 	if (checkAllClearHole()) {
 
 		clear_all_flag_sync();
 		
 		finishHole();
 
-		// Utilizo ele antes no finish hole, limpo ele aqui depois
+		// I use it earlier in finish hole, I clear it here afterwards
 		clearAllClearHole();
 
 		changeHole();
 	
-	}else if (m_players.size() == 1 /*&& m_course->findHoleSeq(m_player_turn->hole) < 4*/) {	// Finaliza o game
+	}else if (m_players.size() == 1 /*&& m_course->findHoleSeq(m_player_turn->hole) < 4*/) {	// Finishes the game
 
 		clear_all_flag_sync();
 
@@ -1347,14 +1347,14 @@ void PangBattle::changeTurn() {
 
 		changeHole();
 
-	}else {	// Troca o Turno
+	}else {	// Changes the Turn
 
 		clear_all_flag_sync();
 
-		// Recalcula Turno
+		// Recalculates Turn
 		requestCalculePlayerTurn();
 
-		// Cnvia para todos o vento e oid do player turn, o player que vai tacar nesse momento
+		// Sends to everyone the wind and the oid of the turn player, the player who will shoot at this moment
 		sendPlayerTurn();
 	}
 }
@@ -1365,16 +1365,16 @@ void PangBattle::sendPlacar(player& _session) {
 
 	p.addUint8((unsigned char)m_players.size());
 
-	// Ultimo hole
+	// Last hole
 	auto last_hole_index = (m_pbd.m_hole < (short)m_pbd.v_player_win.size() ? m_pbd.m_hole - 1 : m_pbd.v_player_win.size() - 1);
 
-	// Quem ganhou o ultimo hole
+	// Who won the last hole
 	if (m_pbd.v_player_win[last_hole_index].player_win != -1)
 		p.addUint32(m_pbd.v_player_win[last_hole_index].player_win);
 	else
 		p.addUint32(m_pbd.m_player_win_pb);
 
-	// Quem ganhou o Pang Battle
+	// Who won the Pang Battle
 	p.addUint32(m_pbd.m_player_win_pb);
 
 	for (auto& el : m_players) {
@@ -1390,7 +1390,7 @@ void PangBattle::sendPlacar(player& _session) {
 		p.addUint64(pgi->data.pang);
 		p.addUint64(pgi->data.bonus_pang);
 
-		// Valor que usa no Pang Battle, valor de pang que ganhou ou perdeu
+		// Value used in Pang Battle, amount of pang won or lost
 		p.addUint64(pgi->data.pang_pang_battle);
 	}
 
@@ -1403,7 +1403,7 @@ void PangBattle::requestCalculeRankPlace() {
 		m_player_order.clear();
 
 	for (auto& el : m_player_info)
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// minus those who quit
 			m_player_order.push_back(el.second);
 
 	std::sort(m_player_order.begin(), m_player_order.end(), PangBattle::sort_player_rank_place);
@@ -1473,7 +1473,7 @@ eMSG_MAKE_HOLE PangBattle::calcMsgToPlayerMakeHole(PlayerGameInfo* _pgi) {
 		_smp::message_pool::getInstance().push(new message("[PangBattle::calcMsgToPlayerMakeHole][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	return ret;	// Perdeu
+	return ret;	// Lost
 }
 
 void PangBattle::init_pang_battle_data() {
@@ -1504,7 +1504,7 @@ void PangBattle::calculePlayerWinPangBattle() {
 
 	if (m_players.size() == 0) {
 		
-		// Primeiro player ganhou, s� tem ele na sala
+		// First player won, he is the only one in the room
 		m_pbd.m_player_win_pb = m_players[0]->m_oid;
 
 		return;
@@ -1518,7 +1518,7 @@ void PangBattle::calculePlayerWinPangBattle() {
 	for (auto& el : m_player_order) {
 
 		// !@
-		// Se o player empatar nos pangs foi um empate
+		// If the player ties on pangs it was a tie
 		if (pang_win == -1ll || el->data.pang_pang_battle > pang_win) {
 
 			m_pbd.m_player_win_pb = el->oid;
@@ -1565,7 +1565,7 @@ bool PangBattle::sort_player_top_shot(PlayerGameInfo* _pgi1, PlayerGameInfo* _pg
 		return true;
 	else if ((_pgi1->shot_sync.isMakeHole() || _pgi1->data.giveup) && _pgi1->data.tacada_num < _pgi2->data.tacada_num && (_pgi2->shot_sync.isMakeHole() || _pgi2->data.giveup))
 		return true;
-	else if ((!_pgi1->shot_sync.isMakeHole() && _pgi1->data.giveup) && (_pgi1->data.tacada_num + 1/*Empate*/) <= _pgi2->data.tacada_num && (_pgi2->shot_sync.isMakeHole() || _pgi2->data.giveup))
+	else if ((!_pgi1->shot_sync.isMakeHole() && _pgi1->data.giveup) && (_pgi1->data.tacada_num + 1/*Tie*/) <= _pgi2->data.tacada_num && (_pgi2->shot_sync.isMakeHole() || _pgi2->data.giveup))
 		return true;
 	else if ((!_pgi1->shot_sync.isMakeHole() && !_pgi1->data.giveup) && _pgi1->data.tacada_num < _pgi2->data.tacada_num && (!_pgi2->shot_sync.isMakeHole() && !_pgi2->data.giveup))
 		return true;
@@ -1573,7 +1573,7 @@ bool PangBattle::sort_player_top_shot(PlayerGameInfo* _pgi1, PlayerGameInfo* _pg
 	return _pgi1->data.tacada_num < _pgi2->data.tacada_num;
 }
 
-// Is Maked Hole no Approach no final do Pang Battle ele n�o marca o acerto_hole ele s� marca o state shot
+// Is Maked Hole in Approach at the end of Pang Battle it does not mark hole_hit it only marks the state shot
 #define APPROACH_IS_MAKE_HOLE(_pp) (bool)((_pp) != nullptr ? ((_pp)->shot_sync.isMakeHole() || (_pp)->shot_sync.state == ShotSyncData::SHOT_STATE::INTO_HOLE) : false)
 #define CHECK_PGI_IS_NULL(__pgi) (bool)((__pgi == nullptr))
 
@@ -1679,7 +1679,7 @@ bool PangBattle::finish_game(player& _session, int option) {
 
 		INIT_PLAYER_INFO("finish_game", "tentou finalizar o jogo", &_session);
 
-		// Terminou o hole, finalizar o hole por ele
+		// Finished the hole, finishes the hole for him
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole || pgi->data.giveup) {
 			
 			requestFinishHole(_session, 0);
@@ -1689,12 +1689,12 @@ bool PangBattle::finish_game(player& _session, int option) {
 
 		pgi->finish_game = 1u;
 
-		if (PlayersCompleteGameAndClear() || option == 2/*Termina o jogo*/) {
+		if (PlayersCompleteGameAndClear() || option == 2/*Ends the game*/) {
 
 			packet p;
 
-			// Verifica se � o primeiro hole e se nem todos terminaram o hole
-			if (m_course->findHoleSeq(pgi->hole) == 1 && !checkAllClearHole() && (pgi->progress.hole <= 0 || pgi->progress.finish_hole[pgi->progress.hole - 1] == 0/*N�o terminou o hole*/)) {
+			// Checks whether it is the first hole and whether not everyone has finished the hole
+			if (m_course->findHoleSeq(pgi->hole) == 1 && !checkAllClearHole() && (pgi->progress.hole <= 0 || pgi->progress.finish_hole[pgi->progress.hole - 1] == 0/*Did not finish the hole*/)) {
 
 				for (auto& el : m_players) {
 
@@ -1715,15 +1715,15 @@ bool PangBattle::finish_game(player& _session, int option) {
 					}
 				}
 
-				m_game_init_state = 2;	// Acabou o VS
+				m_game_init_state = 2;	// The VS ended
 
 				return true;
 
 			}else {
 
-				if (m_pang_battle_state) { // Deixa o cliente envia o pacote para finalizar o jogo, depois que ele mostrar os placares
+				if (m_pang_battle_state) { // Lets the client send the packet to finish the game, after it shows the scoreboards
 
-					// Chama o checkAllClearHole para atualizar o ultimo hole, por quem chamou para acabar o jogo foi externo
+					// Calls checkAllClearHole to update the last hole, because whoever called to end the game was external
 					if (option == 2)
 						auto lixo_ret = checkAllClearHole();
 
@@ -1739,57 +1739,57 @@ bool PangBattle::finish_game(player& _session, int option) {
 
 							requestSaveRecordCourse(*el, 0/*Normal Game*/, (m_ri.qntd_hole == 18 && m_course->findHoleSeq(pgi->hole) == 18) ? 1 : 0);
 
-							// Salva (inicializa os dados do Pang Battle do player para o UserInfo) do PlayerGamInfo
+							// Saves (initializes the player's Pang Battle data for the UserInfo) from the PlayerGameInfo
 							savePangBattleDados(*el);
 
-							// Salva info do player
+							// Saves player info
 							requestSaveInfo(*el, 0);
 
-							// D� Exp para o Caddie E Mascot Tamb�m
-							if (pgi->data.exp > 0) {	// s� add exp se for maior que 0
+							// Gives Exp to the Caddie And Mascot Too
+							if (pgi->data.exp > 0) {	// only adds exp if greater than 0
 
-								// Add Exp para o player
-								el->addExp(pgi->data.exp, false/*N�o precisa do pacote para trocar de level*/);
+								// Add Exp to the player
+								el->addExp(pgi->data.exp, false/*No packet needed to change level*/);
 
-								// D� Exp para o Caddie Equipado
-								if (el->m_pi.ei.cad_info != nullptr)	// Tem um caddie equipado
+								// Gives Exp to the Equipped Caddie
+								if (el->m_pi.ei.cad_info != nullptr)	// Has an equipped caddie
 									el->addCaddieExp(pgi->data.exp);
 
-								// D� Exp para o Mascot Equipado
+								// Gives Exp to the Equipped Mascot
 								if (el->m_pi.ei.mascot_info != nullptr)
 									el->addMascotExp(pgi->data.exp);
 							}
 
 							sendUpdateInfoAndMapStatistics(*el, 0);
 
-							// Resposta Treasure Hunter Item
+							// Response Treasure Hunter Item
 							requestSendTreasureHunterItem(*el);
 
-							// Update Mascot Info ON GAME, se o player estiver com um mascot equipado
+							// Update Mascot Info ON GAME, if the player has an equipped mascot
 							if (el->m_pi.ei.mascot_info != nullptr) {
 								packet_func::pacote06B(p, el, &el->m_pi, 8);
 
 								packet_func::session_send(p, el, 1);
 							}
 
-							// Achievement Aqui
+							// Achievement Here
 							pgi->sys_achieve.finish_and_update(*el);
 
-							// Resposta que tem sempre que acaba um jogo, n�o sei o que � ainda, esse s� n�o tem no HIO Event
+							// Response that always exists when a game ends, I do not know what it is yet, only HIO Event does not have this one
 							p.init_plain((unsigned short)0x244);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Esse � novo do JP, tem Tourney, VS, Grand Prix, HIO Event, n�o vi talvez tenha nos outros tamb�m
+							// This one is new from JP, it exists in Tourney, VS, Grand Prix, HIO Event, I did not see it, maybe the others have it too
 							p.init_plain((unsigned short)0x24F);
 
 							p.addUint32(0);	// OK
 
 							packet_func::session_send(p, &_session, 1);
 
-							// Resposta Update Pang
+							// Response Update Pang
 							p.init_plain((unsigned short)0xC8);
 
 							p.addUint64(el->m_pi.ui.pang);
@@ -1802,7 +1802,7 @@ bool PangBattle::finish_game(player& _session, int option) {
 						}
 					}
 
-					m_game_init_state = 2;	// Acabou o VS
+					m_game_init_state = 2;	// The VS ended
 
 					return true;
 				}

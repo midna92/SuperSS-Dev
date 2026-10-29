@@ -1,6 +1,6 @@
-// Arquivo cmd_daily_quest_info.cpp
-// Criado em 07/04/2018 as 20:15 por Acrisio
-// Implementa��o da classe CmdDailyQuestInfo
+// File cmd_daily_quest_info.cpp
+// Created on 07/04/2018 at 20:15 by Acrisio
+// Implementation of the class CmdDailyQuestInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

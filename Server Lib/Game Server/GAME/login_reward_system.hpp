@@ -1,6 +1,6 @@
-// Arquivo login_reward_system.hpp
-// Criado em 27/10/2020 as 12:21 por Acrisio
-// Defini��o da classe LoginRewardSystem
+// File login_reward_system.hpp
+// Created on 27/10/2020 at 12:21 by Acrisio
+// Definition of the LoginRewardSystem class
 
 #pragma once
 #ifndef _STDA_LOGIN_REWARD_SYSTEM_HPP

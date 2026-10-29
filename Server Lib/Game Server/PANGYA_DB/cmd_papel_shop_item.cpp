@@ -1,6 +1,6 @@
-// Arquivo cmd_papel_shop_item.cpp
-// Criado em 09/07/2018 as 20:31 por Acrisio
-// Implementa��o da classe CmdPapelShopItem
+// File cmd_papel_shop_item.cpp
+// Created on 09/07/2018 at 20:31 by Acrisio
+// Implementation of the class CmdPapelShopItem
 
 #if defined(_WIN32)
 #pragma pack(1)

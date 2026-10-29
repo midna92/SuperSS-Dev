@@ -1,6 +1,6 @@
-// Arquivo cmd_coin_cube_info.cpp
-// Criado em 16/10/2020 as 18:54 por Acrisio
-// Implementa��o da classe CmdCoinCubeInfo
+// File cmd_coin_cube_info.cpp
+// Created on 16/10/2020 at 18:54 by Acrisio
+// Implementation of the class CmdCoinCubeInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

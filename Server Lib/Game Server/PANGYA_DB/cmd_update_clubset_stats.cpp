@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_stats.cpp
-// Criado em 16/06/2018 as 22:02 por Acrisio
-// Implementa��o da classe CmdUpdateClubSetStats
+// File cmd_update_clubset_stats.cpp
+// Created on 16/06/2018 at 22:02 by Acrisio
+// Implementation of class CmdUpdateClubSetStats
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateClubSetStats::~CmdUpdateClubSetStats() {
 
 void CmdUpdateClubSetStats::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 	
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

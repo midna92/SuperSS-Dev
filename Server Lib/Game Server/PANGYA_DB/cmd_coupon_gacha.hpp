@@ -1,6 +1,6 @@
-// Arquivo cmd_coupon_gacha.hpp
-// Criado em 19/03/2018 as 22:05 por Acrisio
-// Definição da classe CmdCouponGacha
+// File cmd_coupon_gacha.hpp
+// Created on 19/03/2018 at 22:05 by Acrisio
+// Definition of the class CmdCouponGacha
 
 #pragma once
 #ifndef _STDA_CMD_COUPON_GACHA_HPP

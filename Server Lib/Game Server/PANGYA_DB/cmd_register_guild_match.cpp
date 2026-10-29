@@ -1,6 +1,6 @@
-// Arquivo cmd_register_guild_match.cpp
-// Criado em 29/12/2019 as 12:12 por Acrisio
-// Implementa��o da classe CmdRegisterGuildMatch
+// File cmd_register_guild_match.cpp
+// Created on 29/12/2019 at 12:12 by Acrisio
+// Implementation of the class CmdRegisterGuildMatch
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdRegisterGuildMatch::~CmdRegisterGuildMatch() {
 
 void CmdRegisterGuildMatch::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

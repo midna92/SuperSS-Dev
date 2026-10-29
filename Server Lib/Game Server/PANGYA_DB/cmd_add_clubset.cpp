@@ -1,6 +1,6 @@
-// Arquivo cmd_add_clubset.cpp
-// Criado em 19/05/2018 as 14:07 por Acrisio
-// Implementa��o da classe CmdAddClubSet
+// File cmd_add_clubset.cpp
+// Created on 19/05/2018 at 14:07 by Acrisio
+// Implementation of the class CmdAddClubSet
 
 #if defined(_WIN32)
 #pragma pack(1)

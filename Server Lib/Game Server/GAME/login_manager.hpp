@@ -1,6 +1,6 @@
-// Arquivo login_manager.hpp
-// Criado em 01/05/2018 as 17:28 por Acrisio
-// Definição da classe LoginManager
+// File login_manager.hpp
+// Created on 01/05/2018 at 17:28 by Acrisio
+// Definition of the LoginManager class
 
 #pragma once
 #ifndef _STDA_LOGIN_MANAGER_HPP

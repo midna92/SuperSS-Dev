@@ -1,6 +1,6 @@
-// Arquivo cmd_first_set_check.cpp
-// Criado em 30/03/2018 as 20:35 por Acrisio
-// Implementa��o da classe CmdFirstSetCheck
+// File cmd_first_set_check.cpp
+// Created on 30/03/2018 at 20:35 by Acrisio
+// Implementation of the CmdFirstSetCheck class
 
 #if defined(_WIN32)
 #pragma pack(1)

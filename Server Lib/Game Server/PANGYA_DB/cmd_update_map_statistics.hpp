@@ -1,6 +1,6 @@
-// Arquivo cmd_update_map_statistics.hpp
-// Criado em 08/09/2018 as 21:55 por Acrisio
-// Defini��o da classe CmdUpdateMapStatistics
+// File cmd_update_map_statistics.hpp
+// Created on 08/09/2018 at 21:55 by Acrisio
+// Definition of class CmdUpdateMapStatistics
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_MAP_STATISTICS_HPP

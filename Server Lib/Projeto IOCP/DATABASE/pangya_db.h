@@ -1,7 +1,7 @@
-// Arquivo pangya_db.h
-// Criado em 05/12/2017 por Acrisio
-// Definição da classe base pangya_base_db
-// e dos macros e funçoes de helper do pangya_db
+// File pangya_db.h
+// Created on 05/12/2017 by Acrisio
+// Definition of class base pangya_base_db
+// and the helper macros and functions of pangya_db
 
 #pragma once
 #ifndef _STDA_PANGYA_DB_H
@@ -86,9 +86,9 @@
 //								(_query)->waitEvent(wait_time); \
 //							}catch (exception& e) { \
 //								if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::EXEC_QUERY) { \
-//									/*nenhuma db thread disponivel para tratar a query*/ \
+//									/*no db thread available to handle the query*/ \
 //									if (STDA_ERROR_DECODE(e.getCodeError()) == 7 && wait_time == INFINITE) { \
-//										wait_time = 1000;/*1 segundo esperar se não for da próxima da erro*/ \
+//										wait_time = 1000;/*wait 1 second, if not the next one gives an error*/ \
 //										continue; \
 //									} \
 //									pangya_base_db::m_mysql_db_query_pool.remove((_query)); \
@@ -108,9 +108,9 @@
 								(_query)->waitEvent(wait_time); \
 							}catch (exception& e) { \
 								if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::EXEC_QUERY) { \
-									/*nenhuma db thread disponivel para tratar a query*/ \
+									/*no db thread available to handle the query*/ \
 									if (STDA_ERROR_DECODE(e.getCodeError()) == 7 && wait_time == INFINITE) { \
-										wait_time = 1000;/*1 segundo esperar se não for da próxima da erro*/ \
+										wait_time = 1000;/*wait 1 second, if not the next one gives an error*/ \
 										continue; \
 									} \
 									pangya_base_db::m_query_pool.remove((_query)); \
@@ -123,7 +123,7 @@
 						} \
 						response *r = (_query)->getRes(); \
 
-// Inteiro
+// Integer
 #define IFNULL(_func, _data) ((_data) == nullptr ? 0 : _func((_data)))
 
 namespace stdA {

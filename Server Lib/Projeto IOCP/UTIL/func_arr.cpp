@@ -1,6 +1,6 @@
-// Arquivo func_arr.cpp
-// Criado em 22/07/2017 por Acrisio
-// Implementação da classe func_arr
+// File func_arr.cpp
+// Created on 22/07/2017 by Acrisio
+// Implementation of the class func_arr
 
 #include "func_arr.h"
 #include "exception.h"

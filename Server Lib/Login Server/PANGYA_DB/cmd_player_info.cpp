@@ -1,6 +1,6 @@
-// Arquivo cmd_player_info.cpp
-// Criado em 17/03/2018 as 18:39 por Acrisio
-// Implementação da classe CmdPlayerInfo
+// File cmd_player_info.cpp
+// Created on 17/03/2018 at 18:39 by Acrisio
+// Implementation of the CmdPlayerInfo class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -26,7 +26,7 @@ void CmdPlayerInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
     
     checkColumnNumber(8, (uint32_t)_result->cols);
 
-    // Aqui faz as coisas
+    // Does the things here
     m_pi.uid = IFNULL(atoi, _result->data[0]);
     if (is_valid_c_string(_result->data[1]))
         STRCPY_TO_MEMORY_FIXED_SIZE(m_pi.id, sizeof(m_pi.id), _result->data[1]);
@@ -38,7 +38,7 @@ void CmdPlayerInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
     m_pi.level = (unsigned short)IFNULL(atoi, _result->data[5]);
 	m_pi.block_flag.setIDState((uint64_t)IFNULL(atoll, _result->data[6]));
 	m_pi.block_flag.m_id_state.block_time = IFNULL(atoi, _result->data[7]);
-    // Fim
+    // End
 
     if (m_pi.uid != m_uid)
         throw exception("[CmdPlayerInfo::lineResult][Error] UID do player info nao e igual ao requisitado. UID Req: " + std::to_string(m_uid) + " != " + std::to_string(m_pi.uid), STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 3, 0));

@@ -1,6 +1,6 @@
-// Arquivo pangya_db.h
-// Criado em 25/12/2017 por Acrisio
-// Definição da classe pangya_db
+// File pangya_db.h
+// Created on 25/12/2017 by Acrisio
+// Definition of class pangya_db
 
 #pragma once
 #ifndef _STDA_PANGYA_DB_H
@@ -38,7 +38,7 @@ namespace stdA {
 
 			friend class NormalDB;
 
-        protected: // Metôdos
+        protected: // Methods
 			virtual response* _insert(database& _db, std::string _query);
 			virtual response* _insert(database& _db, std::wstring _query);
 			virtual response* _update(database& _db, std::string _query);
@@ -79,7 +79,7 @@ namespace stdA {
 			Event *hEvent;
 #endif
 
-        public: // Metôdos estaticos
+        public: // Static methods
             static list_fifo_asyc< exec_query > m_query_pool;
             static list_async< exec_query* > m_cache_query;
 

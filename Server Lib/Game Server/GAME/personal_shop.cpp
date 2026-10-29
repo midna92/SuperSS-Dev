@@ -1,6 +1,6 @@
-// Arquivo personal_shop.cpp
-// Criado em 09/06/2018 as 10:06 por Acrisio
-// Implement��o da PersonalShop
+// File personal_shop.cpp
+// Created on 09/06/2018 at 10:06 by Acrisio
+// Implementation of the PersonalShop
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -148,7 +148,7 @@ void PersonalShop::pushItem(PersonalShopItem& _psi) {
 
 	Locker _locker(*this);
 
-	// Verifica aqui se esse item por ser colocar no shop
+	// Checks here whether this item can be put in the shop
 
 	if (_psi.item._typeid == 0)
 		throw exception("[PersonalShop::pushItem][Error] player[UID=" + std::to_string(m_owner.m_pi.uid) + "] tentou colocar um invalid item no Personal Shop dele. Hacker ou Bug", 
@@ -164,13 +164,13 @@ void PersonalShop::pushItem(PersonalShopItem& _psi) {
 		throw exception("[PersonalShop::pushItem][Error] player[UID=" + std::to_string(m_owner.m_pi.uid) + "] tentou colocar um item[TYPEID=" 
 				+ std::to_string(_psi.item._typeid) + "] que nao pode ser vendido no Personal Shop. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP, 9, 0));
 
-	// Verifica o pre�o do item
+	// Checks the item price
 	if (_psi.item.pang < ITEM_MIN_PRICE || _psi.item.pang > ITEM_MAX_PRICE)
 		throw exception("[PersonalShop::pushItem][Error] player[UID=" + std::to_string(m_owner.m_pi.uid) + "] tentou colocar um item[TYPEID="
 				+ std::to_string(_psi.item._typeid) + ", Price=" + std::to_string(_psi.item.pang) + "] que o preco esta fora do limite[MIN="
 				+ std::to_string(ITEM_MIN_PRICE) + ", MAX=" + std::to_string(ITEM_MAX_PRICE) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP, 24, 0));
 
-	// Card pre�o controle
+	// Card price control
 	if (sIff::getInstance().getItemGroupIdentify(_psi.item._typeid) == iff::CARD) {
 
 		auto card = sIff::getInstance().findCard(_psi.item._typeid);
@@ -356,7 +356,7 @@ void PersonalShop::addClient(player& _session) {
 
 	v_open_shop_visit.push_back(&_session);
 
-	// Add Contador de visitas
+	// Adds visit counter
 	m_visit_count++;
 
 #ifdef _DEBUG
@@ -454,12 +454,12 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 				+ std::to_string(psi_owner->item.qntd) + "] mas ele quer comprar uma quantidade(" 
 				+ std::to_string(_psi.item.qntd) + ") do item maior do que esta a venda. ", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PERSONAL_SHOP, 26, 0));
 
-	// Depois o Personal Shop vai poder vender card, ent�o tem que procurar nos card tbm
+	// Later the Personal Shop will be able to sell cards, so cards have to be searched too
 	
 	uint64_t pang = psi_owner->item.pang * _psi.item.qntd;
 
-	// c�pia do personalshopitem, para enviar para o player que comprou que muda o id, quando compra card ou item, part e clubset ele so transfere msm,
-	// mas pode ser que no pangya original ele cria um novo e s� transferi os dados
+	// copy of personalshopitem, to send to the player who bought, the id changes, when buying a card or item, part and clubset it is simply transferred,
+	// but it may be that in the original pangya it creates a new one and only transfers the data
 	auto psi_r = _psi;
 
 	//WarehouseItemEx* pWi = nullptr;
@@ -479,16 +479,16 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 		}
 
-		// ATUALIZA OS PANGS DO PLAYER NO DB, CHAMNANDO AS FUN��ES QUE J� CRIEI, MAS POR HORA S� VOU MEXER NO SERVER
+		// UPDATES THE PLAYER'S PANGS IN THE DB, CALLING THE FUNCTIONS I ALREADY CREATED, BUT FOR NOW I WILL ONLY TOUCH THE SERVER
 		_session.m_pi.consomePang(pang);
 
-		// Tira os 5% dos pangs
+		// Removes the 5% of the pangs
 		m_owner.m_pi.addPang((pang = (uint64_t)std::round(pang * 0.95f)));
 
-		// Pang(s) do Personal Shop
+		// Pang(s) of the Personal Shop
 		m_pang_sale += pang;
 
-		// Att no Jogo
+		// Update in the Game
 		packet p;
 
 		// Card
@@ -496,12 +496,12 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 			auto ci_r = *reinterpret_cast< CardInfo* >(pWi);
 
-			// Tira de quem vendeu
+			// Removes from the seller
 			p.init_plain((unsigned short)0xEC);
 
 			p.addUint32(1);	// OK
 
-			p.addUint8(1);	// 1 Tira Item
+			p.addUint8(1);	// 1 Removes Item
 
 			p.addUint64(pang);
 
@@ -509,7 +509,7 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 			p.addUint8(5/*Card*/);
 
-			// Att id por que esta o novo item do player que vai receber o item
+			// Update id because it is the new item of the player who will receive the item
 			ci_r.id = _psi.item.id;
 			ci_r.qntd = _psi.item.qntd;
 
@@ -517,11 +517,11 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 			packet_func::session_send(p, &m_owner, 1);
 
-			// Esse Pacote � o de add ele soma, n�o atualiza do zero como o que tira do player
+			// This Packet is the add one, it sums, it does not update from zero like the one that removes from the player
 			ci_r.id = psi_r.item.id;
 			ci_r.qntd = (short)psi_r.item.qntd;
 
-			// Add para quem comprou, aqui � s� para mostrar a tela que comprou e liberar o player
+			// Add for the buyer, here it is only to show the purchase screen and release the player
 			p.init_plain((unsigned short)0xEC);
 
 			p.addUint32(1);	// OK
@@ -542,20 +542,20 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 			
 			auto wi_r = *reinterpret_cast< WarehouseItemEx* >(pWi);
 
-			// Tira de quem vendeu
+			// Removes from the seller
 			p.init_plain((unsigned short)0xEC);
 
 			p.addUint32(1);	// OK
 
-			p.addUint8(1);	// 1 Tira Item
+			p.addUint8(1);	// 1 Removes Item
 
 			p.addUint64(pang);
 
 			p.addBuffer(&_psi, sizeof(PersonalShopItem));
 
-			p.addUint8((sIff::getInstance().getItemGroupIdentify(_psi.item._typeid) == iff::ITEM) ? 1 : 3/*ClubSet ou Parts*/);
+			p.addUint8((sIff::getInstance().getItemGroupIdentify(_psi.item._typeid) == iff::ITEM) ? 1 : 3/*ClubSet or Parts*/);
 
-			// Att id por que esta o novo item do player que vai receber o item
+			// Update id because it is the new item of the player who will receive the item
 			wi_r.id = _psi.item.id;
 			wi_r.STDA_C_ITEM_QNTD = (short)_psi.item.qntd;
 
@@ -563,11 +563,11 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 			packet_func::session_send(p, &m_owner, 1);
 
-			// Esse Pacote � o de add ele soma, n�o atualiza do zero como o que tira do player
+			// This Packet is the add one, it sums, it does not update from zero like the one that removes from the player
 			wi_r.id = psi_r.item.id;
 			wi_r.STDA_C_ITEM_QNTD = (short)psi_r.item.qntd;
 
-			// Add para quem comprou
+			// Add for the buyer
 			p.init_plain((unsigned short)0xEC);
 
 			p.addUint32(1);	// OK
@@ -578,14 +578,14 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 			p.addBuffer(&psi_r, sizeof(PersonalShopItem));
 
-			p.addUint8((sIff::getInstance().getItemGroupIdentify(psi_r.item._typeid) == iff::ITEM) ? 1 : 3/*ClubSet ou Parts*/);
+			p.addUint8((sIff::getInstance().getItemGroupIdentify(psi_r.item._typeid) == iff::ITEM) ? 1 : 3/*ClubSet or Parts*/);
 
 			p.addBuffer(&wi_r, sizeof(WarehouseItem));
 
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Atualiza no Shop os Itens que foram comprado
+		// Updates in the Shop the Items that were bought
 		p.init_plain((unsigned short)0xED);
 
 		p.addString(m_owner.m_pi.nickname);
@@ -594,7 +594,7 @@ void PersonalShop::buyItem(player& _session, PersonalShopItem& _psi) {
 
 		p.addBuffer(&_psi, sizeof(PersonalShopItem));
 
-		p.addUint32(v_item.size() == 0 ? 3/*Shop fechou por que nao tem mais item*/ : 1/*Shop aberto ainda*/);
+		p.addUint32(v_item.size() == 0 ? 3/*Shop closed because there are no more items*/ : 1/*Shop still open*/);
 
 		shop_broadcast(p, &_session, 1);
 
@@ -636,7 +636,7 @@ inline void PersonalShop::shop_broadcast(packet& _p, session *_s, unsigned char 
 
 	auto& clients = v_open_shop_visit;
 
-	// Envia para o dono do Personal Shop
+	// Sends to the owner of the Personal Shop
 	packet_func::session_send(_p, &m_owner, 1);
 
 	for (auto& el : clients)
@@ -652,7 +652,7 @@ inline void PersonalShop::shop_broadcast(std::vector< packet* > _v_p, session *_
 
 	auto& clients = v_open_shop_visit;
 
-	// Envia para o dono do Personal Shop
+	// Sends to the owner of the Personal Shop
 	packet_func::session_send(_v_p, &m_owner, 1);
 
 	for (auto& el : clients)

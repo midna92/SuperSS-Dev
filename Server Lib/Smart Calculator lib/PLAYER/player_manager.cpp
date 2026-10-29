@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 21/11/2020 as 13:33 Por Acrisio
-// Implementa��o da classe PlayerManager
+// File player_manager.cpp
+// Created on 21/11/2020 at 13:33 by Acrisio
+// Implementation of the class PlayerManager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -33,7 +33,7 @@ PlayerManager::~PlayerManager() {
 	try {
 		clearPlayersContext();
 	}catch (exception& e) {
-		// Garantir para n�o lan�ar exception no destructor
+		// Ensure no exception is thrown in the destructor
 		sLogger::getInstance().Log("[" + std::string(__FUNCTION__) + "][ErrorSystem] " + e.getFullMessageError(), eTYPE_LOG::TL_ERROR);
 	}
 

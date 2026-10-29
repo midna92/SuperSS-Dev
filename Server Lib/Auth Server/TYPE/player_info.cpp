@@ -1,6 +1,6 @@
-// Arquivo player_info.cpp
-// Criado em 02/12/2018 as 13:14 por Acrisio
-// Implementa��o da classe PlayerInfo
+// File player_info.cpp
+// Created on 02/12/2018 at 13:14 by Acrisio
+// Implementation of class PlayerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

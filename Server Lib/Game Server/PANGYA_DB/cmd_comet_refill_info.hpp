@@ -1,6 +1,6 @@
-// Arquivo cmd_comet_refill_info.hpp
-// Criado em 08/07/2018 as 22:42 por Acrisio
-// Defini��o da classe CmdCometRefillInfo
+// File cmd_comet_refill_info.hpp
+// Created on 08/07/2018 at 22:42 by Acrisio
+// Definition of the class CmdCometRefillInfo
 
 #pragma once
 #ifndef _STDA_CMD_COMET_REFILL_INFO_HPP

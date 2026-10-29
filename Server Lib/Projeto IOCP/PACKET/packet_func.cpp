@@ -1,6 +1,6 @@
-// Arquivo packet_func.cpp
-// Criado em 05/12/2017 por Acrisio
-// Implementação da classe packet_func_base
+// File packet_func.cpp
+// Created on 05/12/2017 by Acrisio
+// Implementation of class packet_func_base
 
 #if defined(_WIN32)
 #include <Winsock2.h>

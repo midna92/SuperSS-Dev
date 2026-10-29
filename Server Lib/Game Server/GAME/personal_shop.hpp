@@ -1,6 +1,6 @@
-// Arquivo personal_shop.hpp
-// Criado em 09/06/2018 as 09:56 por Acrisio
-// Defini��o da classe PersonalShop
+// File personal_shop.hpp
+// Created on 09/06/2018 at 09:56 by Acrisio
+// Definition of the PersonalShop class
 
 #pragma once
 #ifndef _STDA_PERSONAL_SHOP_HPP
@@ -88,17 +88,17 @@ namespace stdA {
 			inline void shop_broadcast(std::vector< packet* > _v_p, session *_s, unsigned char _debug);
 
 		protected:
-			std::string m_name;		// Nome da Loja
-			player& m_owner;		// Dono da Loja
+			std::string m_name;		// Shop Name
+			player& m_owner;		// Shop Owner
 
-			STATE m_state;			// estado da loja, aberta ou editando
+			STATE m_state;			// shop state, open or editing
 
-			uint32_t m_visit_count;	// N�mero de visitantes que visitaram a loja
+			uint32_t m_visit_count;	// Number of visitors who visited the shop
 
-			uint64_t m_pang_sale;	// pangs em caixa
+			uint64_t m_pang_sale;	// pangs in the cash box
 
 		protected:
-			std::vector< PersonalShopItem > v_item;		// Itens da Loja
+			std::vector< PersonalShopItem > v_item;		// Shop Items
 
 		protected:
 #if defined(_WIN32)
@@ -106,7 +106,7 @@ namespace stdA {
 #elif defined(__linux__)
 			pthread_mutex_t m_cs;
 #endif
-			std::vector< player* > v_open_shop_visit;	// Os visitantes que est�o com o shop aberto
+			std::vector< player* > v_open_shop_visit;	// The visitors who have the shop open
 	};
 }
 

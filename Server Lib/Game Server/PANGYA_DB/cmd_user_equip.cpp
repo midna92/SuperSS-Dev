@@ -1,6 +1,6 @@
-// Arquivo cmd_user_equip.cpp
-// Criado em 18/03/2018 as 17:47 por Acrisio
-// Implementa��o da classe CmdUserEquip
+// File cmd_user_equip.cpp
+// Created on 18/03/2018 at 17:47 by Acrisio
+// Implementation of class CmdUserEquip
 
 #if defined(_WIN32)
 #pragma pack(1)

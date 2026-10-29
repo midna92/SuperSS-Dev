@@ -1,6 +1,6 @@
-// Arquivo attendance_reward_system.hpp
-// Criado em 14/11/2018 as 21:22 por Acrisio
-// Defini��o da classe AttendanceRewardSystem
+// File attendance_reward_system.hpp
+// Created on 14/11/2018 at 21:22 by Acrisio
+// Definition of class AttendanceRewardSystem
 
 #pragma once
 #ifndef _STDA_ATTENDANCE_REWARD_SYSTEM_HPP
@@ -37,12 +37,12 @@ namespace stdA {
 
 			/*static*/ void clear();
 
-			// D� 3 Grand Prix Ticket para o player por ele ter logado a primeira vez no dia, mas s� d� se ele n�o atingiu o limite de grand prix ticket
+			// Gives 3 Grand Prix Tickets to the player for having logged in for the first time today, but only gives if they have not reached the grand prix ticket limit
 			/*static*/ void sendGrandPrixTicket(player& _session);
 
 			/*static*/ AttendanceRewardItemCtx* drawReward(unsigned char _tipo);
 
-			// Verifica se passou um dia, depois do player ter logado no pangya
+			// Checks whether a day has passed since the player logged into pangya
 			/*static*/ bool passedOneDay(player& _session);
 
 			static void SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg);

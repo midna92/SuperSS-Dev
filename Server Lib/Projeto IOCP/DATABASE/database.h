@@ -1,6 +1,6 @@
-// Arquivo database.h
-// Criado em 27/01/2018 as 23:10 por Acrisio
-// Definição da classe database
+// File database.h
+// Created on 27/01/2018 at 23:10 by Acrisio
+// Definition of class database
 
 #pragma once
 #ifndef _STDA_DATABASE_H

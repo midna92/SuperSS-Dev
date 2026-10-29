@@ -1,6 +1,6 @@
-// Arquivo cmd_update_email.hpp
-// Criado em 14/01/2021 as 08:59 por Acrisio
-// Defini��o da classe CmdUpdateEmail
+// File cmd_update_email.hpp
+// Created on 14/01/2021 at 08:59 by Acrisio
+// Definition of class CmdUpdateEmail
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_EMAIL_HPP

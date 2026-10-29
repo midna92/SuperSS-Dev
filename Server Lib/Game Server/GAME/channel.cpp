@@ -1,6 +1,6 @@
-// Arquivo channel.cpp
-// Criado em 24/12/2017 por Acrisio
-// Implementação da classe channel
+// File channel.cpp
+// Created on 24/12/2017 by Acrisio
+// Implementation of class channel
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -124,8 +124,8 @@
 									throw exception("[channel::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0)); \
 								M_SMART_BLOCK_PACKET_ONE_TIME \
 
-// Verifica se session está autorizada para executar esse ação, 
-// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+// Checks whether the session is authorized to execute this action, 
+// if it has not logged in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[channel::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x7000501)); \
@@ -147,7 +147,7 @@
 		UNREFERENCED_PARAMETER(e); \
 		if (r != nullptr) \
 			m_rm.unlockRoom(r); \
-		throw; /*Relança a exception*/\
+		throw; /*Rethrow the exception*/\
 	} \
 
 #define END_FIND_ROOM_C \
@@ -157,7 +157,7 @@
 		UNREFERENCED_PARAMETER(e); \
 		if (r != nullptr) \
 			c->m_rm.unlockRoom(r); \
-		throw; /*Relança a exception*/\
+		throw; /*Rethrow the exception*/\
 	} \
 
 using namespace stdA;
@@ -186,8 +186,8 @@ channel::~channel() {
 			v_sessions.shrink_to_fit();
 		}
 
-		// !@ Esse aqui da erro, quando usava no game_server std::vector< channel > sem ser ponteiro, ai deletava 2x acho ai dava erro de heap corrompido
-		// porque no game server destroy ele do vector e parece que o shrink_to_fit deleta ele de novo
+		// !@ This one errors, when it was used in game_server as std::vector< channel > without being a pointer, then it deleted twice I think and caused a corrupted heap error
+		// because in game server it destroys it from the vector and it seems shrink_to_fit deletes it again
 		// ------ !$ Ajeite coloquei como ponteiro resolveu
 #if defined(_WIN32)
 		DeleteCriticalSection(&m_cs);
@@ -221,26 +221,26 @@ void channel::enterChannel(player& _session) {
 	packet p;
 
 	packet_func::pacote095(p, &_session, 0x102);
-	packet_func::session_send(p, &_session, 0);	// Não sei direito desse aqui mas passa antes de entrar no canal, talvez é o que faz o cliente pedir MSN server acho
+	packet_func::session_send(p, &_session, 0);	// I am not sure about this one but it passes before entering the channel, maybe what makes the client request the MSN server I think
 
 	packet_func::pacote04E(p, &_session, 1);
 	packet_func::session_send(p, &_session, 0);
 
-	// Verifica se o tempo do ticket premium user acabou e manda a mensagem para o player, e exclui o ticket do player no SERVER, DB e GAME
+	// Checks whether the premium user ticket time ran out and sends the message to the player, and deletes the player's ticket on SERVER, DB and GAME
 	sPremiumSystem::getInstance().checkEndTimeTicket(_session);
 };
 
 void channel::leaveChannel(player& _session) {
 
-	//!@ As vezes o player sai antes e não tem mais como deletar ele do canal
+	//!@ Sometimes the player leaves earlier and there is no way to delete them from the channel anymore
 	//if (!_session.getState())
-		//throw exception("Error player não conectar. Em channel::leaveChannel()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0));
+		//throw exception("Error player not connected. In channel::leaveChannel()", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0));
 
 	try {
 
 		if (_session.m_pi.lobby != (unsigned char)~0)
-			leaveLobby(_session);		// Sai da Lobby
-		else // Sai da Sala Practice que não entra na lobby, [SINGLE PLAY]
+			leaveLobby(_session);		// Leaves the Lobby
+		else // Leaves the Practice Room that does not enter the lobby, [SINGLE PLAY]
 			leaveRoom(_session, 0);
 
 		removeSession(&_session);
@@ -251,7 +251,7 @@ void channel::leaveChannel(player& _session) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::leaveChannel][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))	// Diferente do error do channel
+		if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::CHANNEL, 1))	// Different from the channel error
 			throw;
 	}
 };
@@ -261,7 +261,7 @@ void channel::checkEnterChannel(player& _session) {
 	if (!_session.getState())
 		throw exception("[channel::checkEnterChannel][Error] player nao esta conectado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 1));
 
-	// Não é GM verifica se o player pode entrar nesse canal
+	// In GM checks whether the player can enter this channel
 	if (!_session.m_pi.m_cap.stBit.game_master) {
 		
 		if (_session.m_pi.level < m_ci.min_level_allow || _session.m_pi.level > m_ci.max_level_allow)
@@ -363,8 +363,8 @@ void channel::checkInviteTime() {
 
 				if (send_time_out_invite(v_invite[i])) {
 					
-					// Deleta o Invite Time do Vector
-					v_invite.erase(v_invite.begin() + i--/*deleta 1 do vector e do contador*/);
+					// Deletes the Invite Time from the Vector
+					v_invite.erase(v_invite.begin() + i--/*deletes 1 from the vector and from the counter*/);
 				}
 			}
 		}
@@ -412,7 +412,7 @@ void channel::enterLobby(player& _session, unsigned char _lobby) {
 		throw exception("[channel::enterLobby][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] ja esta na lobby.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 5, 0));
 
-	_session.m_pi.lobby = (_lobby == (unsigned char)~0 || _lobby == 0) ? 1/*Padrão*/ : _lobby;
+	_session.m_pi.lobby = (_lobby == (unsigned char)~0 || _lobby == 0) ? 1/*Default*/ : _lobby;
 	_session.m_pi.place = 0u;
 
 	updatePlayerInfo(_session);
@@ -433,7 +433,7 @@ void channel::enterLobby(player& _session, unsigned char _lobby) {
 
 	pci = getPlayerInfo(&_session);
 
-	// Add o primeiro limpando a lobby
+	// Add the first one clearing the lobby
 	if (packet_func::pacote046(p, &_session, std::vector< PlayerCanalInfo > { v_pci.front() }, 4))
 		packet_func::session_send(p, &_session, 0);
 
@@ -456,12 +456,12 @@ void channel::enterLobby(player& _session, unsigned char _lobby) {
 
 void channel::leaveLobby(player& _session) {
 
-	/// !@tem que tira isso aqui por que tem que enviar para os outros player da lobby que ele sai,
-	/// mesmo que o sock dele não pode mais enviar
+	/// !@ this has to be removed because it must be sent to the other players in the lobby that they left,
+	/// even if their sock can no longer send
 	//if (!_session.getState())
 		//throw exception("[channel::leaveLobby][Error] player nao esta conectado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0));
 
-	// Sai da sala se estiver em uma sala
+	// Leaves the room if in a room
 	try {
 		leaveRoom(_session, 0);
 	}catch (exception& e) {
@@ -534,7 +534,7 @@ void channel::enterLobbyGrandPrix(player& _session) {
 			throw exception("[channel::enterLobbyGrandPrix][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou entrar na lobby Grand Prix, mas ele esta desativo. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x750001));
 
-		// Modo Grand Prix ainda não foi feito
+		// Grand Prix mode has not been done yet
 		/*throw exception("[channel::enterLobbyGrandPrix][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 				+ "] tentou entrar na lobby Grand Prix, mas ele ainda nao foi feito. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x750002));*/
 
@@ -546,21 +546,21 @@ void channel::enterLobbyGrandPrix(player& _session) {
 
 		p.addUint32(0u);	// OK
 
-		// Count Type Grand Prix que está ativo
-		// Tipo 0 é ativo por sem precisar desses valores
+		// Active Grand Prix Count Type
+		// Type 0 active because these values are not needed
 		p.addUint32(sgs::gs::getInstance().getInfo().rate.countBitGrandPrixEvent());
 
 		// Grand Prix Event: Types
 		for (auto& el : sgs::gs::getInstance().getInfo().rate.getValueBitGrandPrixEvent())
 			p.addUint32(el);
 
-		// Count de	grand prix clear, (typeid, position)
+		// Grand prix clear count, (typeid, position)
 		p.addUint32((uint32_t)_session.m_pi.v_gpc.size());
 
 		for (auto& el : _session.m_pi.v_gpc)
 			p.addBuffer(&el, sizeof(GrandPrixClear));
 
-		// Avg. Score do player
+		// Player's Avg. Score
 		p.addFloat(_session.m_pi.ui.getMediaScore());
 
 		packet_func::session_send(p, &_session, 1);
@@ -608,8 +608,8 @@ void channel::leaveLobbyGrandPrix(player& _session) {
 
 std::vector< stPlayerReward > channel::getAllEligibleToGoldenTime() {
 	
-	// Channel verifica se o player está elegível a participar do Golden Time Event
-	// Verifica se o player está em sala jogando ou no lounge, practice e Grand Prix Rookie não conta
+	// Channel checks whether the player is eligible to participate in the Golden Time Event
+	// Checks whether the player is in a room playing or in the lounge, practice and Grand Prix Rookie do not count
 
 	// [Lambda] get Room Info
 	auto getRoomInfoLambda = [&](player* _p) -> std::pair< bool/*Playing*/, RoomInfoEx > {
@@ -643,30 +643,30 @@ std::vector< stPlayerReward > channel::getAllEligibleToGoldenTime() {
 		if (p == nullptr)
 			continue;
 
-		// Não está na lobby
+		// Not in the lobby
 		if (p->m_pi.lobby == INVALID_LOBBY)
 			continue;
 
-		// Não está em nenhum sala
+		// Not in any room
 		if (p->m_pi.mi.sala_numero == -1)
 			continue;
 
 		pair_ri = getRoomInfoLambda(p);
 
-		// Não encontrou a sala
+		// Did not find the room
 		if (pair_ri.second.numero == -1)
 			continue;
 
-		// Practice ou grand zodiac practice não conta
+		// Practice or grand zodiac practice does not count
 		if (pair_ri.second.tipo == RoomInfo::TIPO::PRACTICE || pair_ri.second.tipo == RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 			continue;
 
-		// Grand Prix Rookie(tuto) não conta
+		// Grand Prix Rookie (tutorial) does not count
 		if (pair_ri.second.tipo == RoomInfo::TIPO::GRAND_PRIX && sIff::getInstance().getGrandPrixAba(pair_ri.second.grand_prix.dados_typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE
 				&& sIff::getInstance().isGrandPrixNormal(pair_ri.second.grand_prix.dados_typeid))
 			continue;
 
-		// Lounge é o único que não precisa está jogando
+		// Lounge is the only one that does not need to be playing
 		if (pair_ri.second.tipo != RoomInfo::TIPO::LOUNGE && !pair_ri.first)
 			continue;
 
@@ -698,7 +698,7 @@ void channel::sendFireWorksWinnerGoldenTime(std::vector< stPlayerReward >& _winn
 
 				if (r->getInfo()->tipo == RoomInfo::TIPO::LOUNGE) {
 
-					// send "chat" da sala fogos de artifícios em cima da cabela do player(*p)
+					// send "chat" of the room fireworks above the player's (*p) head
 					packet_func::pacote04B(pckt, p, ChangePlayerItemRoom::TYPE_CHANGE::TC_ITEM_EFFECT_LOUNGE, 0/*no error*/, ChangePlayerItemRoom::stItemEffectLounge::TYPE_EFFECT::TE_TWILIGHT);
 					packet_func::room_broadcast(*r, pckt, 1);
 				}
@@ -727,7 +727,7 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 
 		//try {
 
-			// Bloquea a sala
+			// Locks the room
 			//r->lock();
 
 			packet p;
@@ -735,7 +735,7 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 
 			try {
 			
-				// Deleta Convidado
+				// Deletes Invited
 				if (r->isInvited(_session)) {
 
 					auto ici = r->deleteInvited(_session);
@@ -745,8 +745,8 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 				}else
 					opt = r->leave(_session, _option);
 
-				// Verifica se todos players da sala é convite, se for deleta todos
-				// Por que o ultimo player saiu da sala
+				// Checks whether all players in the room are invited, if so deletes them all
+				// Because the last player left the room
 				auto& all_invite = r->getAllInvite();
 
 				if (r->getNumPlayers() == all_invite.size()) {
@@ -761,12 +761,12 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 
 						if ((s = sgs::gs::getInstance().findPlayer(all_invite.begin()->invited_uid)) == nullptr) {
 
-							// Player não está online no server, tenta deletar o convite com o uid do player
+							// Player is not online on the server, tries to delete the invite with the player's uid
 							ici = r->deleteInvited(all_invite.begin()->invited_uid);
 
 						}else {
 
-							// Player está online deleta o convite com o objeto do player
+							// Player is online, deletes the invite with the player's object
 							ici = r->deleteInvited(*s);
 						}
 
@@ -784,7 +784,7 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 			// Att PlayerCanalInfo
 			updatePlayerInfo(_session);
 
-			if (r->getNumPlayers() > 0 || opt == 0/*Não exclui a sala*/) {
+			if (r->getNumPlayers() > 0 || opt == 0/*Does not delete the room*/) {
 				
 				r->sendUpdate();
 
@@ -800,14 +800,14 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 
 				try {
 			
-					// Desbloquea a sala
+					// Unlocks the room
 					//r->unlock();
 
-					// Deleta Todos da sala
+					// Deletes Everyone in the room
 					if (opt == 0x801 && r->getNumPlayers() > 0)
 						while (r->getNumPlayers() > 0)
 							if (leaveRoom(*r->getSessions().front(), 0x800) == LEAVE_ROOM_STATE::ROOM_DESTROYED)
-								break;	// Deletou a sala
+								break;	// Deleted the room
 
 				}catch (exception& e) {
 
@@ -818,10 +818,10 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 
 				RoomInfoEx ri = *r->getInfo();
 
-				// Destruíndo a sala
+				// Destroying the room
 				r->setDestroying();
 
-				// Desbloquea a sala
+				// Unlocks the room
 				//r->unlock();
 
 				m_rm.destroyRoom(r);
@@ -839,8 +839,8 @@ channel::LEAVE_ROOM_STATE channel::leaveRoom(player& _session, int _option) {
 		
 		/*}catch (exception& e) {
 
-			// Desbloquea a sala
-			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150/*!Não consegui bloquear a sala por que ela está no estado para ser destruída*//*))
+			// Unlock the room
+			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::ROOM, 150/*!Could not lock the room because it is in the state to be destroyed*//*))
 				r->unlock();
 
 			_smp::message_pool::getInstance().push(new message("[channel::leaveRoom][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -869,7 +869,7 @@ channel::LEAVE_ROOM_STATE channel::leaveRoomMultiPlayer(player& _session, int _o
 
 		packet p;
 
-		packet_func::pacote04C(p, &_session, -1/*acho que seja -1 aqui*/);
+		packet_func::pacote04C(p, &_session, -1/*I think it is -1 here*/);
 		packet_func::session_send(p, &_session, 0);
 	}
 
@@ -902,7 +902,7 @@ channel::LEAVE_ROOM_STATE channel::leaveRoomGrandPrix(player& _session, int _opt
 
 channel::LEAVE_ROOM_STATE channel::kickPlayerRoom(player& _session, unsigned char force) {
 	
-	auto state = leaveRoom(_session, (force == 1u) ? 3/*Chuta com quit rate*/ : 0x800 /*Chuta sem quit rate*/);
+	auto state = leaveRoom(_session, (force == 1u) ? 3/*Kicks with quit rate*/ : 0x800 /*Kicks without quit rate*/);
 
 	if (state > LEAVE_ROOM_STATE::DO_NOTHING && 
 #if defined(_WIN32)
@@ -932,8 +932,8 @@ std::vector< player* > channel::getSessions(unsigned char _lobby) {
 #endif
 
 	/*
-	* _lobby == (unsigned char)~0 é o valor padrão envia todos os players do canal
-	* _lobby != (unsigned char)~0 manda todos que estão na lobby
+	* _lobby == (unsigned char)~0 is the default value, sends to all players of the channel
+	* _lobby != (unsigned char)~0 sends to everyone in the lobby
 	*/
 
 	for (auto i = 0u; i < v_sessions.size(); ++i)
@@ -957,7 +957,7 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 		constexpr char GRAND_ZODIAC_EVENT_INT_NAME[] = "HIO Event (Itermediare)";
 		constexpr char GRAND_ZODIAC_EVENT_ADV_NAME[] = "HIO Event (Advance)";
 
-		// Verifica se tem room grand zodiac event criado se não cria
+		// Checks whether a grand zodiac event room has been created, if not creates it
 		RoomInfoEx ri{ 0 };
 		RoomGrandZodiacEvent *r = nullptr;
 
@@ -978,8 +978,8 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 					ri.course = RoomInfo::eCOURSE::GRAND_ZODIAC;
 					ri.max_player = 100;
 
-					// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-					if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+					// Channel flag, if it is rookie it is passed to the room, which in game makes this flag bring wind of 1m to 5m
+					if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Beginner only (Rookie)*/)
 						ri.channel_rookie = 1;
 
 #if defined(_WIN32)
@@ -1005,13 +1005,13 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 
 							sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 1);
 
-							// Libera a sala
+							// Frees the room
 							if (r != nullptr)
 								m_rm.unlockRoom(r);
 
 						}catch (exception& e) {
 
-							// Libera a sala
+							// Frees the room
 							if (r != nullptr)
 								m_rm.unlockRoom(r);
 
@@ -1025,8 +1025,8 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 
 					ri.clear();
 
-					// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-					if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+					// Channel flag, if it is rookie it is passed to the room, which in game makes this flag bring wind of 1m to 5m
+					if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Beginner only (Rookie)*/)
 						ri.channel_rookie = 1;
 
 					ri.time_30s = 7 * 60000; // 7 min
@@ -1058,13 +1058,13 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 
 							sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 1);
 
-							// Libera a sala
+							// Frees the room
 							if (r != nullptr)
 								m_rm.unlockRoom(r);
 
 						}catch (exception& e) {
 
-							// Libera a sala
+							// Frees the room
 							if (r != nullptr)
 								m_rm.unlockRoom(r);
 
@@ -1090,8 +1090,8 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 						ri.course = RoomInfo::eCOURSE::GRAND_ZODIAC;
 						ri.max_player = 100;
 
-						// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-						if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+						// Channel flag, if it is rookie it is passed to the room, which in game makes this flag bring wind of 1m to 5m
+						if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Beginner only (Rookie)*/)
 							ri.channel_rookie = 1;
 
 #if defined(_WIN32)
@@ -1116,13 +1116,13 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 
 								sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 1);
 
-								// Libera a sala
+								// Frees the room
 								if (r != nullptr)
 									m_rm.unlockRoom(r);
 
 							}catch (exception& e) {
 
-								// Libera a sala
+								// Frees the room
 								if (r != nullptr)
 									m_rm.unlockRoom(r);
 
@@ -1147,8 +1147,8 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 						ri.course = RoomInfo::eCOURSE::GRAND_ZODIAC;
 						ri.max_player = 100;
 
-						// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-						if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+						// Channel flag, if it is rookie it is passed to the room, which in game makes this flag bring wind of 1m to 5m
+						if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Beginner only (Rookie)*/)
 							ri.channel_rookie = 1;
 
 #if defined(_WIN32)
@@ -1173,13 +1173,13 @@ void channel::makeGrandZodiacEventRoom(range_time& _rt) {
 
 								sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 1);
 
-								// Libera a sala
+								// Frees the room
 								if (r != nullptr)
 									m_rm.unlockRoom(r);
 
 							}catch (exception& e) {
 
-								// Libera a sala
+								// Frees the room
 								if (r != nullptr)
 									m_rm.unlockRoom(r);
 
@@ -1203,7 +1203,7 @@ void channel::makeBotGMEventRoom(stRangeTime& _rt, std::vector< stReward > _rewa
 
 		constexpr char BOT_GM_EVENT_NAME[] = "Bot GM Event";
 
-		// Verifica se tem room grand Bot GM Event criado se não cria
+		// Checks whether a Bot GM Event room has been created, if not creates it
 		RoomInfoEx ri{ 0 };
 		RoomBotGMEvent *r = nullptr;
 
@@ -1213,8 +1213,8 @@ void channel::makeBotGMEventRoom(stRangeTime& _rt, std::vector< stReward > _rewa
 
 			ri.clear();
 
-			// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-			if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+			// Channel flag, if it is rookie it is passed to the room, which in game makes this flag bring wind of 1m to 5m
+			if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Beginner only (Rookie)*/)
 				ri.channel_rookie = 1;
 
 			ri.time_30s = 35 * 60000; // 35 min
@@ -1244,13 +1244,13 @@ void channel::makeBotGMEventRoom(stRangeTime& _rt, std::vector< stReward > _rewa
 
 				sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 1);
 
-				// Libera a sala
+				// Frees the room
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 
 			}catch (exception& e) {
 
-				// Libera a sala
+				// Frees the room
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 
@@ -1280,7 +1280,7 @@ bool channel::execSmartCalculatorCmd(player& _session, std::string& _msg, eTYPE_
 						? "na sala[NUMERO=" + std::to_string(_session.m_pi.mi.sala_numero) + "], mas ela nao existe." 
 						: "mas ele nao esta em nenhum sala."), STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0));
 
-		// GM pode user ela nessas salas, menos no lounge
+		// GM can use it in these rooms, except the lounge
 		if (!_session.m_pi.m_cap.stBit.game_master && !_session.m_pi.m_cap.stBit.gm_normal || r->getInfo()->tipo == RoomInfo::TIPO::LOUNGE)
 			if (r->getInfo()->tipo == RoomInfo::TIPO::LOUNGE || r->getInfo()->tipo == RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE || r->getInfo()->tipo == RoomInfo::TIPO::PRACTICE
 					|| (r->getInfo()->tipo == RoomInfo::TIPO::GRAND_PRIX 
@@ -1309,8 +1309,8 @@ void channel::requestEnterLobby(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterLobby");
 
 		enterLobbyMultiPlayer(_session);
@@ -1326,8 +1326,8 @@ void channel::requestExitLobby(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExitLobby");
 
 		leaveLobbyMultiPlayer(_session);
@@ -1343,8 +1343,8 @@ void channel::requestEnterLobbyGrandPrix(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterLobbyGranPrix");
 
 		enterLobbyGrandPrix(_session);
@@ -1360,8 +1360,8 @@ void channel::requestExitLobbyGrandPrix(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExitLobbyGrandPrix");
 
 		leaveLobbyGrandPrix(_session);
@@ -1377,8 +1377,8 @@ void channel::requestEnterSpyRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterSpyRoom");
 
 #ifdef _DEBUG
@@ -1390,7 +1390,7 @@ void channel::requestEnterSpyRoom(player& _session, packet* _packet) {
 
 		requestEnterRoom(_session, _packet);
 
-		// Resposta do pangya s4.9
+		// Reply from pangya s4.9
 		/*packet p((unsigned short)0xBC);
 
 		p.addUint16(11); // Error
@@ -1414,8 +1414,8 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if it has not logged in with the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("MakeRoom");
 
 		int option;
@@ -1437,7 +1437,7 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 			ri.fixed_hole = _packet->readUint32();
 		}
 
-		ri.natural.ulNaturalAndShortGame = _packet->readUint32();	// Short Game e Natural está nessa flag também
+		ri.natural.ulNaturalAndShortGame = _packet->readUint32();	// Short Game and Natural are in this flag too
 
 		s_tmp = _packet->readString();
 
@@ -1463,27 +1463,27 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 		}
 
 		ri.artefato = _packet->readUint32();
-		//::::::::::::::::::::::: Termina Leitura de dados do cliente ::::::::::::::::::::::::::::::://
+		//::::::::::::::::::::::: End of reading client data ::::::::::::::::::::::::::::::://
 
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("[channel::requestMakeRoom][Log] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 				+ "] Player[UID=" + std::to_string(_session.m_pi.uid) + "] Room Maked. Tipo: " + std::to_string((unsigned)ri.tipo), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Short game só pode em torneio, Special shuffle course e Grand Prix se estiver com o short game ativado, desativa
+		// Short game is only allowed in tourney, Special shuffle course and Grand Prix; if short game is enabled, disable it
 		if (ri.natural.stBit.short_game && ri.tipo != RoomInfo::TIPO::TOURNEY 
 				&& ri.tipo != RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE && ri.tipo != RoomInfo::TIPO::GRAND_PRIX)
 			ri.natural.stBit.short_game = 0u;
 
-		// Se for natural Modo ativa o Modo natural na sala, para mostrar os detalhes na rosa dos ventos,
-		// por que o cliente muda o vento, mas não mostra os detalhes
+		// If it is natural Mode, enable natural Mode in the room, to show the details on the wind compass,
+		// because the client changes the wind, but does not show the details
 		if (m_type.stBit.natural)
 			ri.natural.stBit.natural = 1;
 
 		// Flag Server
 		uFlag flag = /*sgs::gs->getInfo().flag.ullFlag |*/ _session.m_pi.block_flag.m_flag.ullFlag;
 
-		// Player não pode criar sala, exceto Lounge, se ele não estiver bloqueado
+		// Player cannot create a room, except Lounge, unless he is blocked
 		if (flag.stBit.all_game && (ri.tipo != RoomInfo::TIPO::LOUNGE || flag.stBit.lounge))
 			throw exception("[channel::requestMakeRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 					+ "] tentou criar um sala, mas ele nao pode criar nenhuma sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x780001));
@@ -1570,8 +1570,8 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 			throw exception("[channel::requestMakeRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) + "] tentou criar a sala[TIPO=" 
 					+ std::to_string((unsigned short)ri.tipo) + "], mas nao pode criar sala Grand Prix com esse pacote. Hacker.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 15, 0x770001));
 
-		// Flag do canal, se for rookie passa para sala, que no jogo, essa flag faz vir vento de 1m a 5m
-		if (m_ci.flag.stBit.junior_bellow/* & 512/*de Rookie F a Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Só Iniciante(Rookie)*/)
+		// Channel flag, if rookie it is passed to the room; in the game, this flag makes the wind range from 1m to 5m
+		if (m_ci.flag.stBit.junior_bellow/* & 512/*from Rookie F to Junior A*/ || m_ci.flag.stBit.only_rookie/* & 2048/*Rookie only*/)
 			ri.channel_rookie = 1;
 
 		if (ri.tipo == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE) {
@@ -1602,10 +1602,10 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 						+ ", ID=" + std::to_string(item.id) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 11, 0));
 
 			// UPDATE ON GAME
-			// O Proprio Cliente já tira 1 SSC Ticket, então só precisa atualizar no SERVER e NO DB
+			// The client itself already removes 1 SSC Ticket, so it only needs to be updated on the SERVER and in the DB
 
-			// Diminui o tempo do SSC se for Short Game
-			// Se for short game, coloca para o tempo ser de 20 minutos
+			// Reduces the SSC time if it is Short Game
+			// If it is short game, set the time to 20 minutes
 			if (ri.natural.stBit.short_game)
 				ri.time_30s = 20 * 60000;
 
@@ -1624,15 +1624,15 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 		try {
 
 #ifdef _DEBUG
-			// !@ Teste
+			// !@ Test
 			/*if (ri.tipo == RoomInfo::TIPO::PRACTICE && ri.modo == RoomInfo::MODO::M_REPEAT) {
 				ri.course = RoomInfo::eCOURSE::CHRONICLE_1_CHAOS;
 				ri.hole_repeat = 2;
 			}*/
 #endif // _DEBUG
 
-			// Verifica se o player foi convidado em outra sala
-			// e tira o convite dele
+			// Checks whether the player was invited to another room
+			// and removes his invitation
 			deleteInviteTimeResquestByInvited(_session);
 
 			r = m_rm.makeRoom(m_ci.id, ri, &_session);
@@ -1645,7 +1645,7 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 			_smp::message_pool::getInstance().push(new message("New Room Maked.", CL_FILE_LOG_AND_CONSOLE));
 		#endif // _DEBUG
 
-			// Att PlayerCanalInfo
+			// Update PlayerCanalInfo
 			updatePlayerInfo(_session);
 
 			r->sendUpdate();
@@ -1663,14 +1663,14 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 				sendUpdatePlayerInfo(_session, 3);
 
-			// Guild Battle precisa enviar o sendCharacter opção 0 duas vezes.
-			// Uma na sua posição normal e outra depois de atualizar o info da sala na lobby
+			// Guild Battle needs to send sendCharacter option 0 twice.
+			// One in its normal position and another after updating the room info in the lobby
 			if (r->getInfo()->tipo == RoomInfo::TIPO::GUILD_BATTLE)
 				r->sendCharacter(_session, 0);
 
-			// Verifica se é Tourney, Short Game, SSC e ver se tem senha e se a senha é "bot", para criar a sala com bot
-			// Verifica se tem o item para criar o bot se tiver cria se não só da a mensagem
-			if (r->getInfo()->tipo == RoomInfo::TIPO::TOURNEY/*Short Game ou Tourney normal*/ || r->getInfo()->tipo == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE) {
+			// Checks whether it is Tourney, Short Game, SSC and whether it has a password and the password is "bot", to create the room with a bot
+			// Checks whether he has the item to create the bot; if so, creates it, otherwise just gives the message
+			if (r->getInfo()->tipo == RoomInfo::TIPO::TOURNEY/*Short Game or normal Tourney*/ || r->getInfo()->tipo == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE) {
 
 				try {
 				
@@ -1679,11 +1679,11 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 
 				}catch (exception& e) {
 					UNREFERENCED_PARAMETER(e);
-					// Exception lança quando a sala não tem senha
+					// Exception is thrown when the room has no password
 				}
 			}
 
-			// Libera a sala
+			// Releases the room
 			if (r != nullptr)
 				m_rm.unlockRoom(r);
 		
@@ -1693,14 +1693,14 @@ void channel::requestMakeRoom(player& _session, packet* _packet) {
 			if (r != nullptr)
 				m_rm.unlockRoom(r);
 
-			throw;	// Relança a exception
+			throw;	// Rethrows the exception
 		}
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestMakeRoom][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error response
 		p.init_plain((unsigned short)0x49);
 
 		p.addUint16(2);	// Error
@@ -1720,8 +1720,8 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterRoom");
 
 		short numero = _packet->readInt16();
@@ -1737,7 +1737,7 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 		// Flag Server
 		uFlag flag = /*sgs::gs->getInfo().flag.ullFlag |*/ _session.m_pi.block_flag.m_flag.ullFlag;
 
-		// Player não pode criar sala, exceto Lounge, se ele não estiver bloqueado
+		// Player cannot create a room, except Lounge, unless he is blocked
 		if (flag.stBit.all_game && (r->getInfo()->tipo != RoomInfo::TIPO::LOUNGE || flag.stBit.lounge))
 			throw exception("[channel::requestEnterRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou entrar um sala[NUMERO=" + std::to_string(r->getNumero()) + "], mas ele nao pode entrar em nenhuma sala. Hacker ou Bug", 
@@ -1830,9 +1830,9 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 					+ "] tentou entrar na sala[TIPO=" + std::to_string((unsigned short)r->getInfo()->tipo) + ", NUMERO=" + std::to_string(r->getNumero()) 
 					+ "], mas nao pode entrar na sala Grand Prix com esse pacote. Hacker.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 15, 0x770001));
 
-		if (r->isGaming() && (_session.m_pi.m_cap.stBit.game_master/* & 4*/)) // GM Entra na sala depois que o jogo começou
+		if (r->isGaming() && (_session.m_pi.m_cap.stBit.game_master/* & 4*/)) // GM enters the room after the game has started
 			r->requestSendTimeGame(_session);
-		else if (r->isGaming())	// não é GM envia error para o player que ele nao pode entrar na sala depois de ter começado
+		else if (r->isGaming())	// if not GM, sends an error to the player that he cannot enter the room after it has started
 			throw exception("[channel::requestEnterRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou entrar na sala[NUMERO=" + std::to_string(numero) + "], mas a sala ja comecou o jogo. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 10, 0));
 		else {
@@ -1841,22 +1841,22 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 			
 				if (r->isInvited(_session)) {
 					
-					// Deleta convite
+					// Deletes invitation
 					auto ici = r->deleteInvited(_session);
 
 					deleteInviteTimeRequest(ici);
 					
-					// Add convidado a sala
+					// Adds invitee to the room
 					if (!r->isFull())
 						r->enter(_session);
 
 				}else if (!r->isFull()) {
 
-					// Verifica se o player foi convidado em outra sala
-					// e tira o convite dele
+					// Checks whether the player was invited to another room
+					// and removes his invitation
 					deleteInviteTimeResquestByInvited(_session);
 
-					// Entra na sala
+					// Enters the room
 					r->enter(_session);
 				
 				}else
@@ -1866,7 +1866,7 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 				throw exception("[channel::requestEnterRoom][WARNING] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 						+ "] tentou entrar na sala[NUMERO=" + std::to_string(numero) + "], mas a senha nao eh igual a da sala.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 4, 0));
 
-			// Att PlayerCanalInfo
+			// Update PlayerCanalInfo
 			updatePlayerInfo(_session);
 
 			r->sendUpdate();
@@ -1886,8 +1886,8 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 				sendUpdatePlayerInfo(_session, 3);
 
-			// Guild Battle precisa enviar o sendCharacter opção 0 duas vezes.
-			// Uma na sua posição normal e outra depois de atualizar o info da sala na lobby
+			// Guild Battle needs to send sendCharacter option 0 twice.
+			// One in its normal position and another after updating the room info in the lobby
 			if (r->getInfo()->tipo == RoomInfo::TIPO::GUILD_BATTLE)
 				r->sendCharacter(_session, 0);
 		}
@@ -1898,7 +1898,7 @@ void channel::requestEnterRoom(player& _session, packet* _packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestEnterRoom][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error response
 		p.init_plain((unsigned short)0x49);
 
 		p.addUint16(2);	// Error
@@ -1916,8 +1916,8 @@ void channel::requestChangeInfoRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeInfoRoom");
 
 		//room *r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -1948,25 +1948,25 @@ void channel::requestExitRoom(player& _session, packet* _packet) {
 	_smp::message_pool::getInstance().push(new message("Packet 0x0F.\n\rHex Dump.\n\r" + hex_util::BufferToHexString((unsigned char*)_packet->getPlainBuf().buf, _packet->getPlainBuf().len), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-	// Recebe do cliente
-	// 1 Byte Option, 0 não está em jogo, 1 está em jogo
-	// 2 Byte -1, deve ser o número da sala ou outra coisa que não sei, tipo um valor constante
-	// 16 Bytes acho que deve ser a senha da sala de encriptação do pacote1B da sala
+	// Received from the client
+	// 1 Byte Option, 0 not in game, 1 in game
+	// 2 Byte -1, should be the room number or something else I don't know, like a constant value
+	// 16 Bytes, I think it should be the room encryption password of the room's packet1B
 	unsigned char option;
 	short flag;
 	char senhaEncriptSala[16];
 
 	try {
 		
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExitRoom");
 
 		option = _packet->readUint8();
 		flag = _packet->readInt16();
 		_packet->readBuffer(senhaEncriptSala, sizeof(senhaEncriptSala));
 
-		// Esse precisa do pacote para sair da sala
+		// This one needs the packet to leave the room
 		leaveRoomMultiPlayer(_session, 1);
 
 	}catch (exception& e) {
@@ -1984,8 +1984,8 @@ void channel::requestShowInfoRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ShowInfoRoom");
 
 		short sala_numero = _packet->readInt16();
@@ -1993,7 +1993,7 @@ void channel::requestShowInfoRoom(player& _session, packet* _packet) {
 		//room *r = m_rm.findRoom(sala_numero);
 		BEGIN_FIND_ROOM(sala_numero);
 
-		// aqui tem que passar o pacote86 com resposta que a sala não existe
+		// here it must send packet86 with the response that the room does not exist
 		if (r == nullptr)
 			throw exception("[channel::requestShowInfoRoom][Error] Channel[ID=" + std::to_string((unsigned short)m_ci.id) + "], Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] pediu info da sala[NUMERO=" + std::to_string(sala_numero) + "] nao existe.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 10, 0));
@@ -2022,9 +2022,9 @@ void channel::requestShowInfoRoom(player& _session, packet* _packet) {
 
 			p.addUint32(pci->oid);
 			p.addUint8(pci->level);
-			p.addUint8(r->requestPlace(*v_session[i]));	// se estiver jogando, aqui fica o número do hole
+			p.addUint8(r->requestPlace(*v_session[i]));	// if playing, the hole number goes here
 
-			// Cap do player, se for GM so mostra se estiver com a flag visible
+			// Player cap, if GM it is only shown if the visible flag is set
 			p.addUint32(pci->capability.ulCapability);
 			p.addUint32(pci->title);
 			p.addUint32(pci->team_point);
@@ -2049,8 +2049,8 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayerLocationRoom");
 
 		//room *r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2085,7 +2085,7 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 		}
 		case 1:	// Motion In Room
 		{
-			// verifca algumas coisa se necessario e envia a resposta para o cliente
+			// checks a few things if necessary and sends the response to the client
 			p.init_plain((unsigned short)0xC4);
 
 			p.addUint32(_session.m_oid);
@@ -2097,7 +2097,7 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 4: // X Z R, coordenada inicial do player no lounge
+		case 4: // X Z R, initial player coordinates in the lounge
 		{
 			PlayerRoomInfo::stLocation location;
 
@@ -2122,7 +2122,7 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 5: // Estado do player na sala, se o player esta sentado, deitado ou em pé
+		case 5: // Player state in the room, whether the player is sitting, lying down or standing
 		{
 			_session.m_pi.state = _packet->readUint32();
 
@@ -2139,7 +2139,7 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 6: // Player está andando no lounge, X, Z, R
+		case 6: // Player is walking in the lounge, X, Z, R
 		{
 			PlayerRoomInfo::stLocation location_add;
 
@@ -2166,9 +2166,9 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 7:	// Motion no lounge
+		case 7:	// Motion in the lounge
 		{
-			// verifca algumas coisa se necessario e envia a resposta para o cliente
+			// checks a few things if necessary and sends the response to the client
 			p.init_plain((unsigned short)0xC4);
 
 			p.addUint32(_session.m_oid);
@@ -2180,7 +2180,7 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 8:	// Estado do player de icon no lounge
+		case 8:	// Player icon state in the lounge
 		{
 			_session.m_pi.state_lounge = _packet->readUint32();
 
@@ -2197,9 +2197,9 @@ void channel::requestPlayerLocationRoom(player& _session, packet* _packet) {
 
 			break;
 		}
-		case 10:	// Motion no lounge de item especial
+		case 10:	// Special item motion in the lounge
 		{
-			// verifca algumas coisa se necessario e envia a resposta para o cliente
+			// checks a few things if necessary and sends the response to the client
 			p.init_plain((unsigned short)0xC4);
 
 			p.addUint32(_session.m_oid);
@@ -2234,8 +2234,8 @@ void channel::requestChangePlayerStateReadyRoom(player& _session, packet* _packe
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerStateReadyRoom");
 
 		//room *r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2256,7 +2256,7 @@ void channel::requestChangePlayerStateReadyRoom(player& _session, packet* _packe
 		// Update state of ready
 		pri->state_flag.uFlag.stFlagBit.ready = !ready;
 
-		packet p((unsigned short)0x78);	// Estado de Ready do player na sala
+		packet p((unsigned short)0x78);	// Player Ready state in the room
 
 		p.addUint32(_session.m_oid);
 		p.addUint8(ready);
@@ -2280,8 +2280,8 @@ void channel::requestKickPlayerOfRoom(player& _session, packet* _packet) {
 	
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("KickPlayerOfRoom");
 
 		uint32_t uid = _packet->readUint32();
@@ -2299,7 +2299,7 @@ void channel::requestKickPlayerOfRoom(player& _session, packet* _packet) {
 					+ "] tentou chutar um player[UID=" + std::to_string(uid) + "] da sala[NUMERO=" + std::to_string(r->getNumero()) 
 					+ "], mas o player nao eh master da sala para poder chutar(kick) o player. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 11, 0));
 
-		// Se não for GM, não pode kikar o player da sala com jogo em andamento
+		// If not GM, cannot kick the player from a room with a game in progress
 		if (!_session.m_pi.m_cap.stBit.game_master && r->isGaming())
 			throw exception("[channel::requestKickPlayerOfRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou chutar um player[UID=" + std::to_string(uid) + "] da sala[NUMERO=" + std::to_string(r->getNumero()) 
@@ -2312,9 +2312,9 @@ void channel::requestKickPlayerOfRoom(player& _session, packet* _packet) {
 					+ "] tentou chutar um player[UID=" + std::to_string(uid) + "] da sala[NUMERO=" + std::to_string(r->getNumero()) 
 					+ "], mas o player nao existe na sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 12, 0));
 
-		// Player precisa do pacote para sair da sala
-		// Não precisa verifica se é Grand Prix o multiplayer,
-		// o pacote do multiplayer serve para kikar o player da sala. O pacote do GP no GP buga
+		// Player needs the packet to leave the room
+		// No need to check whether the multiplayer is Grand Prix,
+		// the multiplayer packet works for kicking the player from the room. The GP packet in GP is buggy
 		leaveRoomMultiPlayer(*kick, 3);
 
 		END_FIND_ROOM;
@@ -2334,8 +2334,8 @@ void channel::requestChangePlayerTeamRoom(player& _session, packet* _packet) {
 		_smp::message_pool::getInstance().push(new message("Packet 0x10.\n\rHex Dump.\n\r" + hex_util::BufferToHexString((unsigned char*)_packet->getPlainBuf().buf, _packet->getPlainBuf().len), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerTeamRoom");
 
 		//auto *r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2365,8 +2365,8 @@ void channel::requestChangePlayerStateAFKRoom(player& _session, packet* _packet)
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerStateAFKRoom");
 
 		unsigned char state = _packet->readUint8();
@@ -2419,8 +2419,8 @@ void channel::requestPlayerStateCharacterLounge(player& _session, packet* _packe
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayerStateCharacterLounge");
 	
 		//room *r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2461,8 +2461,8 @@ void channel::requestToggleAssist(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ToggleAssist");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2493,8 +2493,8 @@ void channel::requestInvite(player& _session, packet *_packet) {
 		std::string nickname = _packet->readString();
 		uint32_t uid = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("Invite");
 
 		auto s = findSessionByNickname(nickname);
@@ -2503,19 +2503,19 @@ void channel::requestInvite(player& _session, packet *_packet) {
 			throw exception("[channel::requestInvite][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou convidar o player[UID=" + std::to_string(uid) + ", NICKNAME=" + nickname + "] para Sala[NUMERO=" 
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "], mas o player nao esta nesse canal. Hacker ou Bug", 
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3000, 23/*nao pode ser convidado*/));
+					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3000, 23/*cannot be invited*/));
 
 		if (s->m_pi.mi.sala_numero != -1)
 			throw exception("[channel::requestInvite][Warning] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 					+ "] tentou convidar o player[UID=" + std::to_string(uid) + ", NICKNAME=" + nickname + "] para Sala[NUMERO="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "], mas o player ja esta em outra sala.",
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3002, 23/*nao pode ser convidado*/));
+					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3002, 23/*cannot be invited*/));
 
 		if (s->m_pi.place != 0)
 			throw exception("[channel::requestInvite][Warning] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 					+ "] tentou convidar o player[UID=" + std::to_string(uid) + ", NICKNAME=" + nickname + "] para Sala[NUMERO="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "], mas o player nao pode ser convidado no momento.",
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3002, 23/*nao pode ser convidado*/));
+					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3002, 23/*cannot be invited*/));
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
@@ -2524,11 +2524,11 @@ void channel::requestInvite(player& _session, packet *_packet) {
 			throw exception("[channel::requestInvite][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id) 
 					+ "] tentou convidar o player[UID=" + std::to_string(uid) + ", NICKNAME=" + nickname + "] para Sala[NUMERO=" 
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "], mas ele nao esta em nenhuma sala para poder convidar. Hacker ou Bug", 
-					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3001, 23/*nao pode ser convidado*/));
+					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3001, 23/*cannot be invited*/));
 
 		auto ici = r->addInvited(_session.m_pi.uid, *s);
 
-		// Adiciona para o vector ou Mapa do canal que monitora os convites
+		// Adds to the channel's vector or map that monitors invitations
 		addInviteTimeRequest(ici);
 
 		sendUpdateRoomInfo(*const_cast< RoomInfoEx* >(r->getInfo()), 3);
@@ -2550,7 +2550,7 @@ void channel::requestInvite(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Envia o Convite para o player
+		// Sends the invitation to the player
 		p.init_plain((unsigned short)0x83);
 
 		p.addUint16(0);	// OK
@@ -2573,10 +2573,10 @@ void channel::requestInvite(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestInvite][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta Error
+		// Error response
 		p.init_plain((unsigned short)0x12F);
 
-		p.addUint16((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? (unsigned short)STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 23u/*Player não pode ser convidado*/);
+		p.addUint16((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? (unsigned short)STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 23u/*Player cannot be invited*/);
 
 		packet_func::session_send(p, &_session, 1);
 	}
@@ -2587,11 +2587,11 @@ void channel::requestCheckInvite(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CheckInvite");
 
-		// Esse aqui o O Server Original nao retorna nada para o cliente, acho que é só um check
+		// For this one the Original Server returns nothing to the client, I think it is just a check
 		uint32_t uid = _packet->readUint32();
 
 #ifdef _DEBUG
@@ -2610,8 +2610,8 @@ void channel::requestChatTeam(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChatTeam");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2637,32 +2637,32 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExitedFromWebGuild");
 
-		// Verifica se tem alteração nos pangs
+		// Checks whether the pangs changed
 		auto old_pang = _session.m_pi.ui.pang;
 
-		// Update o pang do server com o valor que está no banco de dados
+		// Updates the server pang with the value in the database
 		_session.m_pi.updatePang();
 
 		if (old_pang != _session.m_pi.ui.pang) {
 
-			// Atualiza o pangs do player no jogo que teve alteração dos pangs do player no banco de dados
+			// Updates the player's pangs in the game when the player's pangs changed in the database
 
 			// UPDATE ON GAME
 			packet p((unsigned short)0xC8);
 
 			p.addUint64(_session.m_pi.ui.pang);
-			p.addUint64(0);	// Aqui é o pang que foi gasto, old_pang - new pang, mas o pangya original passa 0 por que pode da número negativo se o old for menor que o novo se adicionar mais pang no db
+			p.addUint64(0);	// Here is the pang that was spent, old_pang - new pang, but the original pangya sends 0 because it can be negative if old is less than new when more pang is added in the db
 
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Verifica se tem alguma atualização da guild Web para atualizar o player no server e cliente
+		// Checks whether there is any Web guild update to update the player on the server and client
 
-		// Só verifica se o player estiver em uma guild
+		// Only checks if the player is in a guild
 		if (_session.m_pi.gi.uid > 0) {
 
 			CmdGuildUpdateActivityInfo cmd_guai(_session.m_pi.gi.uid, _session.m_pi.uid, true);	// Waiter
@@ -2680,25 +2680,25 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 
 				packet p;
 
-				// Verifica todas as alterações que tem na Guild e trata elas
+				// Checks all changes in the Guild and handles them
 				for (auto& el : v_info) {
 
 					switch (el.type) {
 						case GuildUpdateActivityInfo::TYPE_UPDATE::TU_ACCEPTED_MEMBER:
 						{
-							// Manda para o Message Server, para atulizar a lista de membros da guild dos membros online,
-							// que o player foi adicionado na guild
-							p.init_plain((unsigned short)0x01/*Aceito na Guild*/);
+							// Sends to the Message Server, to update the guild member list of the online members,
+							// that the player was added to the guild
+							p.init_plain((unsigned short)0x01/*Accepted into the Guild*/);
 
 							p.addUint32(el.club_uid);
 							p.addUint32(el.player_uid);
 
 							sgs::gs::getInstance().sendCommandToOtherServerWithAuthServer(p, 3/*Message Server*/);
 
-							// Verifica se o player está online e atualiza o info de guild dele no server
+							// Checks whether the player is online and updates his guild info on the server
 							auto s = sgs::gs::getInstance().findPlayer(el.player_uid);
 
-							// Player está online
+							// Player is online
 							if (s != nullptr && 
 #if defined(_WIN32)
 								s->m_sock != INVALID_SOCKET
@@ -2719,10 +2719,10 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 
 								auto mi = cmd_mi.getInfo();
 
-								// Só atualiza o info da guild se ele estiver em uma guild
+								// Only updates the guild info if he is in a guild
 								if (mi.guild_uid > 0u) {
 									
-									// Atualiza os dados de Guild do player, ele foi aceito em uma guild
+									// Updates the player's Guild data, he was accepted into a guild
 									s->m_pi.mi.guild_mark_img_no = mi.guild_mark_img_no;
 									s->m_pi.mi.guild_uid = mi.guild_uid;
 									s->m_pi.mi.guild_pang = mi.guild_pang;
@@ -2745,10 +2745,10 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 									if (cmd_gi.getException().getCodeError() != 0)
 										throw cmd_gi.getException();
 
-									// Atualiza guild info
+									// Updates guild info
 									s->m_pi.gi = cmd_gi.getInfo();
 
-									// Verifica se está na lobby e atualiza seu info
+									// Checks whether he is in the lobby and updates his info
 									if (s->m_pi.lobby != (unsigned char)~0) {
 
 										auto c = sgs::gs::getInstance().findChannel(s->m_pi.channel);
@@ -2767,18 +2767,18 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 						}
 						case GuildUpdateActivityInfo::TYPE_UPDATE::TU_EXITED_MEMBER:
 						{
-							// Manda para o Message Server, para atulizar a lista de membros da guild dos membros online,
-							// que o player saiu da guild
-							p.init_plain((unsigned short)0x02/*Saiu da Guild*/);
+							// Sends to the Message Server, to update the guild member list of the online members,
+							// that the player left the guild
+							p.init_plain((unsigned short)0x02/*Left the Guild*/);
 
 							p.addUint32(el.club_uid);
 							p.addUint32(el.player_uid);
 
 							sgs::gs::getInstance().sendCommandToOtherServerWithAuthServer(p, 3/*Message Server*/);
 
-							// Atualiza o info do player no server que ele saiu da guild
-							// Limpa os dados da guild do player
-							// Ele não está mais em uma guild
+							// Updates the player's info on the server that he left the guild
+							// Clears the player's guild data
+							// He is no longer in a guild
 							_session.m_pi.gi.clear();
 
 							_session.m_pi.mi.guild_mark_img_no = 0u;
@@ -2788,7 +2788,7 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 							memset(_session.m_pi.mi.guild_name, 0, sizeof(_session.m_pi.mi.guild_name));
 							memset(_session.m_pi.mi.guild_mark_img, 0, sizeof(_session.m_pi.mi.guild_mark_img));
 
-							// Verifica se está na lobby e atualiza seu info
+							// Checks whether he is in the lobby and updates his info
 							if (_session.m_pi.lobby != (unsigned char)~0) {
 
 								auto c = sgs::gs::getInstance().findChannel(_session.m_pi.channel);
@@ -2805,20 +2805,20 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 						}
 						case GuildUpdateActivityInfo::TYPE_UPDATE::TU_KICKED_MEMBER:
 						{
-							// Manda para o Message Server, para atulizar a lista de membros da guild dos membros online,
-							// que o player foi chutado da guild
-							p.init_plain((unsigned short)0x03/*Chutado da Guild*/);
+							// Sends to the Message Server, to update the guild member list of the online members,
+							// that the player was kicked from the guild
+							p.init_plain((unsigned short)0x03/*Kicked from the Guild*/);
 
 							p.addUint32(el.club_uid);
 							p.addUint32(el.player_uid);
 
 							sgs::gs::getInstance().sendCommandToOtherServerWithAuthServer(p, 3/*Message Server*/);
 
-							// Verifica se o player está online e zera o info de guild dele no server
+							// Checks whether the player is online and zeroes his guild info on the server
 							auto s = sgs::gs::getInstance().findPlayer(el.player_uid);
 
-							// Player está online
-							// Atualiza o info do player no server que ele saiu da guild
+							// Player is online
+							// Updates the player's info on the server that he left the guild
 							if (s != nullptr && 
 #if defined(_WIN32)
 								s->m_sock != INVALID_SOCKET
@@ -2827,8 +2827,8 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 #endif
 							) {
 								
-								// Limpa os dados da guild do player
-								// Ele não está mais em uma guild
+								// Clears the player's guild data
+								// He is no longer in a guild
 								s->m_pi.gi.clear();
 
 								s->m_pi.mi.guild_mark_img_no = 0u;
@@ -2838,7 +2838,7 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 								memset(s->m_pi.mi.guild_name, 0, sizeof(s->m_pi.mi.guild_name));
 								memset(s->m_pi.mi.guild_mark_img, 0, sizeof(s->m_pi.mi.guild_mark_img));
 
-								// Verifica se está na lobby e atualiza seu info
+								// Checks whether he is in the lobby and updates his info
 								if (s->m_pi.lobby != (unsigned char)~0) {
 
 									auto c = sgs::gs::getInstance().findChannel(s->m_pi.channel);
@@ -2856,7 +2856,7 @@ void channel::requestExitedFromWebGuild(player& _session, packet *_packet) {
 						}
 					}
 
-					// Atualiza o STATE do guild update activity por que ela já foi tratada
+					// Updates the STATE of the guild update activity because it has already been handled
 					snmdb::NormalManagerDB::getInstance().add(27, new CmdUpdateGuildUpdateActiviy(el.index), channel::SQLDBResponse, this);
 				}
 			}
@@ -2873,8 +2873,8 @@ void channel::requestStartGame(player& _session, packet *_packet) {
 	
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("StartGame");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2887,11 +2887,11 @@ void channel::requestStartGame(player& _session, packet *_packet) {
 
 		if (r->requestStartGame(_session, _packet)) {
 
-			// Atualiza na lobby a sala, que acabou de começar o jogo
+			// Updates in the lobby the room that has just started the game
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {
 				packet p;
 
-				// Atualiza info da sala na lobby
+				// Updates room info in the lobby
 				sendUpdateRoomInfo(*const_cast< RoomInfoEx* >(r->getInfo()), 3);
 			}
 		}
@@ -2910,8 +2910,8 @@ void channel::requestInitHole(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("InitHole");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2937,8 +2937,8 @@ void channel::requestFinishLoadHole(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("FinishLoadHole");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -2949,7 +2949,7 @@ void channel::requestFinishLoadHole(player& _session, packet *_packet) {
 					+ "] tentou finalizar carregamento do hole do jogo na sala[NUMERO=" + std::to_string(_session.m_pi.mi.sala_numero) 
 					+ "], mas ele nao esta em nenhuma sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5900401));
 
-		// Timer do tempo que a sala fica aberta para entrar depois que o Tourney começa
+		// Timer for how long the room stays open for joining after the Tourney starts
 		if (r->requestFinishLoadHole(_session, _packet)) {
 
 			job j(channel::_enter_left_time_is_over, this, (void*)(intptr_t)r->getNumero());
@@ -2979,8 +2979,8 @@ void channel::requestFinishCharIntro(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("FinishCharIntro");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3006,8 +3006,8 @@ void channel::requestFinishHoleData(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("FinishHoleData");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3056,8 +3056,8 @@ void channel::requestInitShot(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("InitShot");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3084,8 +3084,8 @@ void channel::requestSyncShot(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("SyncShot");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3111,8 +3111,8 @@ void channel::requestInitShotArrowSeq(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("InitShotArrowSeq");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3138,8 +3138,8 @@ void channel::requestShotEndData(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ShotEndData");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3165,8 +3165,8 @@ void channel::requestFinishShot(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("FinishShot");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3181,12 +3181,12 @@ void channel::requestFinishShot(player& _session, packet *_packet) {
 		
 		if (rfs.ret > 0) {
 
-			if (rfs.ret == 2/*Kika Player da sala*/ && rfs.p != nullptr)
-				leaveRoom(*rfs.p, 2);	// Time out ou Give Up não lembro mais direito
+			if (rfs.ret == 2/*Kick Player from the room*/ && rfs.p != nullptr)
+				leaveRoom(*rfs.p, 2);	// Time out or Give Up, I don't remember exactly
 
 			/*if (rfs.p != nullptr) {
 
-				// Atualiza que o player saiu da sala
+				// Updates that the player left the room
 				updatePlayerInfo(*rfs.p);
 
 				sendUpdatePlayerInfo(*rfs.p, 3);
@@ -3196,7 +3196,7 @@ void channel::requestFinishShot(player& _session, packet *_packet) {
 				
 				packet p;
 
-				// Atualiza info da sala na lobby
+				// Updates room info in the lobby
 				packet_func::pacote047(p, std::vector< RoomInfo > { *r->getInfo() }, 3);
 				packet_func::channel_broadcast(*this, p, 1);
 			}*/
@@ -3215,8 +3215,8 @@ void channel::requestChangeMira(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangMira");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3242,8 +3242,8 @@ void channel::requestChangeStateBarSpace(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeStateBarSpace");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3269,8 +3269,8 @@ void channel::requestActivePowerShot(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActivePowerShot");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3296,8 +3296,8 @@ void channel::requestChangeClub(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeClub");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3323,8 +3323,8 @@ void channel::requestUseActiveItem(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UseActiveItem");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3350,8 +3350,8 @@ void channel::requestChangeStateTypeing(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeStateTypeing");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3377,8 +3377,8 @@ void channel::requestMoveBall(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("MoveBall");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3404,8 +3404,8 @@ void channel::requestChangeStateChatBlock(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeStateChatBlock");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3431,8 +3431,8 @@ void channel::requestActiveBooster(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveBooster");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3458,8 +3458,8 @@ void channel::requestActiveReplay(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveReplay");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3485,8 +3485,8 @@ void channel::requestActiveCutin(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveCutin");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3512,8 +3512,8 @@ void channel::requestActiveAutoCommand(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveAutoCommand");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3539,8 +3539,8 @@ void channel::requestActiveAssistGreen(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveAssistGreen");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3567,8 +3567,8 @@ void channel::requestLoadGamePercent(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LoadGamePercent");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3594,8 +3594,8 @@ void channel::requestMarkerOnCourse(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("MarkerOnCourse");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3621,8 +3621,8 @@ void channel::requestStartTurnTime(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("StartTurnTime");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3648,8 +3648,8 @@ void channel::requestUnOrPauseGame(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UnOrPauseGame");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3675,8 +3675,8 @@ void channel::requestLastPlayerFinishVersus(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LastPlayerFinishVersus");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3692,7 +3692,7 @@ void channel::requestLastPlayerFinishVersus(player& _session, packet *_packet) {
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {
 				packet p;
 
-				// Atualiza info da sala na lobby
+				// Updates room info in the lobby
 				packet_func::pacote047(p, std::vector< RoomInfo > { *r->getInfo() }, 3);
 				packet_func::channel_broadcast(*this, p, 1);
 			}
@@ -3711,8 +3711,8 @@ void channel::requestReplyContinueVersus(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ReplyContinueVersus");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3728,7 +3728,7 @@ void channel::requestReplyContinueVersus(player& _session, packet *_packet) {
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {
 				packet p;
 
-				// Atualiza info da sala na lobby
+				// Updates room info in the lobby
 				packet_func::pacote047(p, std::vector< RoomInfo > { *r->getInfo() }, 3);
 				packet_func::channel_broadcast(*this, p, 1);
 			}
@@ -3747,8 +3747,8 @@ void channel::requestTeamFinishHole(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("TeamFinishHole");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3774,8 +3774,8 @@ void channel::requestLeavePractice(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LeavePractice");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3806,8 +3806,8 @@ void channel::requestUseTicketReport(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UseTicketReport");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3818,9 +3818,9 @@ void channel::requestUseTicketReport(player& _session, packet *_packet) {
 					+ "] tentou sair do Tourney com Ticket Report no jogo na sala[NUMERO=" + std::to_string(_session.m_pi.mi.sala_numero) 
 					+ "], mas ele nao esta em nenhuma sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x6301001));
 
-		// Verifica se deu certo sair com Ticket Report do Tourney, se sim, sai da Sala
+		// Checks whether leaving with the Tourney Ticket Report worked, if so, leaves the Room
 		if (r->requestUseTicketReport(_session, _packet))
-			leaveRoom(_session, 10/*Saiu com ticket report, não att master*/);
+			leaveRoom(_session, 10/*Left with ticket report, do not update master*/);
 
 		END_FIND_ROOM;
 
@@ -3835,8 +3835,8 @@ void channel::requestLeaveChipInPractice(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LeaveChipInPractice");
 
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
@@ -3861,8 +3861,8 @@ void channel::requestStartFirstHoleGrandZodiac(player& _session, packet *_packet
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("StartFirstHoleGrandZodiac");
 
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
@@ -3887,8 +3887,8 @@ void channel::requestReplyInitialValueGrandZodiac(player& _session, packet *_pac
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ReplyInitialValueGrandZodiac");
 
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
@@ -3913,8 +3913,8 @@ void channel::requestActiveRing(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRing");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3940,8 +3940,8 @@ void channel::requestActiveRingGround(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRingGround");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3967,8 +3967,8 @@ void channel::requestActiveRingPawsRainbowJP(player& _session, packet *_packet) 
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRingPawsRainbowJP");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -3994,8 +3994,8 @@ void channel::requestActiveRingPawsRingSetJP(player& _session, packet *_packet) 
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRingPawsRingSetJP");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4021,8 +4021,8 @@ void channel::requestActiveRingPowerGagueJP(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRingPowerGagueJP");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4048,8 +4048,8 @@ void channel::requestActiveRingMiracleSignJP(player& _session, packet *_packet) 
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveRingMiracleSignJP");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4075,8 +4075,8 @@ void channel::requestActiveWing(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveWing");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4102,8 +4102,8 @@ void channel::requestActivePaws(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActivePaws");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4129,8 +4129,8 @@ void channel::requestActiveGlove(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveGlove");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4156,8 +4156,8 @@ void channel::requestActiveEarcuff(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ActiveEarcuff");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4187,8 +4187,8 @@ void channel::requestEnterGameAfterStarted(player& _session, packet *_packet) {
 
 		unsigned char option = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterGameAfterStarted");
 
 		if (option == 0 || option == 1) {
@@ -4225,15 +4225,15 @@ void channel::requestEnterGameAfterStarted(player& _session, packet *_packet) {
 
 				try {
 
-					// Verifica se o player foi convidado em outra sala
-					// e tira o convite dele
+					// Checks whether the player was invited to another room
+					// and removes his invitation
 					deleteInviteTimeResquestByInvited(_session);
 					
 					if (r->requestEnterGameAfterStarted(_session)) {
 
 						sendUpdateRoomInfo(*const_cast<RoomInfoEx*>(r->getInfo()), 3);
 
-						// update info player no canal
+						// update player info in the channel
 						updatePlayerInfo(_session);
 
 						if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
@@ -4277,7 +4277,7 @@ void channel::requestEnterGameAfterStarted(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestEnterGameAfterStarted][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta erro
+		// Error response
 		p.init_plain((unsigned short)0x113);
 
 		p.addUint8(6);		// Option Error
@@ -4294,8 +4294,8 @@ void channel::requestFinishGame(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("FinishGame");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4306,12 +4306,12 @@ void channel::requestFinishGame(player& _session, packet *_packet) {
 					+ "] tentou finalizar o jogo na sala[NUMERO=" + std::to_string(_session.m_pi.mi.sala_numero) 
 					+ "], mas ele nao esta em nenhum sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5902201));
 
-		if (r->requestFinishGame(_session, _packet)) {	// Terminou o jogo
+		if (r->requestFinishGame(_session, _packet)) {	// Game finished
 
 			if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {
 				packet p;
 
-				// Atualiza info da sala na lobby
+				// Updates room info in the lobby
 				packet_func::pacote047(p, std::vector< RoomInfo > { *r->getInfo() }, 3);
 				packet_func::channel_broadcast(*this, p, 1);
 			}
@@ -4330,8 +4330,8 @@ void channel::requestChangeWindNextHoleRepeat(player& _session, packet *_packet)
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeWindNextHoleRepeat");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -4361,14 +4361,14 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 
 		uint32_t _typeid_gp = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterRoomGrandPrix");
 
 		// Flag Server
 		uFlag flag = _session.m_pi.block_flag.m_flag.ullFlag;
 
-		// Player não pode criar ou entrar em sala Grand Prix
+		// Player cannot create or enter a Grand Prix room
 		if (flag.stBit.all_game)
 			throw exception("[channel::requestEnterRoomGrandPrix][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 					+ "] tentou criar ou entrar sala Grand Prix[TYPEID=" + std::to_string(_typeid_gp) 
@@ -4379,23 +4379,23 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 					+ "] tentou criar ou entrar sala Grand Prix[TYPEID=" + std::to_string(_typeid_gp) + ", TIPO=" + std::to_string(RoomInfo::GRAND_PRIX)
 					+ "], mas ele nao pode criar Grand Prix ou entrar(jogar). Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x6700004, 0x6700004));
 
-		// Verifica as regras do Grand Prix
+		// Checks the Grand Prix rules
 		auto gp = sIff::getInstance().findGrandPrixData(_typeid_gp);
 
-		// Verifica se o Grand Prix existe no server e se ele está ativado
+		// Checks whether the Grand Prix exists on the server and is enabled
 		if (gp == nullptr || !gp->active)
 			throw exception("[channel::requestEnterRoomGrandPrix][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] Canal[ID=" + std::to_string((unsigned short)m_ci.id) + "] tentou entrar na sala Grand Prix[TYPEID=" + std::to_string(_typeid_gp) 
 					+ "] mas nao existe esse grand prix no IFF_STRUCT do server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x6700001, 0x6700001));
 
-		// Verifica se o Grand Prix está na hora em que pode entrar
+		// Checks whether the Grand Prix is within the time window to enter
 		SYSTEMTIME local{ 0 };
 
 		GetLocalTime(&local);
 
 		local.wDay = local.wDayOfWeek = local.wMonth = local.wYear = 0u;
 
-		// Adiciona 1 dia para o start se a hora for >= 23 do open e <= 1 a hora do start
+		// Adds 1 day to the start if the open hour is >= 23 and the start hour is <= 1
 		if (gp->open.wHour >= 23 && gp->start.wHour <= 1)
 			gp->start.wDay = 1u;
 
@@ -4407,20 +4407,20 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 					+ "}] mas ainda nao esta na hora[HORA=" + std::to_string(local.wHour) + ", MIN=" + std::to_string(local.wMinute) 
 					+ "] em que pode entrar na sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x670000C, 0x670000C));
 
-		// Verifica level
+		// Checks level
 		if (_session.m_pi.level < gp->level_min || (gp->level_max > 0u && _session.m_pi.level > gp->level_max))
 			throw exception("[channel::requestEnterRoomGrandPrix][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + ", LEVEL=" + std::to_string(_session.m_pi.level) 
 					+ "] Canal[ID=" + std::to_string((unsigned short)m_ci.id) + "] tentou entrar na sala Grand Prix[TYPEID=" + std::to_string(gp->_typeid) 
 					+ ", LVL_MIN=" + std::to_string(gp->level_min) + ", LVL_MAX=" + std::to_string(gp->level_max) 
 					+ "] mas ele nao tem o level necessario para entrar na sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x6700006, 0x6700006));
 
-		// Verifica condition equiped item
+		// Checks equipped item condition
 		auto gp_condition = sIff::getInstance().findGrandPrixConditionEquip(gp->typeid_link);
 
 		uint32_t gp_condition_item_typeid = 0u;
 
-		// tem que está com pelo menos 1 item equipado, ex: (clubset, character, ball, caddie, Part)
-		// na condição pode vários itens mas do mesmo tipo(IFF::TYPE), ex: (3 clubset, 3 character, 2 ball, 1 caddie, 5 Part)
+		// must have at least 1 item equipped, e.g.: (clubset, character, ball, caddie, Part)
+		// the condition can have several items but of the same type (IFF::TYPE), e.g.: (3 clubset, 3 character, 2 ball, 1 caddie, 5 Part)
 		if (!gp_condition.empty() && !std::any_of(gp_condition.begin(), gp_condition.end(), [&_session, &gp_condition_item_typeid](auto& _el) -> bool {
 			
 			gp_condition_item_typeid = _el.item_typeid;
@@ -4438,7 +4438,7 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 					+ ", AVG_MIN=" + std::to_string(gp->condition[0]) + ", AVG_MAX=" + std::to_string(gp->condition[1]) 
 					+ "] mas ele nao tem o Avg. Score necessario para entrar na sala. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x6700008, 0x6700008));
 
-		// Verifica se ele tem o Grand Prix Ticket necessário
+		// Checks whether he has the required Grand Prix Ticket
 		if (gp->ticket.qntd > 0u && gp->ticket._typeid != 0u) {
 
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(gp->ticket._typeid);
@@ -4451,13 +4451,13 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 
 		}
 
-		// Verifica se ele já concluiu outro Grand Prix para poder jogar esse
+		// Checks whether he has already completed another Grand Prix in order to play this one
 		if (gp->lock_yn > 0u && gp->clear_gp_typeid != 0u && _session.m_pi.findGrandPrixClear(gp->clear_gp_typeid) == nullptr)
 			throw exception("[channel::requestEnterRoomGrandPrix][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] Canal[ID=" + std::to_string((unsigned short)m_ci.id) + "] tentou entrar na sala Grand Prix[TYPEID=" + std::to_string(gp->_typeid) 
 					+ "] mas nao concluiu o Grand Prix[TYPEID=" + std::to_string(gp->clear_gp_typeid) + "]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x670000A, 0x670000A));
 
-		// Verifica se o tipo do Grand Prix está ativo no server
+		// Checks whether the Grand Prix type is active on the server
 		if (gp->type > 0u) {
 			if (!sgs::gs::getInstance().getInfo().rate.checkBitGrandPrixEvent(gp->type))
 				throw exception("[channel::requestEnterRoomGrandPrix][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
@@ -4475,14 +4475,14 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 		// Room variable
 		room *r = nullptr;
 
-		// Grand Prix Rookie é instância cria uma sala separada para cada 1, o resto do Grand Prix considera como uma sala normal
-		// Cria uma nova sala se for GP Rookie ou não tiver nenhum sala criada do GP _typeid
+		// Grand Prix Rookie is an instance, it creates a separate room for each one; the rest of Grand Prix is treated as a normal room
+		// Creates a new room if it is GP Rookie or there is no room created for GP _typeid
 		if (sIff::getInstance().isGrandPrixNormal(gp->_typeid) && sIff::getInstance().getGrandPrixAba(gp->_typeid) == IFF::GrandPrixData::GP_ABA::ROOKIE 
 				|| (r = m_rm.findRoomGrandPrix(gp->_typeid)) == nullptr) {
 			
 			//auto gp_rwd = sIff::getInstance().findG
 
-			// Sala Beginner, Sempre cria uma nova ela é instancia
+			// Beginner room, always creates a new one, it is an instance
 			RoomInfoEx ri{ 0 };
 
 			ri.time_vs = 0;
@@ -4508,18 +4508,18 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 #elif defined(__linux__)
 			memcpy(ri.nome, gp->name, sizeof(ri.nome));
 #endif
-			// Fim de init Grand Prix Room Dados
+			// End of init Grand Prix Room data
 
 			//auto r = m_rm.makeRoomGrandPrix(ri, &_session, *gp, 1/*Sala Sem Master*/);
 			RoomGrandPrix *r = nullptr;
 			
 			try {
 
-				// Verifica se o player foi convidado em outra sala
-				// e tira o convite dele
+				// Checks whether the player was invited to another room
+				// and removes his invitation
 				deleteInviteTimeResquestByInvited(_session);
 
-				r = m_rm.makeRoomGrandPrix(m_ci.id, ri, &_session, *gp, 1/*Sala Sem Master*/);
+				r = m_rm.makeRoomGrandPrix(m_ci.id, ri, &_session, *gp, 1/*Room Without Master*/);
 
 				if (r == nullptr)
 					throw exception("[channel::requestEnterRoomGrandPrix][Error] Player[UID=" + std::to_string(_session.m_pi.uid)
@@ -4530,7 +4530,7 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 				_smp::message_pool::getInstance().push(new message("New Room Grand Prix Maked.", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-				// Att PlayerCanalInfo
+				// Update PlayerCanalInfo
 				updatePlayerInfo(_session);
 
 				r->sendUpdate();
@@ -4544,7 +4544,7 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 				if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 					sendUpdatePlayerInfo(_session, 3);
 
-				// Libera a sala
+				// Releases the room
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 
@@ -4554,28 +4554,28 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 
-				throw;	// Relança a exception
+				throw;	// Rethrows the exception
 			}
 		
 		}else {
 
 			try {
 
-				// Entra na sala
+				// Enters the room
 				if (!r->isFull()) {
 					
-					// Verifica se o player foi convidado em outra sala
-					// e tira o convite dele
+					// Checks whether the player was invited to another room
+					// and removes his invitation
 					deleteInviteTimeResquestByInvited(_session);
 					
-					// Entra na sala
+					// Enters the room
 					r->enter(_session);
 
 				}else
 					throw exception("[channel::requestEnterRoomGrandPrix][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" + std::to_string((unsigned short)m_ci.id)
 						+ "] tentou entrar na sala[NUMERO=" + std::to_string(r->getNumero()) + "], mas a sala esta cheia.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x6700005));
 
-				// Att PlayerCanalInfo
+				// Update PlayerCanalInfo
 				updatePlayerInfo(_session);
 
 				r->sendUpdate();
@@ -4591,7 +4591,7 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 				if (r->getInfo()->tipo != RoomInfo::TIPO::PRACTICE && r->getInfo()->tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE)
 					sendUpdatePlayerInfo(_session, 3);
 
-				// Libera a sala
+				// Releases the room
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 			
@@ -4601,7 +4601,7 @@ void channel::requestEnterRoomGrandPrix(player& _session, packet *_packet) {
 				if (r != nullptr)
 					m_rm.unlockRoom(r);
 
-				throw;	// Relança a exception
+				throw;	// Rethrows the exception
 			}
 		}
 
@@ -4624,21 +4624,21 @@ void channel::requestExitRoomGrandPrix(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExitRoomGrandPrix");
 
-		// 0 sai da sala sem está em jogo, 1 sai da sala em jogo
+		// 0 leaves the room while not in game, 1 leaves the room while in game
 		unsigned char opt = _packet->readUint8();
 
-		short value = _packet->readInt16();	// aqui sempre peguei -1
+		short value = _packet->readInt16();	// here I always got -1
 
 		char key[16];
 
-		// Acho que seja chave da sala ele sempre manda 0
+		// I think it is the room key, it always sends 0
 		_packet->readBuffer(key, sizeof(key));
 
-		// Esse precisa do pacote para sair da sala
+		// This one needs the packet to leave the room
 		leaveRoomGrandPrix(_session, 1);
 
 	}catch (exception& e) {
@@ -4652,8 +4652,8 @@ void channel::requestPlayerReportChatGame(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("requestPlayerReportChatGame");
 
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
@@ -4801,8 +4801,8 @@ void channel::requestExecCCGIdentity(player& _session, packet *_packet) {
 		uCapability cap = _packet->readUint32();
 		std::string nick = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExecCCGIdentity");
 
 		if (nick.empty())
@@ -4827,9 +4827,9 @@ void channel::requestExecCCGIdentity(player& _session, packet *_packet) {
 
 		packet p;
 
-		if (cap.ulCapability == ~0u) {	// player está tentando voltar a ser GM novament
+		if (cap.ulCapability == ~0u) {	// player is trying to become GM again
 
-			// Valta para o GM
+			// Back to GM
 			if (_session.m_pi.m_cap.stBit.gm_normal) {
 				
 				_session.m_pi.m_cap.stBit.game_master = 1u;
@@ -4906,7 +4906,7 @@ void channel::requestExecCCGKick(player& _session, packet *_packet) {
 	try {
 
 		int32_t oid = _packet->readInt32();
-		unsigned char force = _packet->readUint8();	// Força o kick do player
+		unsigned char force = _packet->readUint8();	// Forces the player kick
 
 		auto s = findSessionByOID(oid);
 
@@ -4927,7 +4927,7 @@ void channel::requestExecCCGKick(player& _session, packet *_packet) {
 				+ "] kikou o player[UID=" + std::to_string(s->m_pi.uid) + ", NICKNAME=" + std::string(s->m_pi.nickname) 
 				+ "] FORCE[QUIT=" + std::to_string((unsigned short)force) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Chuta da sala se o Player estiver em uma
+		// Kicks from the room if the Player is in one
 		kickPlayerRoom(*s, force);
 
 		END_FIND_ROOM;
@@ -4945,8 +4945,8 @@ void channel::requestExecCCGDestroy(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExecCCGDestroy");
 
 		if (_session.m_pi.m_cap.stBit.game_master) {
@@ -4973,9 +4973,9 @@ void channel::requestExecCCGDestroy(player& _session, packet *_packet) {
 
 			}else {
 
-				// Kick all player e destroi a sala
+				// Kick all players and destroy the room
 				for (auto& el : v_sessions)
-					kickPlayerRoom(*el, 0/*Não conta quit*/);
+					kickPlayerRoom(*el, 0/*Does not count quit*/);
 			}
 
 			// Log
@@ -4993,7 +4993,7 @@ void channel::requestExecCCGDestroy(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestExecCCGDestroy][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		packet p((unsigned short)0x40);	// Msg to Chat of player
+		packet p((unsigned short)0x40);	// Msg to player chat
 
 		p.addUint8(7);	// Notice
 
@@ -5019,14 +5019,14 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerItemMyRoom");
 
 		type = _packet->readUint8();
 
 		switch (type) {
-		case 0: // Character Equipado Parts Complete
+		case 0: // Equipped Character Parts Complete
 		{
 			CharacterInfo ci{ 0 }, *pCe = nullptr;
 
@@ -5035,10 +5035,10 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 			if (ci.id != 0 && (pCe = _session.m_pi.findCharacterById(ci.id)) != nullptr 
 					&& (sIff::getInstance().getItemGroupIdentify(pCe->_typeid) == iff::CHARACTER && sIff::getInstance().getItemGroupIdentify(ci._typeid) == iff::CHARACTER)) {
 					
-				// Checks Parts Equiped
+				// Checks Equipped Parts
 				_session.checkCharacterEquipedPart(ci);
 
-				// Check AuxPart Equiped
+				// Check Equipped AuxPart
 				_session.checkCharacterEquipedAuxPart(ci);
 					
 				*pCe = ci;
@@ -5065,7 +5065,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 				if (packet_func::pacote048(p, &_session, std::vector< PlayerRoomInfoEx > { (pri == nullptr) ? PlayerRoomInfoEx() : *pri }, 0x103))
 					packet_func::room_broadcast(*r, p, 0);
 
-				packet_func::pacote04B(p, &_session, 4/*att character, por que o jp passa o pacote0c antes desse ai nao att direito para os outros players, no lounge*/);
+				packet_func::pacote04B(p, &_session, 4/*update character, because jp sends packet0c before this one, it does not update correctly for the other players in the lounge*/);
 				packet_func::room_broadcast(*r, p, 0);
 			}
 
@@ -5085,9 +5085,9 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 					_session.m_pi.ei.cad_info = pCi;
 					_session.m_pi.ue.caddie_id = item_id;
 
-					// Verifica se o Caddie pode ser equipado
+					// Checks whether the Caddie can be equipped
 					if (_session.checkCaddieEquiped(_session.m_pi.ue))
-						item_id = _session.m_pi.ue.caddie_id;	// Desequipa caddie
+						item_id = _session.m_pi.ue.caddie_id;	// Unequips caddie
 
 					// Update ON DB
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
@@ -5101,7 +5101,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 							+ "]. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				}
 
-			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.char_info != nullptr) {	// Desequipa Caddie
+			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.char_info != nullptr) {	// Unequips Caddie
 			
 				_session.m_pi.ei.cad_info = nullptr;
 				_session.m_pi.ue.caddie_id = 0;
@@ -5109,20 +5109,20 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 
-			}// else Não tem nenhum caddie equipado, para desequipar, então o cliente só quis atualizar o estado
+			}// else There is no caddie equipped to unequip, so the client just wanted to update the state
 		
 			packet_func::pacote06B(p, &_session, &_session.m_pi, type, error);
 			packet_func::session_send(p, &_session, 1);
 			break;
 		}
-		case 2:	// Itens Equipáveis
+		case 2:	// Equippable Items
 		{
-			// Aqui tenho que copiar para uma struct temporaria antes,
-			// para verificar os itens que ele está equipando.
-			// Se está tudo certo, Salva na struct da session dele, e depois manda pra salvar no db por meio do Asyc query update
-			// Se não da mensagem de erro
-			// Error: 0 = "código 'errado(tenho que traduzir direito ainda)'", 1 = "DB Item Errado", 2, 3 = "Unknown ainda",
-			// 4 = "Sucesso"
+			// Here I have to copy to a temporary struct first,
+			// to check the items he is equipping.
+			// If everything is fine, saves to his session struct, and then sends to be saved in the db through the Async query update
+			// Otherwise gives an error message
+			// Error: 0 = "wrong code (I still have to translate it properly)", 1 = "Wrong DB Item", 2, 3 = "Still unknown",
+			// 4 = "Success"
 
 			UserEquip ue;
 			_packet->readBuffer(&ue.item_slot, sizeof(ue.item_slot));
@@ -5144,12 +5144,12 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 							throw exception("[channel::requestChangePlayerItemMyRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou atualizar item[TYPEID=" 
 									+ std::to_string(ue.item_slot[i]) + "] equipaveis, mas nao eh um item equipavel. Hacker ou Bug", 0);
 						
-						// Verifica se esse item existe pela chave do map se não lança uma exception se nao existir
+						// Checks whether this item exists by the map key, throws an exception if it does not exist
 						if (sIff::getInstance().findItem(ue.item_slot[i]) == nullptr)
 							throw std::out_of_range("[channel::requestChangePlayerItemMyRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou atualizar item[TYPEID="
 									+ std::to_string(ue.item_slot[i]) + "] equipaveis, mas nao tem o item no iff Item do IFF_STRUCT do Server. Hacker ou Bug");
 
-						// E se não tiver quantidade para equipar lança outra exception
+						// And if there is not enough quantity to equip, throws another exception
 						auto pWi = _session.m_pi.findWarehouseItemByTypeid(ue.item_slot[i]);
 
 						if (pWi == nullptr)
@@ -5184,7 +5184,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 					}
 				}
 
-				// Verifica se está em uma sala GrandPrix para verificar o GrandPrixConditionEquip
+				// Checks whether he is in a GrandPrix room to check the GrandPrixConditionEquip
 				BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
 				if (r != nullptr && r->getClassType() == eROOM_CLASS_TYPE::RCT_GRAND_PRIX)
@@ -5216,7 +5216,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 			
 				_smp::message_pool::getInstance().push(new message(std::string("[channel::requestChangePlayerItemMyRoom][ErrorSystem] ") + e.what(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Item Não existe no Server
+				// Item does not exist on the Server
 				error = 1;
 
 			}catch (std::exception& e) {
@@ -5238,7 +5238,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 			packet_func::session_send(p, &_session, 1);
 			break;
 		}
-		case 3: // Bola e Taqueira
+		case 3: // Ball and Club Bag
 		{
 			// Ball(COMET)
 			WarehouseItemEx *pWi = nullptr;
@@ -5247,22 +5247,22 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 					&& sIff::getInstance().getItemGroupIdentify(pWi->_typeid) == iff::BALL) {
 			
 				_session.m_pi.ei.comet = pWi;
-				_session.m_pi.ue.ball_typeid = item_id;		// Ball(Comet) é o typeid que o cliente passa
+				_session.m_pi.ue.ball_typeid = item_id;		// Ball(Comet) is the typeid the client sends
 
-				// Verifica se a Bola pode ser equipada
+				// Checks whether the Ball can be equipped
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					item_id = _session.m_pi.ue.ball_typeid;
 
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateBallEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 				
-			}else if (item_id == 0) { // Bola 0 coloca a bola padrão para ele, se for premium user coloca a bola de premium user
+			}else if (item_id == 0) { // Ball 0 sets the default ball for him, if premium user sets the premium user ball
 
-				// Zera para equipar a bola padrão
+				// Zeroes to equip the default ball
 				_session.m_pi.ei.comet = nullptr;
 				_session.m_pi.ue.ball_typeid = 0l;
 
-				// Verifica se a Bola pode ser equipada (Coloca para equipar a bola padrão
+				// Checks whether the Ball can be equipped (Sets it to equip the default ball
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					item_id = _session.m_pi.ue.ball_typeid;
 
@@ -5285,8 +5285,8 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 				// Update ClubSet
 				_session.m_pi.ei.clubset = pWi;
 
-				// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-				// que no original fica no warehouse msm, eu só confundi quando fiz
+				// This C of WarehouseItem, taken from the DB, is not the initial already-updated one of the club set, it is the one kept in the enchant table, 
+				// which in the original is kept in the warehouse itself, I just got confused when I made it
 				_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 				IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -5298,14 +5298,14 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 
 					_session.m_pi.ue.clubset_id = item_id;
 
-					// Verifica se o ClubSet pode ser equipado
+					// Checks whether the ClubSet can be equipped
 					if (_session.checkClubSetEquiped(_session.m_pi.ue))
 						item_id = _session.m_pi.ue.clubset_id;
 
 					// Update ON DB
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateClubsetEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 
-				}else // O Cliente é que tem que saber do erro, não posso passa essa excessão para função anterior
+				}else // The Client is the one that must know about the error, I cannot pass this exception to the previous function
 					_smp::message_pool::getInstance().push(new message("[channel::requestChangePlayerItemMyRoom][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou atualizar o ClubSet[TYPEID=" 
 							+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "] equipado, mas ClubSet Not exists on IFF_STRUCT do Server. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 			
@@ -5347,7 +5347,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 								+ "], mas deu Error[VALUE=" + std::to_string(error) + "]. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 					}
 
-				}else { // Zera o Skin equipado
+				}else { // Zeroes the equipped Skin
 				
 					_session.m_pi.ue.skin_id[i] = 0u;
 					_session.m_pi.ue.skin_typeid[i] = 0u;
@@ -5357,7 +5357,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 				}
 			}
 
-			// Verifica se a Skin pode ser equipada
+			// Checks whether the Skin can be equipped
 			if (_session.checkSkinEquiped(_session.m_pi.ue))
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateSkinEquiped(_session.m_pi.uid, _session.m_pi.ue), channel::SQLDBResponse, this);
@@ -5366,7 +5366,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 			packet_func::session_send(p, &_session, 1);
 			break;
 		}
-		case 5:	// only Character ID EQUIPADO
+		case 5:	// only EQUIPPED Character ID
 		{
 			CharacterInfo *pCe = nullptr;
 
@@ -5399,7 +5399,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 			packet_func::session_send(p, &_session, 1);
 			break;
 		}
-		case 8:	// Mascot Equipado
+		case 8:	// Equipped Mascot
 		{
 			if ((item_id = _packet->readUint32()) != 0) {
 			
@@ -5410,7 +5410,7 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 					_session.m_pi.ei.mascot_info = pMi;
 					_session.m_pi.ue.mascot_id = item_id;
 
-					// Verifica se o Mascot pode ser equipado
+					// Checks whether the Mascot can be equipped
 					if (_session.checkMascotEquiped(_session.m_pi.ue))
 						item_id = _session.m_pi.ue.mascot_id;
 
@@ -5426,15 +5426,15 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 							+ "]. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 				}
 
-			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Desequipa Mascot
+			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Unequips Mascot
 			
 				_session.m_pi.ei.mascot_info = nullptr;
 				_session.m_pi.ue.mascot_id = 0;
 
-				// Att No DB
+				// Update in DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 
-			}// else Não tem nenhum mascot equipado, para desequipar, então o cliente só quis atualizar o estado
+			}// else There is no mascot equipped to unequip, so the client just wanted to update the state
 
 			packet_func::pacote06B(p, &_session, &_session.m_pi, type, error);
 			packet_func::session_send(p, &_session, 1);
@@ -5444,8 +5444,8 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 		{
 			CharacterInfo *pCe = nullptr;
 
-			// Só atualizar o cuttin se for o do character equipado, para não da conflito depois
-			// O pangya deveria passa todos os cutin que foram alterado, mas ele só passa o do character equipado
+			// Only update the cutin if it is the equipped character's, to avoid conflicts later
+			// Pangya should send all the cutins that were changed, but it only sends the equipped character's
 			if ((item_id = _packet->readUint32()) != 0 && (pCe = _session.m_pi.findCharacterById(item_id)) != nullptr 
 					&& (sIff::getInstance().getItemGroupIdentify(pCe->_typeid) == iff::CHARACTER && _session.m_pi.ei.char_info != nullptr && _session.m_pi.ei.char_info->id == pCe->id)) {
 			
@@ -5470,11 +5470,11 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 									+ ", SLOT=" + std::to_string(i) + "], mas deu Error[VALUE=" + std::to_string(error) + "]. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 						}
 				
-					}else // Zera o Cutin que o valor que o cliente passou é 0, para desequipar o cutin
+					}else // Zeroes the Cutin when the value the client sent is 0, to unequip the cutin
 						pCe->cut_in[i] = cc[i];
 				}
 
-				// Verifica se o Cutin pode ser equipado
+				// Checks whether the Cutin can be equipped
 				_session.checkCharacterEquipedCutin(*pCe);
 
 				// Update ON DB
@@ -5489,9 +5489,9 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 				else if (pCe == nullptr)
 					error = 2; // Not Found Item
 				else if (_session.m_pi.ei.char_info == nullptr)
-					error = 4; // Não tem nenhum character
+					error = 4; // There is no character
 				else if (_session.m_pi.ei.char_info->id != pCe->id)
-					error = 5;	// Não é o mesmo character que está equipado
+					error = 5;	// It is not the same character that is equipped
 				else
 					error = 3; // Item Typeid is Wrong
 
@@ -5523,11 +5523,11 @@ void channel::requestChangePlayerItemMyRoom(player& _session, packet* _packet) {
 									+ "], mas deu Error[VALUE=" + std::to_string(error) + "]. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 						}
 					}else
-						_session.m_pi.ue.poster[i] = 0;	// Zera o poster[i] = 0 (Desequipa)
+						_session.m_pi.ue.poster[i] = 0;	// Zeroes poster[i] = 0 (Unequips)
 				}
 
-				// Update ON DB, Verifica se o Poster pode ser equipado
-				if (_session.checkPosterEquiped(_session.m_pi.ue) || error == 4/*sucesso*/)
+				// Update ON DB, Checks whether the Poster can be equipped
+				if (_session.checkPosterEquiped(_session.m_pi.ue) || error == 4/*success*/)
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdatePosterEquiped(_session.m_pi.uid, _session.m_pi.ue), channel::SQLDBResponse, this);
 
 				packet_func::pacote06B(p, &_session, &_session.m_pi, type, error);
@@ -5557,8 +5557,8 @@ void channel::requestOpenTicketReportScroll(player& _session, packet *_packet) {
 		int32_t ticket_scroll_item_id = _packet->readInt32();
 		int32_t ticket_scroll_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenTicketReportScroll");
 
 		item_manager::openTicketReportScroll(_session, ticket_scroll_item_id, ticket_scroll_id, true/*update on game*/);
@@ -5567,7 +5567,7 @@ void channel::requestOpenTicketReportScroll(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestOpenTicketReportScroll][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Reposta Error;
+		// Error response;
 		p.init_plain((unsigned short)0x11A);
 
 		p.addInt32(-1);	// Error
@@ -5587,8 +5587,8 @@ void channel::requestChangeMascotMessage(player& _session, packet *_packet) {
 		int32_t mascot_id = _packet->readInt32();
 		std::string msg = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeMascotMessage");
 
 		if (msg.empty())
@@ -5636,7 +5636,7 @@ void channel::requestChangeMascotMessage(player& _session, packet *_packet) {
 					+ "] suficiente para trocar a mensagem do mascot. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 0x6200105, 0));
 		}
 
-		// limpa e move message para o Mascot Info do player no server
+		// clears and moves the message to the player's Mascot Info on the server
 		memset(pMi->message, 0, sizeof(pMi->message));
 
 #if defined(_WIN32)
@@ -5645,7 +5645,7 @@ void channel::requestChangeMascotMessage(player& _session, packet *_packet) {
 		memcpy(pMi->message, msg.data(), msg.length());
 #endif
 
-		// Update Mascot info no DB
+		// Update Mascot info in DB
 		snmdb::NormalManagerDB::getInstance().add(26, new CmdUpdateMascotInfo(_session.m_pi.uid, *pMi), channel::SQLDBResponse, this);
 
 		// Update on GAME
@@ -5689,8 +5689,8 @@ void channel::requestPayCaddieHolyDay(player& _session, packet *_packet) {
 
 		int32_t caddie_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PayCaddieHolyDay");
 
 		if (caddie_id <= 0)
@@ -5723,7 +5723,7 @@ void channel::requestPayCaddieHolyDay(player& _session, packet *_packet) {
 		// Date
 		auto end_date_unix = GetLocalTimeAsUnix() + (30 * 24 * 3600/*FROM Day(s) TO Seconds*/);	// TO STRING DATE
 
-		// Convert para System Time novamente
+		// Convert to System Time again
 		pCi->end_date = UnixToSystemTime(end_date_unix);
 
 		// Update Caddie End Date Unix
@@ -5736,19 +5736,19 @@ void channel::requestPayCaddieHolyDay(player& _session, packet *_packet) {
 		// UPDATE ON DB
 		snmdb::NormalManagerDB::getInstance().add(20, new CmdPayCaddieHolyDay(_session.m_pi.uid, pCi->id, end_dt), channel::SQLDBResponse, this);
 
-		// Verifica se o Caddie já tem um item update, por que se tiver, 
-		// ele vai desequipar o caddie por que o player não relogou quando acabou o tempo do caddie
+		// Checks whether the Caddie already has an update item, because if it does, 
+		// it will unequip the caddie because the player did not relog when the caddie time ran out
 		auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(pCi->_typeid, pCi->id);
 
 		if (!v_it.empty()) {
 
 			for (auto& el : v_it)
 				if (el->second.type == UpdateItem::CADDIE)
-					// Tira esse Update Item do map
+					// Removes this Update Item from the map
 					_session.m_pi.mp_ui.erase(el);
 
 		}
-		// ---- fim do verifica se o caddie no update item ----
+		// ---- end of check whether the caddie is in update item ----
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[PayCaddieHolyDay][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] pagou as ferias do Caddie[TYPEID=" 
@@ -5756,7 +5756,7 @@ void channel::requestPayCaddieHolyDay(player& _session, packet *_packet) {
 
 		// UPDATE ON GAME
 
-		// Resposta do Paga Ferias do Caddie
+		// Caddie Pay Vacation response
 		p.init_plain((unsigned short)0x93);
 
 		p.addUint8(2);	// OK
@@ -5786,8 +5786,8 @@ void channel::requestSetNoticeBeginCaddieHolyDay(player& _session, packet *_pack
 		int32_t caddie_id = _packet->readInt32();
 		unsigned char check = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("SetNoticeBeginCaddieHolyDay");
 
 		if (caddie_id <= 0)
@@ -5806,14 +5806,14 @@ void channel::requestSetNoticeBeginCaddieHolyDay(player& _session, packet *_pack
 			throw exception("[channel::requestSetNoticeBeginCaddieHolyDay][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou setar ou desetar o Aviso de ferias do Caddie[TYPEID="
 					+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + "], mas nao tem esse caddie no IFF_STRUCT do Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3, 0x6200103));
 
-		// Tem caddie que não precisa, checar o end, mas o cliente manda mesmo assim, ai aqui da erro se eu não ignorar
+		// Some caddies do not need the end checked, but the client sends it anyway, so here it gives an error if I do not ignore it
 		if ((!caddie->shop.flag_shop.uFlagShop.stFlagShop.is_cash && caddie->valor_mensal <= 0) || pCi->rent_flag != 2)
 			_smp::message_pool::getInstance().push(new message("[channel::requestSetNoticeBeginCaddieHolyDay][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou setar ou desetar o Aviso de ferias do Caddie[TYPEID="
 					+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + "], mas esse nao eh um caddie valido para setar aviso de ferias. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
 		// UPDATE ON SERVER
 
-		// Só Att se for diferente do que está no Server
+		// Only update if different from what is on the Server
 		if (pCi->check_end != check) {
 
 			pCi->check_end = check;
@@ -5826,13 +5826,13 @@ void channel::requestSetNoticeBeginCaddieHolyDay(player& _session, packet *_pack
 		_smp::message_pool::getInstance().push(new message("[Caddie::SetNoticeHolyDay][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] setou o avisou de ferias do Caddie[TYPEID=" 
 				+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + ", CHECK=" + (pCi->check_end ? std::string("ON") : std::string("OFF")) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// nao precisa att no jogo, pelo que vi(ACHO)
+		// no need to update in the game, from what I saw (I THINK)
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[requestSetNoticeBeginCaddieHolyDay][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Não envia nada de resposta para o cliente, pelo que eu vi até aqui
+		// Does not send any response to the client, from what I have seen so far
 	}
 };
 
@@ -5845,15 +5845,15 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("BuyItemShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.buy_and_gift_shop)
 			throw exception("[channel::requestBuyItemShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
 					+"] tentou comprar item no shop, mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x790001));
 
-		// Log Gastos de CP
+		// CP Spending Log
 		CPLog cp_log;
 
 		cp_log.setType(CPLog::TYPE::BUY_SHOP);
@@ -5875,14 +5875,14 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			for (auto i = 0u; i < qntd; ++i) {
 
-				_packet->readBuffer(&bi, sizeof(BuyItem));	// Le o primeiro item que o cliente mandou
+				_packet->readBuffer(&bi, sizeof(BuyItem));	// Reads the first item the client sent
 
-				// BuyItem é a flag de visivel no pangya shop
-				// Verifica se o item só pode ser presenteado e da error, por que esse pacote é de comprar e o item só pode ser presenteado
-				// Verifica se o item pode ser comprado
+				// BuyItem is the visible flag in the pangya shop
+				// Checks whether the item can only be gifted and gives an error, because this packet is for buying and the item can only be gifted
+				// Checks whether the item can be bought
 				if (sIff::getInstance().IsBuyItem(bi._typeid) && !sIff::getInstance().IsOnlyGift(bi._typeid)) {
 					
-					// Inicializa o item que o player vai comprar
+					// Initializes the item the player will buy
 					if (bi.pang > 0)
 						pang += bi.pang;
 
@@ -5925,30 +5925,30 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 					if (!item_manager::isTimeItem(item.date) || item_manager::betweenTimeSystem(item.date)) {
 
-						// Verifica se já possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
+						// Checks whether he already owns the item; the caddie item checks whether he has the caddie first and then whether he has the caddie item
 						if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(item._typeid)) {
 							
 							if (item_manager::isSetItem(item._typeid)) {
 								
-								auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, true, 1/*Não verifica o Level*/);
+								auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, true, 1/*Does not check the Level*/);
 
 								// CP Log, Set Item
 								if (item.is_cash && bi.cookie > 0)
 									cp_log.putItem(item._typeid, (item.STDA_C_ITEM_TIME > 0 ? item.STDA_C_ITEM_TIME : item.STDA_C_ITEM_QNTD), bi.cookie);
 
 								if (!v_stItem.empty()) {
-									// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-									// Só add eles ao vector de venda
-									// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+									// Already checked above whether he has the set items, so no need to check again here
+									// Just add them to the sale vector
+									// Checks whether he can have more than 1 item and, if not, whether he does not have the item
 									for (auto& el : v_stItem)
 										if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 											v_item.push_back(el);
 									//v_item.insert(v_item.end(), v_stItem.begin(), v_stItem.end());
 
 									//for (auto ii = 0u; ii < v_stItem.size(); ++ii) {
-									//	auto itt = VECTOR_FIND_ITEM(_session.m_pi.v_wi, _typeid, == , v_stItem[ii]._typeid);	// Aqui tem que ver mais tipo de item, aqui só está vendo Warehouse item. Ex:Character, Caddie, Skin e etc
+									//	auto itt = VECTOR_FIND_ITEM(_session.m_pi.v_wi, _typeid, == , v_stItem[ii]._typeid);	// Here more item types must be checked, here it only checks Warehouse items. E.g.: Character, Caddie, Skin, etc
 
-									//	// verificar se tem character no set e se o player já tem o character para não colocar no vector
+									//	// check whether there is a character in the set and whether the player already has the character so as not to put it in the vector
 									//	if (sIff::getInstance().IsCanOverlapped(v_stItem[ii]._typeid) || itt == _session.m_pi.v_wi.end())
 									//		v_item.push_back(v_stItem[ii]);
 									//}
@@ -6035,7 +6035,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			if (coupon.id != 0) {
 
-				// Verifica se o player tem o coupon mesmo
+				// Checks whether the player really has the coupon
 				auto wi_coupon = _session.m_pi.findWarehouseItemById(coupon.id);
 
 				if (wi_coupon == nullptr) {
@@ -6053,26 +6053,26 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 					return;
 				}
 
-				// Inicializa o coupon para ser removido
+				// Initializes the coupon to be removed
 				coupon.type = 2;
 				coupon._typeid = wi_coupon->_typeid;
-				coupon.qntd = 1; // Tira  1 coupon
+				coupon.qntd = 1; // Removes 1 coupon
 				coupon.STDA_C_ITEM_QNTD = (short)coupon.qntd * -1;
 
-				// !@ Aqui tem que pegar os coupon que tem no banco de dados, e ver qual é o seu valor de descontou, 
-				// por hora está dando 5% desconta com qual quer coupon
+				// !@ Here the coupons in the database must be fetched, and see what their discount value is, 
+				// for now it gives 5% discount with any coupon
 
 				uint64_t old_price = cookie;
-				std::string type_desconto = "5%"; // Padrão
+				std::string type_desconto = "5%"; // Default
 
-				// !@ aqui tem que pegar o tipo do coupon e o seu valor que tem que tirar do banco de dados
-				// mas no cache do server
+				// !@ here the coupon type and its value must be fetched from the database
+				// but in the server cache
 				// Hard Coded
 				if (wi_coupon->_typeid == 0x1A00001Eu
 					|| wi_coupon->_typeid == 0x1A000015u
 					|| wi_coupon->_typeid == 0x1A00001Du) {
 					
-					// 5 CP de desconto
+					// 5 CP discount
 					if (((int64_t)cookie - 5ll) < 0)
 						cookie = 0ull;
 					else
@@ -6082,12 +6082,12 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 				
 				}else if (wi_coupon->_typeid == 0x1A00003Cu) {
 
-					// 20 % de desconto
+					// 20 % discount
 					cookie = (uint64_t)(cookie * 0.80f);
 
 					type_desconto = "20%";
 
-				}else // Padrão para coupons desconhecido pelo server hardcoded
+				}else // Default for coupons unknown to the server, hardcoded
 					cookie = (uint64_t)(cookie * 0.95f);
 
 				// Log
@@ -6098,7 +6098,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			if (_session.m_pi.cookie < cookie || _session.m_pi.ui.pang < pang) {
 
-				// Aqui depois especifica cada um separado para manda mensagem
+				// Here later specify each one separately to send a message
 				_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] tentou comprar um item, mas nao tem moedas(Pang ou Cookie) suficiente, item typeid: " + std::to_string(bi._typeid) + ". Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -6113,18 +6113,18 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			try {
 				
-				// Consome o cookie e pang, Antes de adicionar os itens
+				// Consumes the cookie and pang, before adding the items
 				_session.m_pi.consomeMoeda(pang, cookie);
 			
 			}catch (exception& e) {
 
 				_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*Tem alterações no Cookie do player no DB*/)) {
+				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*There are changes to the player's Cookie in the DB*/)) {
 					
 					packet p((unsigned short)0x68);
 
-					p.addUint32(2); // Tem alterações no Cookie do player no DB
+					p.addUint32(2); // There are changes to the player's Cookie in the DB
 
 					packet_func::session_send(p, &_session, 0);
 
@@ -6134,7 +6134,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 					throw;
 			}
 
-			// Remove coupon se a compra foi feita com ele
+			// Removes the coupon if the purchase was made with it
 			if (coupon.id != 0 && coupon._typeid != 0u) {
 				
 				if (item_manager::removeItem(coupon, _session) <= 0) {
@@ -6143,7 +6143,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 							+ "] tentou comprar um item com coupon de descontou, mas nao conseguiu remove o coupon[TYPEID=" + std::to_string(coupon._typeid) 
 							+ ", ID=" + std::to_string(coupon.id) + "], item typeid: " + std::to_string(bi._typeid) + ". Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
 
-					// Devolve as moedas gasta para o player, aqui tem que devolver o valor de cada item
+					// Returns the spent coins to the player, here the value of each item must be returned
 					_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][Log] devolve as moedas gasta deu erro no add itens no db para o player.", CL_FILE_LOG_AND_CONSOLE));
 
 					_session.m_pi.addMoeda(pang, cookie);
@@ -6157,7 +6157,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 					return;
 				}
 
-				// Remove o coupon do player no jogo
+				// Removes the player's coupon in the game
 				packet p((unsigned short)0x216);
 
 				p.addUint32((const unsigned int)GetSystemTimeAsUnix());
@@ -6166,10 +6166,10 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 				p.addUint8(coupon.type);
 				p.addInt32(coupon._typeid);
 				p.addInt32(coupon.id);
-				p.addInt32(coupon.flag_time);	// Time Tipo(ou flag)
-				p.addUint32(coupon.stat.qntd_ant);	// qntd ant
-				p.addUint32(coupon.stat.qntd_dep);	// qntd dep
-				p.addUint32((coupon.STDA_C_ITEM_TIME > 0 ? coupon.STDA_C_ITEM_TIME : coupon.STDA_C_ITEM_QNTD));	// qntd
+				p.addInt32(coupon.flag_time);	// Time Type (or flag)
+				p.addUint32(coupon.stat.qntd_ant);	// prev qty
+				p.addUint32(coupon.stat.qntd_dep);	// next qty
+				p.addUint32((coupon.STDA_C_ITEM_TIME > 0 ? coupon.STDA_C_ITEM_TIME : coupon.STDA_C_ITEM_QNTD));	// qty
 				p.addZeroByte(25);
 
 				packet_func::session_send(p, &_session, 1);
@@ -6191,11 +6191,11 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 							+ (rai.fails[i].STDA_C_ITEM_TIME > 0 ? ", TEMPO=" + std::to_string(rai.fails[i].STDA_C_ITEM_TIME) : std::string("")) + "]";
 				}
 
-				// Aqui depois especifica cada um separado para manda mensagem
+				// Here later specify each one separately to send a message
 				_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][Error] Itens que falhou ao add os itens que o Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] comprou item(ns){" + str + "}. Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
 				
-				// Devolve as moedas gasta para o player, aqui tem que devolver o valor de cada item
+				// Returns the spent coins to the player, here the value of each item must be returned
 				_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][Log] devolve as moedas gasta deu erro no add itens no db para o player.", CL_FILE_LOG_AND_CONSOLE));
 
 				_session.m_pi.addMoeda(pang, cookie);
@@ -6247,7 +6247,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			if (cookie > 0) {
 
-				// Log de Gastos de CP
+				// CP Spending Log
 				_session.saveCPLog(cp_log);
 
 				p.init_plain((unsigned short)0x96);
@@ -6268,7 +6268,7 @@ void channel::requestBuyItemShop(player& _session, packet* _packet) {
 
 			packet_func::session_send(p, &_session, 0);
 
-		}else { // quantidade de itens para comprar é 0
+		}else { // quantity of items to buy is 0
 			
 			_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemShop][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou comprar um item, mas nao enviou nenhum item no request. Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -6302,11 +6302,11 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("GiftItemShop");
 
-		// Dados Log gasto de CP
+		// CP spending Log data
 		CPLog cp_log;
 
 		cp_log.setType(CPLog::TYPE::GIFT_SHOP);
@@ -6325,7 +6325,7 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 			throw exception("[channel::requestGiftItemShop][Error] player[UID=" + std::to_string(_session.m_pi.uid)
 				+ "] tentou presentear player[UID=" + std::to_string(uid_to_send) + "], mas ele nao pode. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 2, 0x790001));
 
-		// Verifica o level do player e bloquea se não tiver level Beginner E
+		// Checks the player's level and blocks if he is not at least level Beginner E
 		if (_session.m_pi.level < _session.m_pi.enLEVEL::BEGINNER_E)
 			throw exception("[channel::requestGiftItemShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + ", LEVEL=" + std::to_string(_session.m_pi.level) 
 					+ "] tentou presentear o player[UID=" + std::to_string(uid_to_send) + "], mas o level dele eh menor que Beginner E.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 3500, 1));
@@ -6337,12 +6337,12 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 			for (auto i = 0u; i < qntd; ++i) {
 
-				_packet->readBuffer(&bi, sizeof(BuyItem));	// Le o primeiro item que o cliente mandou
+				_packet->readBuffer(&bi, sizeof(BuyItem));	// Reads the first item the client sent
 
-				// Verifica se o item pode ser presenteado
+				// Checks whether the item can be gifted
 				if (sIff::getInstance().IsGiftItem(bi._typeid)) {
 
-					// Inicializa o item que o player vai comprar
+					// Initializes the item the player will buy
 					if (bi.pang > 0)
 						pang += bi.pang;
 
@@ -6392,7 +6392,7 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 					if (!item_manager::isTimeItem(item.date) || item_manager::betweenTimeSystem(item.date)) {
 
-						// para ele verificar se o player tem o caddie antes de enviar o part do caddie
+						// so it checks whether the player has the caddie before sending the caddie part
 						if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) 
 								|| !item_manager::ownerItem(uid_to_send, item._typeid)/*_session.m_pi.ownerItem(item._typeid)*/) {
 							
@@ -6402,19 +6402,19 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 								if (item.is_cash && bi.cookie > 0)
 									cp_log.putItem(item._typeid, (item.STDA_C_ITEM_TIME > 0 ? item.STDA_C_ITEM_TIME : item.STDA_C_ITEM_QNTD), bi.cookie);
 							
-								auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, true, 1/*Não verifica o Level*/);
+								auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, true, 1/*Does not check the Level*/);
 
-								// No gift ele envia o set para o player, e não os itens que contém dentro do set
+								// In a gift it sends the set to the player, and not the items contained in the set
 								if (!v_stItem.empty()) {
-									// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-									// Só add eles ao vector de venda
-									// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+									// Already checked above whether he has the set items, so no need to check again here
+									// Just add them to the sale vector
+									// Checks whether he can have more than 1 item and, if not, whether he does not have the item
 									
 									//for (auto& el : v_stItem)
 									//	if (sIff::getInstance().IsCanOverlapped(el._typeid) || !item_manager::ownerItem(uid_to_send, el._typeid)/*!_session.m_pi.ownerItem(el._typeid)*/)
 									//		v_item.push_back(el);
 									
-									// No gift ele envia o set para o player, e não os itens que contém dentro do set
+									// In a gift it sends the set to the player, and not the items contained in the set
 									v_item.push_back(item);
 
 								}else {
@@ -6517,7 +6517,7 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 			if (_session.m_pi.cookie < cookie || _session.m_pi.ui.pang < pang) {
 
-				// Aqui depois especifica cada um separado para manda mensagem
+				// Here later specify each one separately to send a message
 				_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] tentou presentear para o player[UID=" + std::to_string(uid_to_send) + "] um item, mas nao tem moedas(Pang ou Cookie) suficiente, item typeid: " 
 						+ std::to_string(bi._typeid) + ". Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
@@ -6536,18 +6536,18 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 			try {
 
-				// Consome o cookie e pang, Antes de adicionar os itens
+				// Consumes the cookie and pang, before adding the items
 				_session.m_pi.consomeMoeda(pang, cookie);
 			
 			}catch (exception& e) {
 
 				_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*Tem alterações no Cookie do player no DB*/)) {
+				if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*There are changes to the player's Cookie in the DB*/)) {
 
 					p.init_plain((unsigned short)0x6A);
 
-					p.addUint32(2);	// Tem alterações no Cookie do player no DB
+					p.addUint32(2);	// There are changes to the player's Cookie in the DB
 
 					p.addUint64(_session.m_pi.ui.pang);
 					p.addUint64(_session.m_pi.cookie);
@@ -6573,13 +6573,13 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 				_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-				// Aqui depois especifica cada um separado para manda mensagem
+				// Here later specify each one separately to send a message
 				_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][Error] ao add os itens que o Player[UID=" + std::to_string(_session.m_pi.uid) 
 						+ "] presenteou para o player[UID=" + std::to_string(uid_to_send) + "]. Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
 
 				_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][Log] devolve as moedas gasta deu erro no add itens no db para o player.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Devolve as moedas gasta para o player, aqui tem que devolver o valor de cada item
+				// Returns the spent coins to the player, here the value of each item must be returned
 				_session.m_pi.addMoeda(pang, cookie);
 
 				p.init_plain((unsigned short)0x6A);
@@ -6632,7 +6632,7 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 			if (cookie > 0) {
 
-				// Log de Gastos de CP
+				// CP Spending Log
 				cp_log.setMailId(mail_id);
 
 				_session.saveCPLog(cp_log);
@@ -6652,7 +6652,7 @@ void channel::requestGiftItemShop(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 0);
 
-		}else { // quantidade de itens para comprar é 0
+		}else { // quantity of items to buy is 0
 			
 			_smp::message_pool::getInstance().push(new message("[channel::requestGiftItemShop][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] tentou presentear para o player[UID=" + std::to_string(uid_to_send) + "] um item, mas nao enviou nenhum item no request. Hacker ou bug.", CL_FILE_LOG_AND_CONSOLE));
@@ -6692,8 +6692,8 @@ void channel::requestExtendRental(player& _session, packet *_packet) {
 
 		int32_t item_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExtendRental");
 
 		if (item_id <= 0)
@@ -6720,44 +6720,44 @@ void channel::requestExtendRental(player& _session, packet *_packet) {
 			throw exception("[channel::requestExtendRental][Error] player[UID=" + std::to_string(_session.m_pi.uid) +"] tentou extender um rental Item[TYPEID=" 
 					+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "] que nao eh um rental no IFF_STRUCT do server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 354, 5200355));
 
-		pWi->end_date_unix_local = (uint32_t)GetLocalTimeAsUnix() + (7 * 24 * 3600)/*dias para segundos*/;
+		pWi->end_date_unix_local = (uint32_t)GetLocalTimeAsUnix() + (7 * 24 * 3600)/*days to seconds*/;
 		
 		// Convert to UTC to send to client
 		pWi->end_date = TzLocalUnixToUnixUTC(pWi->end_date_unix_local);
 
 		auto end_date = formatDateLocal(pWi->end_date_unix_local);
 
-		// Cmd Extend Rental + 7 dias no DB
+		// Cmd Extend Rental + 7 days in DB
 		snmdb::NormalManagerDB::getInstance().add(5, new CmdExtendRental(_session.m_pi.uid, pWi->id, end_date), channel::SQLDBResponse, this);
 
-		// Tira os pangs do valor de renovar o Rental Item
+		// Removes the pangs for the Rental Item renewal cost
 		_session.m_pi.consomePang(part->valor_rental);
 
-		// Verifica se o Parts já tem um item update do parts, por que se tiver, 
-		// ele vai desequipar esse parts por que o player não relogou quando acabou o tempo do parts
+		// Checks whether the Parts already has a parts update item, because if it does, 
+		// it will unequip these parts because the player did not relog when the parts time ran out
 		auto v_it = _session.m_pi.findUpdateItemByTypeidAndId(pWi->_typeid, pWi->id);
 
 		if (!v_it.empty()) {
 
 			for (auto& el : v_it)
 				if (el->second.type == UpdateItem::WAREHOUSE)
-					// Tira esse Update Item do map
+					// Removes this Update Item from the map
 					_session.m_pi.mp_ui.erase(el);
 
 		}
-		// ---- fim do verifica se tem o parts no update item ----
+		// ---- end of check whether the parts are in update item ----
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[Rental::Extend][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] extendeu o Rental Item[TYPEID=" 
 				+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Att pang no Jogo
+		// Update pang in the Game
 		p.init_plain((unsigned short)0xC8);
 
 		p.addUint64(_session.m_pi.ui.pang);
 		p.addUint64(part->valor_rental);
 
-		// Att Rental Item no Jogo
+		// Update Rental Item in the Game
 		packet_func::session_send(p, &_session, 1);
 
 		p.init_plain((unsigned short)0x18F);
@@ -6790,8 +6790,8 @@ void channel::requestDeleteRental(player& _session, packet* _packet) {
 
 		int32_t item_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DeleteRental");
 
 		if (item_id <= 0)
@@ -6826,7 +6826,7 @@ void channel::requestDeleteRental(player& _session, packet* _packet) {
 		if (it != _session.m_pi.mp_wi.end())
 			_session.m_pi.mp_wi.erase(it);
 
-		// Att no Banco de dados
+		// Update in the Database
 		snmdb::NormalManagerDB::getInstance().add(6, new CmdDeleteRental(_session.m_pi.uid, tmp_wi.id), channel::SQLDBResponse, this);
 
 		_smp::message_pool::getInstance().push(new message("[Rental::Delete][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] deletou Rental Item[TYPEID=" 
@@ -6858,8 +6858,8 @@ void channel::requestCheckAttendanceReward(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CheckAttendanceReward");
 
 		// Attendance Reward System
@@ -6881,8 +6881,8 @@ void channel::requestAttendanceRewardLoginCount(player& _session, packet *_packe
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("AttendanceRewardLoginCount");
 
 		// Attendance Reward System
@@ -6902,8 +6902,8 @@ void channel::requestDailyQuest(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DailyQuest");
 
 		MgrDailyQuest::requestCheckAndSendDailyQuest(_session, _packet);
@@ -6919,8 +6919,8 @@ void channel::requestAcceptDailyQuest(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("AcceptDailyQuest");
 
 		MgrDailyQuest::requestAcceptQuest(_session, _packet);
@@ -6936,8 +6936,8 @@ void channel::requestTakeRewardDailyQuest(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("TakeRewardDailyQuest");
 
 		MgrDailyQuest::requestTakeRewardQuest(_session, _packet);
@@ -6953,8 +6953,8 @@ void channel::requestLeaveDailyQuest(player& _session, packet *_packet) {
 	
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LeaveDailyQuest");
 
 		MgrDailyQuest::requestLeaveQuest(_session, _packet);
@@ -6986,8 +6986,8 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CadieCauldronExchange");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.cadie_recycle)
@@ -7006,7 +7006,7 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 
 		_packet->readBuffer(cei, sizeof(CadieExchangeItem) * count);
 
-		// Agora o CadieMagicBox é um vector, e a seq que pesquisa é de 0 a 'N', não add + 1, por que não não procura pelo membro sequência
+		// Now CadieMagicBox is a vector, and the seq searched is from 0 to 'N', do not add + 1, because it does not search by the sequence member
 		auto cmb = sIff::getInstance().findCadieMagicBox(seq/* + 1*/);
 
 		if (cmb == nullptr)
@@ -7047,7 +7047,7 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 				throw exception("[channel::requestCadieCauldronExchange][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou trocar um item[Seq=" 
 						+ std::to_string(seq + 1) + ", TYPEID=" + std::to_string(cei[i]._typeid) + "] que nao pode ser trocado no CadieCauldron. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 457, 5200458));
 
-			// Verifica se o player está com shop aberto e se está vendendo o item no shop
+			// Checks whether the player has a shop open and is selling the item in the shop
 			//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 
 			if (r != nullptr && r->checkPersonalShopItem(_session, cei[i].id))
@@ -7065,20 +7065,20 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 
 		SysAchievement sys_achieve;
 
-		// Remove os itens
+		// Removes the items
 		for (auto i = 0u; i < count; ++i) {
 			item.clear();
 
 			item.type = 2;
 			item.id = cei[i].id;
 			item._typeid = cei[i]._typeid;
-			item.qntd = (short)cmb->item_trade.qntd[i] * item_exchange_qntd/*Quantidade de troca que o player escolheu no cliente*/;
-			item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;	// Tira
+			item.qntd = (short)cmb->item_trade.qntd[i] * item_exchange_qntd/*Exchange quantity the player chose in the client*/;
+			item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;	// Removes
 
 			v_remove.push_back(item);
 		}
 
-		// remove itens
+		// remove items
 		if (item_manager::removeItem(v_remove, _session) <= 0)
 			throw exception("[channel::requestCadieCauldronExchange][Error] problemas ao remover(s) item(ns) do player[UID=" + std::to_string(_session.m_pi.uid) + "]",
 				STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 461, 5200462));
@@ -7095,7 +7095,7 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 				throw exception("[channel::requestCadieCauldronExchange][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] CadieMagicBoxRandom[ID=" 
 						+ std::to_string(cmb->box_random_id) + "] empty", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 456, 5200457));
 
-			// Sortea Item
+			// Draws Item
 			Lottery lottery((uint64_t)this);
 
 			for (auto& el : cmbr_iff)
@@ -7116,7 +7116,7 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 			_smp::message_pool::getInstance().push(new message("[channel::requestCadieCauldronExchange][CadieMagicBoxRandom::Lotery][Log] Item[INDEX=" + std::to_string(lc->offset[0]) + ", TYPEID=" 
 					+ std::to_string(cmbr->item_random._typeid) + ", QNTD=" + std::to_string(cmbr->item_random.qntd) + "] dropped", CL_FILE_LOG_AND_CONSOLE));
 
-			// Procura o item sorteado no IFF_STRUCT para ver se não foi colocado algum typeid errado na hora da criação desse item random do CadieCauldronExchange
+			// Looks for the drawn item in IFF_STRUCT to check that no wrong typeid was set when creating this random item of CadieCauldronExchange
 			auto item_random = sIff::getInstance().findCommomItem(cmbr->item_random._typeid);
 
 			if (item_random == nullptr)
@@ -7128,47 +7128,47 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 			bi._typeid = cmbr->item_random._typeid;
 			bi.qntd = cmbr->item_random.qntd;
 
-			if (item_random->shop.flag_shop.time_shop.active/*Item por tempo*/) {
+			if (item_random->shop.flag_shop.time_shop.active/*Timed item*/) {
 				
-				if (item_random->shop.flag_shop.time_shop.dia > 0/*Tempo que o item vai ter, em Dias*/)
-					bi.time = item_random->shop.flag_shop.time_shop.dia;	// Quantidade de dias
+				if (item_random->shop.flag_shop.time_shop.dia > 0/*Time the item will have, in Days*/)
+					bi.time = item_random->shop.flag_shop.time_shop.dia;	// Number of days
 				else {
 
-					// Verifica aqui por questão de segurança, mas tem que ter a flag no IFF_STRUCT de tempo com a quantidade de dias
+					// Checks here for security, but the time flag with the number of days must be in IFF_STRUCT
 					bi.time = (cmb->box_random_id == cadie_cauldron_Hermes_random_id
 						|| cmb->box_random_id == cadie_cauldron_Jester_random_id
-						|| cmb->box_random_id == cadie_cauldron_Twilight_random_id) ? 10 /*10 dias as roupas especiais*/ : 0;	// Dias
+						|| cmb->box_random_id == cadie_cauldron_Twilight_random_id) ? 10 /*10 days for the special clothes*/ : 0;	// Days
 				}
 
 			}else {
 				
-				// Verifica aqui por questão de segurança, mas tem que ter a flag no IFF_STRUCT de tempo com a quantidade de dias
+				// Checks here for security, but the time flag with the number of days must be in IFF_STRUCT
 				bi.time = (cmb->box_random_id == cadie_cauldron_Hermes_random_id
 					|| cmb->box_random_id == cadie_cauldron_Jester_random_id
-					|| cmb->box_random_id == cadie_cauldron_Twilight_random_id) ? 10 /*10 dias as roupas especiais*/ : 0;
+					|| cmb->box_random_id == cadie_cauldron_Twilight_random_id) ? 10 /*10 days for the special clothes*/ : 0;
 			}
-			// Fim de Sortea Item
+			// End of Draw Item
 
 		}else {	// Normal Item
 
 			bi.id = -1;
 			bi._typeid = cmb->item_receive._typeid;
-			bi.qntd = cmb->item_receive.qntd * item_exchange_qntd/*Quantidade de troca que o player escolheu no cliente*/;
+			bi.qntd = cmb->item_receive.qntd * item_exchange_qntd/*Exchange quantity the player chose in the client*/;
 		}
 
-		// Limpa o item, para inicializar ele
+		// Clears the item, to initialize it
 		item.clear();
 
-		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o level*/);
+		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the level*/);
 
-		// Verifica se é um setitem
+		// Checks whether it is a setitem
 		if (item_manager::isSetItem(item._typeid)) {
-			auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Não verifica o Level*/);
+			auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Does not check the Level*/);
 
 			if (!v_stItem.empty()) {
-				// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-				// Só add eles ao vector de venda
-				// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+				// Already checked above whether he has the set items, so no need to check again here
+				// Just add them to the sale vector
+				// Checks whether he can have more than 1 item and, if not, whether he does not have the item
 				for (auto& el : v_stItem)
 					if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 						v_item.push_back(el);
@@ -7190,7 +7190,7 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 			throw exception("[channel::requestCadieCauldronExchange][Error] problemas ao adicionar o item[TYPEID=" + std::to_string(bi._typeid) + "] para o player[UID="
 					+ std::to_string(_session.m_pi.uid) + "] ", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 460, 5200461));
 
-		// Verifica se é o Gacha Ticket Sub(Partial) e atualiza ele no server
+		// Checks whether it is the Gacha Ticket Sub(Partial) and updates it on the server
 		if (item._typeid == 0x1A000083/*Gacha Partial Ticket*/)
 			_session.m_pi.cg.partial_ticket += item.STDA_C_ITEM_QNTD;
 
@@ -7207,11 +7207,11 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 				+ std::to_string(seq + 1) + ", Aba=" + std::to_string(cmb->setor) + ", TYPEID_RCV=" + std::to_string(item._typeid) 
 				+ ", ID=" + std::to_string(item.id) + ", QNTD(exchange*item_qntd)=" + std::to_string(item.qntd) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Add Item em Jogo
+		// Add Item in Game
 		if (rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
 			v_remove.insert(v_remove.end(), v_item.begin(), v_item.end());
 
-		// Att Item em Jogo
+		// Update Item in Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const unsigned int)GetSystemTimeAsUnix());
@@ -7221,16 +7221,16 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 			p.addUint8(el.type);
 			p.addInt32(el._typeid);
 			p.addInt32(el.id);
-			p.addInt32(el.flag_time);	// Time Tipo(ou flag)
-			p.addUint32(el.stat.qntd_ant);	// qntd ant
-			p.addUint32(el.stat.qntd_dep);	// qntd dep
-			p.addUint32((el.STDA_C_ITEM_TIME > 0 ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD));	// qntd
+			p.addInt32(el.flag_time);	// Time Type (or flag)
+			p.addUint32(el.stat.qntd_ant);	// prev qty
+			p.addUint32(el.stat.qntd_dep);	// next qty
+			p.addUint32((el.STDA_C_ITEM_TIME > 0 ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD));	// qty
 			p.addZeroByte(25);
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta CadieMagicBox
+		// CadieMagicBox response
 		p.init_plain((unsigned short)0x22F);
 
 		p.addUint32(0);	// OK
@@ -7249,8 +7249,8 @@ void channel::requestCadieCauldronExchange(player& _session, packet* _packet) {
 
 		// UPDATE Achievement ON SERVER, DB and GAME
 
-		// Add +1 ao contador de troca de item no Cadie Cauldron
-		sys_achieve.incrementCounter(0x6C400082u/*Troca Item Cadie Cauldron*/);
+		// Adds +1 to the item exchange counter in Cadie Cauldron
+		sys_achieve.incrementCounter(0x6C400082u/*Cadie Cauldron Item Exchange*/);
 
 		sys_achieve.finish_and_update(_session);
 
@@ -7273,8 +7273,8 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterStatsUp");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -7311,21 +7311,21 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 			throw exception("[channel::requestCharacterStatsUp][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "], stat[value=" 
 					+ std::to_string(stat) + "] is invalid. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 501, 0x5200502));
 
-		// Slot de Part Equiped
+		// Equipped Part Slot
 		value += value_part;
 
-		// Slot de AuxPart Equiped
+		// Equipped AuxPart Slot
 		value += value_auxpart;
 
-		// Slot do Set Effect Table
+		// Set Effect Table Slot
 		value += value_set_effect_table;
 
-		// Slot de Card Equiped
+		// Equipped Card Slot
 		value += value_card;
 
-		// Level + POWER, cada level da +1 de POWER
+		// Level + POWER, each level gives +1 POWER
 		if (stat == CharacterInfo::S_POWER)
-			value += ((_session.m_pi.mi.level - 1/*Rookie tem uma letra a+*/) / 5/*Levels*/);
+			value += ((_session.m_pi.mi.level - 1/*Rookie has one more letter*/) / 5/*Levels*/);
 
 		auto mastery = sIff::getInstance().findCharacterMastery(pCi->_typeid);
 
@@ -7371,7 +7371,7 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 				+ std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_CONTROL]) + ", C2=" + std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_ACCURACY]) + ", C3=" 
 				+ std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_SPIN]) + ", C4=" + std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_CURVE]) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Atualiza Pang(s) no Jogo
+		// Updates Pang(s) in the Game
 		p.init_plain((unsigned short)0xC8);
 
 		p.addUint64(_session.m_pi.ui.pang);
@@ -7379,7 +7379,7 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Atualiza Item no Jogo
+		// Updates Item in the Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const unsigned int)GetSystemTimeAsUnix());
@@ -7389,9 +7389,9 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 		p.addUint32(pCi->_typeid);
 		p.addUint32(pCi->id);
 		p.addUint32(0);	// Flag Time
-		p.addUint32(0);	// qntd ant
-		p.addUint32(0);	// qntd dep
-		p.addUint32(0);	// qntd
+		p.addUint32(0);	// prev qty
+		p.addUint32(0);	// next qty
+		p.addUint32(0);	// qty
 		p.addUint16(pCi->pcl[CharacterInfo::S_POWER]);		// stats->PWR
 		p.addUint16(pCi->pcl[CharacterInfo::S_CONTROL]);	// stats->CTRL
 		p.addUint16(pCi->pcl[CharacterInfo::S_ACCURACY]);	// stats->ACCRY
@@ -7401,7 +7401,7 @@ void channel::requestCharacterStatsUp(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta de Upar Stats Character
+		// Character Stats upgrade response
 		p.init_plain((unsigned short)0x26F);
 
 		p.addUint32(0);	// OK
@@ -7436,8 +7436,8 @@ void channel::requestCharacterStatsDown(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterStatsDown");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -7482,7 +7482,7 @@ void channel::requestCharacterStatsDown(player& _session, packet *_packet) {
 				+ std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_CONTROL]) + ", C2=" + std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_ACCURACY]) + ", C3="
 				+ std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_SPIN]) + ", C4=" + std::to_string((unsigned short)pCi->pcl[CharacterInfo::S_CURVE]) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Atualiza item no Jogo
+		// Updates item in the Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -7492,9 +7492,9 @@ void channel::requestCharacterStatsDown(player& _session, packet *_packet) {
 		p.addUint32(pCi->_typeid);
 		p.addUint32(pCi->id);
 		p.addUint32(0);	// Flag Time
-		p.addUint32(0);	// qntd ant
-		p.addUint32(0);	// qntd dep
-		p.addUint32(0);	// qntd
+		p.addUint32(0);	// prev qty
+		p.addUint32(0);	// next qty
+		p.addUint32(0);	// qty
 		p.addUint16(pCi->pcl[CharacterInfo::S_POWER]);		// stats->PWR
 		p.addUint16(pCi->pcl[CharacterInfo::S_CONTROL]);	// stats->CTRL
 		p.addUint16(pCi->pcl[CharacterInfo::S_ACCURACY]);	// stats->ACCRY
@@ -7504,7 +7504,7 @@ void channel::requestCharacterStatsDown(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta de Downgrade Character Stats no Jogo
+		// Character Stats downgrade response in the Game
 		p.init_plain((unsigned short)0x270);
 
 		p.addUint32(0);	// OK
@@ -7538,8 +7538,8 @@ void channel::requestCharacterMasteryExpand(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterMasteryExpand");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -7633,12 +7633,12 @@ void channel::requestCharacterMasteryExpand(player& _session, packet *_packet) {
 			}
 		}
 
-		// Atualiza ON Server
+		// Updates ON Server
 		if (item_manager::removeItem(v_item, _session) <= 0)
 			throw exception("[channel::requestCharacterMasteryExpand][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao conseguiu excluir os item(ns) do player", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 661, 0x5200662));
 
-		// Atualiza mastery, add +1
+		// Updates mastery, add +1
 		pCi->mastery++;
 
 		item.clear();
@@ -7650,14 +7650,14 @@ void channel::requestCharacterMasteryExpand(player& _session, packet *_packet) {
 
 		v_item.push_back(item);
 
-		// Atualiza ON DB
+		// Updates ON DB
 		snmdb::NormalManagerDB::getInstance().add(9, new CmdUpdateCharacterMastery(_session.m_pi.uid, *pCi), channel::SQLDBResponse, this);
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[CharacterMasteryExpand][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] expandiu Character[TYPEID=" 
 				+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + "] Mastery[value=" + std::to_string(pCi->mastery) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Atualiza ON Jogo
+		// Updates ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -7671,14 +7671,14 @@ void channel::requestCharacterMasteryExpand(player& _session, packet *_packet) {
 			p.addUint32(el.stat.qntd_ant);
 			p.addUint32(el.stat.qntd_dep);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 bytes unknown
 			if (el.type == 0xCD)
 				p.addUint32(el.flag);	// Mastery
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta do Character Mastery Expand
+		// Character Mastery Expand response
 		p.init_plain((unsigned short)0x26E);
 
 		p.addUint32(0);	// OK
@@ -7728,8 +7728,8 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterCardEquip");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -7762,7 +7762,7 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 			throw exception("[channel::requestCharacterCardEquip][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou equipar card[TYPEID=" + std::to_string(ce.card_typeid) + ", ID=" 
 					+ std::to_string(ce.card_id) + "] no Character[TYPEID=" + std::to_string(ce.char_typeid) + ", ID=" + std::to_string(ce.char_id) + "], mas ele nao possui esse card", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 751, 0x5200752));
 
-		// Verifica se o player está com shop aberto e se está vendendo o item no shop
+		// Checks whether the player has a shop open and is selling the item in the shop
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
@@ -7783,12 +7783,12 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 
 		v_item.push_back(item);
 
-		if (ce.char_card_slot == 4 || ce.char_card_slot == 8)	// Esse 2 só pode equipar com card patcher, mas o pacote é o 18B, e não esse
+		if (ce.char_card_slot == 4 || ce.char_card_slot == 8)	// This 2 can only be equipped with card patcher, but the packet is 18B, not this one
 			throw exception("[channel::requestCharacterCardEquip][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou equipar card[TYPEID=" 
 					+ std::to_string(ce.card_typeid) + ", ID=" + std::to_string(ce.card_id) + "] no Character[TYPEID=" + std::to_string(ce.char_typeid) + ", ID=" 
 					+ std::to_string(ce.char_id) + "], mas o Slot do card requer um Club Patcher e um outro pacote do cliente. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 752, 0x5200753));
 
-		if (ce.char_card_slot == 7 && !pCi->isEquipedPartSlotThirdCaddieCardSlot())	// Esse aqui só pode equipar card se tiver o Part que libere esse Slot
+		if (ce.char_card_slot == 7 && !pCi->isEquipedPartSlotThirdCaddieCardSlot())	// This one can only equip a card if he has the Part that unlocks this Slot
 			throw exception("[channel::requestCharacterCardEquip][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou equipar card[TYPEID=" 
 					+ std::to_string(ce.card_typeid) + ", ID=" + std::to_string(ce.card_id) + "] no Character[TYPEID=" + std::to_string(ce.char_typeid) + ", ID=" 
 					+ std::to_string(ce.char_id) + "], mas o Slot que ele tentou equipar precisa de um Part que libere ele, mas o player nao tem", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 753, 0x5200754));
@@ -7809,7 +7809,7 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 						+ std::to_string(ce.char_id) + "] no Slot[value=" + std::to_string(ce.char_card_slot) + "] mas ja tem card equipado[TYPEID="
 						+ std::to_string(pCi->card_character[(ce.char_card_slot - 1) % 4]) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 758, 0x5200759));
 
-			// Atualizar Card Character equipado
+			// Update equipped Character Card
 			pCi->card_character[(ce.char_card_slot - 1) % 4] = ce.card_typeid;
 			break;
 		case 5:
@@ -7827,7 +7827,7 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 						+ std::to_string(ce.char_id) + "] no Slot[value=" + std::to_string(ce.char_card_slot) + "] mas ja tem card equipado[TYPEID="
 						+ std::to_string(pCi->card_caddie[(ce.char_card_slot - 1) % 4]) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 758, 0x5200759));
 
-			// Atualizar Card Caddie equipado
+			// Update equipped Caddie Card
 			pCi->card_caddie[(ce.char_card_slot - 1) % 4] = ce.card_typeid;
 			break;
 		case 9:
@@ -7845,7 +7845,7 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 						+ std::to_string(ce.char_id) + "] no Slot[value=" + std::to_string(ce.char_card_slot) + "] mas ja tem card equipado[TYPEID="
 						+ std::to_string(pCi->card_NPC[(ce.char_card_slot - 1) % 4]) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 758, 0x5200759));
 
-			// Atualizar Card NPC equipado
+			// Update equipped NPC Card
 			pCi->card_NPC[(ce.char_card_slot - 1) % 4] = ce.card_typeid;
 			break;
 		default:
@@ -7863,7 +7863,7 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 
 		cei.index = -1;
 		cei._typeid = ce.card_typeid;
-		cei.id = ce.card_id;	// ce.card_id	// mas o pangya server original nao passa o id
+		cei.id = ce.card_id;	// ce.card_id	// but the original pangya server does not send the id
 		cei.efeito = card->efeito.type;
 		cei.efeito_qntd = card->efeito.qntd;
 		cei.slot = ce.char_card_slot;
@@ -7885,13 +7885,13 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 		v_item.push_back(item);
 
 		// Update ON DB
-		snmdb::NormalManagerDB::getInstance().add(10, new CmdEquipCard(_session.m_pi.uid, cei, 0/*nao é card de tempo, é o normal*/), channel::SQLDBResponse, this);
+		snmdb::NormalManagerDB::getInstance().add(10, new CmdEquipCard(_session.m_pi.uid, cei, 0/*it is not a timed card, it is the normal one*/), channel::SQLDBResponse, this);
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[EquipCard][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] equipou card[TYPEID=" + std::to_string(ce.card_typeid) + "] no Character[TYPEID=" 
 				+ std::to_string(ce.char_typeid) + ", ID=" + std::to_string(ce.char_id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Update ON Jogo
+		// Update ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -7906,12 +7906,12 @@ void channel::requestCharacterCardEquip(player& _session, packet *_packet) {
 			p.addUint32(el.stat.qntd_dep);
 			p.addInt32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
 			p.addBuffer(el.c, sizeof(el.c));
-			p.addZeroByte(10);	// UCC IDX e outras coisas
+			p.addZeroByte(10);	// UCC IDX and other things
 			p.addUint32(el.price);		// Card typeid
 			p.addUint8(el.type_iff);	// Card Slot
 		}
 
-		// Resposta para o Character Equip Card
+		// Response to Character Equip Card
 		packet_func::session_send(p, &_session, 1);
 
 		p.init_plain((unsigned short)0x271);
@@ -7964,8 +7964,8 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterCardEquipWithPatcher");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -8020,7 +8020,7 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 			throw exception("[channel::requestCharacterCardEquipWithPatcher][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou equipar card[TYPEID=" + std::to_string(ce.card_typeid) + ", ID=" 
 					+ std::to_string(ce.card_id) + "] no Character[TYPEID=" + std::to_string(ce.char_typeid) + ", ID=" + std::to_string(ce.char_id) + "], mas ele nao possui esse card", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 801, 0x5200802));
 
-		// Verifica se o player está com shop aberto e se está vendendo o item no shop
+		// Checks whether the player has a shop open and is selling the item in the shop
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
@@ -8041,7 +8041,7 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 
 		v_item.push_back(item);
 
-		if (ce.char_card_slot != 4 && ce.char_card_slot != 8)	// Esse só pode equipar esses 2 Slot que usa 1 Club Patcher
+		if (ce.char_card_slot != 4 && ce.char_card_slot != 8)	// This one can only equip these 2 Slots that use 1 Club Patcher
 			throw exception("[channel::requestCharacterCardEquipWithPatcher][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou equipar card[TYPEID=" 
 					+ std::to_string(ce.card_typeid) + ", ID=" + std::to_string(ce.card_id) + "] no Character[TYPEID=" + std::to_string(ce.char_typeid) + ", ID=" 
 					+ std::to_string(ce.char_id) + "], so pode equipar o card no slot 4 ou 8, reg_value=" + std::to_string(ce.char_card_slot) + ". Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 802, 0x5200803));
@@ -8062,7 +8062,7 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 						+ std::to_string(ce.char_id) + "] no Slot[value=" + std::to_string(ce.char_card_slot) + "] mas ja tem card equipado[TYPEID=" 
 						+ std::to_string(pCi->card_character[(ce.char_card_slot - 1) % 4]) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 811, 0x5200812));
 
-			// Atualizar Card Character equipado
+			// Update equipped Character Card
 			pCi->card_character[(ce.char_card_slot - 1) % 4] = ce.card_typeid;
 			break;
 		case 5:
@@ -8080,7 +8080,7 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 						+ std::to_string(ce.char_id) + "] no Slot[value=" + std::to_string(ce.char_card_slot) + "] mas ja tem card equipado[TYPEID="
 						+ std::to_string(pCi->card_caddie[(ce.char_card_slot - 1) % 4]) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 811, 0x5200812));
 
-			// Atualizar Card Caddie equipado
+			// Update equipped Caddie Card
 			pCi->card_caddie[(ce.char_card_slot - 1) % 4] = ce.card_typeid;
 			break;
 		case 9:
@@ -8106,7 +8106,7 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 
 		cei.index = -1;
 		cei._typeid = ce.card_typeid;
-		cei.id = ce.card_id;	// ce.card_id	// mas o pangya server original nao passa o id
+		cei.id = ce.card_id;	// ce.card_id	// but the original pangya server does not send the id
 		cei.efeito = card->efeito.type;
 		cei.efeito_qntd = card->efeito.qntd;
 		cei.slot = ce.char_card_slot;
@@ -8128,13 +8128,13 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 		v_item.push_back(item);
 
 		// Update ON DB
-		snmdb::NormalManagerDB::getInstance().add(10, new CmdEquipCard(_session.m_pi.uid, cei, 0/*nao é card de tempo, é o normal*/), channel::SQLDBResponse, this);
+		snmdb::NormalManagerDB::getInstance().add(10, new CmdEquipCard(_session.m_pi.uid, cei, 0/*it is not a timed card, it is the normal one*/), channel::SQLDBResponse, this);
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[EquipCardWithPatcher][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] equipou card[TYPEID=" + std::to_string(ce.card_typeid) + "] no Character[TYPEID=" 
 				+ std::to_string(ce.char_typeid) + ", ID=" + std::to_string(ce.char_id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Update ON Jogo
+		// Update ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -8149,12 +8149,12 @@ void channel::requestCharacterCardEquipWithPatcher(player& _session, packet* _pa
 			p.addUint32(el.stat.qntd_dep);
 			p.addInt32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
 			p.addBuffer(el.c, sizeof(el.c));
-			p.addZeroByte(10);	// UCC IDX e outras coisas
+			p.addZeroByte(10);	// UCC IDX and other things
 			p.addUint32(el.price);		// Card typeid
 			p.addUint8(el.type_iff);	// Card Slot
 		}
 
-		// Resposta para o Character Equip Card With Club Patcher
+		// Response to Character Equip Card With Club Patcher
 		packet_func::session_send(p, &_session, 1);
 
 		p.init_plain((unsigned short)0x272);
@@ -8207,8 +8207,8 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CharacterRemoveCard");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.char_mastery)
@@ -8255,7 +8255,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 			bi.qntd = 1;
 			bi._typeid = pCi->card_character[(cr.card_slot - 1) % 4];
 
-			// Atualiza card equiped Slot
+			// Updates equipped card Slot
 			pCi->card_character[(cr.card_slot - 1) % 4] = 0;
 			break;
 		case 5:
@@ -8271,7 +8271,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 			bi.qntd = 1;
 			bi._typeid = pCi->card_caddie[(cr.card_slot - 1) % 4];
 
-			// Atualiza card equiped Slot
+			// Updates equipped card Slot
 			pCi->card_caddie[(cr.card_slot - 1) % 4] = 0;
 			break;
 		case 9:
@@ -8287,7 +8287,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 			bi.qntd = 1;
 			bi._typeid = pCi->card_NPC[(cr.card_slot - 1) % 4];
 
-			// Atualiza card equiped Slot
+			// Updates equipped card Slot
 			pCi->card_NPC[(cr.card_slot - 1) % 4] = 0;
 			break;
 		default:
@@ -8312,7 +8312,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 		item.qntd = 1;
 		item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;
 
-		// Remove Card Removedor Item
+		// Removes Card Remover Item
 		if (item_manager::removeItem(item, _session) <= 0)
 			throw exception("[channel::requestCharacterRemoveCard][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao conseguiu excluir/(atualizar qntd) item[TYPEID=" 
 					+ std::to_string(item._typeid) + ", ID=" + std::to_string(item.id) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 858, 0x5200859));
@@ -8321,13 +8321,13 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 
 		item.clear();
 
-		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 		if (item._typeid == 0)
 			throw exception("[channel::requestCharacterRemoveCard][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao conseguiu initializar item[TYPEID=" 
 					+ std::to_string(bi._typeid) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 855, 0x5200856));
 
-		// Add Card Desequipado
+		// Add Unequipped Card
 		auto rt = item_manager::RetAddItem::T_INIT_VALUE;
 
 		if ((rt = item_manager::addItem(item, _session, 0, 0)) < 0)
@@ -8342,7 +8342,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 		item.type = 0xCB;
 		item._typeid = pCi->_typeid;
 		item.id = pCi->id;
-		item.price = 0;	// Card Typeid, 0 desequipa
+		item.price = 0;	// Card Typeid, 0 unequips
 		item.type_iff = (unsigned char)cr.card_slot;
 
 		v_item.push_back(item);
@@ -8350,7 +8350,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 		// Update ON DB
 		snmdb::NormalManagerDB::getInstance().add(11, new CmdRemoveEquipedCard(_session.m_pi.uid, *pCei), channel::SQLDBResponse, this);
 
-		// Remove Equiped Card
+		// Remove Equipped Card
 		auto it = std::find_if(_session.m_pi.v_cei.begin(), _session.m_pi.v_cei.end(), [&](auto _el) {
 			return _el._typeid == bi._typeid && _el.parts_id == cr.char_id && _el.slot == cr.card_slot;
 		});
@@ -8362,7 +8362,7 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 		_smp::message_pool::getInstance().push(new message("[DesequipaCard][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] desequipou Card[TYPEID=" 
 				+ std::to_string(bi._typeid) + "] do Character[TYPEID=" + std::to_string(cr.char_typeid) + ", ID=" + std::to_string(cr.char_id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Update ON Jogo
+		// Update ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -8377,14 +8377,14 @@ void channel::requestCharacterRemoveCard(player& _session, packet* _packet) {
 			p.addUint32(el.stat.qntd_dep);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
 			p.addBuffer(el.c, sizeof(el.c));
-			p.addZeroByte(10);	// UCC IDX e outras coisas
+			p.addZeroByte(10);	// UCC IDX and other things
 			p.addUint32(el.price);		// Card Typeid
 			p.addUint8(el.type_iff);	// Card Slot
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Reposta do Character Remove Card
+		// Character Remove Card response
 		p.init_plain((unsigned short)0x273);
 
 		p.addUint32(0);	// OK
@@ -8422,8 +8422,8 @@ void channel::requestClubSetStatsUpdate(player& _session, packet *_packet) {
 		unsigned char stat = _packet->readUint8();
 		int32_t item_id = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetStatsUpdate");
 
 		if (opt == 1 || opt == 3) {	// ClubSet Up/Downgrade
@@ -8475,7 +8475,7 @@ void channel::requestClubSetStatsUpdate(player& _session, packet *_packet) {
 				// Update ON Game
 				p.init_plain((unsigned short)0xA5);
 
-				p.addUint8(opt / 2 + 1);	// [0, 1] / 2 + 1 = 1, [2, 3] / 2 + 1 = 2	// UPA = 1, DESUPA = 2
+				p.addUint8(opt / 2 + 1);	// [0, 1] / 2 + 1 = 1, [2, 3] / 2 + 1 = 2	// UPGRADE = 1, DOWNGRADE = 2
 				p.addUint8(opt % 2);		// [0, 2] mod 2 = 0, [1, 3] mod 2 = 1		// Character = 0, ClubSet = 1
 				p.addUint8(stat);
 				p.addUint32(item_id);
@@ -8501,7 +8501,7 @@ void channel::requestClubSetStatsUpdate(player& _session, packet *_packet) {
 				// Update ON Game
 				p.init_plain((unsigned short)0xA5);
 
-				p.addUint8(opt / 2 + 1);	// [0, 1] / 2 + 1 = 1, [2, 3] / 2 + 1 = 2	// UPA = 1, DESUPA = 2
+				p.addUint8(opt / 2 + 1);	// [0, 1] / 2 + 1 = 1, [2, 3] / 2 + 1 = 2	// UPGRADE = 1, DOWNGRADE = 2
 				p.addUint8(opt % 2);		// [0, 2] mod 2 = 0, [1, 3] mod 2 = 1		// Character = 0, ClubSet = 1
 				p.addUint8(stat);
 				p.addUint32(item_id);
@@ -8518,7 +8518,7 @@ void channel::requestClubSetStatsUpdate(player& _session, packet *_packet) {
 					+ std::to_string(pWi->c[CharacterInfo::S_CONTROL]) + ", C2=" + std::to_string(pWi->c[CharacterInfo::S_ACCURACY]) + ", C3="
 					+ std::to_string(pWi->c[CharacterInfo::S_SPIN]) + ", C4=" + std::to_string(pWi->c[CharacterInfo::S_CURVE]) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		}	// OPT [0 OR 2] é Character Stats para season passada
+		}	// OPT [0 OR 2] is Character Stats for the previous season
 
 	}catch (exception& e) {
 
@@ -8554,11 +8554,11 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("TikiShopExchangeItem");
 
-		// !@ Teste do bug(acho que é bug) que dá erro mais ainda troca, acho que o cliente envia o mesmo pacote 2x
+		// !@ Test of the bug (I think it is a bug) that gives an error but still exchanges, I think the client sends the same packet 2x
 		_smp::message_pool::getInstance().push(new message("[channel::requestTikiShopExchangeItem][Log][Teste] Player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] iniciou a troca de itens no Tiki Shop.", CL_ONLY_FILE_LOG));
 
@@ -8611,7 +8611,7 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 						+ std::to_string(tsei._typeid) + ", ID=" + std::to_string(tsei.id) + ", QNTD=" + std::to_string(tsei.qntd) + "] no Tiki's Shop, mas nao conseguiu inicializar o item. Hacker ou Bug.", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 900, 0x52000901));
 
-			// Verifica se o player está com shop aberto e se está vendendo o item no shop
+			// Checks whether the player has a shop open and is selling the item in the shop
 			//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 
 			if (r != nullptr && r->checkPersonalShopItem(_session, tsei.id))
@@ -8629,7 +8629,7 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 				throw exception("[channel::requestTikiShopExchangeItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou trocar item[TYPEID=" 
 						+ std::to_string(tsei._typeid) + ", ID=" + std::to_string(tsei.id) + "] no Tiki's Shop, mas o item nao eh valido para ser trocado. Hacker ou Bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 904, 0x5200905));
 
-			// Soma dados de tiki dos itens
+			// Sums the tiki data of the items
 			pang += base->tiki.tiki_pang;
 			
 			milage += base->tiki.milage_pts * tsei.qntd;
@@ -8640,7 +8640,7 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 
 			v_item.insert(v_item.end(), item.begin(), item.end());
 
-			// Achievement Add +1 ao contador de tipo de item que foi trocado no Tiki Shop Exchange
+			// Achievement Add +1 to the counter of the item type that was exchanged in Tiki Shop Exchange
 			switch (base->tiki.tipo_tiki_shop) {
 			case 1:	// Normal
 				sys_achieve.incrementCounter(0x6C4000BEu/*Pang Item*/);
@@ -8670,12 +8670,12 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 		if (index < bonus_prob) {
 			bonus = (((uint32_t)sRandomGen::getInstance().rIbeMt19937_64_chrono()) % (bonus_minmax[1] - bonus_minmax[0])) + bonus_minmax[0];
 
-			// Achievement Add +1 ao contador de Tiki Shop Exchange Bonus Milage
+			// Achievement Add +1 to the Tiki Shop Exchange Bonus Milage counter
 			sys_achieve.incrementCounter(0x6C4000C1u/*Bonus Milage*/);
 		}
-		// Fim Bonus
+		// End Bonus
 
-		// Remove Item(ns)
+		// Remove Item(s)
 		if (item_manager::removeItem(v_item, _session) <= 0)
 			throw exception("[channel::requestTikiShopExchangeItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] tentou trocar item(ns)(" + s_item + "), mas nao conseguiu deletar ele(s).", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 902, 0x5200903));
@@ -8684,11 +8684,11 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 		if ((milage + item.qntd + bonus) > 1000)
 			tiki_pts = (milage + item.qntd + bonus) / 1000;
 
-		// Att Qntd Milage
+		// Update Milage Qty
 		item.STDA_C_ITEM_QNTD = (short)((int)((milage + item.qntd + bonus) % 1000) - (int)item.qntd);
 		item.qntd = std::abs(item.STDA_C_ITEM_QNTD);
 
-		// Só atualiza o Milage Points se for diferente de 0 a quantidade
+		// Only updates Milage Points if the quantity is different from 0
 		if (item.STDA_C_ITEM_QNTD != 0) {
 			
 			auto rt = item_manager::RetAddItem::T_INIT_VALUE;
@@ -8730,11 +8730,11 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 			if (rt != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
 				v_item.push_back(item);
 
-			// Achievement Add + valor de Tiki Points Ganhos ao contador
-			sys_achieve.incrementCounter(0x6C4000C2u/*TP(Tiki Point Ganho*/, tiki_pts);
+			// Achievement Add + value of Tiki Points Earned to the counter
+			sys_achieve.incrementCounter(0x6C4000C2u/*TP(Tiki Point Earned*/, tiki_pts);
 		}
 
-		// Consome os Pangs
+		// Consumes the Pangs
 		_session.m_pi.consomePang(pang);
 
 		// Log
@@ -8748,7 +8748,7 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Att Item ON Jogo
+		// Update Item ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -8762,7 +8762,7 @@ void channel::requestTikiShopExchangeItem(player& _session, packet* _packet) {
 			p.addUint32(el.stat.qntd_ant);
 			p.addUint32(el.stat.qntd_dep);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 bytes unknown
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -8803,8 +8803,8 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerItemChannel");
 
 		type = _packet->readUint8();
@@ -8830,7 +8830,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 						if (el->second.type == UpdateItem::CADDIE) {
 								
-							// Desequipa o caddie
+							// Unequips the caddie
 							_session.m_pi.ei.cad_info = nullptr;
 							_session.m_pi.ue.caddie_id = 0;
 
@@ -8838,7 +8838,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 						}else if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							pCi->parts_typeid = 0u;
 							pCi->parts_end_date_unix = 0;
 							pCi->end_parts_date = { 0 };
@@ -8847,7 +8847,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 							_session.m_pi.ue.caddie_id = item_id;
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -8857,7 +8857,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					_session.m_pi.ei.cad_info = pCi;
 					_session.m_pi.ue.caddie_id = item_id;
 
-					// Verifica se o caddie pode ser equipado
+					// Checks whether the caddie can be equipped
 					if (_session.checkCaddieEquiped(_session.m_pi.ue))
 						item_id = _session.m_pi.ue.caddie_id;
 
@@ -8866,9 +8866,9 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 
-			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Desequipa Caddie
+			}else if (_session.m_pi.ue.caddie_id > 0 && _session.m_pi.ei.cad_info != nullptr) {	// Unequips Caddie
 			
-				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pCi == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
+				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pCi == nullptr ? 2/*Item Not Found*/ : 3/*Error invalid item typeid*/);
 
 				if (error > 1) {
 					_smp::message_pool::getInstance().push(new message("[channel::requestChangePlayerItemChannel][Log][WARNING] player[UID=" + std::to_string(_session.m_pi.uid)
@@ -8883,16 +8883,16 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 					for (auto& el : v_it) {
 
-						// Caddie já vai se desequipar, só verifica o parts
+						// Caddie is already going to be unequipped, only checks the parts
 						if (el->second.type == UpdateItem::CADDIE_PARTS) {
 
-							// Limpa o caddie Parts
+							// Clears the caddie Parts
 							_session.m_pi.ei.cad_info->parts_typeid = 0u;
 							_session.m_pi.ei.cad_info->parts_end_date_unix = 0;
 							_session.m_pi.ei.cad_info->end_parts_date = { 0 };
 						}
 
-						// Tira esse Update Item do map
+						// Removes this Update Item from the map
 						_session.m_pi.mp_ui.erase(el);
 					}
 
@@ -8903,13 +8903,13 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 				item_id = 0;
 
-				// Zera o Error para o cliente desequipar o caddie que o server desequipou
+				// Zeroes the Error so the client unequips the caddie that the server unequipped
 				error = 0;
 
-				// Att No DB
+				// Update in DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateCaddieEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 			
-			} // else Não tem nenhum caddie equipado, para desequipar, então o cliente só quis atualizar o estado
+			} // else There is no caddie equipped to unequip, so the client just wanted to update the state
 			
 			break;
 		}
@@ -8921,22 +8921,22 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					&& sIff::getInstance().getItemGroupIdentify(pWi->_typeid) == iff::BALL) {
 				
 				_session.m_pi.ei.comet = pWi;
-				_session.m_pi.ue.ball_typeid = item_id;		// Ball(Comet) é o typeid que o cliente passa
+				_session.m_pi.ue.ball_typeid = item_id;		// Ball(Comet) is the typeid the client sends
 
-				// Verifica se a bola pode ser equipada
+				// Checks whether the ball can be equipped
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					item_id = _session.m_pi.ue.ball_typeid;
 
 				// Update ON DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateBallEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 					
-			}else if (item_id == 0) { // Bola 0 coloca a bola padrão para ele, se for premium user coloca a bola de premium user
+			}else if (item_id == 0) { // Ball 0 sets the default ball for him, if premium user sets the premium user ball
 
-				// Zera para equipar a bola padrão
+				// Zeroes to equip the default ball
 				_session.m_pi.ei.comet = nullptr;
 				_session.m_pi.ue.ball_typeid = 0l;
 
-				// Verifica se a Bola pode ser equipada (Coloca para equipar a bola padrão
+				// Checks whether the Ball can be equipped (Sets it to equip the default ball
 				if (_session.checkBallEquiped(_session.m_pi.ue))
 					item_id = _session.m_pi.ue.ball_typeid;
 
@@ -8962,7 +8962,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					_session.m_pi.ei.comet = pWi;
 					item_id = _session.m_pi.ue.ball_typeid = pWi->_typeid;
 
-					// Zera o Error para o cliente equipar a Ball Padrão que o server equipou
+					// Zeroes the Error so the client equips the Default Ball that the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -8981,13 +8981,13 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					bi._typeid = DEFAULT_COMET_TYPEID;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((item_id = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((item_id = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa a Ball padrao
+							// Equips the default Ball
 							pWi = _session.m_pi.findWarehouseItemById(item_id);
 
 							if (pWi != nullptr) {
@@ -8995,7 +8995,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 								_session.m_pi.ei.comet = pWi;
 								_session.m_pi.ue.ball_typeid = pWi->_typeid;
 
-								// Zera o Error para o cliente equipar a Ball Padrão que o server equipou
+								// Zeroes the Error so the client equips the Default Ball that the server equipped
 								error = 0;
 
 								// Update ON DB
@@ -9047,8 +9047,8 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 					_session.m_pi.ei.clubset = pWi;
 
-					// Esse C do WarehouseItem, que pega do DB, não é o ja updado inicial da taqueira é o que fica tabela enchant, 
-					// que no original fica no warehouse msm, eu só confundi quando fiz
+					// This C of WarehouseItem, taken from the DB, is not the initial already-updated one of the club set, it is the one kept in the enchant table, 
+					// which in the original is kept in the warehouse itself, I just got confused when I made it
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9060,7 +9060,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 						_session.m_pi.ue.clubset_id = item_id;
 
-						// Verifica se o ClubSet pode ser equipado
+						// Checks whether the ClubSet can be equipped
 						if (_session.checkClubSetEquiped(_session.m_pi.ue))
 							item_id = _session.m_pi.ue.clubset_id;
 
@@ -9075,7 +9075,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 								+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) 
 								+ "] equipado, mas ClubSet Not exists on IFF structure. Equipa o ClubSet padrao. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 
-						// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+						// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 						pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 						if (pWi != nullptr) {
@@ -9087,7 +9087,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 							_session.m_pi.ei.clubset = pWi;
 							item_id = _session.m_pi.ue.clubset_id = pWi->id;
 
-							// Atualiza o ClubSet Enchant no Equiped Item do Player
+							// Updates the ClubSet Enchant in the Player's Equipped Item
 							_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 							IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9096,7 +9096,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 								for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 									_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-							// Zera o Error para o cliente equipar a "CV1" que o server equipou
+							// Zeroes the Error so the client equips the "CV1" that the server equipped
 							error = 0;
 
 							// Update ON DB
@@ -9115,13 +9115,13 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 							bi._typeid = AIR_KNIGHT_SET;
 							bi.qntd = 1;
 				
-							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+							item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 							if (item._typeid != 0) {
 
-								if ((item_id = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+								if ((item_id = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-									// Equipa o ClubSet CV1
+									// Equips the ClubSet CV1
 									pWi = _session.m_pi.findWarehouseItemById(item_id);
 
 									if (pWi != nullptr) {
@@ -9129,7 +9129,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 										_session.m_pi.ei.clubset = pWi;
 										_session.m_pi.ue.clubset_id = pWi->id;
 
-										// Atualiza o ClubSet Enchant no Equiped Item do Player
+										// Updates the ClubSet Enchant in the Player's Equipped Item
 										_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 										IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9138,7 +9138,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 											for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 												_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-										// Zera o Error para o cliente equipar a "CV1" que o server equipou
+										// Zeroes the Error so the client equips the "CV1" that the server equipped
 										error = 0;
 
 										// Update ON DB
@@ -9174,11 +9174,11 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 						}
 					}
 			
-				}else {	// ClubSet Acabou o tempo
+				}else {	// ClubSet time ran out
 
-					error = 6;	// Acabou o tempo do item
+					error = 6;	// Item time ran out
 
-					// Coloca o ClubSet CV1 no lugar do ClubSet que acabou o tempo
+					// Puts the ClubSet CV1 in place of the ClubSet whose time ran out
 					pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
 					if (pWi != nullptr) {
@@ -9190,7 +9190,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 						_session.m_pi.ei.clubset = pWi;
 						item_id = _session.m_pi.ue.clubset_id = pWi->id;
 
-						// Atualiza o ClubSet Enchant no Equiped Item do Player
+						// Updates the ClubSet Enchant in the Player's Equipped Item
 						_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 						IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9199,7 +9199,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 							for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 								_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-						// Zera o Error para o cliente equipar a "CV1" que o server equipou
+						// Zeroes the Error so the client equips the "CV1" that the server equipped
 						error = 0;
 
 						// Update ON DB
@@ -9218,13 +9218,13 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 						bi._typeid = AIR_KNIGHT_SET;
 						bi.qntd = 1;
 				
-						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+						item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 						if (item._typeid != 0) {
 
-							if ((item_id = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+							if ((item_id = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-								// Equipa o ClubSet CV1
+								// Equips the ClubSet CV1
 								pWi = _session.m_pi.findWarehouseItemById(item_id);
 
 								if (pWi != nullptr) {
@@ -9232,7 +9232,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 									_session.m_pi.ei.clubset = pWi;
 									_session.m_pi.ue.clubset_id = pWi->id;
 
-									// Atualiza o ClubSet Enchant no Equiped Item do Player
+									// Updates the ClubSet Enchant in the Player's Equipped Item
 									_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 									IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9241,7 +9241,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 										for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 											_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-									// Zera o Error para o cliente equipar a "CV1" que o server equipou
+									// Zeroes the Error so the client equips the "CV1" that the server equipped
 									error = 0;
 
 									// Update ON DB
@@ -9279,7 +9279,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 		
 			}else {
 
-				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pWi == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
+				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pWi == nullptr ? 2/*Item Not Found*/ : 3/*Error invalid item typeid*/);
 
 				pWi = _session.m_pi.findWarehouseItemByTypeid(AIR_KNIGHT_SET);
 
@@ -9292,7 +9292,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					_session.m_pi.ei.clubset = pWi;
 					item_id = _session.m_pi.ue.clubset_id = pWi->id;
 
-					// Atualiza o ClubSet Enchant no Equiped Item do Player
+					// Updates the ClubSet Enchant in the Player's Equipped Item
 					_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 					IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9301,7 +9301,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 						for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 							_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-					// Zera o Error para o cliente equipar a "CV1" que o server equipou
+					// Zeroes the Error so the client equips the "CV1" that the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -9320,13 +9320,13 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					bi._typeid = AIR_KNIGHT_SET;
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						if ((item_id = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						if ((item_id = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Equipa o ClubSet CV1
+							// Equips the ClubSet CV1
 							pWi = _session.m_pi.findWarehouseItemById(item_id);
 
 							if (pWi != nullptr) {
@@ -9334,7 +9334,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 								_session.m_pi.ei.clubset = pWi;
 								_session.m_pi.ue.clubset_id = pWi->id;
 
-								// Atualiza o ClubSet Enchant no Equiped Item do Player
+								// Updates the ClubSet Enchant in the Player's Equipped Item
 								_session.m_pi.ei.csi = { pWi->id, pWi->_typeid, pWi->c };
 
 								IFF::ClubSet *cs = sIff::getInstance().findClubSet(pWi->_typeid);
@@ -9343,7 +9343,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 									for (auto i = 0u; i < (sizeof(_session.m_pi.ei.csi.enchant_c) / sizeof(_session.m_pi.ei.csi.enchant_c[0])); ++i)
 										_session.m_pi.ei.csi.enchant_c[i] = cs->slot[i] + pWi->clubset_workshop.c[i];
 
-								// Zera o Error para o cliente equipar a "CV1" que o server equipou
+								// Zeroes the Error so the client equips the "CV1" that the server equipped
 								error = 0;
 
 								// Update ON DB
@@ -9391,7 +9391,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 				_session.m_pi.ei.char_info = pCe;
 				_session.m_pi.ue.character_id = item_id;
 
-				// Verifica se está em uma sala GrandPrix para verificar o GrandPrixConditionEquip
+				// Checks whether he is in a GrandPrix room to check the GrandPrixConditionEquip
 				BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
 				if (r != nullptr && r->getClassType() == eROOM_CLASS_TYPE::RCT_GRAND_PRIX)
@@ -9407,7 +9407,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					
 			}else {
 				
-				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pCe == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
+				error = (item_id == 0) ? 1/*client give invalid item id*/ : (pCe == nullptr ? 2/*Item Not Found*/ : 3/*Error invalid item typeid*/);
 
 				if (_session.m_pi.mp_ce.size() > 0) {
 
@@ -9418,7 +9418,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					_session.m_pi.ei.char_info = &_session.m_pi.mp_ce.begin()->second;
 					item_id = _session.m_pi.ue.character_id = _session.m_pi.ei.char_info->id;
 
-					// Zera o Error para o cliente equipar o Primeiro Character do map de character do player, que o server equipou
+					// Zeroes the Error so the client equips the First Character of the player's character map, which the server equipped
 					error = 0;
 
 					// Update ON DB
@@ -9440,14 +9440,14 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					bi._typeid = iff::CHARACTER << 26;	// Nuri
 					bi.qntd = 1;
 				
-					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+					item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 					if (item._typeid != 0) {
 
-						// Add Item já atualiza o Character equipado
-						if ((item_id = item_manager::addItem(item, _session, 2/*Padrão Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
+						// Add Item already updates the equipped Character
+						if ((item_id = item_manager::addItem(item, _session, 2/*Default Item*/, 0)) != item_manager::RetAddItem::T_ERROR) {
 
-							// Zera o Error para o cliente equipar o Nuri que o server equipou
+							// Zeroes the Error so the client equips the Nuri that the server equipped
 							error = 0;
 
 							// Update ON GAME
@@ -9493,7 +9493,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 					if (m_it != _session.m_pi.mp_ui.end()) {
 
-						// Desequipa o Mascot que acabou o tempo dele
+						// Unequips the Mascot whose time ran out
 						_session.m_pi.ei.mascot_info = nullptr;
 						_session.m_pi.ue.mascot_id = 0;
 
@@ -9505,7 +9505,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 						_session.m_pi.ei.mascot_info = pMi;
 						_session.m_pi.ue.mascot_id = item_id;
 
-						// Verifica se o Mascot pode ser equipado
+						// Checks whether the Mascot can be equipped
 						if (_session.checkMascotEquiped(_session.m_pi.ue))
 							item_id = _session.m_pi.ue.mascot_id;
 
@@ -9516,7 +9516,7 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 					
 				}else {
 
-					error = (item_id == 0) ? 1/*client give invalid item id*/ : (pMi == nullptr ? 2/*Item Not Found*/ : 3/*Erro item typeid invalid*/);
+					error = (item_id == 0) ? 1/*client give invalid item id*/ : (pMi == nullptr ? 2/*Item Not Found*/ : 3/*Error invalid item typeid*/);
 
 					if (error > 1) {
 						_smp::message_pool::getInstance().push(new message("[channel::requestChangePlayerItemChannel][Log][WARNING] player[UID=" + std::to_string(_session.m_pi.uid)
@@ -9529,21 +9529,21 @@ void channel::requestChangePlayerItemChannel(player& _session, packet* _packet) 
 
 					item_id = 0;
 
-					// Att No DB
+					// Update in DB
 					snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 				}
 
-			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Desequipa Mascot
+			}else if (_session.m_pi.ue.mascot_id > 0 && _session.m_pi.ei.mascot_info != nullptr) {	// Unequips Mascot
 
 				_session.m_pi.ei.mascot_info = nullptr;
 				_session.m_pi.ue.mascot_id = 0;
 
 				item_id = 0;
 
-				// Att No DB
+				// Update in DB
 				snmdb::NormalManagerDB::getInstance().add(0, new CmdUpdateMascotEquiped(_session.m_pi.uid, item_id), channel::SQLDBResponse, this);
 
-			} // else Não tem nenhum mascot equipado, para desequipar, então o cliente só quis atualizar o estado
+			} // else There is no mascot equipped to unequip, so the client just wanted to update the state
 			
 			break;
 		}
@@ -9576,14 +9576,14 @@ void channel::requestChangePlayerItemRoom(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangePlayerItemRoom");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
-		// Error do Lounge que ele sai do lounge e pede para atualizar o character equipado
+		// Lounge error where he leaves the lounge and asks to update the equipped character
 		if (r == nullptr && _session.m_pi.lobby != (unsigned char)~0u)
 			return;
 
@@ -9644,8 +9644,8 @@ void channel::requestDeleteActiveItem(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DeleteActiveItem");
 
 		uint32_t _typeid = _packet->readUint32();
@@ -9689,7 +9689,7 @@ void channel::requestDeleteActiveItem(player& _session, packet *_packet) {
 		item.qntd = qntd;
 		item.STDA_C_ITEM_QNTD = (short)qntd * -1;
 
-		// Atualiza ON Server AND Banco de dados
+		// Updates ON Server AND Database
 		if (item_manager::removeItem(item, _session) <= 0)
 			throw exception("[channel::requestDeleteActiveItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao conseguiu excluir item[TYPEID=" 
 					+ std::to_string(_typeid) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 702, 0x5200703));
@@ -9697,7 +9697,7 @@ void channel::requestDeleteActiveItem(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[DeleteActiveItem][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] excluiu/(Atualizou qntd) item[TYPEID=" 
 				+ std::to_string(pWi->_typeid) + ", QNTD=" + std::to_string(qntd) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Atualiza ON Jogo
+		// Updates ON Game
 		p.init_plain((unsigned short)0xC5);
 
 		p.addUint8(1);	// OK
@@ -9732,8 +9732,8 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 	struct ClubSetWorkShopTransferMasteryPts {
 		void clear() { memset(this, 0, sizeof(ClubSetWorkShopTransferMasteryPts)); };
 		uint32_t UCIM_chip_typeid;	// UCIM chip typeid
-		int32_t clubset[2];				// src[0], dst[1] ID do ClubSet
-		uint32_t qntd;				// Qntd de troca
+		int32_t clubset[2];				// src[0], dst[1] ClubSet ID
+		uint32_t qntd;				// Exchange qty
 	};
 
 #if defined(__linux__)
@@ -9742,7 +9742,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 	try {
 
-		// 300 mastery pts transfere por cada UCIM chip
+		// 300 mastery pts are transferred per UCIM chip
 		ClubSetWorkShopTransferMasteryPts tmp{ 0 };
 
 		std::vector< stItemEx > v_item;
@@ -9750,8 +9750,8 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 		_packet->readBuffer(&tmp, sizeof(ClubSetWorkShopTransferMasteryPts));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopTransferMasteryPts");
 
 		auto pUCIM_chip = _session.m_pi.findWarehouseItemByTypeid(tmp.UCIM_chip_typeid);
@@ -9802,7 +9802,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 		uint32_t mastery = ((tmp.qntd * 300) > (uint32_t)pClub_src->clubset_workshop.mastery) ? pClub_src->clubset_workshop.mastery : tmp.qntd * 300;
 
-		// Transferi os Mastery Points
+		// Transferred the Mastery Points
 		pClub_dst->clubset_workshop.mastery += mastery;
 		pClub_src->clubset_workshop.mastery -= mastery;
 
@@ -9821,7 +9821,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 		v_item.push_back(item);
 
-		// ClubSet Font
+		// ClubSet Source
 		item.clear();
 
 		item.type = 0xCC;
@@ -9839,7 +9839,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 		v_item.push_back(item);
 
-		// ClubSet Destino
+		// ClubSet Destination
 		item.clear();
 
 		item.type = 0xCC;
@@ -9857,7 +9857,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 
 		v_item.push_back(item);
 
-		// Atualiza ON DB
+		// Updates ON DB
 		snmdb::NormalManagerDB::getInstance().add(12, new CmdUpdateClubSetWorkshop(_session.m_pi.uid, *pClub_src, CmdUpdateClubSetWorkshop::F_TRANSFER_MASTERY_PTS), channel::SQLDBResponse, this);
 		snmdb::NormalManagerDB::getInstance().add(12, new CmdUpdateClubSetWorkshop(_session.m_pi.uid, *pClub_dst, CmdUpdateClubSetWorkshop::F_TRANSFER_MASTERY_PTS), channel::SQLDBResponse, this);
 
@@ -9865,7 +9865,7 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 		_smp::message_pool::getInstance().push(new message("[ClubSet Workshop::TransferMasteryPts][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] transferiu mastery pts[value=" + std::to_string(mastery) + "] do ClubSet[TYPEID=" 
 				+ std::to_string(pClub_src->_typeid) + ", ID=" + std::to_string(pClub_src->id) + "] para o ClubSet[TYPEID=" + std::to_string(pClub_dst->_typeid) + ", ID=" + std::to_string(pClub_dst->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Atualiza ON Jogo
+		// Updates ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -9878,14 +9878,14 @@ void channel::requestClubSetWorkShopTransferMasteryPts(player& _session, packet 
 			p.addUint32(el.flag_time);
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 bytes unknown
 			if (el.type == 0xCC)
 				p.addBuffer(&el.clubset_workshop, sizeof(el.clubset_workshop));
 		}
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta do transfer Mastery Pts
+		// Transfer Mastery Pts response
 		p.init_plain((unsigned short)0x245);
 
 		p.addUint32(0);	// OK
@@ -9921,8 +9921,8 @@ void channel::requestClubSetWorkShopRecoveryPts(player& _session, packet *_packe
 		uint32_t item_typeid = _packet->readUint32();
 		int32_t clubset_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopRecoveryPts");
 
 		std::vector< stItemEx > v_item;
@@ -9959,7 +9959,7 @@ void channel::requestClubSetWorkShopRecoveryPts(player& _session, packet *_packe
 			throw exception("[requestClubSetWorkShopRecoveryPts][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou recuperar os pontos de recuperacao do ClubSet[ID="
 					+ std::to_string(clubset_id) + "], mas o ClubSet do player ja foi recuperado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 156, 0x5300157));
 
-		// Corneta de recuperar recovery pts do ClubSet
+		// Horn to recover recovery pts of the ClubSet
 		item.clear();
 
 		item.type = 2;
@@ -10002,7 +10002,7 @@ void channel::requestClubSetWorkShopRecoveryPts(player& _session, packet *_packe
 		_smp::message_pool::getInstance().push(new message("[ClubSet WorkShop::RecoveryPts][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] recuperou os pontos do ClubSet[TYPEID=" 
 				+ std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON Jogo
+		// UPDATE ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10022,7 +10022,7 @@ void channel::requestClubSetWorkShopRecoveryPts(player& _session, packet *_packe
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o recovery ClubSet Pts
+		// Response to recovery ClubSet Pts
 		p.init_plain((unsigned short)0x246);
 
 		p.addUint32(0);	// OK
@@ -10032,7 +10032,7 @@ void channel::requestClubSetWorkShopRecoveryPts(player& _session, packet *_packe
 		// Update Achievement ON SERVER, DB and GAME
 		SysAchievement sys_achieve;
 
-		sys_achieve.incrementCounter(0x6C4000A6/*Recupera Recovery Pts do ClubSet*/);
+		sys_achieve.incrementCounter(0x6C4000A6/*Recovers Recovery Pts of the ClubSet*/);
 
 		sys_achieve.finish_and_update(_session);
 
@@ -10080,12 +10080,12 @@ void channel::requestClubSetWorkShopUpLevel(player& _session, packet* _packet) {
 		stItem item{ 0 };
 		ProbCardExtra pce{ 0 };
 
-		size_t stat = 0;	// Stat que vai ser updado no ClubSet, Ex: PWR, CTRL, ACCY, SPIN, CURV
+		size_t stat = 0;	// Stat that will be updated in the ClubSet, e.g.: PWR, CTRL, ACCY, SPIN, CURV
 
 		_packet->readBuffer(&cwul, sizeof(CWUpLevel));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpLevel");
 
 		switch (sIff::getInstance().getItemGroupIdentify(cwul.item_typeid)) {
@@ -10218,7 +10218,7 @@ void channel::requestClubSetWorkShopUpLevel(player& _session, packet* _packet) {
 		_smp::message_pool::getInstance().push(new message("[ClubSetWorkshop::UpLevel][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] upou Level[stat=" 
 				+ std::to_string(stat) + "] do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "] agora aguardando resposta do cliente, se quer ou nao esse stat.", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10234,7 +10234,7 @@ void channel::requestClubSetWorkShopUpLevel(player& _session, packet* _packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o ClubSet Up Level
+		// Response to ClubSet Up Level
 		p.init_plain((unsigned short)0x23D);
 
 		p.addUint32(0);	// OK;
@@ -10261,8 +10261,8 @@ void channel::requestClubSetWorkShopUpLevelConfirm(player& _session, packet *_pa
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpLevelConfirm");
 
 		stItemEx item{ 0 };
@@ -10305,7 +10305,7 @@ void channel::requestClubSetWorkShopUpLevelConfirm(player& _session, packet *_pa
 		_smp::message_pool::getInstance().push(new message("[ClubSetWorkshop::UpLevelConfirm][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] confirmou o Up Level[stat="
 				+ std::to_string(_session.m_pi.cwlul.stat) + "] do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10323,7 +10323,7 @@ void channel::requestClubSetWorkShopUpLevelConfirm(player& _session, packet *_pa
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o ClubSet Wrokshop Up Level Confirm
+		// Response to ClubSet Workshop Up Level Confirm
 		p.init_plain((unsigned short)0x23E);
 
 		p.addUint32(0);	// OK
@@ -10358,8 +10358,8 @@ void channel::requestClubSetWorkShopUpLevelCancel(player& _session, packet* _pac
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpLevelCancel");
 
 		stItemEx item{ 0 };
@@ -10412,7 +10412,7 @@ void channel::requestClubSetWorkShopUpLevelCancel(player& _session, packet* _pac
 		_smp::message_pool::getInstance().push(new message("[ClubSetWorkshop::UpLevelCancel][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] cancelou o Up Level[stat=" 
 				+ std::to_string(_session.m_pi.cwlul.stat) + "] do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10430,7 +10430,7 @@ void channel::requestClubSetWorkShopUpLevelCancel(player& _session, packet* _pac
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o ClubSet Wrokshop Up Level Cancel
+		// Response to ClubSet Workshop Up Level Cancel
 		p.init_plain((unsigned short)0x23F);
 
 		p.addUint32(0);	// OK
@@ -10476,12 +10476,12 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 		std::vector< stItemEx > v_item;
 		stItemEx item{ 0 };
 
-		uint32_t stat = 2/*ACCURACY*/;	// PWR, CTRL, ACCRY, SPIN e CURVE
+		uint32_t stat = 2/*ACCURACY*/;	// PWR, CTRL, ACCRY, SPIN and CURVE
 
 		_packet->readBuffer(&cwup, sizeof(CWUpRank));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpRank");
 
 		if (cwup.qntd > 0) {
@@ -10541,7 +10541,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 			throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID="
 					+ std::to_string(pClub->id) + "], mas a quantidade de card[TYPEID=" + std::to_string(cwup.item_typeid) + ", QNTD=" + std::to_string(cwup.qntd) + "] eh desconhecida", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 355, 0x5300356));
 
-		// Stat Up, quando upar o Rank do ClubSet
+		// Stat Up, when the ClubSet Rank goes up
 		stat = (cwup.qntd == 0 ? 2/*ACCURACY*/ : (cwup.qntd == 1 ? 4/*CURVE*/ : (cwup.qntd == 2 ? 0/*PWR*/ : (cwup.qntd == 3 ? 3/*SPIN*/ : (cwup.qntd == 4 ? 1/*CTRL*/ : 2/*ACCURACY*/)))));
 
 		if (limit->c[stat] <= (pClub->clubset_workshop.c[stat] + clubset->slot[stat]))
@@ -10554,7 +10554,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 			throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID="
 					+ std::to_string(pClub->id) + "], mas nao encontrou o Rank Up Exp no IFF_STRUCT do Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 358, 0x5300359));
 
-		// Rank do ClubSet +1 que ele vai tornar-se
+		// ClubSet Rank +1 that it will become
 		int32_t rank = pClub->clubset_workshop.calcRank((short*)clubset->slot) + 1/*UP RANK*/;
 
 		if (rank == -1)
@@ -10578,7 +10578,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 
 		// UPDATE ON SERVER
 
-		// Upa Stat do rank S, que da 1 de bonus
+		// Upgrades Stat of rank S, which gives 1 bonus
 		if (rank == 5/*Rank S*/) {
 			if (clubset->work_shop.rank_s_stat > 4)
 				throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID = " + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID = " + std::to_string(pClub->_typeid) + ", ID = "
@@ -10617,7 +10617,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 		// UPDATE ON DB
 		snmdb::NormalManagerDB::getInstance().add(12, new CmdUpdateClubSetWorkshop(_session.m_pi.uid, *pClub, CmdUpdateClubSetWorkshop::F_UP_RANK), channel::SQLDBResponse, this);
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10637,25 +10637,25 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Check Se Ele Pode Transformar e se ele transformou
-		if (clubset->work_shop.can_transform) { // Esse Clubset pode transformar-se em um ClubSet Special
+		// Checks Whether It Can Transform and whether it transformed
+		if (clubset->work_shop.can_transform) { // This Clubset can transform into a Special ClubSet
 			Lottery lottery((uint64_t)this);
 
 			lottery.push(250, 0x1000005D);		// Wingtross Evo-Knight Club Set
 			lottery.push(250, 0x1000005E);		// Giga Yard Totem Pole Club Set
 			lottery.push(250, 0x1000005F);		// Duostar Manapikal Club Set
-			lottery.push(750 * 14/*7.14%*/, 0);	// Não Transforma nada
+			lottery.push(750 * 14/*7.14%*/, 0);	// Transforms nothing
 
 			auto lc = lottery.spinRoleta();
 
-			if (lc != nullptr && lc->value != 0) {	// Transformou
+			if (lc != nullptr && lc->value != 0) {	// Transformed
 				auto clubset_original = sIff::getInstance().findClubSetOriginal((uint32_t)lc->value);
 
 				if (clubset_original.empty())
 					throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID = " + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID = " + std::to_string(pClub->_typeid) + ", ID = "
 							+ std::to_string(pClub->id) + "], nao encontrou o Special ClubSet Original no IFF_STRUCT do Server. System Error", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 362, 0x5300363));
 
-				if (clubset_original.size() <= (uint32_t)(rank - 1)/*Por que é do RANK D~S e nao do E~S*/)
+				if (clubset_original.size() <= (uint32_t)(rank - 1)/*Because it is from RANK D~S and not E~S*/)
 					throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID = " + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID = " + std::to_string(pClub->_typeid) + ", ID = "
 							+ std::to_string(pClub->id) + "], nao tem o Rank[value=" + std::to_string(rank) + "] do Special ClubSet Original no IFF_STRUCT do Server. System Error", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 363, 0x5300364));
 
@@ -10667,10 +10667,10 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 					throw exception("[channel::requestClubSetWorkShopUpRank][Error] player[UID = " + std::to_string(_session.m_pi.uid) + "] tentou upar rank do ClubSet[TYPEID = " + std::to_string(pClub->_typeid) + ", ID = "
 							+ std::to_string(pClub->id) + "], nao encontrou o Rank[value=" + std::to_string(rank) + "] no IFF_STRUCT do Server. System Error", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 364, 0x5300365));
 
-				// Não tem o ClubSet Sorteado, Envia para cliente um dialog se ele quer transformar o ClubSet ou não
+				// He does not have the drawn ClubSet, sends the client a dialog asking whether he wants to transform the ClubSet or not
 				if (!_session.m_pi.ownerItem(it->_typeid)) {
 
-					// Att taqueira que ele pode transformar se ele confirmar depois
+					// Updates the club set that he can transform if he confirms later
 					_session.m_pi.cwtc.clubset_id = pClub->id;
 					_session.m_pi.cwtc.stat = stat;
 					_session.m_pi.cwtc.transform_typeid = it->_typeid;
@@ -10679,7 +10679,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 					_smp::message_pool::getInstance().push(new message("[ClubSetWorkshop::UpRank][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] transformou o ClubSet[TYPEID=" 
 								+ std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "] no ClubSet[TYPEID=" + std::to_string(it->_typeid) + "] Special, aguardando confirmacao do cliente.", CL_FILE_LOG_AND_CONSOLE));
 
-					// Dialog de Transformação do ClubSet
+					// ClubSet Transformation Dialog
 					p.init_plain((unsigned short)0x241);
 
 					packet_func::session_send(p, &_session, 1);
@@ -10688,14 +10688,14 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 				}
 			}
 		}
-		// Fim do Check Transform ClubSet
+		// End of Check Transform ClubSet
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[ClubSetWorkshop::UpRank][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] upou Rank[value="
 				+ std::to_string(rank) + "] do ClubSet[TYPEID=" + std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "] Stat[value="
 				+ std::to_string(stat) + "" + ((rank == 5/*Rank S*/) ? std::string(", Rank S bonus=" + std::to_string(clubset->work_shop.rank_s_stat) + "") : std::string("")) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para o ClubSet Workshop Up Rank
+		// Response to ClubSet Workshop Up Rank
 		p.init_plain((unsigned short)0x240);
 
 		p.addUint32(0);	// OK
@@ -10707,7 +10707,7 @@ void channel::requestClubSetWorkShopUpRank(player& _session, packet *_packet) {
 		// Update Achievement ON SERVER, DB and GAME
 		SysAchievement sys_achieve;
 
-		// Add +1 ao contado do Up Rank S ClubSet
+		// Adds +1 to the Up Rank S ClubSet counter
 		if (rank == 5/*Rank S*/)
 			sys_achieve.incrementCounter(0x6C4000A7u/*Up Rank S ClubSet*/);
 
@@ -10734,8 +10734,8 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 
 	try {
 		
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpRankTransformConfirm");
 
 		std::vector< stItem > v_item;
@@ -10761,7 +10761,7 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 					+ std::to_string(_session.m_pi.cwtc.clubset_id) + "] no ClubSet[TYPEID=" + std::to_string(_session.m_pi.cwtc.transform_typeid) + "] Special, mas o ClubSet Special nao existe no IFF_STRUCT do Server. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 452, 0x5300453));
 
-		// ClubSet que se Transformou
+		// ClubSet that Transformed
 		item.clear();
 
 		item.type = 2;
@@ -10770,7 +10770,7 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 		item.qntd = 1;
 		item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;
 
-		// Delete ClubSet que vai ser transformado no ClubSet Special
+		// Deletes the ClubSet that will be transformed into the Special ClubSet
 		if (item_manager::removeItem(item, _session) <= 0)
 			throw exception("[channel::requestClubSetWorkShopUpRankTransformConfirm][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou transformar ClubSet[ID="
 					+ std::to_string(_session.m_pi.cwtc.clubset_id) + "] no ClubSet[TYPEID=" + std::to_string(_session.m_pi.cwtc.transform_typeid) + "] Special, nao conseguiu deletar o ClubSet[TYPEID=" 
@@ -10778,7 +10778,7 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 
 		v_item.push_back(item);
 
-		// ClubSet Transformado
+		// Transformed ClubSet
 		item.clear();
 
 		BuyItem bi{ 0 };
@@ -10787,7 +10787,7 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 		bi._typeid = clubset_transform->_typeid;
 		bi.qntd = 1;
 	
-		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 		if (item._typeid == 0)
 			throw exception("[channel::requestClubSetWorkShopUpRankTransformConfirm][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou transformar ClubSet[ID="
@@ -10804,11 +10804,11 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 		if (rt != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH)
 			v_item.push_back(item);
 
-		// Log, // Usa o clubset->_typeid e _session.m_pi.cwtc.clubset_id por que já excluiu esse ClubSet o "pClub"
+		// Log, // Uses clubset->_typeid and _session.m_pi.cwtc.clubset_id because this ClubSet "pClub" was already deleted
 		_smp::message_pool::getInstance().push(new message("[ClubSetWokShop::UpRankTransformConfirm][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] confirmou a transformacao do ClubSet[TYPEID=" 
 				+ std::to_string(clubset->_typeid) + ", ID=" + std::to_string(_session.m_pi.cwtc.clubset_id) + "] no ClubSet[TYPEID=" + std::to_string(item._typeid) + ", ID=" + std::to_string(item.id) + "] Special", CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -10826,7 +10826,7 @@ void channel::requestClubSetWorkShopUpRankTransformConfirm(player& _session, pac
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o ClubSet Workshop Up Rank Transform Confirm
+		// Response to ClubSet Workshop Up Rank Transform Confirm
 		p.init_plain((unsigned short)0x242);
 
 		p.addUint32(0);	// OK;
@@ -10862,8 +10862,8 @@ void channel::requestClubSetWorkShopUpRankTransformCancel(player& _session, pack
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetWorkShopUpRankTransformCancel");
 
 		auto pClub = _session.m_pi.findWarehouseItemById(_session.m_pi.cwtc.clubset_id);
@@ -10930,8 +10930,8 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 		uint32_t item_typeid = _packet->readUint32();
 		int32_t clubset_id = _packet->readInt32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ClubSetRest");
 
 		if (item_typeid != 0x1A00024B/*Hard*/ && item_typeid != 0x1A000247/*Soft*/)
@@ -10976,7 +10976,7 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 					+ std::to_string(clubset_id) + "], mas nao encontrou o Rank Up Exp[tipo=" + std::to_string(clubset->work_shop.tipo_rank_s) + "] no IFF_STRUCT do Server. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 504, 0x5300505));
 
-		// Item reset ClubSet
+		// ClubSet reset Item
 		item.clear();
 
 		item.type = 2;
@@ -10994,15 +10994,15 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 		uint32_t mastery = 0u;
 		uint64_t pang = 0u;
 
-		if (item_typeid == 0x1A00024B) {	// Hard Reset devolve 50% do Pang e Mastery gasto no ClubSet
+		if (item_typeid == 0x1A00024B) {	// Hard Reset returns 50% of the Pang and Mastery spent on the ClubSet
 
 			IFF::Enchant *enchant = nullptr;
 
-			// Soma Todo Mastery Gasto no ClubSet
+			// Sums All Mastery Spent on the ClubSet
 			for (auto i = rank_base + 1; i <= rank; ++i)
 				mastery += rank_up_exp->rank[i];
 
-			// Soma Todo Pang Gasto no ClubSet
+			// Sums All Pang Spent on the ClubSet
 			for (auto i = 0u; i < (sizeof(pClub->c) / sizeof(pClub->c[0])); ++i) {
 				for (auto j = 0u; j < (uint32_t)pClub->c[i]; ++j) {
 					if ((enchant = sIff::getInstance().findEnchant((iff::ENCHANT << 26) | (i << 20) + j)) != nullptr)
@@ -11010,13 +11010,13 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 				}
 			}
 
-			// Metade
+			// Half
 			mastery = (uint32_t)(mastery * 0.5f);
 			pang = (uint64_t)(pang * 0.5f);
 
 			pClub->clubset_workshop.mastery += mastery;
 
-			// Só atualiza os pangs se for maior que zero
+			// Only updates the pangs if greater than zero
 			if (pang > 0ull)
 				_session.m_pi.addPang(pang);
 
@@ -11031,17 +11031,17 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 
 		// UPDATE ON SERVER
 
-		// Reseta ClubSet Workshop Stats
+		// Resets ClubSet Workshop Stats
 		memset(pClub->clubset_workshop.c, 0, sizeof(pClub->clubset_workshop.c));
 
 		pClub->clubset_workshop.level = 0;
 		pClub->clubset_workshop.rank = 0;
 		pClub->clubset_workshop.recovery_pts = 0;
 
-		// Reseta ClubSet Stats
+		// Resets ClubSet Stats
 		memset(pClub->c, 0, sizeof(pClub->c));
 
-		// Atualiza o stats do ClubSet Workshop
+		// Updates the ClubSet Workshop stats
 		item.clear();
 
 		item.type = 0xCC;
@@ -11059,7 +11059,7 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 
 		v_item.push_back(item);
 
-		// Atualiza os stats do ClubSet
+		// Updates the ClubSet stats
 		item.type = 0xC9;
 #if defined(_WIN32)
 		memcpy_s(item.c, sizeof(item.c), pClub->c, sizeof(item.c));
@@ -11082,7 +11082,7 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 				+ std::to_string(pClub->_typeid) + ", ID=" + std::to_string(pClub->id) + "] " 
 				+ (item_typeid == 0x1A00024B ? std::string("Hard[Pang=" + std::to_string(pang) + ", Mastery=" + std::to_string(mastery) + "] Item") : std::string("Soft Item")), CL_FILE_LOG_AND_CONSOLE));
 
-		// UPDATE ON JOGO
+		// UPDATE ON GAME
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -11103,7 +11103,7 @@ void channel::requestClubSetReset(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o ClubSet Reset
+		// Response to ClubSet Reset
 		p.init_plain((unsigned short)0x247);
 
 		p.addUint32(0);	// OK
@@ -11140,7 +11140,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 			unsigned short usTipo;
 			struct {
 				unsigned char finish;	// 0 normal tutorial, 1 Finish Tutorial
-				unsigned char tipo;		// 0 Rookie, 1 Beginner, 2 Advancer(ACHO) 
+				unsigned char tipo;		// 0 Rookie, 1 Beginner, 2 Advancer(I THINK) 
 			}stTipo;
 		}uTipo;
 		union u2 {
@@ -11206,8 +11206,8 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&rmt, sizeof(RequestMakeTutorial));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("MakeTutorial");
 
 		switch (rmt.uTipo.stTipo.tipo) {
@@ -11218,26 +11218,26 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 						+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele ja concluiu esse tutorial. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 550, 0x5300551));
 
 			if (rmt.uValor.stValor.rookie.st8bit._bit2 || rmt.uValor.stValor.rookie.st8bit._bit3) {
-				if (_session.m_pi.TutoInfo.rookie < 3)	// Error não concluiu os outros tutoriais para liberar esse
+				if (_session.m_pi.TutoInfo.rookie < 3)	// Error did not complete the other tutorials to unlock this one
 					throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 							+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu os outros tutoriais para poder completar o Rookie. Hacker ou Bug", 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 553, 0x5300554));
 			}else if (rmt.uValor.stValor.rookie.st8bit._bit4) {
-				if ((_session.m_pi.TutoInfo.rookie & 7) <= 3)	// Error não concluiu os outros tutoriais para liberar esse
+				if ((_session.m_pi.TutoInfo.rookie & 7) <= 3)	// Error did not complete the other tutorials to unlock this one
 					throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 							+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu os outros tutoriais para poder completar o Rookie. Hacker ou Bug", 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 553, 0x5300554));
 			}else if (rmt.uValor.stValor.rookie.st8bit._bit6) {
-				if ((_session.m_pi.TutoInfo.rookie & 11) <= 3)	// Error não concluiu os outros tutoriais para liberar esse
+				if ((_session.m_pi.TutoInfo.rookie & 11) <= 3)	// Error did not complete the other tutorials to unlock this one
 					throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 							+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu os outros tutoriais para poder completar o Rookie. Hacker ou Bug", 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 553, 0x5300554));
 			}else if (rmt.uValor.stValor.rookie.st8bit._bit5) {
-				if ((_session.m_pi.TutoInfo.rookie & 15) <= 3)	// Error não concluiu os outros tutoriais para liberar esse
+				if ((_session.m_pi.TutoInfo.rookie & 15) <= 3)	// Error did not complete the other tutorials to unlock this one
 					throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 							+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu os outros tutoriais para poder completar o Rookie. Hacker ou Bug", 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 553, 0x5300554));
-			}else if (((rmt.uValor.stValor.rookie.ucbyte - 1) & _session.m_pi.TutoInfo.rookie) != (rmt.uValor.stValor.rookie.ucbyte -1)) // Error não concluiu os outros tutoriais para liberar esse
+			}else if (((rmt.uValor.stValor.rookie.ucbyte - 1) & _session.m_pi.TutoInfo.rookie) != (rmt.uValor.stValor.rookie.ucbyte -1)) // Error did not complete the other tutorials to unlock this one
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 						+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu os outros tutoriais para poder completar o Rookie. Hacker ou Bug", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 553, 0x5300554));
@@ -11250,7 +11250,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				item._typeid = 0x1A000002;
 				item.qntd = item.STDA_C_ITEM_QNTD = 10;
 				break;
-			case 2:	// Tranquilizande de Cookies
+			case 2:	// Cookie Tranquilizer
 				item._typeid = 0x1800000B;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
@@ -11258,11 +11258,11 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				item._typeid = 0x18000025;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
-			case 4: // Olho Magico
+			case 4: // Magic Eye
 				item._typeid = 0x18000005;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
-			case 5:	// Açai
+			case 5:	// Acai
 				item._typeid = 0x18000004;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
@@ -11270,7 +11270,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				item._typeid = 0x1800000A;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
-			case 7:	// Spin Mastery(Guaraná)
+			case 7:	// Spin Mastery(Guarana)
 				item._typeid = 0x18000000;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
@@ -11286,12 +11286,12 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 			msg = "NICE TUTORIAL ROOKIE CLEAR";
 
-			// Send Item para mailbox do player que concluiu o Tutorial
+			// Send Item to the mailbox of the player who completed the Tutorial
 			MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item);
 
 			_smp::message_pool::getInstance().push(new message("[Tutorial][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Concluiu Tutorial Rookie", CL_FILE_LOG_AND_CONSOLE));
 
-			// Concluiu o Tutorial Rookie
+			// Completed the Rookie Tutorial
 			if (_session.m_pi.TutoInfo.rookie & 0xFF && rmt.uTipo.stTipo.finish) {
 
 				std::vector< stItem > v_item;
@@ -11316,7 +11316,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 				msg = "NICE ALL TUTORIAL ROOKIE CLEAR";
 
-				// Send Item para mailbox do player que concluiu todos os Tutoriais Rookie
+				// Send Item to the mailbox of the player who completed all Rookie Tutorials
 				MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, v_item);
 
 				// UPDATE ON DB
@@ -11332,7 +11332,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 						+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele ja concluiu esse tutorial. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 550, 0x5300551));
 
-			// Check Rookie Concluido
+			// Check Rookie Completed
 			if (_session.m_pi.TutoInfo.rookie && 0xFF != 0xFF)
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 						+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu o tutorial rookie. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 554, 0x5300555));
@@ -11366,7 +11366,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				item._typeid = 0x18000028;
 				item.qntd = item.STDA_C_ITEM_QNTD = 1;
 				break;
-			case 3:	// Corta vento
+			case 3:	// Wind Cutter
 				item._typeid = 0x18000006;
 				item.qntd = item.STDA_C_ITEM_QNTD = 1;
 				break;
@@ -11374,7 +11374,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 				item._typeid = 0x1800000A;
 				item.qntd = item.STDA_C_ITEM_QNTD = 3;
 				break;
-			case 5: // Spin Mastery(Guaraná)
+			case 5: // Spin Mastery(Guarana)
 				item._typeid = 0x18000000;
 				item.qntd = item.STDA_C_ITEM_QNTD = 4;
 				break;
@@ -11392,12 +11392,12 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 			msg = "NICE TUTORIAL BEGINNER CLEAR";
 
-			// Send Item para mailbox do player que concluiu o Tutorial
+			// Send Item to the mailbox of the player who completed the Tutorial
 			MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item);
 
 			_smp::message_pool::getInstance().push(new message("[Tutorial][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Concluiu Tutorial Beginner", CL_FILE_LOG_AND_CONSOLE));
 
-			// Concluiu o Tutorial Beginner
+			// Completed the Beginner Tutorial
 			if (_session.m_pi.TutoInfo.beginner == (0x3F << 8)) {
 
 				std::vector< stItem > v_item;
@@ -11422,7 +11422,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 				msg = "NICE ALL TUTORIAL BEGINNER CLEAR";
 
-				// Send Item para mailbox do player que concluiu todos os Tutoriais Beginner
+				// Send Item to the mailbox of the player who completed all Beginner Tutorials
 				MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, v_item);
 
 				// UPDATE ON DB
@@ -11432,18 +11432,18 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 			}
 			break;
 		}
-		case 2: // Advancer(ACHO)
+		case 2: // Advancer(I THINK)
 		{
-			if (rmt.uTipo.stTipo.tipo == 2/*Advancer(ACHO)*/ && _session.m_pi.TutoInfo.advancer & rmt.uValor.stValor.advancer.ucbyte)
+			if (rmt.uTipo.stTipo.tipo == 2/*Advancer(I THINK)*/ && _session.m_pi.TutoInfo.advancer & rmt.uValor.stValor.advancer.ucbyte)
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 					+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele ja concluiu esse tutorial. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 550, 0x5300551));
 
-			// Check Rookie Concluido
+			// Check Rookie Completed
 			if (_session.m_pi.TutoInfo.rookie && 0xFF != 0xFF)
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 					+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu o tutorial rookie. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 554, 0x5300555));
 
-			// Check Beginner Concluido
+			// Check Beginner Completed
 			if (_session.m_pi.TutoInfo.beginner && 0x3F != 0x3F)
 				throw exception("[channel::requestMakeTutorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fazer tutorial[tipo="
 						+ std::to_string(rmt.uTipo.stTipo.tipo) + ", value=" + std::to_string(rmt.uValor.ulValor) + "], mas ele nao concluiu o tutorial Beginner. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 554, 0x5300555));
@@ -11475,22 +11475,22 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 			msg = "NICE TUTORIAL ADVANCER CLEAR";
 
-			// Send Item para mailbox do player que concluiu o Tutorial
+			// Send Item to the mailbox of the player who completed the Tutorial
 			MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item);
 
 			_smp::message_pool::getInstance().push(new message("[Tutorial][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Concluiu Tutorial Advancer", CL_FILE_LOG_AND_CONSOLE));
 
-			// Concluiu o Tutorial Advancer (ACHO)
+			// Completed the Advancer Tutorial (I THINK)
 			if (_session.m_pi.TutoInfo.advancer == (0x7 << 16) && rmt.uTipo.stTipo.finish) {
 
-				// Esse não tem estou deixando por questão de quando eu implementar ou só para ter mesmo
+				// This one has none, I am leaving it in case I implement it or just to have it
 				std::vector< stItem > v_item;
 
 				item.clear();
 
 				item.type = 2;
 				item.id = -1;
-				item._typeid = 0x18000000;	// Spin Mastery(Guaraná)
+				item._typeid = 0x18000000;	// Spin Mastery(Guarana)
 				item.qntd = item.STDA_C_ITEM_QNTD = 1;
 
 				v_item.push_back(item);
@@ -11506,7 +11506,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 				msg = "NICE ALL TUTORIAL ADVANCER CLEAR";
 
-				// Send Item para mailbox do player que concluiu todos os Tutoriais Advancer
+				// Send Item to the mailbox of the player who completed all Advancer Tutorials
 				MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, v_item);
 
 				// UPDATE ON DB
@@ -11524,18 +11524,18 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 		// UPDATE ON DB
 		snmdb::NormalManagerDB::getInstance().add(13, new CmdUpdateTutorial(_session.m_pi.uid, _session.m_pi.TutoInfo), channel::SQLDBResponse, this);
 
-		// UPDATE ON JOGO
-		// Resposta do Make Tutorial
+		// UPDATE ON GAME
+		// Make Tutorial response
 		p.init_plain((unsigned short)0x11F);
 
-		p.addUint8(rmt.uTipo.stTipo.tipo);	// 0 Rookie, 1 Beginner, 2 Advancer(ACHO), 3 Init Todos
-		p.addUint8(1);	// Finish Tutorial Normal ou O Tipo
+		p.addUint8(rmt.uTipo.stTipo.tipo);	// 0 Rookie, 1 Beginner, 2 Advancer(I THINK), 3 Init All
+		p.addUint8(1);	// Finish Tutorial Normal or The Type
 
 		if (rmt.uTipo.stTipo.tipo == 0/*Rookie*/)
 			p.addUint32(_session.m_pi.TutoInfo.rookie);
 		else if (rmt.uTipo.stTipo.tipo == 1/*Beginner*/)
 			p.addUint32(_session.m_pi.TutoInfo.beginner);
-		else if (rmt.uTipo.stTipo.tipo == 2/*Advancer(ACHO)*/)
+		else if (rmt.uTipo.stTipo.tipo == 2/*Advancer(I THINK)*/)
 			p.addUint32(_session.m_pi.TutoInfo.advancer);
 
 		packet_func::session_send(p, &_session, 1);
@@ -11544,7 +11544,7 @@ void channel::requestMakeTutorial(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestMakeTutorial][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Tenho que achar outro pacote que só envie erro para o cliente, esse pacote é de inicializar os info do player
+		// I have to find another packet that only sends an error to the client, this packet is for initializing the player info
 		p.init_plain((unsigned short)0x44);
 
 		p.addUint8(0xE2);	// Error
@@ -11559,11 +11559,11 @@ void channel::requestEnterWebLinkState(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterWebLinkState");
 		
-		// Att Lugar que o player está, ele está vendo weblink
+		// Update Place where the player is, he is viewing weblink
 		_session.m_pi.place = _packet->readUint8();
 
 	}catch (exception& e) {
@@ -11579,13 +11579,13 @@ void channel::requestCookie(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("Cookie");
 
-		// Sempre atualiza o Cookie do server com o valor que está no banco de dados
+		// Always updates the server Cookie with the value in the database
 
-		// Update cookie do server com o que está no banco de dados
+		// Updates the server cookie with what is in the database
 		_session.m_pi.updateCookie();
 		
 		// Update ON GAME
@@ -11595,8 +11595,8 @@ void channel::requestCookie(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Vou colocar aqui para atualizar os Grand Zodiac Pontos por que quando eu fazer o evento o Grand Zodiac ele vai consumir os pontos na página web, 
-		// aí vou atualizar aqui com o do banco de dados
+		// I will put this here to update the Grand Zodiac Points because when I make the Grand Zodiac event it will consume the points on the web page, 
+		// then I will update here with the one from the database
 		CmdGrandZodiacPontos cmd_gzp(_session.m_pi.uid, CmdGrandZodiacPontos::eCMD_GRAND_ZODIAC_TYPE::CGZT_GET, true);
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_gzp, nullptr, nullptr);
@@ -11621,8 +11621,8 @@ void channel::requestUpdateGachaCoupon(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UpdateGachaCoupon");
 
 		CmdCouponGacha cmd_cg(_session.m_pi.uid, true);	// Waiter
@@ -11636,7 +11636,7 @@ void channel::requestUpdateGachaCoupon(player& _session, packet *_packet) {
 
 		_session.m_pi.cg = cmd_cg.getCouponGacha();
 
-		// Update no Warehouse Item
+		// Update in Warehouse Item
 		unsigned char find_ticket_and_sub = 0;
 
 		for (auto& el : _session.m_pi.mp_wi) {
@@ -11664,7 +11664,7 @@ void channel::requestUpdateGachaCoupon(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestUpdateGachaCoupon][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Error envia o dizendo que deu erro no sistema
+		// Error sends saying that a system error occurred
 		p.init_plain((unsigned short)0x44);
 
 		p.addUint8(0xE2);
@@ -11688,8 +11688,8 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 		uint32_t box_typeid = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenBoxMail");
 
 		if (box_typeid == 0)
@@ -11734,9 +11734,9 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 		switch (pWi->_typeid) {
 		case SPINNING_CUBE_TYPEID:
 		{
-			// Openned Spinning Cube, Ele ganha por abrir o spinning cube, e chave que gasta uma para abrir o spinning cube
+			// Opened Spinning Cube, he gets it by opening the spinning cube, and key, one of which is spent to open the spinning cube
 
-			// Key para abrir Spinning Cube
+			// Key to open Spinning Cube
 			auto key = _session.m_pi.findWarehouseItemByTypeid(KEY_OF_SPINNING_CUBE_TYPEID);
 
 			if (key == nullptr)
@@ -11748,14 +11748,14 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas ele nao tem quantidade suficiante[value=" 
 						+ std::to_string(key->STDA_C_ITEM_QNTD) + ", request=1] de chave para abrir Spinning Cube. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x6300108));
 
-			// Sortea
+			// Draw
 			ctx_bi = sBoxSystem::getInstance().drawBox(_session, *box);
 
 			if (ctx_bi == nullptr)
 				throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu sortear um Spinning Cube Item. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 9, 0x6300109));
 
-			// Deleta Spinning Cube
+			// Deletes Spinning Cube
 			item.clear();
 
 			item.type = 2;
@@ -11770,7 +11770,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			v_item.push_back(item);
 
-			// [Key] tira uma chave
+			// [Key] removes one key
 			item.clear();
 
 			item.type = 2;
@@ -11786,7 +11786,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			v_item.push_back(item);
 
-			// [Opened Spinning Cube] add um spinning cube aberto
+			// [Opened Spinning Cube] adds one opened spinning cube
 			if (box->opened_typeid > 0) {
 				
 				item.clear();
@@ -11823,36 +11823,36 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			}
 
-			// Init Item Ganho
+			// Init Item Won
 			item.clear();
 
 			item.type = 2;
 			item.id = -1;
 			item._typeid = ctx_bi->_typeid;
 
-			// Check se é Mascot, para colocar por dia o tempo que é a quantidade
+			// Check whether it is a Mascot, to set the quantity as the time in days
 			if (sIff::getInstance().getItemGroupIdentify(ctx_bi->_typeid) == iff::MASCOT && (mascot = sIff::getInstance().findMascot(ctx_bi->_typeid)) != nullptr
 				&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {
 				item.qntd = 1;
-				item.flag_time = 4;	// Flag Dias
-				item.STDA_C_ITEM_QNTD = 1;	// qntd 1 por que é só 1 mascot com tempo
+				item.flag_time = 4;	// Days Flag
+				item.STDA_C_ITEM_QNTD = 1;	// qty 1 because it is only 1 timed mascot
 				item.STDA_C_ITEM_TIME = (short)ctx_bi->qntd;
 			}else {
 				item.qntd = ctx_bi->qntd;
 				item.STDA_C_ITEM_QNTD = (short)item.qntd;
 			}
 
-			// Coloca Item ganho no Mail do player
+			// Puts the won Item in the player's Mail
 			if (MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item) <= 0)
 				throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu colocar o item ganho no mailbox do player. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 13, 0x6300113));
 
-			// Verifica se é um super raro para mandar broadcast que ganhou o item
+			// Checks whether it is a super rare to broadcast that the item was won
 			if (ctx_bi->raridade == BOX_TYPE_RARETY::R_SUPER_RARE) {
 				_smp::message_pool::getInstance().push(new message("[BoxSystem::SpinningCube][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Spinning Cube[TYPEID=" + std::to_string(pWi->_typeid) + "] ganhou super raro[TYPEID="
 						+ std::to_string(ctx_bi->_typeid) + ", QNTD=" + std::to_string(ctx_bi->qntd) + "] no spinning cube.", CL_FILE_LOG_AND_CONSOLE));
 
-				// DB envia comando de broadcast de Spinning Cube Win Super Rare
+				// DB sends the Spinning Cube Win Super Rare broadcast command
 				std::string msg = "<PARAMS><BOX_TYPEID>" + std::to_string(box->_typeid) + "</BOX_TYPEID><NICKNAME>" + std::string(_session.m_pi.nickname) + "</NICKNAME><TYPEID>" 
 						+ std::to_string(ctx_bi->_typeid) + "</TYPEID><QTY>" + std::to_string(ctx_bi->qntd) + "</QTY></PARAMS>";
 
@@ -11889,7 +11889,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// atualiza moedas em jogo
+			// updates coins in game
 			p.init_plain((unsigned short)0xAA);
 
 			p.addUint16(0);	// count;
@@ -11899,7 +11899,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta do Abrir Cube
+			// Open Cube response
 			p.init_plain((unsigned short)0x19D);
 
 			p.addUint32(0);	// OK
@@ -11915,10 +11915,10 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			break;
 		}
-		case PAPEL_BOX_TYPEID:	// Esse add as 30 Key que ganha quando abre a papel box, no pacoteAA
+		case PAPEL_BOX_TYPEID:	// This one adds the 30 Keys received when opening the papel box, in packetAA
 		{
 
-			// Sortea
+			// Draw
 			ctx_bi = sBoxSystem::getInstance().drawBox(_session, *box);
 
 			if (ctx_bi == nullptr)
@@ -11958,7 +11958,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], nao conseguiu adicionar Key[TYPEID=" 
 						+ std::to_string(KEY_OF_SPINNING_CUBE_TYPEID) + ", DESC=Spinning Cube]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 14, 0x6300114));
 
-			// [Opened Box] add um Papel Box aberto se tiver
+			// [Opened Box] adds an opened Papel Box if any
 			if (box->opened_typeid > 0) {
 				
 				item.clear();
@@ -11995,26 +11995,26 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			}
 
-			// Init Item Ganho
+			// Init Item Won
 			item.clear();
 
 			item.type = 2;
 			item.id = -1;
 			item._typeid = ctx_bi->_typeid;
 
-			// Check se é Mascot, para colocar por dia o tempo que é a quantidade
+			// Check whether it is a Mascot, to set the quantity as the time in days
 			if (sIff::getInstance().getItemGroupIdentify(ctx_bi->_typeid) == iff::MASCOT && (mascot = sIff::getInstance().findMascot(ctx_bi->_typeid)) != nullptr
 				&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {
 				item.qntd = 1;
-				item.flag_time = 4;	// Flag Dias
-				item.STDA_C_ITEM_QNTD = 1;	// qntd 1 por que é só 1 mascot com tempo
+				item.flag_time = 4;	// Days Flag
+				item.STDA_C_ITEM_QNTD = 1;	// qty 1 because it is only 1 timed mascot
 				item.STDA_C_ITEM_TIME = (short)ctx_bi->qntd;
 			}else {
 				item.qntd = ctx_bi->qntd;
 				item.STDA_C_ITEM_QNTD = (short)item.qntd;
 			}
 
-			// Coloca Item ganho no Mail do player
+			// Puts the won Item in the player's Mail
 			if (MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item) <= 0)
 				throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu colocar o item ganho no mailbox do player. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 13, 0x6300113));
@@ -12036,7 +12036,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// atualiza moedas em jogo e Key que ganha 30 quando abre papel box
+			// updates coins in game and the 30 Keys received when opening the papel box
 			p.init_plain((unsigned short)0xAA);
 
 			p.addUint16(1);	// count;
@@ -12054,7 +12054,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta do Abrir Papel Box
+			// Open Papel Box response
 			p.init_plain((unsigned short)0x19D);
 
 			p.addUint32(0);	// OK
@@ -12067,9 +12067,9 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			break;
 		}
-		default:	// Todas as outras box
+		default:	// All the other boxes
 		{
-			// Sortea
+			// Draw
 			ctx_bi = sBoxSystem::getInstance().drawBox(_session, *box);
 
 			if (ctx_bi == nullptr)
@@ -12091,7 +12091,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			v_item.push_back(item);
 
-			// [Opened Box] add um Box aberto
+			// [Opened Box] adds an opened Box
 			if (box->opened_typeid > 0) {
 				
 				item.clear();
@@ -12128,26 +12128,26 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			}
 
-			// Init Item Ganho
+			// Init Item Won
 			item.clear();
 
 			item.type = 2;
 			item.id = -1;
 			item._typeid = ctx_bi->_typeid;
 			
-			// Check se é Mascot, para colocar por dia o tempo que é a quantidade
+			// Check whether it is a Mascot, to set the quantity as the time in days
 			if (sIff::getInstance().getItemGroupIdentify(ctx_bi->_typeid) == iff::MASCOT && (mascot = sIff::getInstance().findMascot(ctx_bi->_typeid)) != nullptr
 				&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {
 				item.qntd = 1;
-				item.flag_time = 4;	// Flag Dias
-				item.STDA_C_ITEM_QNTD = 1;	// qntd 1 por que é só 1 mascot com tempo
+				item.flag_time = 4;	// Days Flag
+				item.STDA_C_ITEM_QNTD = 1;	// qty 1 because it is only 1 timed mascot
 				item.STDA_C_ITEM_TIME = (short)ctx_bi->qntd;
 			}else {
 				item.qntd = ctx_bi->qntd;
 				item.STDA_C_ITEM_QNTD = (short)item.qntd;
 			}
 
-			// Coloca Item ganho no Mail do player
+			// Puts the won Item in the player's Mail
 			if (MailBoxManager::sendMessageWithItem(0, _session.m_pi.uid, msg, item) <= 0)
 				throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 						+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu colocar o item ganho no mailbox do player. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 13, 0x6300113));
@@ -12169,7 +12169,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// atualiza moedas em jogo
+			// updates coins in game
 			p.init_plain((unsigned short)0xAA);
 
 			p.addUint16(0);	// count;
@@ -12179,7 +12179,7 @@ void channel::requestOpenBoxMail(player& _session, packet *_packet) {
 
 			packet_func::session_send(p, &_session, 1);
 
-			// Resposta do Abrir Box Mail
+			// Open Box Mail response
 			p.init_plain((unsigned short)0x19D);
 
 			p.addUint32(0);	// OK
@@ -12217,8 +12217,8 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenBoxMyRoom");
 
 		if (!sBoxSystem::getInstance().isLoad())
@@ -12269,7 +12269,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 			throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 					+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu sortear um Box Item. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 9, 0x6300209));
 
-		// Init Item Ganho
+		// Init Item Won
 		BuyItem bi{ 0 };
 		IFF::Mascot *mascot = nullptr;
 
@@ -12278,7 +12278,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 		bi.id = -1;
 		bi._typeid = ctx_bi->_typeid;
 			
-		// Check se é Mascot, para colocar por dia o tempo que é a quantidade
+		// Check whether it is a Mascot, to set the quantity as the time in days
 		if (sIff::getInstance().getItemGroupIdentify(ctx_bi->_typeid) == iff::MASCOT && (mascot = sIff::getInstance().findMascot(ctx_bi->_typeid)) != nullptr
 			&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {
 			bi.qntd = 1;
@@ -12292,15 +12292,15 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 			throw exception("[channel::requestOpenBoxMail][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Box[TYPEID="
 					+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "], mas nao conseguiu inicializar o Item[TYPEID=" + std::to_string(bi._typeid) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 11, 0x6300211));
 
-		// Verifica se já possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
+		// Checks whether he already owns the item; the caddie item checks whether he has the caddie first and then whether he has the caddie item
 		if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(item._typeid)) {
 			if (item_manager::isSetItem(item._typeid)) {
-				auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Não verifica o Level*/);
+				auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Does not check the Level*/);
 
 				if (!v_stItem.empty()) {
-					// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-					// Só add eles ao vector de venda
-					// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+					// Already checked above whether he has the set items, so no need to check again here
+					// Just add them to the sale vector
+					// Checks whether he can have more than 1 item and, if not, whether he does not have the item
 					for (auto& el : v_stItem)
 						if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 							v_item.push_back(el);
@@ -12334,7 +12334,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 
 		std::string str = "";
 
-		// Coloca Item ganho no My Room do player
+		// Puts the won Item in the player's My Room
 		auto rai = item_manager::addItem(v_item, _session, 0, 0);
 		
 		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH) {
@@ -12372,7 +12372,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 
 		// UPDATE ON GAME
 
-		// atualiza moedas e item(ns) em jogo
+		// updates coins and item(s) in game
 		for (auto& el : v_item) {
 			p.init_plain((unsigned short)0xAA);
 
@@ -12392,7 +12392,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 			packet_func::session_send(p, &_session, 1);
 		}
 
-		// Resposta do Abrir Box My Room
+		// Open Box My Room response
 		p.init_plain((unsigned short)0x129);
 
 		p.addUint8(0);	// OK
@@ -12406,7 +12406,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 			p.addUint32(el._typeid);
 			p.addInt32(el.id);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(8);	// Não sei o que é esses 8 Bytes ainda
+			p.addZeroByte(8);	// I still do not know what these 8 Bytes are
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -12419,7 +12419,7 @@ void channel::requestOpenBoxMyRoom(player& _session, packet *_packet) {
 
 		p.addUint8(1);	// Error
 
-		p.addZeroByte(12);	// Box Typeid, Box Qntd e count de itens
+		p.addZeroByte(12);	// Box Typeid, Box Qty and item count
 
 		packet_func::session_send(p, &_session, 1);
 	}
@@ -12432,8 +12432,8 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayMemorial");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.memorial_shop)
@@ -12475,7 +12475,7 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 			throw exception("[channel::requestPlayMemorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar Memorial com a coin[TYPEID="
 					+ std::to_string(coin_typeid) + "], mas nao tem essa coin no Memorial System do Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 5, 0x6300305));
 
-		// Achievement add + 1 ao contador de Play Coin no memorial shop
+		// Achievement adds +1 to the Play Coin counter in the memorial shop
 		if (c->tipo == MEMORIAL_COIN_TYPE::MCT_NORMAL)
 			sys_achieve.incrementCounter(0x6C4000B2u/*Normal Coin*/);
 		else if (c->tipo == MEMORIAL_COIN_TYPE::MCT_SPECIAL)
@@ -12490,7 +12490,7 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 		std::vector< stItem > v_item;
 		stItem item{ 0 };
 
-		// Init Item Ganho
+		// Init Item Won
 		BuyItem bi{ 0 };
 		IFF::Mascot *mascot = nullptr;
 
@@ -12501,9 +12501,9 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 			bi.id = -1;
 			bi._typeid = el._typeid;
 			
-			// Check se é Mascot, para colocar por dia o tempo que é a quantidade
+			// Check whether it is a Mascot, to set the quantity as the time in days
 			if (sIff::getInstance().getItemGroupIdentify(el._typeid) == iff::MASCOT && (mascot = sIff::getInstance().findMascot(el._typeid)) != nullptr
-				&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {	// é Mascot por Tempo
+				&& mascot->shop.flag_shop.time_shop.dia > 0 && mascot->shop.flag_shop.time_shop.active) {	// is a timed Mascot
 				bi.qntd = 1;
 				bi.time = (unsigned short)el.qntd;
 			}else
@@ -12515,15 +12515,15 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 				throw exception("[channel::requestPlayMemorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar Memorial com a coin[TYPEID="
 						+ std::to_string(coin_typeid) + "], mas nao conseguiu inicializar o Item[TYPEID=" + std::to_string(bi._typeid) + "]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 7, 0x6300307));
 
-			// Verifica se já possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
+			// Checks whether he already owns the item; the caddie item checks whether he has the caddie first and then whether he has the caddie item
 			if ((sIff::getInstance().IsCanOverlapped(item._typeid) && sIff::getInstance().getItemGroupIdentify(item._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(item._typeid)) {
 				if (item_manager::isSetItem(item._typeid)) {
-					auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Não verifica o Level*/);
+					auto v_stItem = item_manager::getItemOfSetItem(_session, item._typeid, false, 1/*Does not check the Level*/);
 
 					if (!v_stItem.empty()) {
-						// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-						// Só add eles ao vector de venda
-						// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+						// Already checked above whether he has the set items, so no need to check again here
+						// Just add them to the sale vector
+						// Checks whether he can have more than 1 item and, if not, whether he does not have the item
 						for (auto& el : v_stItem)
 							if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid))
 								v_item.push_back(el);
@@ -12540,7 +12540,7 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 				throw exception("[channel::requestPlayMemorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar Memorial com a coin[TYPEID="
 						+ std::to_string(coin_typeid) + "], mas ele ja tem o Item[TYPEID=" + std::to_string(bi._typeid) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 10, 0x6300310));
 
-			// Achievement add +1 ao contador de item raro que ganhou
+			// Achievement adds +1 to the rare item won counter
 			if (el.tipo > 0 && el.tipo < 3)
 				sys_achieve.incrementCounter(0x6C4000B5u/*Rare Win*/);
 			else if (el.tipo >= 3)
@@ -12562,11 +12562,11 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 			throw exception("[channel::requestPlayMemorial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar Memorial com a coin[TYPEID="
 					+ std::to_string(coin_typeid) + "], mas nao conseguiu deletar Coin. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 11, 0x6300311));
 
-		// Add ao vector depois que add os itens ganho no memorial
+		// Add to the vector after adding the items won in the memorial
 
 		std::string str = "";
 
-		// Coloca Item ganho no My Room do player
+		// Puts the won Item in the player's My Room
 		auto rai = item_manager::addItem(v_item, _session, 0, 0);
 		
 		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH) {
@@ -12594,7 +12594,7 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 			}
 		}
 
-		// Add a Coin agora no Vector de itens
+		// Add the Coin now to the items Vector
 		v_item.push_back(item);
 
 		// DB Register Rare Win Log
@@ -12623,7 +12623,7 @@ void channel::requestPlayMemorial(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta ao Play Memorial
+		// Play Memorial response
 		p.init_plain((unsigned short)0x264);
 
 		p.addUint32(0);	// OK
@@ -12674,8 +12674,8 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 				+ std::to_string(_typeid) + ", ID=" + std::to_string(id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenCardPack");
 
 		if (!sCardSystem::getInstance().isLoad())
@@ -12722,9 +12722,9 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 
 		BuyItem bi{ 0 };
 
-		// Reserva o espaço na memória, por que se for alocar depois dinamicamente na hora do push_back, ele pode realocar memória e mudar o endereço
-		// e perder o endereço que eu utilizei no outro vector para enviar o ganho de cards, para quando for add no db, nao add 2x o msm card, que pode da bug
-		// no async e ele executar o sql do ultimo primeiro ai fica com 1 card a mais do que deveria
+		// Reserves the memory space, because if it is allocated dynamically later at push_back time, it may reallocate memory and change the address
+		// and lose the address I used in the other vector to send the cards won, so that when adding to the db the same card is not added 2x, which can cause a bug
+		// in the async and it executes the last sql first, then ends up with 1 more card than it should
 		v_item_add.reserve(3);
 
 		auto it = v_item_add.end();
@@ -12738,7 +12738,7 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 			bi._typeid = el._typeid;
 			bi.qntd = 1;
 
-			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 			if (item._typeid == 0)
 				throw exception("[channel::requestOpenCardPack][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou abrir Card Pack[TYPEID="
@@ -12746,10 +12746,10 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 
 			it = VECTOR_FIND_ITEM(v_item_add, _typeid, == , item._typeid);
 
-			if (it != v_item_add.end()) {	// Atualiza Qntd do item, por que já tem no vector
+			if (it != v_item_add.end()) {	// Updates the item Qty, because it is already in the vector
 				it->qntd += 1;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd;
-			}else // Add New Item no vector
+			}else // Add New Item to the vector
 				it = v_item_add.insert(v_item_add.end(), item);
 
 #if defined(_WIN32)
@@ -12779,10 +12779,10 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 				break;
 			}
 
-			// Card Tipo, 0x6C40007C Normal, +1 Rare, +2 Super Rare, +3 Secret
+			// Card Type, 0x6C40007C Normal, +1 Rare, +2 Super Rare, +3 Secret
 			sys_achieve.incrementCounter(0x6C40007Cu + el.tipo);
 
-			//if (el.tipo == 3)	// Soma x2 para saber se ele concluí as duas quest com a modificação que eu fiz, de add x1 o contador
+			//if (el.tipo == 3)	// Sums x2 to know whether he completed both quests with the modification I made, of adding x1 to the counter
 				//sys_achieve.incrementCounter(0x6C40007F/*Secret*/);
 		}
 
@@ -12801,7 +12801,7 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 		// Update Achievement
 		sys_achieve.incrementCounter(0x6C400078u/*Card Pack*/);
 
-		// Resposta para o Card System Open Card Pack
+		// Response to Card System Open Card Pack
 		p.init_plain((unsigned short)0x154);
 
 		p.addUint32(0);	// OK
@@ -12844,7 +12844,7 @@ void channel::requestOpenCardPack(player& _session, packet* _packet) {
 
 		p.init_plain((unsigned short)0x154);
 
-		// Alguns valores o cliente não aceita como resposta de error
+		// Some values the client does not accept as an error response
 		//p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x5400100);
 		p.addUint32(1);	// Error
 
@@ -12859,8 +12859,8 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("LoloCardCompose");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.lolo_copound_card)
@@ -12911,7 +12911,7 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 						+ std::to_string(lcc._typeid[2]) + "] no Lolo Card Compose, mas ele nao tem quantidade suficiente do card[TYPEID=" 
 						+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + ", QNTD=" + std::to_string(pCi->qntd) + ", request=1]. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 153, 0x5400154));
 
-			// Verifica se o player está com shop aberto e se está vendendo o item no shop
+			// Checks whether the player has a shop open and is selling the item in the shop
 			//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 
 			if (r != nullptr && r->checkPersonalShopItem(_session, pCi->id))
@@ -12922,7 +12922,7 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 
 			auto it = VECTOR_FIND_ITEM(v_item, id, == , pCi->id);
 
-			if (it != v_item.end() && it->_typeid == pCi->_typeid) {	// Update Qntd, já tem esse item no vector
+			if (it != v_item.end() && it->_typeid == pCi->_typeid) {	// Update Qty, this item is already in the vector
 				it->qntd += 1;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd * -1;
 			}else {
@@ -12953,7 +12953,7 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 					+ std::to_string(lcc._typeid[0]) + ", TYPEID=" + std::to_string(lcc._typeid[1]) + ", TYPEID="
 					+ std::to_string(lcc._typeid[2]) + "] no Lolo Card Compose, mas nao conseguiu sortear um card. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 155, 0x5400156));
 
-		// Remove Cards da fusão
+		// Removes Cards from the fusion
 		if (item_manager::removeItem(v_item, _session) <= 0)
 			throw exception("[channel::requestLoloCardCompose][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fundir card(s)[TYPEID="
 					+ std::to_string(lcc._typeid[0]) + ", TYPEID=" + std::to_string(lcc._typeid[1]) + ", TYPEID="
@@ -12961,7 +12961,7 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 					+ std::to_string(lcc._typeid[0]) + ", TYPEID=" + std::to_string(lcc._typeid[1]) + ", TYPEID="
 					+ std::to_string(lcc._typeid[2]) + "]. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 156, 0x5400157));
 
-		// Add o Card que foi sorteado
+		// Add the Card that was drawn
 		BuyItem bi{ 0 };
 
 		bi.id = -1;
@@ -12970,7 +12970,7 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 
 		item.clear();
 
-		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+		item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 		if (item._typeid == 0)
 			throw exception("[channel::requestLoloCardCompose][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou fundir card(s)[TYPEID="
@@ -12992,10 +12992,10 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 
 		// Update Achievement ON SERVER, DB and GAME
 		
-		// Add o tipo do card que ganho na fusão dos cards, Normal 0x6C40008A + tipo, 0 a 3, Normal = 0, Rare = 1, Super Rare = 2 e Secret = 3
+		// Add the type of the card won in the card fusion, Normal 0x6C40008A + type, 0 to 3, Normal = 0, Rare = 1, Super Rare = 2 and Secret = 3
 		sys_achieve.incrementCounter(0x6C40008Au + card.tipo);
 
-		// Add +1 ao contador de vezes que o player compose card no Lolo Card Compose
+		// Add +1 to the counter of times the player composes a card in Lolo Card Compose
 		sys_achieve.incrementCounter(0x6C400089u/*Lolo Card Compose*/);
 
 		// Log
@@ -13029,10 +13029,10 @@ void channel::requestLoloCardCompose(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Reposta do Lolo Card Compose
+		// Lolo Card Compose response
 		p.init_plain((unsigned short)0x229);
 
-		p.addUint32(card.tipo);		// Card Tipo
+		p.addUint32(card.tipo);		// Card Type
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -13068,8 +13068,8 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 
 		uint32_t card_typeid = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UseCardSpecial");
 
 		SysAchievement sys_achieve;
@@ -13101,7 +13101,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 			throw exception("[channel::requestUseCardSpecial][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar card special[TYPEID="
 					+ std::to_string(card_typeid) + "], tentou usar um card que nao eh espacial. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 353, 0x5500354));
 
-		// Verifica se o player está com shop aberto e se está vendendo o item no shop
+		// Checks whether the player has a shop open and is selling the item in the shop
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 		BEGIN_FIND_ROOM(_session.m_pi.mi.sala_numero);
 
@@ -13120,17 +13120,17 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 		item.qntd = 1;
 		item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;
 
-		// Inicializa Card Equip Info
+		// Initializes Card Equip Info
 		cei.index = -1;
 		cei.id = pCi->id;
 		cei._typeid = pCi->_typeid;
 		cei.efeito = card->efeito.type;
 		cei.efeito_qntd = card->efeito.qntd;
-		cei.parts_typeid = 0;	// Não usa por que é special card
-		cei.parts_id = 0;		// Não usa por que é special card
+		cei.parts_typeid = 0;	// Not used because it is a special card
+		cei.parts_id = 0;		// Not used because it is a special card
 		cei.use_yn = 1;
 		cei.tipo = sIff::getInstance().getItemSubGroupIdentify22(pCi->_typeid);
-		cei.slot = 0;			// Não usa por que é special card
+		cei.slot = 0;			// Not used because it is a special card
 
 		switch (card->efeito.type) {
 		// Use Card Special Effect get here NOW
@@ -13146,7 +13146,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 				throw exception("[channel::requestUseCardSpecial][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar card special[TYPEID="
 						+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + "], mas nao conseguiu deletar o card. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 355, 0x5500356));
 
-			_session.addExp(card->efeito.qntd/*, true/*sim envia os pacotes de att de level e exp para o cliente*/);
+			_session.addExp(card->efeito.qntd/*, true/*yes, sends the level and exp update packets to the client*/);
 
 			_smp::message_pool::getInstance().push(new message("[UseCardSpecial][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] usou card special[TYPEID="
 					+ std::to_string(cei._typeid) + ", ID=" + std::to_string(cei.id) + "] com efeito[TYPE=" + std::to_string(card->efeito.type) + ", QNTD="
@@ -13172,7 +13172,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 					+ std::to_string(card->efeito.qntd) + ", TEMPO=" + std::to_string(card->tempo) + "min]", CL_FILE_LOG_AND_CONSOLE));
 			break;
 		}
-		case 17:	// Pang Value Sorteio
+		case 17:	// Pang Value Draw
 		{
 			if ((int)card->efeito.qntd <= 0)
 				throw exception("[channel::requestUseCardSpecial][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar card special[TYPEID="
@@ -13184,7 +13184,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 				throw exception("[channel::requestUseCardSpecial][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar card special[TYPEID="
 						+ std::to_string(pCi->_typeid) + ", ID=" + std::to_string(pCi->id) + "], mas nao conseguiu deletar o card. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 355, 0x5500356));
 
-			uint64_t pang = 100/*minimo*/ + (sRandomGen::getInstance().rIbeMt19937_64_chrono() % (card->efeito.qntd - 100 + 1));
+			uint64_t pang = 100/*minimum*/ + (sRandomGen::getInstance().rIbeMt19937_64_chrono() % (card->efeito.qntd - 100 + 1));
 
 			_session.addPang(pang);
 
@@ -13209,7 +13209,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 		case 15:	// Pink Wind %
 		case 16:	// Blue Moon %
 		case 18:	// Treasure Hunter %
-		case 19:	// Chuva %
+		case 19:	// Rain %
 		case 20:	// Blue Lagoon %
 		case 21:	// Blue Water %
 		case 22:	// Shinning Send %
@@ -13221,8 +13221,8 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 		case 28:	// Increase Power Gague for Pangya shot
 		case 29:	// Ice Inferno %
 		case 30:	// Wiz City %
-		case 31:	// Se chover, persistir no próximo hole a chuva
-		case 32:	// Efeito de Flor do esquecimento(Mullegen Rose) infinito por tempo(alguns minutos)
+		case 31:	// If it rains, the rain persists into the next hole
+		case 32:	// Forget-me-not Flower effect (Mullegen Rose), infinite for a time (a few minutes)
 		case 33:	// Uknown
 		case 34:	// ClubSet Mastery %
 		{
@@ -13233,9 +13233,9 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 			
 			auto pCei = _session.m_pi.findCardEquipedByTypeid(cei._typeid, 0, 0, sIff::getInstance().getItemSubGroupIdentify22(cei._typeid), card->efeito.type);
 
-			if (pCei != nullptr) {	// já tem um card equipado, aumenta o tempo dele
+			if (pCei != nullptr) {	// already has a card equipped, increases its time
 
-				if (pCei->_typeid != cei._typeid) {	// Mesmo Efeito mas typeid diferente, renova o tempo, e muda o efeito qntd e tempo
+				if (pCei->_typeid != cei._typeid) {	// Same Effect but different typeid, renews the time, and changes the effect qty and time
 					
 					pCei->id = cei.id;
 					pCei->_typeid = cei._typeid;
@@ -13246,7 +13246,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 					GetLocalTime(&pCei->use_date);
 
 					pCei->end_date = UnixToSystemTime(SystemTimeToUnix(pCei->use_date) + (card->tempo * 60/*FROM MINUTES TO SECONDS*/));
-				}else {// É o mesmo só aumenta o tempo
+				}else {// It is the same, just increases the time
 					time_t new_end_date = (GetLocalTimeAsUnix() > SystemTimeToUnix(pCei->end_date)) ? GetLocalTimeAsUnix() : SystemTimeToUnix(pCei->end_date);
 
 					pCei->end_date = UnixToSystemTime((uint32_t)(new_end_date + (card->tempo * 60/*FROM MINUTES TO SECONDS*/)));
@@ -13257,7 +13257,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 
 				cei = *pCei;
 
-			}else {	// Não tem cria um novo e equipa
+			}else {	// Does not have one, creates a new one and equips it
 				// Date of Card Special
 				GetLocalTime(&cei.use_date);
 
@@ -13300,7 +13300,7 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 		// UPDATE ON GAME
 		sys_achieve.incrementCounter(0x6C40009E/*Use Card Special*/);
 
-		// Resposta do Use Card Special
+		// Use Card Special response
 		p.init_plain((unsigned short)0x160);
 
 		p.addUint32(0);	// OK
@@ -13310,10 +13310,10 @@ void channel::requestUseCardSpecial(player& _session, packet *_packet) {
 		p.addUint32(cei.parts_typeid);
 		p.addInt32(cei.parts_id);
 		p.addUint32(cei.slot);
-		p.addUint32(1);		// Acho que seja o active date, como estava no meu antigo
+		p.addUint32(1);		// I think it is the active date, as it was in my old one
 		p.addBuffer(&cei.use_date, sizeof(cei.use_date));
 		p.addBuffer(&cei.end_date, sizeof(cei.end_date));
-		p.addUint16(0);		// Não sei o que é ainda
+		p.addUint16(0);		// I do not know what it is yet
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -13341,8 +13341,8 @@ void channel::requestUseItemBuff(player& _session, packet *_packet) {
 
 		uint32_t item_typeid = _packet->readUint32();	// Item To Use
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Checks whether the session is authorized to execute this action, 
+		// if he has not logged in with the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UseItemBuff");
 
 		stItem item{ 0 };
@@ -13383,23 +13383,23 @@ void channel::requestUseItemBuff(player& _session, packet *_packet) {
 		item.qntd = 1;
 		item.STDA_C_ITEM_QNTD = (short)item.qntd * -1;
 
-		// Initializa Item Buff estrutura
+		// Initializes Item Buff structure
 		ib.index = -1;
 		ib._typeid = pWi->_typeid;
 		ib.tipo = tli->type;
 		ib.percent = tli->percent;
 		ib.use_yn = 1;
 
-		// Remove Item Buff usado
+		// Removes used Item Buff
 		if (item_manager::removeItem(item, _session) <= 0)
 			throw exception("[channel::requestUseItemBuff][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou usar o item[TYPEID="
 					+ std::to_string(item_typeid) + "], mas nao conseguiu deletar  o item. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 405, 0x5500406));
 
 		auto pIb = _session.m_pi.findItemBuff(ib._typeid);
 
-		if (pIb != nullptr) {	// já tem um equipado aumenta o tempo dele
+		if (pIb != nullptr) {	// already has one equipped, increases its time
 			
-			if (pIb->_typeid != ib._typeid) {	// Mesmo Efeito mas typeid diferente, renova o tempo, e muda o efeito qntd e tempo
+			if (pIb->_typeid != ib._typeid) {	// Same Effect but different typeid, renews the time, and changes the effect qty and time
 
 				pIb->tipo = tli->type;
 				pIb->_typeid = ib._typeid;
@@ -13412,7 +13412,7 @@ void channel::requestUseItemBuff(player& _session, packet *_packet) {
 
 				pIb->tempo.setTime((uint32_t)(SystemTimeToUnix(pIb->end_date) - SystemTimeToUnix(pIb->use_date)));	// Make Time in seconds
 
-			}else {	// É o mesmo item só aumenta o tempo
+			}else {	// It is the same item, just increases the time
 
 				time_t new_end_date = (GetLocalTimeAsUnix() > SystemTimeToUnix(pIb->end_date)) ? GetLocalTimeAsUnix() : SystemTimeToUnix(pIb->end_date);
 
@@ -13424,14 +13424,14 @@ void channel::requestUseItemBuff(player& _session, packet *_packet) {
 			// UPDATE ON DB
 			snmdb::NormalManagerDB::getInstance().add(16, new CmdUpdateItemBuff(_session.m_pi.uid, *pIb), channel::SQLDBResponse, this);
 
-			// Passa o Item buff já equipado(atualizado o tempo) para o novo que foi inicializado
+			// Pass the already equipped Item buff (time updated) to the new one that was initialized
 			ib = *pIb;
 
 			// Log
 			_smp::message_pool::getInstance().push(new message("[UseItemBuff][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Atualizou o tempo do Item Buff[TYPEID=" + std::to_string(ib._typeid) + ", TIPO="
 					+ std::to_string(ib.tipo) + ", PERCENT=" + std::to_string(ib.percent) + "] por " + std::to_string(ib.tempo.getTime() / 60/*FROM SECONDS TO MINUTES*/) + "min", CL_FILE_LOG_AND_CONSOLE));
 
-		}else {	// não tem equipado cria um novo
+		}else {	// not equipped, create a new one
 
 			// Date
 			GetLocalTime(&ib.use_date);
@@ -13467,12 +13467,12 @@ void channel::requestUseItemBuff(player& _session, packet *_packet) {
 
 		// UPDATE ON GAME
 
-		// Resposta para o Use Item Buff
+		// Reply to the Use Item Buff
 		p.init_plain((unsigned short)0x181);
 
 		p.addUint32(2);	// OK, add Item Buff
 
-		p.addUint32(1);	// Qntd(Count)
+		p.addUint32(1);	// Qty(Count)
 		p.addUint32(ib._typeid);
 		p.addBuffer(&ib, sizeof(ItemBuff));
 
@@ -13501,11 +13501,11 @@ void channel::requestCometRefill(player& _session, packet *_packet) {
 		uint32_t item_typeid = _packet->readUint32();
 		uint32_t ball_typeid = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CometRefill");
 
-		// Carrega Comet Refill System se ele não estiver carregado
+		// Load the Comet Refill System if it is not loaded
 		if (!sCometRefillSystem::getInstance().isLoad())
 			sCometRefillSystem::getInstance().load();
 
@@ -13546,7 +13546,7 @@ void channel::requestCometRefill(player& _session, packet *_packet) {
 					+ std::to_string(ball_typeid) + ", ID=" + std::to_string(pBall->id) + "] com o Item[TYPEID=" + std::to_string(item_typeid) + ", ID=" 
 					+ std::to_string(pItem->id) + "], mas nao tem o Comet Refill no sistema. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 8, 0x5600100));
 
-		// Sorteia a quantidade do comet refill
+		// Draw the comet refill quantity
 		auto qntd = sCometRefillSystem::getInstance().drawsCometRefill(*ctx_cr);
 
 		// UPDATE ON SERVER
@@ -13586,14 +13586,14 @@ void channel::requestCometRefill(player& _session, packet *_packet) {
 
 		// UPDATE ON GAME
 
-		// Resposta para o Comet Refill
+		// Reply to the Comet Refill
 		p.init_plain((unsigned short)0x197);
 
 		p.addUint8(1);	// OK
 
 		p.addUint32(pItem->_typeid);
 		p.addUint32(pBall->_typeid);
-		p.addUint16(pBall->STDA_C_ITEM_QNTD);	// Pode ser esse também, item.stat.qntd_dep, por que a bola foi a ultima que eu att no server e db
+		p.addUint16(pBall->STDA_C_ITEM_QNTD);	// It could be this one too, item.stat.qntd_dep, because the ball was the last one I updated on the server and db
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -13633,8 +13633,8 @@ void channel::requestOpenMailBox(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[channel::requestOpenMailBox][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "]\tRequest Pagina: " + std::to_string(pagina) + " MailBox", CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenMailBox");
 
 		auto mails = _session.m_pi.m_mail_box.getPage(pagina);
@@ -13665,11 +13665,11 @@ void channel::requestOpenMailBox(player& _session, packet *_packet) {
 					+ "] abriu o MailBox[Pagina=" + std::to_string(pagina) + "] com sucesso.", CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-			// pagina existe, envia ela
+			// page exists, send it
 			packet_func::pacote211(p, &_session, mails, pagina, _session.m_pi.m_mail_box.getTotalPages()/*cmd_mbi.getTotalPage()*/);
 			packet_func::session_send(p, &_session, 1);
 
-		}else { // MailBox Vazio
+		}else { // Empty MailBox
 			packet_func::pacote211(p, &_session, std::vector< MailBox >(), pagina, 1);
 			packet_func::session_send(p, &_session, 1);
 		}
@@ -13699,8 +13699,8 @@ void channel::requestInfoMail(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[channel::requestInfoMail][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "]\tRequest Email Info: " + std::to_string(email_id), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("InfoMail");
 
 		auto email = _session.m_pi.m_mail_box.getEmailInfo(email_id);
@@ -13723,7 +13723,7 @@ void channel::requestInfoMail(player& _session, packet *_packet) {
 		try {
 			item_manager::checkSetItemOnEmail(_session, email);
 		}catch (exception& e) {
-			// Se não for item vector vazio, relança a exception
+			// If it is not an empty item vector, rethrow the exception
 			if (!STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::_ITEM_MANAGER, 20))
 				throw;
 		}
@@ -13767,8 +13767,8 @@ void channel::requestSendMail(player& _session, packet *_packet) {
 		uint64_t pang_price = _packet->readUint64();
 		unsigned char count_item = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("SendMail");
 
 		if (to_msg.empty())
@@ -13829,7 +13829,7 @@ void channel::requestSendMail(player& _session, packet *_packet) {
 							+ std::to_string(aItem[i]._typeid) + ", ID=" + std::to_string(aItem[i].id) + "] para o player[UID=" + std::to_string(to_uid) + "], mas ele nao tem esse item. Bug ou Hacker", 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::PACKET_FUNC_SV, 157, 5100088));
 
-				// Verifica se o player está com shop aberto e se está vendendo o item no shop
+				// Check if the player has a shop open and is selling the item in the shop
 				//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 
 				if (r != nullptr && r->checkPersonalShopItem(_session, aItem[i].id))
@@ -13979,15 +13979,15 @@ void channel::requestTakeItemFomMail(player& _session, packet *_packet) {
 				+ "]\tMove Item from Email to armario: " + std::to_string(email_id), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("TakeItemFromMail");
 
-		// Level temporário do player para quando o player pegar Exp Pouch e 
-		// subir de level atualizar o info dele e se ele estiver na lobby atualizar para todos da lobby o level dele
+		// Temporary player level for when the player picks up an Exp Pouch and 
+		// levels up, update his info and, if he is in the lobby, update his level for everyone in the lobby
 		unsigned short tmp_level = _session.m_pi.level;
 
-		auto ei = _session.m_pi.m_mail_box.getEmailInfo(email_id, false); // Não ler o email
+		auto ei = _session.m_pi.m_mail_box.getEmailInfo(email_id, false); // Do not read the email
 
 		/*CmdEmailInfo cmd_ei(_session.m_pi.uid, email_id, true);	// waitable
 
@@ -14002,8 +14002,8 @@ void channel::requestTakeItemFomMail(player& _session, packet *_packet) {
 		std::vector< stItem > v_item;
 
 		if (!ei.itens.empty()/*!itens.empty()*/) {
-			// trata os itens que pegou do banco de dados antes de add
-			// no warehouse item e depois no banco de dados com async
+			// handle the items taken from the database before adding
+			// to the warehouse item and then to the database with async
 			stItem item = { 0 };
 
 			for (auto i = 0u; i < ei.itens.size(); ++i) {
@@ -14024,22 +14024,22 @@ void channel::requestTakeItemFomMail(player& _session, packet *_packet) {
 					return;
 				}
 
-				// Verifica se já possui o item, o caddie item verifica se tem o caddie para depois verificar se tem o caddie item
-				if ((sIff::getInstance().IsCanOverlapped(ei.itens[i]._typeid) && sIff::getInstance().getItemGroupIdentify(ei.itens[i]._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(ei.itens[i]._typeid, 1/*Não verifica o Mail Box do player*/)) {
+				// Check if he already has the item, the caddie item checks if he has the caddie and then checks if he has the caddie item
+				if ((sIff::getInstance().IsCanOverlapped(ei.itens[i]._typeid) && sIff::getInstance().getItemGroupIdentify(ei.itens[i]._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(ei.itens[i]._typeid, 1/*Does not check the player's Mail Box*/)) {
 					
-					// Verifica se o item é um SetItem
+					// Check if the item is a SetItem
 					if (item_manager::isSetItem(item._typeid)) {
 
-						auto v_stItem = item_manager::getItemOfSetItem(_session, ei.itens[i]._typeid, false, 1/*Não verifica o Level*/);
+						auto v_stItem = item_manager::getItemOfSetItem(_session, ei.itens[i]._typeid, false, 1/*Does not check the Level*/);
 
-						// No gift ele envia o set para o player, e não os itens que contém dentro do set
+						// In a gift he sends the set to the player, not the items contained in the set
 						if (!v_stItem.empty()) {
-							// Já verificou lá em cima se tem os item so set, então não precisa mais verificar aqui
-							// Só add eles ao vector de venda
-							// Verifica se pode ter mais de 1 item e se não ver se não tem o item
+							// Already checked above whether he has the set items, so no need to check here again
+							// Just add them to the sale vector
+							// Check if he can have more than 1 item, and if not, check that he does not have the item
 
 							for (auto& el : v_stItem)
-								if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid, 1/*Não verifica o Mail Box do player*/))
+								if ((sIff::getInstance().IsCanOverlapped(el._typeid) && sIff::getInstance().getItemGroupIdentify(el._typeid) != iff::CAD_ITEM) || !_session.m_pi.ownerItem(el._typeid, 1/*Does not check the player's Mail Box*/))
 									v_item.push_back(el);
 						}else
 							_smp::message_pool::getInstance().push(new message("[channel::requestTakeItemFrom][Log] player[UID=" + std::to_string(_session.m_pi.uid) 
@@ -14111,7 +14111,7 @@ void channel::requestTakeItemFomMail(player& _session, packet *_packet) {
 			packet_func::pacote214(p, &_session);
 			packet_func::session_send(p, &_session, 1);
 
-			// att level no canal
+			// update level in the channel
 			if (tmp_level != _session.m_pi.level) {
 
 				updatePlayerInfo(_session);
@@ -14125,7 +14125,7 @@ void channel::requestTakeItemFomMail(player& _session, packet *_packet) {
 				}
 			}
 
-		}else { // Não tem item do email, erro o cliente não poderia chamar esse pacote, por que esse email não tem item
+		}else { // The email has no item, error: the client should not call this packet because this email has no item
 			
 			packet_func::pacote214(p, &_session, 1);
 			packet_func::session_send(p, &_session, 1);
@@ -14149,8 +14149,8 @@ void channel::requestDeleteMail(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DeleteMail");
 
 		size_t num_email = _packet->readUint32();
@@ -14190,7 +14190,7 @@ void channel::requestDeleteMail(player& _session, packet *_packet) {
 
 		_session.m_pi.m_mail_box.deleteEmail(a_email_id, (uint32_t)num_email);
 
-		//snmdb::NormalManagerDB::getInstance().add(0, new CmdDeleteEmail(_session.m_pi.uid, a_email_id, num_email), nullptr/*por enquanto deixar nullptr mais depois colocar um funcao de retorno*/, nullptr);
+		//snmdb::NormalManagerDB::getInstance().add(0, new CmdDeleteEmail(_session.m_pi.uid, a_email_id, num_email), nullptr/*for now leave nullptr but later add a callback function*/, nullptr);
 		
 		auto mails = _session.m_pi.m_mail_box.getPage((uint32_t)pagina);
 
@@ -14205,13 +14205,13 @@ void channel::requestDeleteMail(player& _session, packet *_packet) {
 
 		auto mails = cmd_mbi.getInfo();*/
 
-		// Ainda tem que ver se a pagina que ele solicita não tem mais depois que excluiu os emails, tem que checar isso tbm
+		// Still need to check whether the requested page no longer exists after deleting the emails, this has to be checked too
 		if (!mails.empty()) {
 			
 			packet_func::pacote215(p, &_session, mails, (uint32_t)pagina, _session.m_pi.m_mail_box.getTotalPages()/*cmd_mbi.getTotalPage()*/);
 			packet_func::session_send(p, &_session, 1);
 
-		}else { // MailBox Vazio
+		}else { // Empty MailBox
 			packet_func::pacote215(p, &_session, std::vector< MailBox >(), (uint32_t)pagina, 1);
 			packet_func::session_send(p, &_session, 1);
 		}
@@ -14241,8 +14241,8 @@ void channel::requestMakePassDolfiniLocker(player& _session, packet *_packet) {
 
 		std::string pass = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("MakePassDolfiniLocker");
 
 		if (pass.empty())
@@ -14291,8 +14291,8 @@ void channel::requestCheckDolfiniLockerPass(player& _session, packet *_packet) {
 
 		std::string pass = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CheckDolfiniLockerPass");
 
 		if (pass.empty())
@@ -14308,13 +14308,13 @@ void channel::requestCheckDolfiniLockerPass(player& _session, packet *_packet) {
 		if (pass.compare(_session.m_pi.df.pass) != 0) {
 			_smp::message_pool::getInstance().push(new message("[channel::requesCheckDolfiniLockerPass][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou entrar no Dolfini Locker com senha[value=" + pass + "] errada", CL_FILE_LOG_AND_CONSOLE));
 
-			p.addUint32(0x75);	// Senha errada
+			p.addUint32(0x75);	// Wrong password
 		}else {
 			_smp::message_pool::getInstance().push(new message("[channel::requesCheckDolfiniLockerPass][Log] Player[UID=" + std::to_string(_session.m_pi.uid) + "] logou com sucesso no Dolfini Locker", CL_FILE_LOG_AND_CONSOLE));
 			
 			_session.m_pi.df.pass_check = 1;
 
-			p.addUint32(0);	// Senha Correta
+			p.addUint32(0);	// Correct password
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -14341,8 +14341,8 @@ void channel::requestChangeDolfiniLockerPass(player& _session, packet *_packet) 
 		std::string old_pass = _packet->readString();
 		std::string new_pass = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeDolfiniLockerPass");
 
 		if (old_pass.empty() || new_pass.empty())
@@ -14358,7 +14358,7 @@ void channel::requestChangeDolfiniLockerPass(player& _session, packet *_packet) 
 		if (old_pass.compare(_session.m_pi.df.pass) != 0) {
 			_smp::message_pool::getInstance().push(new message("[Dolfini Locker::Change Pass][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou trocar a senha mas a senha[value=" + old_pass + "] antiga esta incorreta", CL_FILE_LOG_AND_CONSOLE));
 
-			p.addUint32(1);	// Não sei direito mas vou usar o 1
+			p.addUint32(1);	// Not sure exactly but I will use 1
 		}else {
 
 #if defined(_WIN32)
@@ -14398,8 +14398,8 @@ void channel::requestChangeDolfiniLockerModeEnter(player& _session, packet *_pac
 		unsigned char locker = _packet->readUint8();
 		std::string pass = _packet->readString();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeDolfiniLockerModeEnter");
 
 		if (pass.empty())
@@ -14415,7 +14415,7 @@ void channel::requestChangeDolfiniLockerModeEnter(player& _session, packet *_pac
 		if (pass.compare(_session.m_pi.df.pass) != 0) {
 			_smp::message_pool::getInstance().push(new message("[Dolfini Locker::Change Mode Enter][Log] senha[value=" + pass + "] fornecida incorreta, nao combina com a do player[UID=" + std::to_string(_session.m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			p.addUint32(1);	// não sei direito o valor de erro nesse pacote, mas vou usar 1
+			p.addUint32(1);	// not sure exactly about the error value in this packet, but I will use 1
 		}else {
 
 			_session.m_pi.df.locker = locker;
@@ -14449,14 +14449,14 @@ void channel::requestDolfiniLockerItem(player& _session, packet *_packet) {
 
 	try {
 
-		// Dolfini Locker Limite de Item(ns) por página
+		// Dolfini Locker item limit per page
 #define DL_LIMIT_ITEM_PER_PAGE	20
 
 		uint32_t opt = _packet->readUint32();
 		unsigned short pagina = _packet->readUint16();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DolfiniLockerItem");
 		
 		unsigned short paginas = 0u;
@@ -14480,7 +14480,7 @@ void channel::requestDolfiniLockerItem(player& _session, packet *_packet) {
 		p.init_plain((unsigned short)0x16D);
 
 		p.addUint16(paginas);
-		p.addUint16((num_item > 0) ? pagina : 0);	// Para não da erro no projectg por que não tem nenhum página, por que não tem nenhum item
+		p.addUint16((num_item > 0) ? pagina : 0);	// To avoid an error in projectg because there is no page, because there is no item
 		p.addUint8(count);
 
 		for (auto i = index; i < (index + count); ++i)
@@ -14494,7 +14494,7 @@ void channel::requestDolfiniLockerItem(player& _session, packet *_packet) {
 
 		p.init_plain((unsigned short)0x16D);
 
-		p.addZeroByte(5);	// 2 páginas, 2 página, 1 count item(ns)
+		p.addZeroByte(5);	// 2 pages, 2 page, 1 item count
 
 		packet_func::session_send(p, &_session, 1);
 	}
@@ -14507,8 +14507,8 @@ void channel::requestDolfiniLockerPang(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("DolfiniLockerPang");
 
 		p.init_plain((unsigned short)0x172);
@@ -14539,8 +14539,8 @@ void channel::requestUpdateDolfiniLockerPang(player& _session, packet *_packet) 
 		unsigned char opt = _packet->readUint8();
 		uint64_t pang = _packet->readUint64();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("UpdateDolfiniLockerPang");
 
 		if (opt == 1) {
@@ -14570,7 +14570,7 @@ void channel::requestUpdateDolfiniLockerPang(player& _session, packet *_packet) 
 		_smp::message_pool::getInstance().push(new message("[Dolfini Locker::Update pang][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] Atualizou Pang[value=" 
 				+ std::to_string(pang) + ", OPTION=" + std::to_string((unsigned short)opt) + "] com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Cmd update pang do dolfini locker do player no DB
+		// Cmd update the player's dolfini locker pang in the DB
 		snmdb::NormalManagerDB::getInstance().add(3, new CmdUpdateDolfiniLockerPang(_session.m_pi.uid, _session.m_pi.df.pang), channel::SQLDBResponse, this);
 
 		p.init_plain((unsigned short)0x171);
@@ -14622,8 +14622,8 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 
 		_packet->readBuffer(aTI, sizeof(DolfiniLockerItem) * count);
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("AddDolfiniLockerItem");
 
 		uint32_t char_typeid = 0u;
@@ -14633,7 +14633,7 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 
 		for (i = 0u; i < count; ++i) {
 
-			// Verifica se o player está com shop aberto e se está vendendo o item no shop
+			// Check if the player has a shop open and is selling the item in the shop
 			//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
 
 			if (r != nullptr && r->checkPersonalShopItem(_session, aTI[i].item.id))
@@ -14643,7 +14643,7 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 
 			if (sIff::getInstance().getItemGroupIdentify(aTI[i].item._typeid) != iff::PART)
 				throw exception("[channel::requestAddDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou colocar um item[TYPEID=" 
-						+ std::to_string(aTI[i].item._typeid) + "] no Dolfini Locker que nao eh um IFF::PART.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 500, 109/*item nao permitido*//*5100401*/));
+						+ std::to_string(aTI[i].item._typeid) + "] no Dolfini Locker que nao eh um IFF::PART.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 500, 109/*item not allowed*//*5100401*/));
 
 			auto part = sIff::getInstance().findPart(aTI[i].item._typeid);
 
@@ -14651,7 +14651,7 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 				throw exception("[channel::requestAddDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou colocar um item[TYPEID=" 
 						+ std::to_string(aTI[i].item._typeid) + ", ID=" + std::to_string(aTI[i].item.id) +"] no Dolfini Locker que nao tem no IFF_STRUCT do server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 504, 5100405));
 
-			if (part->type_item == 8/*Part Original*/ || part->type_item == 9/*UCC copy*/)	// Não pode colocar o part original[value=8] e nem cópia[value=9]
+			if (part->type_item == 8/*Part Original*/ || part->type_item == 9/*UCC copy*/)	// Cannot put the original part[value=8] nor the copy[value=9]
 				throw exception("[channel::requestAddDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou colocar um Self Design Original/Copy item[TYPEID=" 
 						+ std::to_string(aTI[i].item._typeid) + ", ID=" + std::to_string(aTI[i].item.id) + "] no Dolfini Locker, mas nao eh permitido", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 505, 5100406));
 
@@ -14662,13 +14662,13 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 			if (character != nullptr) {
 				auto part_num = sIff::getInstance().getItemCharPartNumber(aTI[i].item._typeid);
 				
-				// Aqui alguns Sub Def Part é um part número a+ do certo dele, mas acho que o item feito não tem isso
+				// Here some Sub Def Part is a part number a+ of its correct one, but I think the item made does not have this
 				if (character->parts_id[part_num] == aTI[i].item.id && character->parts_typeid[part_num] == aTI[i].item._typeid)
 					throw exception("[channel::requestAddDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou colocar um item[TYPEID=" 
 							+ std::to_string(aTI[i].item._typeid) + ", ID=" + std::to_string(aTI[i].item.id) + "] equipado Part[num=" + std::to_string(part_num) + "] no Dolfini Locker. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 501, 5100402));
 			}
 
-			// Tira do v_wi, Warehouse Item
+			// Remove from v_wi, Warehouse Item
 			//auto ii = VECTOR_FIND_ITEM(_session.m_pi.v_wi, id, ==, aTI[i].item.id);
 			auto it = _session.m_pi.findWarehouseItemItById(aTI[i].item.id);
 
@@ -14676,7 +14676,7 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 				throw exception("[channel::reuqestAddDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou colocar um item[TYPEID=" 
 						+ std::to_string(aTI[i].item._typeid) + ", ID=" + std::to_string(aTI[i].item.id) + "] no Dolfini Locker que ele nao tem. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 502, 5100403));
 
-			// cmd add Item no Dolfini Locker do player
+			// cmd add Item to the player's Dolfini Locker
 			CmdAddDolfiniLockerItem cmd_adli(_session.m_pi.uid, aTI[i], true);	// Waiter
 
 			snmdb::NormalManagerDB::getInstance().add(0, &cmd_adli, nullptr, nullptr);
@@ -14710,7 +14710,7 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 				continue;
 			}
 
-			// tira o item do warehouse item vector do player
+			// remove the item from the player's warehouse item vector
 			_session.m_pi.mp_wi.erase(it);
 
 			_session.m_pi.df.v_item.insert(_session.m_pi.df.v_item.begin(), aTI[i]);
@@ -14734,11 +14734,11 @@ void channel::requestAddDolfiniLockerItem(player& _session, packet *_packet) {
 
 		p.addUint32(count);
 
-		p.addUint8(1);	// Add Item no Dolfini Locker
+		p.addUint8(1);	// Add Item to Dolfini Locker
 
-		p.addUint64(0);	// Pang add para o player/*esse é do personal shop*/
+		p.addUint64(0);	// Pang added to the player/*this one is from the personal shop*/
 
-		p.addUint32(0);	// Unknown, ainda não sei que membro é esse da estrutura
+		p.addUint32(0);	// Unknown, I do not know yet what this structure member is
 
 		for (i = 0u; i < count; ++i) 
 			p.addBuffer(&aTI[i].item, sizeof(TradeItem));
@@ -14795,8 +14795,8 @@ void channel::requestRemoveDolfiniLockerItem(player& _session, packet *_packet) 
 
 		_packet->readBuffer(aTI, sizeof(DolfiniLockerItem) * count);
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("RemoveDolfiniLockerItem");
 
 		uint32_t char_typeid = 0u;
@@ -14804,17 +14804,17 @@ void channel::requestRemoveDolfiniLockerItem(player& _session, packet *_packet) 
 
 		for (i = 0u; i < count; ++i) {
 			
-			// Tira do Dolfini Locker
+			// Remove from Dolfini Locker
 			auto ii = VECTOR_FIND_ITEM(_session.m_pi.df.v_item , item.id, == , aTI[i].item.id);
 
 			if (ii == _session.m_pi.df.v_item.end())
 				throw exception("[channel::reuqestRemoveDolfiniLockerItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou tirar um item[TYPEID="
 					+ std::to_string(aTI[i].item._typeid) + ", ID=" + std::to_string(aTI[i].item.id) + "] que ele nao tem. Do Dolfini Locker ", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 550, 5100451));
 
-			// cmd remove Item no Dolfini Locker do player
+			// cmd remove Item from the player's Dolfini Locker
 			snmdb::NormalManagerDB::getInstance().add(4, new CmdDeleteDolfiniLockerItem(_session.m_pi.uid, aTI[i].index), channel::SQLDBResponse, this);
 
-			// tira o item do Dolfini Locker item vector do player
+			// remove the item from the player's Dolfini Locker item vector
 			_session.m_pi.df.v_item.erase(ii);
 
 			aWi[i].clear();
@@ -14822,7 +14822,7 @@ void channel::requestRemoveDolfiniLockerItem(player& _session, packet *_packet) 
 			aWi[i].id = aTI[i].item.id;
 			aWi[i]._typeid = aTI[i].item._typeid;
 			aWi[i].ano = -1;
-			aWi[i].STDA_C_ITEM_QNTD = 1;	// Pode ser os stats da roupa msm, qntd de pwr, ctrl, spin e etc
+			aWi[i].STDA_C_ITEM_QNTD = 1;	// It could be the clothing stats themselves, amount of pwr, ctrl, spin, etc
 			aWi[i].purchase = 1;
 			aWi[i].type = 2;
 			aWi[i].clubset_workshop.level = - 1;
@@ -14853,11 +14853,11 @@ void channel::requestRemoveDolfiniLockerItem(player& _session, packet *_packet) 
 
 		p.addUint32(count);
 
-		p.addUint8(0);	// Remove Item no Dolfini Locker
+		p.addUint8(0);	// Remove Item from Dolfini Locker
 
-		p.addUint64(_session.m_pi.ui.pang);	// Pang add para o player/*esse é do personal shop*/
+		p.addUint64(_session.m_pi.ui.pang);	// Pang added to the player/*this one is from the personal shop*/
 
-		p.addUint32(0);	// Unknown, ainda não sei o que é esse membro na estrutura
+		p.addUint32(0);	// Unknown, I do not know yet what this member in the structure is
 
 		for (i = 0u; i < count; ++i) {
 
@@ -14920,8 +14920,8 @@ void channel::requestOpenLegacyTikiShop(player& _session, packet* _packet) {
 				+ "]. Packet raw: " + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenLegacyTikiShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.legacy_tiki_shop)
@@ -14962,8 +14962,8 @@ void channel::requestPointLegacyTikiShop(player& _session, packet* _packet) {
 				+ "]. Packet raw: " + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PointLegacyTikiShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.legacy_tiki_shop)
@@ -15022,8 +15022,8 @@ void channel::requestExchangeTPByItemLegacyTikiShop(player& _session, packet* _p
 				+ "]. Packet raw: " + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExchangeTPByItemLegacyTikiShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.legacy_tiki_shop)
@@ -15033,9 +15033,9 @@ void channel::requestExchangeTPByItemLegacyTikiShop(player& _session, packet* _p
 		// Lambda getNumberItens Per Tiki Shop Pts
 		constexpr auto getNumberItensPerTikiShopPts = [](IFF::TikiShopDados& _tiki) {
 
-			std::pair< uint32_t/*Qntd Item Per Tiki Pts*/, uint32_t/*Qntd Tiki Pts Per Itens*/ > ret{ 0u, 0u };
+			std::pair< uint32_t/*Item Count Per Tiki Pts*/, uint32_t/*Tiki Pts Count Per Items*/ > ret{ 0u, 0u };
 
-			// Qntd Itens
+			// Item Count
 			ret.first = (_tiki.qnt_per_tiki_pts == 0u) ? 1u : _tiki.qnt_per_tiki_pts;
 
 			// Tiki Pts
@@ -15091,7 +15091,7 @@ void channel::requestExchangeTPByItemLegacyTikiShop(player& _session, packet* _p
 						+ std::to_string(tsei.id) + ", QNTD=" + std::to_string(tsei.qntd) + "] no Tiki's Shop, mas o item esta sendo vendido no Personal shop dele. Hacker ou Bug.", 
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1010, 0x5201010));
 
-			// Soma dados de tiki dos itens
+			// Sum the tiki data of the items
 			tiki_pts += dados_tiki.second * tsei.qntd;
 
 			v_item.insert(v_item.end(), item.begin(), item.end());
@@ -15123,14 +15123,14 @@ void channel::requestExchangeTPByItemLegacyTikiShop(player& _session, packet* _p
 
 		snmdb::NormalManagerDB::getInstance().add(28, new CmdUpdateLegacyTikiShopPoint(_session.m_pi.uid, _session.m_pi.m_legacy_tiki_pts), channel::SQLDBResponse, this);
 
-		// Achievement Add 1 valor de Exchange Legacy Tiki Shop ao contador
+		// Achievement: add 1 Exchange Legacy Tiki Shop value to the counter
 		sys_achieve.incrementCounter(0x6C400086u/*Exchange Legacy Tiki Shop*/, 1);
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[ExchangeTPByItemLegacyTikiShop][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] player trocou item(ns)(" 
 				+ s_item + ") por Tiki Point[value=" + std::to_string(tiki_pts) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Att Item ON Jogo
+		// Update Item ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -15144,7 +15144,7 @@ void channel::requestExchangeTPByItemLegacyTikiShop(player& _session, packet* _p
 			p.addUint32(el.stat.qntd_ant);
 			p.addUint32(el.stat.qntd_dep);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 unknown bytes
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -15203,8 +15203,8 @@ void channel::requestExchangeItemByTPLegacyTikiShop(player& _session, packet* _p
 				+ "]. Packet raw: " + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExchangeItemByTPLegacyTikiShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.legacy_tiki_shop)
@@ -15247,14 +15247,14 @@ void channel::requestExchangeItemByTPLegacyTikiShop(player& _session, packet* _p
 						+ std::to_string(tsetp._typeid) + "] no Tiki's Shop, mas o item nao existe no IFF_STRUCT(PointShop) do Server. Hacker ou Bug",
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 901, 0x5200902));
 
-			// Tiki Pts que vai ser gasto para trocar pelo item
+			// Tiki Pts that will be spent to exchange for the item
 			tiki_pts += point_shop->point * tsetp.qntd;
 
 			bi.id = -1;
 			bi._typeid = tsetp._typeid;
 			bi.qntd = point_shop->qntd * tsetp.qntd;
 
-			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*~no Check Level*/);
 
 			if (item._typeid == 0)
 				throw exception("[channel::requestExchangeItemByTPLegacyTikiShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) 
@@ -15278,13 +15278,13 @@ void channel::requestExchangeItemByTPLegacyTikiShop(player& _session, packet* _p
 					+ "] tentou trocar item(ns)(" + s_item + "), mas o player nao tem tiki_pts suficiente para a troca[HAVE=" + std::to_string(_session.m_pi.m_legacy_tiki_pts) 
 					+ ", REQUEST=" + std::to_string(tiki_pts) + "].", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 906, 0x5200906));
 
-		// Update tiki points no server
+		// Update tiki points on the server
 		_session.m_pi.m_legacy_tiki_pts -= tiki_pts;
 
-		// Att no banco de dados
+		// Update in the database
 		snmdb::NormalManagerDB::getInstance().add(28, new CmdUpdateLegacyTikiShopPoint(_session.m_pi.uid, _session.m_pi.m_legacy_tiki_pts), channel::SQLDBResponse, this);
 
-		// Add os itens
+		// Add the items
 		auto rai = item_manager::addItem(v_item, _session, 0, 0);
 
 		if (rai.fails.size() > 0 && rai.type != item_manager::RetAddItem::T_SUCCESS_PANG_AND_EXP_AND_CP_POUCH) {
@@ -15301,19 +15301,19 @@ void channel::requestExchangeItemByTPLegacyTikiShop(player& _session, packet* _p
 						+ (rai.fails[i].STDA_C_ITEM_TIME > 0 ? ", TEMPO=" + std::to_string(rai.fails[i].STDA_C_ITEM_TIME) : std::string("")) + "]";
 			}
 
-			// Aqui depois especifica cada um separado para manda mensagem
+			// Here later specify each one separately to send a message
 			throw exception("[channel::requestExchangeItemByTPLegacyTikiShop][Error] Itens que falhou ao add os itens que o Player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] trocou item(ns){" + str + "}. Hacker ou bug.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 907, 0x5200907));
 		}
 
-		// Achievement Add 1 valor de Exchange Legacy Tiki Shop ao contador
+		// Achievement: add 1 Exchange Legacy Tiki Shop value to the counter
 		sys_achieve.incrementCounter(0x6C400086u/*Exchange Legacy Tiki Shop*/, 1);
 
 		// Log
 		_smp::message_pool::getInstance().push(new message("[channel::requestExchangeItemByTPLegacyTikiShop][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] trocou Tiki Points[TP=" + std::to_string(tiki_pts) + "] por Item(ns)(" + s_item + ").", CL_FILE_LOG_AND_CONSOLE));
 
-		// Att Item ON Jogo
+		// Update Item ON Game
 		p.init_plain((unsigned short)0x216);
 
 		p.addUint32((const uint32_t)GetSystemTimeAsUnix());
@@ -15327,7 +15327,7 @@ void channel::requestExchangeItemByTPLegacyTikiShop(player& _session, packet* _p
 			p.addUint32(el.stat.qntd_ant);
 			p.addUint32(el.stat.qntd_dep);
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 unknown bytes
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -15360,8 +15360,8 @@ void channel::requestOpenEditSaleShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenEditSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15369,12 +15369,12 @@ void channel::requestOpenEditSaleShop(player& _session, packet* _packet) {
 
 		if (r != nullptr) {
 
-			// Aqui ou lá dentro verifica se o Personal Shop está bloqueado no shop ou para o player, para poder bloquear
+			// Here or inside check if the Personal Shop is blocked in the shop or for the player, in order to block it
 			r->requestOpenEditSaleShop(_session, _packet);
 
 		}else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestOpenEditSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou abrir ou editar um/o personal shop para ele, mas nao esta em nenhum sala[numero=" 
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15396,8 +15396,8 @@ void channel::requestCloseSaleShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CloseSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15406,8 +15406,8 @@ void channel::requestCloseSaleShop(player& _session, packet* _packet) {
 		if (r != nullptr)
 			r->requestCloseSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestCloseSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou deletar um personal shop dele, mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15429,8 +15429,8 @@ void channel::requestChangeNameSaleShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeNameSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15439,8 +15439,8 @@ void channel::requestChangeNameSaleShop(player& _session, packet *_packet) {
 		if (r != nullptr)
 			r->requestChangeNameSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestChangeNameSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou trocar o nome do personal shop dele. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15462,8 +15462,8 @@ void channel::requestOpenSaleShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15472,8 +15472,8 @@ void channel::requestOpenSaleShop(player& _session, packet *_packet) {
 		if (r != nullptr)
 			r->requestOpenSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestOpenSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou abrir o personal shop dele. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15495,8 +15495,8 @@ void channel::requestVisitCountSaleShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("VisitCountSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15505,8 +15505,8 @@ void channel::requestVisitCountSaleShop(player& _session, packet *_packet) {
 		if (r != nullptr)
 			r->requestVisitCountSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestVisitCountSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou pedir Visit Count do personal shop dele. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15528,8 +15528,8 @@ void channel::requestPangSaleShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PangSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15538,8 +15538,8 @@ void channel::requestPangSaleShop(player& _session, packet* _packet) {
 		if (r != nullptr)
 			r->requestPangSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestPangSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou pedir Pang Sale do personal shop dele. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15561,8 +15561,8 @@ void channel::requestCancelEditSaleShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CancelEditSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15571,8 +15571,8 @@ void channel::requestCancelEditSaleShop(player& _session, packet *_packet) {
 		if (r != nullptr)
 			r->requestCancelEditSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestCancelEditSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou cancelar edit o personal shop dele. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15594,8 +15594,8 @@ void channel::requestViewSaleShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("ViewSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15604,8 +15604,8 @@ void channel::requestViewSaleShop(player& _session, packet* _packet) {
 		if (r != nullptr)
 			r->requestViewSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestViewSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou ver o personal shop de outro player. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15627,8 +15627,8 @@ void channel::requestCloseViewSaleShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("CloseViewSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15637,8 +15637,8 @@ void channel::requestCloseViewSaleShop(player& _session, packet *_packet) {
 		if (r != nullptr)
 			r->requestCloseViewSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestCloseViewSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou fechar o personal shop de outro player. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15660,8 +15660,8 @@ void channel::requestBuyItemSaleShop(player& _session, packet* _packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("BuyItemSaleShop");
 
 		//auto r = m_rm.findRoom(_session.m_pi.mi.sala_numero);
@@ -15670,8 +15670,8 @@ void channel::requestBuyItemSaleShop(player& _session, packet* _packet) {
 		if (r != nullptr)
 			r->requestBuyItemSaleShop(_session, _packet);
 		else {
-			// não aqui mas no else tem que retornar erro para o cliente, que ele esta tentando Fechar um Personal Shop, mas ele nao esta em nenhum sala
-			// Isso é Hacker ou Bug
+			// not here but in the else it must return an error to the client, that he is trying to Close a Personal Shop but he is not in any room
+			// This is a Hacker or a Bug
 			_smp::message_pool::getInstance().push(new message("[channel::requestBuyItemSaleShop][Error][WARNIG] player[UID=" + std::to_string(_session.m_pi.uid) + "] Channel[ID=" 
 					+ std::to_string((unsigned short)m_ci.id) + "] tentou comprar no personal shop de outro player. mas nao esta em nenhum sala[numero="
 					+ std::to_string(_session.m_pi.mi.sala_numero) + "]. Hacker ou Bug [Tem que enviar a resposta para o cliente, por que ainda nao esta enviando]", CL_FILE_LOG_AND_CONSOLE));
@@ -15695,20 +15695,20 @@ void channel::requestOpenPapelShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("OpenPapelShop");
 
-		// Verifica se ele pode entrar no papel shop
-		// ------------- aqui o cliente não bloqueia mais por que o o memorial está junto dele, então só da erro quando vai jogar -------
+		// Check if he can enter the papel shop
+		// ------------- here the client no longer blocks because the memorial comes with it, so it only errors when playing -------
 		//if (_session.m_pi.block_flag.m_id_state & BLOCK_PAPEL_SHOP)
 		//	throw exception("[channel::requestOpenPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] esta bloqueado para abrir o papel shop", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 1, 0x5800101));
 
 		p.init_plain((unsigned short)0x10B);
 
-		p.addUint32(0);	// OK, !0 Error, aqui o cliente não bloqueia mais por que o o memorial está junto dele, então só da erro quando vai jogar
+		p.addUint32(0);	// OK, !0 Error, here the client no longer blocks because the memorial comes with it, so it only errors when playing
 
-		p.addInt64(_session.m_pi.mi.papel_shop.limit_count);	// Limite count(vezes) por dia
+		p.addInt64(_session.m_pi.mi.papel_shop.limit_count);	// Count (times) limit per day
 
 		packet_func::session_send(p, &_session, 1);
 
@@ -15733,8 +15733,8 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayPapelShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.papel_shop)
@@ -15770,7 +15770,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 
 		SysAchievement sys_achieve;
 
-		// Reserva memória para o vector, não realocar depois a cada push_back ou insert
+		// Reserve memory for the vector, so it does not reallocate on every push_back or insert later
 		v_item.reserve(balls.size() + 1/*coupon*/);
 
 		for (auto& el : balls) {
@@ -15792,10 +15792,10 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 				return el2._typeid == item._typeid;
 			});
 
-			if (it != v_item.end()) {	// Já tem o item soma as quantidades
+			if (it != v_item.end()) {	// Already has the item, add the quantities
 				it->qntd += item.qntd;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd;
-			}else	// Não tem coloca ele no vector
+			}else	// Does not have it, put it in the vector
 				it = v_item.insert(v_item.end(), item);
 
 #if defined(_WIN32)
@@ -15819,7 +15819,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			throw exception("[channel::requestPlayPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Normal, mas nao conseguiu adicionar o(s) Item(ns){"
 					+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
 
-		// Delete Coupon e coloca no vector de att item, se tiver coupon
+		// Delete Coupon and put it in the update item vector, if there is a coupon
 		if (coupon != nullptr) {
 			item.clear();
 
@@ -15836,19 +15836,19 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			// Add ao vector
 			v_item.push_back(item);
 
-		}else	// Não tem Coupon Tira Pangs do player
+		}else	// No Coupon, take Pangs from the player
 			_session.m_pi.consomePang(sPapelShopSystem::getInstance().getPriceNormal());
 
-		// Update Papel Shop Count Player. Se o limite por dia estiver habilitado, decrementa 1 do player
+		// Update Papel Shop Count Player. If the per-day limit is enabled, decrement 1 from the player
 		sPapelShopSystem::getInstance().updatePlayerCount(_session);
 
-		// Verificar se ganhou item Raro, se sim, cria um log no banco de dados
+		// Check if a Rare item was won, if so, create a log in the database
 		auto rare = std::for_each(balls.begin(), balls.end(), [&](auto& el) {
 			if (el.ctx_psi.tipo == PST_RARE) {
 				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayNormal][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID=" 
 						+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-				// Add +1 ao contador de item Rare Win no Papel Shop
+				// Add +1 to the Rare Win item counter in the Papel Shop
 				sys_achieve.incrementCounter(0x6C400081u/*Rare Win*/);
 
 				snmdb::NormalManagerDB::getInstance().add(19, new CmdInsertPapelShopRareWinLog(_session.m_pi.uid, el), channel::SQLDBResponse, this);
@@ -15857,7 +15857,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 
 		// UPDATE Achievement ON SERVER, DB and GAME
 
-		// Add +1 ao contador de jogo ao play Palpel Shop
+		// Add +1 to the game counter for play Papel Shop
 		sys_achieve.incrementCounter(0x6C40004Au/*Play Papel Shop*/);
 
 		// Log
@@ -15876,7 +15876,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 			p.addUint32(el.flag_time);
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// C[0~4] 10 Bytes e mais outras coisas, que tem na struct stItem216 explicando
+			p.addZeroByte(25);	// C[0~4] 10 Bytes and other things, explained in the stItem216 struct
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -15893,7 +15893,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o Play Papel Shop Normal
+		// Reply to Play Papel Shop Normal
 		p.init_plain((unsigned short)0x21B);
 
 		p.addUint32(0);		// OK
@@ -15905,7 +15905,7 @@ void channel::requestPlayPapelShop(player& _session, packet *_packet) {
 		for (auto& el : balls) {
 			p.addUint32(el.color);
 			p.addUint32(el.ctx_psi._typeid);
-			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);	// Precisa do ID, se não ele add 2 itens, o do pacote 216 e o desse
+			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);	// Needs the ID, otherwise it adds 2 items, the one from packet 216 and this one
 			p.addUint32(el.qntd);
 			p.addUint32(el.ctx_psi.tipo);
 		}
@@ -15937,8 +15937,8 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check if the session is authorized to execute this action, 
+		// if he has not logged in to the Server he cannot do anything until he logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayBigPapelShop");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.papel_shop)
@@ -15972,7 +15972,7 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 
 		SysAchievement sys_achieve;
 
-		// Reserva memória para o vector, não realocar depois a cada push_back ou insert
+		// Reserve memory for the vector, so it does not reallocate on every push_back or insert later
 		v_item.reserve(balls.size());
 
 		for (auto& el : balls) {
@@ -15994,10 +15994,10 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 				return el2._typeid == item._typeid;
 			});
 
-			if (it != v_item.end()) {	// Já tem o item soma as quantidades
+			if (it != v_item.end()) {	// Already has the item, add the quantities
 				it->qntd += item.qntd;
 				it->STDA_C_ITEM_QNTD = (short)it->qntd;
-			}else	// Não tem coloca ele no vector
+			}else	// Does not have it, put it in the vector
 				it = v_item.insert(v_item.end(), item);
 
 			el.item = &(*it);
@@ -16017,19 +16017,19 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 			throw exception("[channel::requestPlayBigPapelShop][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou jogar o Papel Shop Big, mas nao conseguiu adicionar o(s) Item(ns){"
 					+ ids + "}", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 6, 0x5900106));
 
-		// Tira Pangs do player
+		// Take Pangs from the player
 		_session.m_pi.consomePang(sPapelShopSystem::getInstance().getPriceBig());
 
-		// Update Papel Shop Count Player. Se o limite por dia estiver habilitado, decrementa 1 do player
+		// Update Papel Shop Count Player. If the per-day limit is enabled, decrement 1 from the player
 		sPapelShopSystem::getInstance().updatePlayerCount(_session);
 
-		// Verificar se ganhou item Raro, se sim, cria um log no banco de dados
+		// Check if a Rare item was won, if so, create a log in the database
 		auto rare = std::for_each(balls.begin(), balls.end(), [&](auto& el) {
 			if (el.ctx_psi.tipo == PST_RARE) {
 				_smp::message_pool::getInstance().push(new message("[PapelShopSystem::PlayBig][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] ganhou Item Raro[TYPEID=" 
 						+ std::to_string(el.ctx_psi._typeid) + ", QNTD=" + std::to_string(el.qntd) + ", BALL_COLOR=" + std::to_string(el.color) + ", PROBABILIDADE=" + std::to_string(el.ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-				// Add +1 ao contador de item Rare Win no Papel Shop
+				// Add +1 to the Rare Win item counter in the Papel Shop
 				sys_achieve.incrementCounter(0x6C400081u/*Rare Win*/);
 
 				snmdb::NormalManagerDB::getInstance().add(19, new CmdInsertPapelShopRareWinLog(_session.m_pi.uid, el), channel::SQLDBResponse, this);
@@ -16038,7 +16038,7 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 
 		// UPDATE Achievement ON SERVER, DB and GAME
 
-		// Add +1 ao contador de jogo ao play Palpel Shop
+		// Add +1 to the game counter for play Papel Shop
 		sys_achieve.incrementCounter(0x6C40004Au/*Play Papel Shop*/);
 
 		// Log
@@ -16069,7 +16069,7 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 			p.addUint32(el.flag_time);
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// C[0~4] 10 Bytes e mais outras coisas, que tem na struct stItem216 explicando
+			p.addZeroByte(25);	// C[0~4] 10 Bytes and other things, explained in the stItem216 struct
 		}
 
 		packet_func::session_send(p, &_session, 1);
@@ -16087,19 +16087,19 @@ void channel::requestPlayBigPapelShop(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o Play Papel Shop Big
+		// Reply to Play Papel Shop Big
 		p.init_plain((unsigned short)0x26C);
 
 		p.addUint32(0);		// OK
 
-		p.addInt32(0);		// Big Papel Shop não tem coupon
+		p.addInt32(0);		// Big Papel Shop has no coupon
 
 		p.addUint32((uint32_t)balls.size());
 
 		for (auto& el : balls) {
 			p.addUint32(el.color);
 			p.addUint32(el.ctx_psi._typeid);
-			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);	// Precisa do ID, se não ele add 2 itens, o do pacote 216 e o desse
+			p.addInt32((el.item != 0) ? ((stItem*)el.item)->id : 0);	// Needs the ID, otherwise it adds 2 items, the one from packet 216 and this one
 			p.addUint32(el.qntd);
 			p.addUint32(el.ctx_psi.tipo);
 		}
@@ -16146,7 +16146,7 @@ void channel::requestSendMsgChatRoom(player& _session, std::string _msg) {
 //		r->testeDegree();
 //#endif // _DEBUG
 
-		// Fim do teste
+		// End of test
 
 		packet_func::pacote040(p, &_session, &_session.m_pi, _msg, (_session.m_pi.m_cap.stBit.game_master/* & 4*/) ? 0x80 : 0);
 		packet_func::room_broadcast(*r, p, 0);
@@ -16157,14 +16157,14 @@ void channel::requestSendMsgChatRoom(player& _session, std::string _msg) {
 
 		_smp::message_pool::getInstance().push(new message("[channel::requestSendMsgChatRoom][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// A função que chama ela tem que tratar as excpetion, relança elas
+		// The function that calls it must handle the exceptions, rethrow them
 		throw;
 	}
 };
 
 void channel::sendUpdateRoomInfo(RoomInfoEx& _ri, int _option) {
 
-	if (_ri.tipo != RoomInfo::TIPO::PRACTICE && _ri.tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {	// No modo practice não envia o pacote47, que é a criação de sala visual na lobby
+	if (_ri.tipo != RoomInfo::TIPO::PRACTICE && _ri.tipo != RoomInfo::TIPO::GRAND_ZODIAC_PRACTICE) {	// In practice mode it does not send packet47, which is the visual room creation in the lobby
 		
 		packet p;
 
@@ -16206,9 +16206,9 @@ void channel::destroyRoom(short _number) {
 
 		}else {
 
-			// Kick all player e destroi a sala
+			// Kick all players and destroy the room
 			for (auto& el : v_sessions)
-				kickPlayerRoom(*el, 0/*Não conta quit*/);
+				kickPlayerRoom(*el, 0/*Does not count quit*/);
 		}
 
 		// Log
@@ -16247,7 +16247,7 @@ int channel::_enter_left_time_is_over(void* _arg1, void* _arg2) {
 		r->setState(0);
 		r->setFlag(0);
 
-		// Limpa no Game o Timer
+		// Clear the Timer in the Game
 		r->requestEndAfterEnter();
 
 		packet p;
@@ -16392,7 +16392,7 @@ void channel::deleteInviteTimeResquestByInvited(player& _session) {
 
 bool channel::send_time_out_invite(InviteChannelInfo& _ici) {
 
-	// Libera o Critical Section do invite, e bloqueia assim que pegar a sala
+	// Release the invite Critical Section, and lock it as soon as the room is obtained
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_invite);
 #elif defined(__linux__)
@@ -16408,12 +16408,12 @@ bool channel::send_time_out_invite(InviteChannelInfo& _ici) {
 	pthread_mutex_lock(&m_cs_invite);
 #endif
 
-	// Se retorna true é para deletar o InviteChannelInfo, se false não precisa por que o invite já não é mais válido
+	// If it returns true, delete the InviteChannelInfo; if false it is not needed because the invite is no longer valid
 	auto it = std::find_if(v_invite.begin(), v_invite.end(), [&](auto& _el) {
 		return (InviteChannelInfo*)&_el == (InviteChannelInfo*)&_ici;
 	});
 
-	// InviteChannelInfo não é mais um invite válido, ele já foi excluido
+	// InviteChannelInfo is no longer a valid invite, it has already been deleted
 	if (it == v_invite.end())
 		return false;
 
@@ -16424,7 +16424,7 @@ bool channel::send_time_out_invite(InviteChannelInfo& _ici) {
 					+ "] tentou deletar o convite[CONVIDOU=" + std::to_string(_ici.invite_uid) + ", CONVIDADO=" + std::to_string(_ici.invited_uid)
 					+ "] da Sala[NUMERO=" + std::to_string(_ici.room_number) + "], mas a sala nao existe mais no canal.", CL_FILE_LOG_AND_CONSOLE));
 
-			// Deleta o invite, a sala não é válida mais, mas o invite ainda é válido
+			// Delete the invite, the room is no longer valid, but the invite is still valid
 			return true;
 		}
 
@@ -16458,7 +16458,7 @@ void channel::clear_invite_time() {
 
 	if (!v_invite.empty()) {
 
-		// Envia o Time out dos invite do Canal
+		// Send the Time out of the Channel invites
 		for (auto& el : v_invite)
 			send_time_out_invite(el);
 
@@ -16495,7 +16495,7 @@ void channel::removeSession(player *_session) {
 
 	m_ci.curr_user--;
 
-	// reseta(default) o channel que o player está no player info
+	// reset (default) the channel the player is in in the player info
 	_session->m_pi.channel = INVALID_CHANNEL;
 	_session->m_pi.place = 0u;
 
@@ -16529,9 +16529,9 @@ void channel::addSession(player *_session) {
 	_session->m_pi.channel = m_ci.id;
 	_session->m_pi.place = 0u;
 
-	// Calcula a condição do player e o sexo
-	// Só faz calculo de Quita rate depois que o player
-	// estiver no level Beginner E e jogado 50 games
+	// Calculate the player's condition and gender
+	// Only does the Quit rate calculation after the player
+	// is at level Beginner E and has played 50 games
 	if (_session->m_pi.level >= 6 && _session->m_pi.ui.jogado >= 50) {
 		float rate = _session->m_pi.ui.getQuitRate();
 
@@ -16615,8 +16615,8 @@ void channel::makePlayerInfo(player& _session) {
 	pci.title = _session.m_pi.ue.m_title;
 	pci.team_point = 1000;
 
-	// Só faz calculo de Quita rate depois que o player
-	// estiver no level Beginner E e jogado 50 games
+	// Only does the Quit rate calculation after the player
+	// is at level Beginner E and has played 50 games
 	if (_session.m_pi.level >= 6 && _session.m_pi.ui.jogado >= 50) {
 		float rate = _session.m_pi.ui.getQuitRate();
 
@@ -16643,8 +16643,8 @@ void channel::makePlayerInfo(player& _session) {
 	memcpy(pci.guild_mark_img, _session.m_pi.gi.mark_emblem, sizeof(pci.guild_mark_img));
 #endif
 	pci.flag_visible_gm = _session.m_pi.mi.state_flag.stFlagBit.visible;
-	pci.l_unknown = 0;			// Ví players com valores 2 e 4 e 0
-	//pci.nickNT ainda não uso
+	pci.l_unknown = 0;			// I saw players with values 2 and 4 and 0
+	//pci.nickNT not used yet
 	//pci.unknown106
 
 	auto it = m_player_info.insert(std::make_pair(&_session, pci));
@@ -16656,18 +16656,18 @@ void channel::makePlayerInfo(player& _session) {
 
 			if (it.first->second.uid != _session.m_pi.uid) {
 
-				// Add novo PlayerChannelInfo para a (session*), que tem um novo player conectado na session.
-				// Isso pode acontecer quando chama essa função 2x com a mesma session e o mesmo player
+				// Add new PlayerChannelInfo for the (session*), which has a new player connected to the session.
+				// This can happen when this function is called 2x with the same session and the same player
 
 				try {
 
-					// pega o antigo PlayerChannelInfo para usar no Log
+					// get the old PlayerChannelInfo to use in the Log
 					auto pci_ant = m_player_info.at(&_session);
 
 					// Novo PlayerChannelInfo
 					m_player_info.at(&_session) = pci;
 
-					// Log de que trocou o PlayerChannelInfo da session
+					// Log that the session's PlayerChannelInfo was replaced
 					_smp::message_pool::getInstance().push(new message("[channel::makePlayerInfo][WARNING][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 							+ "] esta trocando o PlayerChannelInfo[UID=" + std::to_string(pci_ant.uid) + "] do player anterior que estava conectado com essa session, pelo o PlayerChannelInfo[UID=" 
 							+ std::to_string(pci.uid) + "] do player atual da session.", CL_FILE_LOG_AND_CONSOLE));
@@ -16699,7 +16699,7 @@ void channel::updatePlayerInfo(player& _session) {
 		throw exception("[channel::updatePlayerInfo][Error] nao tem o player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] info dessa session no canal.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::CHANNEL, 16, 0));
 
-	// Copia do que esta no map
+	// Copy of what is in the map
 	pci = *_pci;
 
 	// Player Canal Info Update
@@ -16716,8 +16716,8 @@ void channel::updatePlayerInfo(player& _session) {
 	pci.title = _session.m_pi.ue.m_title;
 	pci.team_point = 1000;
 
-	// Só faz calculo de Quita rate depois que o player
-	// estiver no level Beginner E e jogado 50 games
+	// Only does the Quit rate calculation after the player
+	// is at level Beginner E and has played 50 games
 	if (_session.m_pi.level >= 6 && _session.m_pi.ui.jogado >= 50) {
 		float rate = _session.m_pi.ui.getQuitRate();
 
@@ -16744,8 +16744,8 @@ void channel::updatePlayerInfo(player& _session) {
 	memcpy(pci.guild_mark_img, _session.m_pi.gi.mark_emblem, sizeof(pci.guild_mark_img));
 #endif
 	pci.flag_visible_gm = _session.m_pi.mi.state_flag.stFlagBit.visible;
-	pci.l_unknown = 0;			// Ví players com valores 2 e 4 e 0
-	//pci.nickNT ainda não uso
+	pci.l_unknown = 0;			// I saw players with values 2 and 4 and 0
+	//pci.nickNT not used yet
 	//pci.unknown106
 
 	// Salva novamente
@@ -16771,7 +16771,7 @@ void channel::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg)
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just leaves, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[channel::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -16942,7 +16942,7 @@ void channel::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg)
 				+ std::to_string(cmd_ipsrwl->getInfo().color) + ", PROBABILIDADE=" + std::to_string(cmd_ipsrwl->getInfo().ctx_psi.probabilidade) + "]", CL_FILE_LOG_AND_CONSOLE));
 		break;
 	}
-	case 20:	// Pay Caddie Holy Day (Paga as ferias do Caddie)
+	case 20:	// Pay Caddie Holy Day (Pays the Caddie's vacation)
 	{
 		auto cmd_pchd = reinterpret_cast< CmdPayCaddieHolyDay* >(&_pangya_db);
 
@@ -16950,7 +16950,7 @@ void channel::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg)
 				+ std::to_string(cmd_pchd->getId()) + "] ate " + cmd_pchd->getEndDate(), CL_FILE_LOG_AND_CONSOLE));
 		break;
 	}
-	case 21:	// Set Notice Caddie Holy Day (Seta Aviso de ferias do Caddie)
+	case 21:	// Set Notice Caddie Holy Day (Sets the Caddie vacation notice)
 	{
 		auto cmd_snchd = reinterpret_cast< CmdSetNoticeCaddieHolyDay* >(&_pangya_db);
 
@@ -17015,7 +17015,7 @@ void channel::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg)
 		break;
 	}
 	case 0:
-	default:	// 25 é update item equipado slot
+	default:	// 25 is update equipped item slot
 		break;
 	}
 

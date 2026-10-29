@@ -1,6 +1,6 @@
-// Arquivo sys_achievement.cpp
-// Criado em 15/04/2018 as 18:05 por Acrisio
-// Implementa��o da classe SysAchievement
+// File sys_achievement.cpp
+// Created on 15/04/2018 at 18:05 by Acrisio
+// Implementation of the SysAchievement class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -42,7 +42,7 @@ SysAchievement::SysAchievement() : v_c(), v_quest_clear(), map_cii_change(), v_r
 	if (!sIff::getInstance().isLoad())
 		sIff::getInstance().load();
 
-	// Tempor�rio CounterItemInfo
+	// Temporary CounterItemInfo
 	Counter c{ 0 };
 
 	for (auto& el : sIff::getInstance().getCounterItem()) {
@@ -125,11 +125,11 @@ void SysAchievement::finish_and_update(player& _session) {
 
 	try {
 
-		/// INICIO DO NOVO MODO
+		/// START OF THE NEW MODE
 		auto v_counter = getCounterChanged();
 		auto v_ai = getAchievementChanged(_session, v_counter);
 
-		// envia a altera��o nos contadores e no achievements
+		// sends the change in the counters and in the achievements
 		if (!v_ai.empty()) {
 
 			if (!map_cii_change.empty()) {
@@ -142,17 +142,17 @@ void SysAchievement::finish_and_update(player& _session) {
 
 				for (auto& el : map_cii_change) {
 
-					// Atualiza o Counter no banco de dados
+					// Updates the Counter in the database
 					snmdb::NormalManagerDB::getInstance().add(3, new CmdUpdateCounterItem(_session.m_pi.uid, el.second), SysAchievement::SQLDBResponse, this);	// Not Waitable
 					
 					p.addUint8(2);	// Type
 					p.addInt32(el.second._typeid);
 					p.addInt32(el.second.id);
 					p.addInt32(0);	// Flag
-					p.addInt32(el.second.last_value);		// Qtnd Antes
-					p.addInt32(el.second.value);			// Qtnd Depois
-					p.addInt32(el.second.increase_value);	// Qtnd que add
-					p.addZeroByte(25);			// 25 bytes que n�o usa com esse tipo de item
+					p.addInt32(el.second.last_value);		// Quantity Before
+					p.addInt32(el.second.value);			// Quantity After
+					p.addInt32(el.second.increase_value);	// Quantity added
+					p.addZeroByte(25);			// 25 bytes not used with this type of item
 				}
 
 				packet_func::session_send(p, &_session, 1);
@@ -199,14 +199,14 @@ void SysAchievement::finish_and_update(player& _session) {
 					p.addInt32(el.id);
 					p.addInt32(el.flag);	// Flag
 					p.addBuffer(&el.stat, sizeof(el.stat));
-					p.addInt32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);		// Qtnd que add
-					p.addZeroByte(25);			// 25 bytes que n�o usa com esse tipo de item
+					p.addInt32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);		// Quantity added
+					p.addZeroByte(25);			// 25 bytes not used with this type of item
 				}
 
 				packet_func::session_send(p, &_session, 1);
 			}
 
-			// Aqui tem que manda o pacote22e(quando uma quest(daily ou achievement) foi concluida) e 220(Att Achievement)
+			// Here it must send packet 22e (when a quest (daily or achievement) was completed) and 220 (Att Achievement)
 			p.init_plain((unsigned short)0x22E);
 
 			p.addInt32((uint32_t)v_quest_clear.size());
@@ -239,7 +239,7 @@ void SysAchievement::finish_and_update(player& _session) {
 					if (el2.counter_item_id > 0 && (cii = el.findCounterItemById(el2.counter_item_id)) != nullptr) {
 						p.addInt32(cii->_typeid);
 						p.addInt32(cii->id);
-					}else // n�o tem o counter item id e nem o typeid
+					}else // has neither the counter item id nor the typeid
 						p.addZeroByte(8);
 
 					p.addInt32(el2.clear_date_unix);
@@ -253,8 +253,8 @@ void SysAchievement::finish_and_update(player& _session) {
 
 		//packet_func::session_send(packet_func::pacote227(&_session, std::vector< AchievementInfoEx >(), 1), &_session, 1);
 
-		// N�o relan�a mais por que a resposta de quest o cliente j� teve, aqui � achievement, que deu erro ele nao precisa saber n�o
-		// Mas o server precisa do log para ajeitar depois
+		// Does not rethrow anymore because the client already got the quest response, here it is achievement, which had an error and it does not need to know
+		// But the server needs the log to fix it later
 		_smp::message_pool::getInstance().push(new message("[SysAchievement::finish_and_update][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 }
@@ -630,7 +630,7 @@ int32_t SysAchievement::getScoreNum(uint32_t _tacada_num, uint32_t _par_hole) {
 		case 2:		// Double Bogey
 			score_num = 6;
 			break;
-		default:	// esse � um score que n�o conta
+		default:	// this is a score that does not count
 			score_num = -1;
 		}
 	}
@@ -669,19 +669,19 @@ std::vector< AchievementInfoEx > SysAchievement::getAchievementChanged(player& _
 		}
 	});
 
-	// Verifica se teve Daily Quest Clear, para poder somar o seu Counter Item
+	// Checks if there was a Daily Quest Clear, to be able to sum its Counter Item
 	Counter count{ 0x6C400039u/*Clear Daily Quest*/, 0 };
 
 	for (auto& el : v_quest_clear) {
 		
-		// Verifica se � Quest Conclu�da
+		// Checks if it is a Completed Quest
 		if (sIff::getInstance().getItemGroupIdentify(el.achievement_typeid) == iff::QUEST_ITEM)
 			count.value++;
 	}
 
 	if (count.value > 0) {
 
-		// Add o Count do Clear Daily Quest, ao vector de contadores modificados
+		// Adds the Clear Daily Quest Count to the vector of modified counters
 		_v_c.push_back(count);
 
 		auto it = std::find_if(_session.m_pi.mgr_achievement.getAchievementInfo().begin(), _session.m_pi.mgr_achievement.getAchievementInfo().end(), [&](auto& el) {
@@ -694,19 +694,19 @@ std::vector< AchievementInfoEx > SysAchievement::getAchievementChanged(player& _
 				v_ai.push_back(it->second);
 		}
 	}
-	// Fim de check Clear Daily Quest
+	// End of check Clear Daily Quest
 
 	return v_ai;
 }
 
-// Verifica qual � o maior, se for menor verifica o menor
-// Param _a � o Objetivo
-// Param _b � a tentativa
-// Verifica o sinal de _a e faz as compara��o
-// Se _b for melhor ou igual _a return true caso contr�rio false
+// Checks which is bigger, if it is smaller checks the smaller
+// Param _a is the Goal
+// Param _b is the attempt
+// Checks the sign of _a and does the comparisons
+// If _b is better or equal to _a return true otherwise false
 #define CHECK_BETTER(_a, _b) (((_a) < 0) ? (_a) >= (_b) : (_a) <= (_b))
 
-// Verifica se o counter Item Info j� foi modificado, se foi retorna true, se n�o return false
+// Checks if the counter Item Info was already modified, if it was returns true, otherwise returns false
 #define CHECK_CHANGE_COUNTER_ITEM(_pCii) (map_cii_change.find((_pCii)->id) != map_cii_change.end()) \
 
 unsigned char SysAchievement::checkQuestClear(player& _session, QuestStuffInfo& _qsi, CounterItemInfo& _cii, std::vector< Counter >& _v_c) {
@@ -719,7 +719,7 @@ unsigned char SysAchievement::checkQuestClear(player& _session, QuestStuffInfo& 
 		return NOT_MATCH;
 	}
 
-	if (_v_c.empty())	// n�o teve mudan�a nos countadores
+	if (_v_c.empty())	// there was no change in the counters
 		return NOT_MATCH;
 
 	unsigned char ret = NOT_MATCH;
@@ -736,28 +736,28 @@ unsigned char SysAchievement::checkQuestClear(player& _session, QuestStuffInfo& 
 				continue;
 
 			/*
-			* Descri��o
-			* Se o valor do counter padr�o for 1, a quest n�o � cumulativa e sim uma quest �nica
-			* Se ela for maior que 1, � cumulativa e soma mesmo que o counter item padr�o n�o concluiu
+			* Description
+			* If the default counter value is 1, the quest is not cumulative but a single quest
+			* If it is greater than 1, it is cumulative and sums even if the default counter item has not completed
 			*/
 
-			// N�o encontrou o contador, retorna o not match
+			// Did not find the counter, returns not match
 			if ((it = VECTOR_FIND_ITEM(_v_c, _typeid, == , qs->counter_item._typeid[i])) == _v_c.end())
 				return NOT_MATCH;
 
 			if (_cii._typeid == qs->counter_item._typeid[i]) {
 				
-				// [Bug Fix] o check better o primeiro parametro tem que ser o objetivo o segundo a tentativa, estava trocado
+				// [Bug Fix] in check better the first parameter must be the goal and the second the attempt, they were swapped
 				if (CHECK_BETTER(qs->counter_item.qntd[i], _cii.value + (!CHECK_CHANGE_COUNTER_ITEM(&_cii) ? it->value : 0)))
 					ret |= CLEAR;
 				else if (qs->counter_item.qntd[i] == 1)
-					return NOT_MATCH;	// quantidade do counter item padr�o � 1, ent�o essa quest o contador n�o � acumulativa
+					return NOT_MATCH;	// the default counter item quantity is 1, so for this quest the counter is not cumulative
 				else
 					ret |= INCREMENT_COUNTER;
 
-				// [Bug Fix] o check better o primeiro parametro tem que ser o objetivo o segundo a tentativa, estava trocado
-			}else if (!CHECK_BETTER(qs->counter_item.qntd[i], it->value))	// Se n�o for melhor ou igual, n�o conclu� o objetivo do countador secund�rio retorna NOT_MATCH
-				return NOT_MATCH;	// j� n�o da certo a quest, por que uma das condi��es n�o foi antendida
+				// [Bug Fix] in check better the first parameter must be the goal and the second the attempt, they were swapped
+			}else if (!CHECK_BETTER(qs->counter_item.qntd[i], it->value))	// If it is not better or equal, it did not complete the secondary counter goal, returns NOT_MATCH
+				return NOT_MATCH;	// the quest already does not work, because one of the conditions was not met
 		}
 
 	}else
@@ -766,9 +766,9 @@ unsigned char SysAchievement::checkQuestClear(player& _session, QuestStuffInfo& 
 	return ret;
 }
 
-// S� add se n�o tiver no map de counter item change(modificado"Incrementa")
-// Add(Incrementa) o counter por que a quest ainda n�o foi conclu�da
-// Add o Counter Para o map de counter item modificados
+// Only adds if it is not in the counter item change map (modified "Increments")
+// Add (Increments) the counter because the quest has not been completed yet
+// Adds the Counter to the modified counter item map
 #define CHECK_CHANGE_COUNTER_AND_INCREMENT_AND_SAVE { \
 	if (map_cii_change.find(pcii->id) == map_cii_change.end()) \
 		pcii->value += _c.value; \
@@ -782,24 +782,24 @@ bool SysAchievement::checkAchievement(player& _session, AchievementInfoEx& _ai, 
 
 	bool necessary_update = false;
 
-	// Check se concluiu quest
+	// Check if the quest was completed
 	for (auto& el : _ai.v_qsi) {
 		if (el.clear_date_unix <= 0 && el.counter_item_id != 0 && (pcii = _ai.findCounterItemById(el.counter_item_id)) != nullptr) {
 			
-			// Esse tem que ser igual a clear n�o pode ter valor misturado
+			// This must be equal to clear, it cannot have mixed values
 			if ((ret = checkQuestClear(_session, el, *pcii, _v_c)) == CLEAR) {
 
-				// � Necess�rio o Update do Achievement, no Game, por que Modificou o Counter Item do achievement
+				// Achievement Update is necessary, in the Game, because the achievement Counter Item was Modified
 				necessary_update = true;
 
-				// S� incrementa o count se o achievement base quest typeid for diferente de 0, que � achievement que acumula os valores mesmo sem passar na condi��o da quest
-				// Add(Incrementa) o counter por que a quest ainda n�o foi conclu�da
+				// Only increments the count if the achievement base quest typeid is different from 0, which is an achievement that accumulates the values even without passing the quest condition
+				// Add (Increments) the counter because the quest has not been completed yet
 				CHECK_CHANGE_COUNTER_AND_INCREMENT_AND_SAVE;
 
 				auto it = _ai.getQuestBase();
 
 				if (it != _ai.v_qsi.end()) {
-					if (el._typeid != it->_typeid && el.counter_item_id == it->counter_item_id) {	// est� usando o counter da quest base, cria um novo counter para ele
+					if (el._typeid != it->_typeid && el.counter_item_id == it->counter_item_id) {	// is using the base quest counter, creates a new counter for it
 						cii.clear();
 
 						cii.active = 1;
@@ -830,12 +830,12 @@ bool SysAchievement::checkAchievement(player& _session, AchievementInfoEx& _ai, 
 											"] no map de counter item do player: " + std::to_string(_session.m_pi.uid),
 											STDA_MAKE_ERROR(STDA_ERROR_TYPE::SYS_ACHIEVEMENT, 13, 1));
 
-						// Add o counter item novo para o map de counter item change(modificado)
+						// Adds the new counter item to the counter item change (modified) map
 						map_cii_change[pcii_new->id] = { *pcii_new, pcii_new->value - pcii->value, pcii->value };
 					}
 				}
 
-				// Envia os Quest reward se tiver
+				// Sends the Quest rewards if any
 				auto qs = sIff::getInstance().findQuestStuff(el._typeid);
 
 				if (qs == nullptr)
@@ -844,46 +844,46 @@ bool SysAchievement::checkAchievement(player& _session, AchievementInfoEx& _ai, 
 
 				for (auto i = 0u; i < (sizeof(qs->reward_item._typeid) / sizeof(qs->reward_item._typeid[0])); ++i) {
 					
-					// Diferente de 0 tem recompensa por concluir a quest
+					// Different from 0 means there is a reward for completing the quest
 					if (qs->reward_item._typeid[i] != 0) {
 
 						if (qs->reward_item._typeid[i] == 0x6C000001/*Achievement Point Counter*/)
-							_session.m_pi.mgr_achievement.incrementPoint(qs->reward_item.qntd[i]);	// Add os pontos ganhos de achievement por concluir a quest
+							_session.m_pi.mgr_achievement.incrementPoint(qs->reward_item.qntd[i]);	// Adds the achievement points earned for completing the quest
 						else
 							v_reward.push_back({ qs->reward_item._typeid[i], (int)qs->reward_item.qntd[i], (int)qs->reward_item.time[i] });
 					}
 				}
 
-				// Finalizar a quest no db colocar a data que ela foi conclu�da
+				// Finish the quest in the db, setting the date it was completed
 				el.clear_date_unix = (uint32_t)GetLocalTimeAsUnix();
 
 				snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateQuestUser(_session.m_pi.uid, el), SysAchievement::SQLDBResponse, this);
 
-				// Quest Conclu�da
+				// Quest Completed
 				v_quest_clear.push_back({ _ai._typeid, el._typeid });
 
 				_smp::message_pool::getInstance().push(new message("[SysAchievement::checkAchievement][Log] Achievement[ID=" + std::to_string(_ai.id) + "]->Quest Clear[ID=" + std::to_string(el.id) + "] do player: " 
 						+ std::to_string(_session.m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
-				// Verifica se todas a quest do achievement foram conclu�das
+				// Checks if all the achievement quests were completed
 				if (_ai.checkAllQuestClear()) {
-					// Troca o estado do achievement para conclu�do
+					// Changes the achievement state to completed
 					_ai.status = AchievementInfo::CONCLUEDED;
 
-					// Atualiza no banco de dados
+					// Updates in the database
 					snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateAchievementUser(_session.m_pi.uid, _ai), SysAchievement::SQLDBResponse, this);
 
 					_smp::message_pool::getInstance().push(new message("[SysAchievement::checkAchievement][Log] Achievement[TYPEID=" + std::to_string(_ai._typeid) + ", ID=" + std::to_string(_ai.id) + "] concluido. do player: " 
 							+ std::to_string(_session.m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 				}
 
-			}else if (ret & INCREMENT_COUNTER/*aqui se tiver increment sozinho ou misturado*/ 
+			}else if (ret & INCREMENT_COUNTER/*here if there is an increment alone or mixed*/ 
 					&& (sIff::getInstance().getItemGroupIdentify(_ai._typeid) == iff::QUEST_ITEM || _ai.quest_base_typeid != 0)) {
-				// S� incrementa o count se o achievement base quest typeid for diferente de 0, que � achievement que acumula os valores mesmo sem passar na condi��o da quest
-				// Add(Incrementa) o counter por que a quest ainda n�o foi conclu�da
+				// Only increments the count if the achievement base quest typeid is different from 0, which is an achievement that accumulates the values even without passing the quest condition
+				// Add (Increments) the counter because the quest has not been completed yet
 				CHECK_CHANGE_COUNTER_AND_INCREMENT_AND_SAVE;
 
-				// � Necess�rio o Update do Achievement, no Game, por que Modificou o Counter Item do achievement
+				// Achievement Update is necessary, in the Game, because the achievement Counter Item was Modified
 				necessary_update = true;
 			}
 		}
@@ -899,7 +899,7 @@ void SysAchievement::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[SysAchievement::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -952,7 +952,7 @@ void SysAchievement::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		break;
 	}
 	case 0:
-	default:	// 25 � update item equipado slot
+	default:	// 25 is update equipped item slot
 		break;
 	}
 

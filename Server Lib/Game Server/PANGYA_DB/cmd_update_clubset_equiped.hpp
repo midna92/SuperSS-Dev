@@ -1,6 +1,6 @@
-// Arquivo cmd_update_clubset_equiped.hpp
-// Criado em 25/03/2018 as 11:10 por Acrisio
-// Defini��o da classe CmdUpdateClubsetEquiped
+// File cmd_update_clubset_equiped.hpp
+// Created on 25/03/2018 at 11:10 by Acrisio
+// Definition of class CmdUpdateClubsetEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CLUBSET_EQUIPED_HPP

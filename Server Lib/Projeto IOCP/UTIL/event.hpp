@@ -1,6 +1,6 @@
-// Arquivo event.hpp
-// Criado em 12/03/2021 09:24 por Acrisio
-// Definição da classe Event, Event manual reset Linux
+// File event.hpp
+// Created on 12/03/2021 at 09:24 by Acrisio
+// Definition of the class Event, Event manual reset Linux
 
 #pragma once
 #ifndef _STDA_EVENT_HPP

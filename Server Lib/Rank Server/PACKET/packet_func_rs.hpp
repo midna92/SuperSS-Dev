@@ -1,6 +1,6 @@
-// Arquivo packet_func_rs.hpp
-// Criado em 15/06/2020 as 14:59 por Acrisio
-// Defini��o da classe packet_func para o Rank Server
+// File packet_func_rs.hpp
+// Created on 15/06/2020 at 14:59 by Acrisio
+// Definition of the class packet_func for the Rank Server
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_RS_HPP
@@ -39,7 +39,7 @@
 namespace stdA {
 	class packet_func : public packet_func_base {
 		public:
-			// Cliente
+			// Client
 			static int packet000(void* _arg1, void* _arg2); // Request Login
 			static int packet001(void* _arg1, void* _arg2);	// Request Player[UID] info
 			static int packet002(void* _arg1, void* _arg2);	// Request search player

@@ -1,6 +1,6 @@
 // Arquivo golden_time_system.cpp
-// Criado em 20/10/2020 as 18:58 por Acrisio
-// Implementa��o da classe GoldenTimeSystem
+// Created on 20/10/2020 at 18:58 by Acrisio
+// Implementation of the GoldenTimeSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -102,7 +102,7 @@ void GoldenTimeSystem::initialize() {
 
 	TRY_CHECK;
 
-	// Carrega a lista de eventos
+	// Load the event list
 	CmdGoldenTimeInfo cmd_gti(true); // Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_gti, nullptr, nullptr);
@@ -154,7 +154,7 @@ void GoldenTimeSystem::initialize() {
 		}
 	}
 
-	// Inicializa a ordem dos rounds e dos golden time, e atualiza as datas se for necess�rio
+	// Initialize the order of the rounds and golden times, and update the dates if necessary
 
 	// Sort Rounds
 	for (auto& el : m_events) {
@@ -180,7 +180,7 @@ void GoldenTimeSystem::initialize() {
 		return getDateDiff(_el1.date[0], _el2.date[0]) < 0ll;
 	});
 
-	// Verifica
+	// Check
 	for (auto& el : m_events) {
 
 		if (el.type != stGoldenTime::eTYPE::ONE_DAY) {
@@ -232,14 +232,14 @@ void GoldenTimeSystem::initialize() {
 		//_smp::message_pool::getInstance().push(new message("[GoldenTimeSystem::initialize][Log] Golden Time System carregado com sucesso!", CL_ONLY_FILE_LOG));
 	//#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -325,7 +325,7 @@ stGoldenTime* GoldenTimeSystem::findNewGoldenTime() {
 
 	stGoldenTime *gt = nullptr;
 
-	// Cria um novo se tiver eventos
+	// Create a new one if there are events
 	auto it_ev = std::find_if(m_events.begin(), m_events.end(), findForever);
 
 	if (it_ev != m_events.end() && gt == nullptr)
@@ -341,13 +341,13 @@ stGoldenTime* GoldenTimeSystem::findNewGoldenTime() {
 	if (it_ev != m_events.end() && (gt == nullptr || getTimeDiff(it_ev->date[0], gt->date[0]) <= 0ll))
 		gt = &(*it_ev);
 
-	// Retorna o com menor tempo, endependente da prioridade
+	// Return the one with the shortest time, regardless of priority
 	return gt;
 }
 
 void GoldenTimeSystem::updateGoldenTimeEnd() {
 
-	// Atual golden time acabou, procura um novo
+	// Current golden time ended, look for a new one
 	if (m_current_golden_time->type != stGoldenTime::eTYPE::ONE_DAY) {
 		
 		m_current_golden_time->date[0] = UnixToSystemTime(SystemTimeToUnix(m_current_golden_time->date[0]) + (24 * 60 * 60)); // Add 1 dia
@@ -367,7 +367,7 @@ void GoldenTimeSystem::updateGoldenTimeEnd() {
 	}else
 		m_current_golden_time->is_end = true;
 
-	// Atualiza no banco de dados
+	// Update in the database
 	if (m_current_golden_time->is_end)
 		snmdb::NormalManagerDB::getInstance().add(1, new CmdUpdateGoldenTime(m_current_golden_time->id, m_current_golden_time->is_end), GoldenTimeSystem::SQLDBResponse, this);
 }
@@ -435,7 +435,7 @@ bool GoldenTimeSystem::checkRound() {
 			RETURNN_CHECK(false);
 		}
 
-		// Tira o Round, para inicializar no makeOfListOfPlayersToGoldenTime
+		// Remove the Round, to initialize it in makeOfListOfPlayersToGoldenTime
 		m_current_golden_time->current_round = nullptr;
 
 		initCurrentGoldenTime();
@@ -509,7 +509,7 @@ stGoldenTimeReward GoldenTimeSystem::calculeRoundReward(std::vector< stPlayerRew
 
 	while (number_of_winners > 0) {
 
-		if ((ctx = lottery.spinRoleta(true/*N�o pode ganhar 2x o mesmo player*/)) != nullptr && (uint32_t*)ctx->value != nullptr) {
+		if ((ctx = lottery.spinRoleta(true/*The same player cannot win 2x*/)) != nullptr && (uint32_t*)ctx->value != nullptr) {
 
 			reward.players.push_back(*(stPlayerReward*)ctx->value);
 
@@ -537,7 +537,7 @@ bool GoldenTimeSystem::checkFirstMessage() {
 
 	m_current_golden_time->updateRound();
 
-	// Para quem chama d� o error
+	// The caller gets the error
 	if (m_current_golden_time->current_round == nullptr)
 		RETURNN_CHECK(true);
 
@@ -558,7 +558,7 @@ stRound* GoldenTimeSystem::checkNextRound() {
 
 	if (m_current_golden_time == nullptr) {
 
-		// Cria um novo se tiver eventos
+		// Create a new one if there are events
 		m_current_golden_time = findNewGoldenTime();
 
 		if (m_current_golden_time == nullptr)
@@ -659,7 +659,7 @@ void GoldenTimeSystem::sendRewardToMailOfPlayers(stGoldenTimeReward& _reward) {
 
 			if ((p = sgs::gs::getInstance().findPlayer(el.uid)) == nullptr) {
 
-				// Log, Player que ganhou n�o est� mais online, vai ficar sem o item
+				// Log, the winning player is no longer online, he will be left without the item
 				_smp::message_pool::getInstance().push(new message("[GoldenTimeSystem::sendRewardToMailOfPlayers][WARNING] Player[UID=" + std::to_string(el.uid)
 						+ "] ganhou o item[TYPEID=" + std::to_string(_reward.round.item._typeid) + ", QNTD=" + std::to_string(_reward.round.item.qntd)
 						+ ", QNTD_TIME=" + std::to_string(_reward.round.item.qntd_time) + "], mas saiu antes dos pr�mios ser entregues, vai ficar sem o pr�mio.", CL_FILE_LOG_AND_CONSOLE));
@@ -677,7 +677,7 @@ void GoldenTimeSystem::sendRewardToMailOfPlayers(stGoldenTimeReward& _reward) {
 			bi.qntd = _reward.round.item.qntd;
 			bi.time = (unsigned short)_reward.round.item.qntd_time;
 
-			item_manager::initItemFromBuyItem(p->m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+			item_manager::initItemFromBuyItem(p->m_pi, item, bi, false, 0, 0, 1/*~no Check Level*/);
 
 			if (item._typeid == 0)
 				_smp::message_pool::getInstance().push(new message("[GoldenTimeSystem::sendRewardToMailOfPlayers][Error][WARNING] tentou enviar o reward para o player[UID="
@@ -708,7 +708,7 @@ void GoldenTimeSystem::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, vo
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just leaves, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[GoldenTimeSystem::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

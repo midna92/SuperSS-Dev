@@ -1,6 +1,6 @@
-// Arquivo cmd_create_user.hpp
-// Criado em 31/03/2018 as 15:54 por Acrisio
-// Defini��o da classe CmdCreateUser.cpp
+// File cmd_create_user.hpp
+// Created on 31/03/2018 at 15:54 by Acrisio
+// Definition of the CmdCreateUser.cpp class
 
 #pragma once
 #ifndef _STDA_CMD_CREATE_USER_HPP

@@ -3,7 +3,7 @@
 #define _GG_AUTH_SERVER_H_
 
 #if defined(_WIN32)
-// Pack padrão
+// Default pack
 #pragma pack(push, ggsrv)
 #pragma pack( )
 #endif
@@ -278,7 +278,7 @@ GGAUTHS_API UINT32	__CDECL GGGetCurrentGGVer();
 GGAUTHS_API UINT32	 __CDECL GGAuthGetUserValue(LPGGAUTH pGGAuth, int type);
 
 #if defined(_WIN32)
-// Pop Pack padrão
+// Pop default pack
 #pragma pack(pop, ggsrv)
 #endif
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_item_left_from_email.cpp
-// Criado em 24/03/2018 as 17:29 por Acrisio
-// Implementa��o da classe CmdItemLeftFromEmail
+// File cmd_item_left_from_email.cpp
+// Created on 24/03/2018 at 17:29 by Acrisio
+// Implementation of the class CmdItemLeftFromEmail
 
 #if defined(_WIN32)
 #pragma pack(1)

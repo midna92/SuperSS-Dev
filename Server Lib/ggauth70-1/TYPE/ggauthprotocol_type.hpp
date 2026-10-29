@@ -1,6 +1,6 @@
-// Arquivo ggauthprotocol_type.hpp
-// Criado em 11/10/2021 as 14:06 por Acrisio
-// Definição dos tipos usados no GameGuard Auth Protocolo
+// File ggauthprotocol_type.hpp
+// Created on 11/10/2021 at 14:06 by Acrisio
+// Definition of the types used in the GameGuard Auth Protocol
 
 #pragma once
 #ifndef _GGAUTHPROTOCOL_TYPE_HPP
@@ -41,7 +41,7 @@ public:
 	uIndex dwValue3;
 };
 
-// Ainda vou declara ela
+// I will still declare it
 #define GG_AUTH_PROTOCOL void*
 
 class CCSAuth2 {

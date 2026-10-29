@@ -1,6 +1,6 @@
-// Arquivo cmd_add_friend.hpp
-// Criado em 04/08/2018 as 22:17 por Acrisio
-// Defini��o da classe CmdAddFriend
+// File cmd_add_friend.hpp
+// Created on 04/08/2018 at 22:17 by Acrisio
+// Definition of class CmdAddFriend
 
 #pragma once
 #ifndef _STDA_CMD_ADD_FRIEND_HPP

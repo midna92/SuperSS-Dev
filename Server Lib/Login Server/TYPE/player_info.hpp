@@ -1,6 +1,6 @@
-// Arquivo player_info.hpp
-// Criado em 11/03/2018 as 14:04 por Acrisio
-// Definição da classe PlayerInfo
+// File player_info.hpp
+// Created on 11/03/2018 at 14:04 by Acrisio
+// Definition of the PlayerInfo class
 
 #pragma once
 #ifndef _STDA_PLAYER_INFO_HPP
@@ -19,7 +19,7 @@ namespace stdA {
         public:
             unsigned char m_state;
             unsigned char m_place;
-			uint32_t m_server_uid;		// Server UID em que eles está conectado
+			uint32_t m_server_uid;		// Server UID they are connected to
     };
 }
 

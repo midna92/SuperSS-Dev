@@ -1,6 +1,6 @@
-// Arquivo rank_server.hpp
-// Criado em 15/06/2020 as 14:43 por Acrisio
-// Defini��o da classe rank_server
+// File rank_server.hpp
+// Created on 15/06/2020 at 14:43 by Acrisio
+// Definition of the class rank_server
 
 #pragma once
 #ifndef _STDA_RANK_SERVER_HPP
@@ -53,7 +53,7 @@ namespace stdA {
 			virtual void updateTimeRefresh(uint32_t _ret, std::string _date);
 
 		public:
-			// Auth Server Comandos
+			// Auth Server Commands
 			virtual void authCmdShutdown(int32_t _time_sec) override;
 			virtual void authCmdBroadcastNotice(std::string _notice) override;
 			virtual void authCmdBroadcastTicker(std::string _nickname, std::string _msg) override;

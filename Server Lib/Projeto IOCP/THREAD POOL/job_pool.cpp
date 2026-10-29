@@ -1,6 +1,6 @@
-// Arquivo job_pool.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe job_pool
+// File job_pool.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of class job_pool
 
 #include "job_pool.h"
 #include "../UTIL/exception.h"

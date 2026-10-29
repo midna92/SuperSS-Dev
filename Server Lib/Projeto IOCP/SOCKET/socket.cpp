@@ -1,6 +1,6 @@
-// Arquivo socket.cpp
-// Criado em 02/03/2017 por Acrisio
-// Implementação da classe socket
+// File socket.cpp
+// Created on 02/03/2017 by Acrisio
+// Implementation of class socket
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -15,7 +15,7 @@
 	#include <fcntl.h>
 #endif
 
-// Minha stricmp/strcasecmp
+// My stricmp/strcasecmp
 int myStrCaseCmp(const char* __s1, const char* __s2) {
 
 #if defined(_WIN32)
@@ -40,7 +40,7 @@ int myStrCaseCmp(const char* __s1, const char* __s2) {
 
 using namespace stdA;
 
-// Thread que chame a função connec_check_clear de 5 em 5 minutos
+// Thread that calls the connec_check_clear function every 5 minutes
 #if defined(_WIN32)
 DWORD socket::pThread_Timer(LPVOID lpParameter) 
 #elif defined(__linux__)
@@ -62,9 +62,9 @@ void* socket::pThread_Timer(LPVOID lpParameter)
 	while (my_sock->connect_check_continue()) {
 
 #if defined(_WIN32)
-		Sleep(1000);	// Dorme de 1 em 1 segundo
+		Sleep(1000);	// Sleep every 1 second
 #elif defined(__linux__)
-		sleep(1); // 1 segundo
+		sleep(1); // 1 second
 #endif
 
 		my_sock->connect_check_is_live();
@@ -92,7 +92,7 @@ void* socket::pThread_Timer(LPVOID lpParameter)
 #endif
 };
 
-// Pega o QueryPerformanceCounter do mommento
+// Get the current QueryPerformanceCounter
 #if defined(_WIN32)
 LARGE_INTEGER socket::gettick() {
 	LARGE_INTEGER r;
@@ -111,7 +111,7 @@ timespec socket::gettick() {
 };
 #endif
 
-// Verifica se continuar com a thread_timer
+// Check whether to continue with the thread_timer
 bool socket::connect_check_continue() {
 #if defined(_WIN32)
 	return InterlockedCompareExchange(&m_thread_check_on, 1, 1);
@@ -121,7 +121,7 @@ bool socket::connect_check_continue() {
 #endif
 };
 
-// Desligar a thread connect_check, modificando a variavel atomica
+// Turn off the connect_check thread, by modifying the atomic variable
 void socket::thread_connect_check_off() {
 #if defined(_WIN32)
 	InterlockedExchange(&m_thread_check_on, 0);
@@ -137,20 +137,20 @@ UINT32 socket::getDDoS_AutoReset() {
 
 void socket::reload_config_file() {
 
-	// Bloqueia os check dos access ip mask
+	// Block the access ip mask checks
 #if defined(_WIN32)
 	EnterCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
 	pthread_mutex_lock(&m_cs_ip);
 #endif
 
-	// Limpa os vectores access allow e deny
+	// Clear the access allow and deny vectors
 	close_access_allow();
 	close_acces_deny();
 
 	try {
 		
-		// Ler novamento o arquivo de configuração do socket
+		// Read the socket configuration file again
 		config_read(STDA_SOCKET_CONFIG_FILE_PATH);
 
 	} catch (exception& e) {
@@ -162,7 +162,7 @@ void socket::reload_config_file() {
 		pthread_mutex_unlock(&m_cs_ip);
 #endif
 
-		// Relança a exception
+		// Rethrow the exception
 		throw;
 	}
 
@@ -186,8 +186,8 @@ int socket::getConnectTime(SOCKET _sock) {
 		if (0 == ::getsockopt(_sock, SOL_SOCKET, SO_CONNECT_TIME, (char*)&seconds, &size_seconds))
 			return seconds;
 		else
-			return -2;	// Error ao pegar optsock SO_CONNECT_TIME
-			//throw exception("[session::getConnectTime] erro ao pegar optsock SO_CONNECT_TIME.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SESSION, 50, WSAGetLastError()));
+			return -2;	// Error getting optsock SO_CONNECT_TIME
+			//throw exception("[session::getConnectTime] error getting optsock SO_CONNECT_TIME.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::SESSION, 50, WSAGetLastError()));
 	}
 #elif defined(__linux__)
 	if (_sock.fd != INVALID_SOCKET) {
@@ -198,7 +198,7 @@ int socket::getConnectTime(SOCKET _sock) {
 		int rt_flg = fcntl(_sock.fd, F_GETFL);
 
 		if (rt_flg == -1)
-			return (errno == EAGAIN | errno == EBADF | errno == EACCES) ? -1 : -2; // -1 socket is not connected, -2 Erro ao pegar status flag do socket
+			return (errno == EAGAIN | errno == EBADF | errno == EACCES) ? -1 : -2; // -1 socket is not connected, -2 Error getting the socket status flag
 
 		int error = 0;
 		socklen_t len = sizeof (error);
@@ -225,7 +225,7 @@ int socket::getConnectTime(SOCKET _sock) {
 	return -1;
 };
 
-// Check se o ip pode conectar
+// Check whether the ip can connect
 int socket::connect_check(SOCKET _sock, UINT32 ip) {
 
 	unsigned int  i, is_allowip = 0, is_denyip = 0;
@@ -256,29 +256,29 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 	case ACO_DENY_ALLOW:
 	default:
 		if (is_denyip)
-			connect_ok = 0; // rejeita
+			connect_ok = 0; // reject
 		else if (is_allowip)
-			connect_ok = 2;	// aceita unconditional
+			connect_ok = 2;	// accept unconditionally
 		else
-			connect_ok = 1; // aceita
+			connect_ok = 1; // accept
 		break;
 	case ACO_ALLOW_DENY:
 		if (is_allowip)
-			connect_ok = 2;	// aceita unconditional
+			connect_ok = 2;	// accept unconditionally
 		else if (is_denyip)
-			connect_ok = 0;	// rejeita
+			connect_ok = 0;	// reject
 		else
-			connect_ok = 1;	// aceita
+			connect_ok = 1;	// accept
 		break;
 	case ACO_MUTUAL_FAILURE:
 		if (is_allowip && !is_denyip)
-			connect_ok = 2;	// aceita unconditional
+			connect_ok = 2;	// accept unconditionally
 		else
-			connect_ok = 0; // rejeita
+			connect_ok = 0; // reject
 		break;
 	}
 
-	// Libera o Critical section para não dá dead lock com a função de baixo que usa outro critical section
+	// Release the Critical section to avoid a deadlock with the function below that uses another critical section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -287,9 +287,9 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 
 	int ret_chk2 = connect_ok;
 
-	// Verifica se o ip já tem o limite de conexões por IP
+	// Check whether the ip has already reached the connection limit per IP
 	if ((ret_chk2 = connect_check2(_sock, connect_ok, ip)) <= 0)
-		return ret_chk2;	// rejeita
+		return ret_chk2;	// reject
 
 #if defined(_WIN32)
 	LARGE_INTEGER frequency;
@@ -299,7 +299,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 	clock_getres(CLOCK_SOCKET_TO_CHECK, &frequency);
 #endif
 
-	// Entra no critical section novamente
+	// Enter the critical section again
 #if defined(_WIN32)
 	EnterCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -320,7 +320,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 						+ std::to_string((unsigned short)(unsigned char)s_ip[3]) + "." + std::to_string((unsigned short)(unsigned char)s_ip[2]) + "."
 						+ std::to_string((unsigned short)(unsigned char)s_ip[1]) + "." + std::to_string((unsigned short)(unsigned char)s_ip[0]), CL_FILE_LOG_AND_CONSOLE));
 
-				// Libera Critical Section
+				// Release Critical Section
 #if defined(_WIN32)
 				LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -344,7 +344,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 
 					hist->ddos = 1;
 
-					// Libera Critical Section
+					// Release Critical Section
 #if defined(_WIN32)
 					LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -354,7 +354,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 					return (connect_ok == 2) ? 1 : 0;
 				}
 
-				// Libera Critical Section
+				// Release Critical Section
 #if defined(_WIN32)
 				LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -367,7 +367,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 				hist->tick = gettick();
 				hist->count = 0;
 
-				// Libera Critical Section
+				// Release Critical Section
 #if defined(_WIN32)
 				LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -381,7 +381,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 	}
 
 	hist = (PConnectHistory)malloc(sizeof(ConnectHistory));
-	// Aqui da erro se não conseguir alocar a memória
+	// Error here if the memory cannot be allocated
 	if (hist != nullptr) {
 
 		hist->clear();
@@ -391,7 +391,7 @@ int socket::connect_check(SOCKET _sock, UINT32 ip) {
 		connect_history[ip & 0xFFFF] = hist;
 	}
 
-	// Libera Critical Section
+	// Release Critical Section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -425,7 +425,7 @@ int socket::connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip) {
 						+ "." + std::to_string((unsigned short)(unsigned char)s_ip[2]) + "." + std::to_string((unsigned short)(unsigned char)s_ip[1]) 
 						+ "." + std::to_string((unsigned short)(unsigned char)s_ip[0]), CL_FILE_LOG_AND_CONSOLE));
 
-				// Libera Critical Section
+				// Release Critical Section
 #if defined(_WIN32)
 				LeaveCriticalSection(&m_cs_ipx);
 #elif defined(__linux__)
@@ -439,7 +439,7 @@ int socket::connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip) {
 	}
 
 	hist = (PConnectLive)malloc(sizeof(ConnectLive));
-	// Aqui da erro se não conseguir alocar a memória
+	// Error here if the memory cannot be allocated
 	if (hist != nullptr) {
 
 		hist->clear();
@@ -450,7 +450,7 @@ int socket::connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip) {
 		connect_live[_ip & 0xFFFF] = hist;
 	}
 
-	// Libera Critical Section
+	// Release Critical Section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ipx);
 #elif defined(__linux__)
@@ -460,7 +460,7 @@ int socket::connect_check2(SOCKET _sock, int _connect_ok, UINT32 _ip) {
 	return _connect_ok;
 };
 
-// Limpa o histórico de conexão que já passaram do tempo permitido
+// Clear the connection history entries that have exceeded the allowed time
 #if defined(_WIN32)
 int socket::connect_check_clear(LARGE_INTEGER tick) 
 #elif defined(__linux__)
@@ -507,7 +507,7 @@ int socket::connect_check_clear(timespec tick)
 		connect_history[i] = root.next;
 	}
 
-	// Libera Critical Section
+	// Release Critical Section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ip);
 #elif defined(__linux__)
@@ -517,7 +517,7 @@ int socket::connect_check_clear(timespec tick)
 	return 0;
 };
 
-// Limpa o histórico de conexão com o mesmo ip connectado
+// Clear the connection history with the same connected ip
 #if defined(_WIN32)
 int socket::connect_live_check_clear(LARGE_INTEGER tick) 
 #elif defined(__linux__)
@@ -566,7 +566,7 @@ int socket::connect_live_check_clear(timespec tick)
 		connect_live[i] = root.next;
 	}
 
-	// Libera Critical Section
+	// Release Critical Section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ipx);
 #elif defined(__linux__)
@@ -612,7 +612,7 @@ int socket::connect_check_is_live() {
 		connect_live[i] = root.next;
 	}
 
-	// Libera Critical Section
+	// Release Critical Section
 #if defined(_WIN32)
 	LeaveCriticalSection(&m_cs_ipx);
 #elif defined(__linux__)
@@ -622,7 +622,7 @@ int socket::connect_check_is_live() {
 	return 0;
 };
 
-// passa de ip str para ip mask
+// convert from ip str to ip mask
 int socket::access_ipmask(const char* str, PAccessControl acc) {
 	UINT32 ip, mask;
 
@@ -670,7 +670,7 @@ int socket::access_ipmask(const char* str, PAccessControl acc) {
 	return 1;
 };
 
-// Ler as configuraçao do socket
+// Read the socket configuration
 void socket::config_read(const char* file_name) {
 
 	char line[1024], w1[1024], w2[1024];
@@ -721,7 +721,7 @@ void socket::config_read(const char* file_name) {
 	fopen.close();
 };
 
-// limpa e fecha o histórico de conexão
+// clear and close the connection history
 void socket::close_connect_history() {
 	PConnectHistory hist, next_hist;
 
@@ -772,7 +772,7 @@ void socket::close_connect_live() {
 #endif
 };
 
-// limpa o vector de access allow
+// clear the access allow vector
 void socket::close_access_allow() {
 
 #if defined(_WIN32)
@@ -793,7 +793,7 @@ void socket::close_access_allow() {
 #endif
 };
 
-// limpa o vector de access deny
+// clear the access deny vector
 void socket::close_acces_deny() {
 
 #if defined(_WIN32)
@@ -833,25 +833,25 @@ socket::socket(int option) {
 	m_socket.connect_time.tv_nsec = 0;
 #endif
 
-	// ip rules e DDoS Protection
+	// ip rules and DDoS Protection
 	ip_rules = true;
 
-	// conexão histórico
+	// connection history
 	memset(connect_history, 0, sizeof(connect_history));
 
-	// conexão live
+	// live connection
 	memset(connect_live, 0, sizeof(connect_live));
 
-	// Controle de acesso
+	// Access control
 	access_order = ACO_DENY_ALLOW;
 
-	// DDoS Proteção
+	// DDoS Protection
 	ddos_count = 10;
-	ddos_interval = 3 * 1000;			// 3 segundos
-	ddos_autoreset = 10 * 60 * 1000;	// 10 Minutos
+	ddos_interval = 3 * 1000;			// 3 seconds
+	ddos_autoreset = 10 * 60 * 1000;	// 10 Minutes
 
-	// Limite de conexão por IP
-	limit_connection_per_ip = 3;	// 3 Conexões
+	// Connection limit per IP
+	limit_connection_per_ip = 3;	// 3 Connections
 
 #if defined(_WIN32)
 	hThread = INVALID_HANDLE_VALUE;
@@ -861,7 +861,7 @@ socket::socket(int option) {
 #endif
 
 	if (option == 1 /*Server*/) {
-		// Ler o arquivo de configuração
+		// Read the configuration file
 		config_read(STDA_SOCKET_CONFIG_FILE_PATH);
 
 #if defined(_WIN32)
@@ -897,25 +897,25 @@ socket::socket(SOCKET socket, int option) {
 
 	m_socket = socket;
 
-	// ip rules e DDoS Protection
+	// ip rules and DDoS Protection
 	ip_rules = true;
 
-	// conexão histórico
+	// connection history
 	memset(connect_history, 0, sizeof(connect_history));
 
-	// conexão live
+	// live connection
 	memset(connect_live, 0, sizeof(connect_live));
 
-	// Controle de acesso
+	// Access control
 	access_order = ACO_DENY_ALLOW;
 
-	// DDoS Proteção
+	// DDoS Protection
 	ddos_count = 10;
-	ddos_interval = 3 * 1000;			// 3 segundos
-	ddos_autoreset = 10 * 60 * 1000;	// 10 Minutos
+	ddos_interval = 3 * 1000;			// 3 seconds
+	ddos_autoreset = 10 * 60 * 1000;	// 10 Minutes
 
-	// Limite de conexão por IP
-	limit_connection_per_ip = 3;	// 3 Conexões
+	// Connection limit per IP
+	limit_connection_per_ip = 3;	// 3 Connections
 
 #if defined(_WIN32)
 	hThread = INVALID_HANDLE_VALUE;
@@ -925,7 +925,7 @@ socket::socket(SOCKET socket, int option) {
 #endif
 
 	if (option == 1 /*Server*/) {
-		// Ler o arquivo de configuração
+		// Read the configuration file
 		config_read(STDA_SOCKET_CONFIG_FILE_PATH);
 
 #if defined(_WIN32)
@@ -944,17 +944,17 @@ socket::socket(SOCKET socket, int option) {
 
 socket::~socket() {
 
-	// Finaliza a thread timer
+	// Finish the timer thread
 #if defined(_WIN32)
 	if (hThread != INVALID_HANDLE_VALUE) {
-		thread_connect_check_off();	// Desliga thread connect_check
+		thread_connect_check_off();	// Turn off the connect_check thread
 		
 		if (WaitForSingleObject(hThread, INFINITE) != WAIT_OBJECT_0)
 			TerminateThread(hThread, 0);
 	}
 #elif defined(__linux__)
 	if (hThread != nullptr) {
-		thread_connect_check_off();	// Desliga thread connect_check
+		thread_connect_check_off();	// Turn off the connect_check thread
 		
 		try {
 			hThread->waitThreadFinish(INFINITE);

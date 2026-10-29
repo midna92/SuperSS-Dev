@@ -1,6 +1,6 @@
-// Arquivo cmd_add_daily_quest.cpp
-// Criado em 24/03/2018 as 21:25 por Acrisio
-// Implementa��o da classe CmdAddDailyQuest
+// File cmd_add_daily_quest.cpp
+// Created on 24/03/2018 at 21:25 by Acrisio
+// Implementation of the class CmdAddDailyQuest
 
 #if defined(_WIN32)
 #pragma pack(1)

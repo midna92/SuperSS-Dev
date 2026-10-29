@@ -1,6 +1,6 @@
-// Arquivo cmd_register_logon.cpp
-// Criado em 01/04/2018 as 21:45 por Acrisio
-// Implementação da classe CmdRegisterLogon
+// File cmd_register_logon.cpp
+// Created on 01/04/2018 at 21:45 by Acrisio
+// Implementation of class CmdRegisterLogon
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdRegisterLogon::~CmdRegisterLogon() {
 
 void CmdRegisterLogon::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-    // Não usa por que é um UPDATE
+    // Not used because it's an UPDATE
     return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo team.cpp
-// Criado em 02/11/2018 as 14:37 por Acrisio
-// Implementa��o da classe Team
+// File team.cpp
+// Created on 02/11/2018 at 14:37 by Acrisio
+// Implementation of the Team class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -70,7 +70,7 @@ void Team::addPlayer(player* _player) {
 		return _el->m_pi.uid == _player->m_pi.uid;
 	});
 
-	if (it == m_players.end())	// Add um playe ao team
+	if (it == m_players.end())	// Add a player to the team
 		m_players.push_back(_player);
 	else
 		_smp::message_pool::getInstance().push(new message("[Team::addPlayer][WARNING] player[UID=" + std::to_string(_player->m_pi.uid) + "] ja esta no team.", CL_FILE_LOG_AND_CONSOLE));
@@ -95,7 +95,7 @@ void Team::deletePlayer(player* _player, int _option) {
 		return _el->m_pi.uid == _player->m_pi.uid;
 	});
 
-	if (it != m_players.end())	// deleta o player do map
+	if (it != m_players.end())	// deletes the player from the map
 		m_players.erase(it);
 	else
 		_smp::message_pool::getInstance().push(new message("[Team::deletePlayer][WARNING] player[UID=" + std::to_string(_player->m_pi.uid) + "] ja foi deletado o map ou nunca esteve no map.", 

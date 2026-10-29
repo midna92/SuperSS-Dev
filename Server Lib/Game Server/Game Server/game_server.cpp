@@ -1,6 +1,6 @@
-// Arquivo game_server.cpp
-// Criado em 17/12/2017 por Acrisio
-// Implementação da classe game_server
+// File game_server.cpp
+// Created on 17/12/2017 by Acrisio
+// Implementation of the game_server class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -93,7 +93,7 @@
 #include <DbgHelp.h>
 #endif
 
-// !@ Teste
+// !@ Test
 #include "../UTIL/block_exec_one_per_time.hpp"
 
 #define CHECK_SESSION_BEGIN(method) if (!_session.getState()) \
@@ -104,8 +104,8 @@
 									throw exception("[game_server::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 6, 0)); \
 								M_SMART_BLOCK_PACKET_ONE_TIME \
 
-// Verifica se session está autorizada para executar esse ação, 
-// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+// Checks whether the session is authorized to perform this action, 
+// if it did not log in with the Server it cannot do anything until it logs in
 #define CHECK_SESSION_IS_AUTHORIZED(method) if (!_session.m_is_authorized) \
 												throw exception("[game_server::request" + std::string((method)) + "][Error] Player[UID=" + std::to_string(_session.m_pi.uid) \
 														+ "] Nao esta autorizado a fazer esse request por que ele ainda nao fez o login com o Server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 0x7000501)); \
@@ -124,7 +124,7 @@
 using namespace stdA;
 
 game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manager(*this, m_si.max_user), m_dqi{0}, m_login_manager(), m_timer_manager(),
-		m_notice(60/*60 segundos 1 minuto para o notice*/), m_ticker(30/*30 segundos para o ticker*/), m_GameGuardAuth(false), m_game_guard(nullptr) {
+		m_notice(60/*60 seconds 1 minute for the notice*/), m_ticker(30/*30 seconds for the ticker*/), m_GameGuardAuth(false), m_game_guard(nullptr) {
 
 	if (m_state == FAILURE) {
 		_smp::message_pool::getInstance().push(new message("[game_server::game_server][Error] na inicializacao do game server", CL_FILE_LOG_AND_CONSOLE));
@@ -133,13 +133,13 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 
 	try {
 
-		// Inicilializa Thread que cuida de verificar todos os itens do players, estão com o tempo normal
+		// Initialize the Thread that checks whether all the players' items have normal time
 		m_threads.push_back(new thread(TT_MONITOR, game_server::_check_player, (LPVOID)this, THREAD_PRIORITY_BELOW_NORMAL));
 
-		// Inicializa config do Game Server
+		// Initialize Game Server config
 		config_init();
 
-		// Inicializa os sistemas Globais
+		// Initialize the Global systems
 		init_systems();
 
 		// Initialize Game Guard Auth
@@ -153,7 +153,7 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 #endif
 		}
 
-		// SINCRONAR por que se não alguem pode pegar lixo de memória se ele ainda nao estiver inicializado
+		// SYNCHRONIZE because otherwise someone may get garbage from memory if it is not yet initialized
 		CmdDailyQuestInfo cmd_dqi(true);
 
 		snmdb::NormalManagerDB::getInstance().add(1, &cmd_dqi, game_server::SQLDBResponse, this);
@@ -169,7 +169,7 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 
 		// ---------------- Tests Area ---------------------
 #ifdef _DEBUG
-		//// Testes IFF
+		//// IFF Tests
 		//auto mapCommom = sIff::getInstance().getSetEffectTable();
 		//IFF::Base *commom = nullptr;
 		//IFF::Desc *desc = nullptr;
@@ -389,9 +389,9 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 		packet_func::funcs.addPacketCall(0xAB, packet_func::packet0AB, this);
 		packet_func::funcs.addPacketCall(0xAE, packet_func::packet0AE, this);
 		packet_func::funcs.addPacketCall(0xB2, packet_func::packet0B2, this);
-		// Recebi esse pacote quando troquei de server, e no outro eu tinha jogado um Match feito bastante Achievement
-		// e pegado daily quest, desistido do resto e aceito a do dia e aberto alguns card packs, ai troquei de server e recebi esse pacote
-		//2018-11-17 20:43:07.307 Tipo : 180(0xB4), desconhecido ou nao implementado.func_arr::getPacketCall()     Error Code : 335609856
+		// I received this packet when I switched servers, and on the other one I had played a Match and earned a lot of Achievements
+		// and got the daily quest, given up on the rest and accepted the one of the day and opened some card packs, then I switched servers and received this packet
+		//2018-11-17 20:43:07.307 Type : 180(0xB4), unknown or not implemented.func_arr::getPacketCall()     Error Code : 335609856
 		//2018-11-17 20:43:07.307 size packet : 5
 		//0000 B4 00 01 00 00 -- -- -- -- -- -- -- -- -- -- --    ................
 		packet_func::funcs.addPacketCall(0xB4, packet_func::packet0B4, this);
@@ -545,7 +545,7 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 		packet_func::funcs_sv.addPacketCall(0x84, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x86, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x89, packet_func::packet_svFazNada, this);
-		packet_func::funcs_sv.addPacketCall(0x8A, packet_func::packet_sv055, this);	// Esse pede o pacote 0x1B de tacada de novo do player que está com lag
+		packet_func::funcs_sv.addPacketCall(0x8A, packet_func::packet_sv055, this);	// This one asks again for the 0x1B shot packet from the player who is lagging
 		packet_func::funcs_sv.addPacketCall(0x8B, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x8C, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x8D, packet_func::packet_svFazNada, this);
@@ -554,7 +554,7 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 		packet_func::funcs_sv.addPacketCall(0x91, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x92, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x93, packet_func::packet_svFazNada, this);
-		packet_func::funcs_sv.addPacketCall(0x94, packet_func::packet_svFazNada, this);	// Resposta player report chat game
+		packet_func::funcs_sv.addPacketCall(0x94, packet_func::packet_svFazNada, this);	// Player report chat game response
 		packet_func::funcs_sv.addPacketCall(0x95, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x96, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x97, packet_func::packet_svFazNada, this);
@@ -773,11 +773,11 @@ game_server::game_server() : server(m_player_manager, 2, 26, 8), m_player_manage
 		packet_func::funcs_sv.addPacketCall(0x280, packet_func::packet_svFazNada, this);
 		packet_func::funcs_sv.addPacketCall(0x281, packet_func::packet_svFazNada, this);
 
-		// Auth Server Comandos
+		// Auth Server Commands
 		packet_func::funcs_as.addPacketCall(0x1, packet_func::packet_as001, this);
 
 
-		// ----------------------- Passa o ponteiro desse Game Server para o game_server statico para ser usado por outras classes -----------------
+		// ----------------------- Passes the pointer of this Game Server to the static game_server to be used by other classes -----------------
 		//sgs::gs = this;
 
 		// Initialized complete
@@ -805,7 +805,7 @@ game_server::~game_server() {
 		v_channel.shrink_to_fit();
 	}*/
 
-	// Limpa o Ponteiro static do Game Server para nao ter problemas futuros
+	// Clear the static Pointer of the Game Server to avoid future problems
 	//sgs::gs = nullptr;
 };
 
@@ -842,12 +842,12 @@ channel* game_server::enterChannel(player& _session, unsigned char _channel) {
 			packet_func::pacote04E(p, &_session, 1);
 			packet_func::session_send(p, &_session, 0);
 		
-			return enter;	// Ele já está nesse canal
+			return enter;	// It is already in this channel
 		}
 
 		if (enter->isFull()) {
 		
-			// Não conseguiu entrar no canal por que ele está cheio, deixa o enter como nullptr
+			// Could not enter the channel because it is full, leaves enter as nullptr
 			enter = nullptr;
 
 			packet p;
@@ -856,24 +856,24 @@ channel* game_server::enterChannel(player& _session, unsigned char _channel) {
 	
 		}else {
 
-			// Verifica se pode entrar no canal
+			// Check whether it can enter the channel
 			enter->checkEnterChannel(_session);
 
-			// Sai do canal antigo se ele estiver em outro canal
+			// Leaves the old channel if it is in another channel
 			if (_session.m_pi.channel != INVALID_CHANNEL && (last = findChannel(_session.m_pi.channel)) != nullptr)
 				last->leaveChannel(_session);
 	
-			// Entra no canal
+			// Enter the channel
 			enter->enterChannel(_session);
 		
 		}
 
 	}catch (exception& e) {
 
-		// Não conseguiu entrar no canal por um alguma flag ou erro do sistema deixa o enter como nullptr
+		// Could not enter the channel because of some flag or system error, leaves enter as nullptr
 		enter = nullptr;
 
-		// Tem que ter a resposta
+		// It must have the response
 		packet p;
 		packet_func::pacote04E(p, &_session, 6, (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x5700052);
 
@@ -882,7 +882,7 @@ channel* game_server::enterChannel(player& _session, unsigned char _channel) {
 		// Log Exception Error
 		_smp::message_pool::getInstance().push(new message("[game_server::enterChannel][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Relança se não for diferente de CHANNEL error
+		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)	// Rethrow unless it is different from CHANNEL error
 			throw;
 	}
 
@@ -912,8 +912,8 @@ void game_server::sendServerListAndChannelListToSession(player& _session) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("sendServerListAndChannelListToSession");
 
 		packet_func::pacote09F(p, &_session, m_server_list, v_channel);
@@ -932,8 +932,8 @@ void game_server::sendDateTimeToSession(player& _session) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("sendDateTimeToSession");
 
 		GetLocalTime(&localtime);
@@ -957,8 +957,8 @@ void game_server::sendRankServer(player& _session) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("sendRankServer");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.rank_server)
@@ -993,7 +993,7 @@ void game_server::sendRankServer(player& _session) {
 
 		p.init_plain((unsigned short)0xA2);
 
-		// Erro manda tudo 0
+		// Error sends everything 0
 		p.addUint16(0u);	// String IP
 		p.addUint32(0u);	// Port
 
@@ -1053,7 +1053,7 @@ void game_server::sendSmartCalculatorReplyToPlayer(const uint32_t _uid, std::str
 
 		v_msg = limit_chat_display(v_msg, (80 - (uint32_t)strlen(player->m_pi.nickname)));
 
-		// Resposta para o que enviou a private message
+		// Response to whoever sent the private message
 		packet p;
 
 		for (auto& el : v_msg) {
@@ -1066,7 +1066,7 @@ void game_server::sendSmartCalculatorReplyToPlayer(const uint32_t _uid, std::str
 			p.addString(el);
 
 #ifdef _DEBUG
-			// !@ Teste
+			// !@ Test
 			//_smp::message_pool::getInstance().push(new message("[game_server::sendSmartCalculatorReplyToPlayer][Log] Message Line: " + hex_util::StringToHexString(el), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
@@ -1123,14 +1123,14 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 		
 		std::string client_version;
 		
-		// Temp que vai guarda os dados que o cliente enviou para fazer o login com o server
+		// Temp that will store the data the client sent to log in to the server
 		player_info _pi;
 
-		// Player info da session e vai guardar os valores recuperados do banco de dados
+		// Player info of the session, which will store the values retrieved from the database
 		PlayerInfo *pi = &(_session.m_pi);
 		pi->clear();
 
-		//////////// ----------------------- Começa a ler o packet que o cliente enviou ------------------------- \\\\\\\\\\\/
+		//////////// ----------------------- Starts reading the packet the client sent ------------------------- \\\\\\\\\\\/
 
 #ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("[game_server::requestLogin][Log] Hex:\n\r" + hex_util::BufferToHexString(_packet->getBuffer(), _packet->getSize()), CL_FILE_LOG_AND_CONSOLE));
@@ -1223,19 +1223,19 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 
 #endif // _DEBUG
 
-		////////////----------------------- Terminou a leitura do packet que o cliente enviou -------------------------\\\\\\\\\\\/
+		////////////----------------------- Finished reading the packet the client sent -------------------------\\\\\\\\\\\/
 
-		// Verifica aqui se o IP/MAC ADDRESS do player está bloqueado
+		// Check here whether the player's IP/MAC ADDRESS is blocked
 		if (haveBanList(_session.m_ip, mac_address))
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(_pi.uid) + ", IP=" 
 					+ _session.m_ip +", MAC=" + mac_address + "] esta bloqueado por regiao IP/MAC Addrress.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1058, 0));
 		
-		// Aqui verifica se recebeu os dados corretos
+		// Here it checks whether the correct data was received
 		if (_pi.id[0] == '\0')
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(_pi.uid) 
 					+ ", IP=" + _session.m_ip + "] id que o player enviou eh invalido. id: " + std::string(_pi.id), STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1050, 0));
 
-		// Verifica se o server está mantle, se tiver verifica se o player tem capacidade para entrar
+		// Check whether the server is in maintenance, if so check whether the player has the capability to enter
 		CmdPlayerInfo cmd_pi(_pi.uid, true); // Waiter
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_pi, nullptr, nullptr);
@@ -1250,13 +1250,13 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 		if (pi->uid == ~0u)
 			throw exception("[game_server::requestLogin][Error] player[UID=" + std::to_string(_pi.uid) + "] nao existe no banco de dados", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1051, 0));
 
-		// UID de outro player ou enviou o ID errado mesmo (essa parte é anti-hack ou bot)
+		// UID of another player or really sent the wrong ID (this part is anti-hack or bot)
 		if (strcmp(pi->id, _pi.id) != 0)
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(pi->uid) + ", REQ_UID=" 
 					+ std::to_string(_pi.uid) + "] Player ID nao bate : client send ID : " + std::string(_pi.id) + "\t player DB ID : " 
 					+ std::string(pi->id), STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1052, 0));
 		
-		// Verifica aqui se a conta do player está bloqueada
+		// Check here whether the player's account is blocked
 		if (pi->block_flag.m_id_state.id_state.ull_IDState != 0) {
 
 			if (pi->block_flag.m_id_state.id_state.st_IDState.L_BLOCK_TEMPORARY && (pi->block_flag.m_id_state.block_time == -1 || pi->block_flag.m_id_state.block_time > 0)) {
@@ -1273,23 +1273,23 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 
 			}else if (pi->block_flag.m_id_state.id_state.st_IDState.L_BLOCK_ALL_IP) {
 
-				// Bloquea todos os IP que o player logar e da error de que a area dele foi bloqueada
+				// Blocks every IP the player logs in from and gives an error that their area was blocked
 
-				// Add o ip do player para a lista de ip banidos
+				// Add the player's ip to the banned ip list
 				snmdb::NormalManagerDB::getInstance().add(9, new CmdInsertBlockIP(_session.m_ip, "255.255.255.255"), game_server::SQLDBResponse, this);
 
-				// Resposta
+				// Response
 				throw exception("[game_server::requestLogin][Log] Player[UID=" + std::to_string(pi->uid) + ", IP=" + std::string(_session.m_ip) 
 						+ "] Block ALL IP que o player fizer login.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1031, 0));
 
 			}else if (pi->block_flag.m_id_state.id_state.st_IDState.L_BLOCK_MAC_ADDRESS) {
 
-				// Bloquea o MAC Address que o player logar e da error de que a area dele foi bloqueada
+				// Blocks the MAC Address the player logs in from and gives an error that their area was blocked
 
-				// Add o MAC Address do player para a lista de MAC Address banidos
+				// Add the player's MAC Address to the banned MAC Address list
 				snmdb::NormalManagerDB::getInstance().add(10, new CmdInsertBlockMAC(mac_address), game_server::SQLDBResponse, this);
 
-				// Resposta
+				// Response
 				throw exception("[game_server::requestLogin][Log] Player[UID=" + std::to_string(pi->uid)
 						+ ", IP=" + std::string(_session.m_ip) + ", MAC=" + mac_address + "] Block MAC Address que o player fizer login.",  
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1032, 0));
@@ -1300,12 +1300,12 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 		// Check packet version
 		de_encrypt_packet_ver(packet_version);
 
-		// Se a flag do canSameIDLogin estiver ativo, não verifica packet
+		// If the canSameIDLogin flag is active, does not check the packet
 		if (!m_login_manager.canSameIDLogin() && packet_version != PACKET_VERSION_SERVER)
 			throw exception("[game_server::requestLogin][Error] Player UID: " + std::to_string(_pi.uid) + ".\tPacket Version of client not match. Server: " 
 					+ std::to_string(PACKET_VERSION_SERVER) + " == Client: " + std::to_string(packet_version), STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1055, 0));
 
-		// Verifica o Auth Key do player
+		// Check the player's Auth Key
 		CmdAuthKeyLoginInfo cmd_akli(pi->uid, true); // Waiter
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_akli, nullptr, nullptr);
@@ -1315,11 +1315,11 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 		if (cmd_akli.getException().getCodeError() != 0)
 			throw cmd_akli.getException();
 
-		// ### Isso aqui é uma falha de segurança faltal, muito grande nunca posso deixar isso ligado depois que colocar ele online
+		// ### This is a fatal security flaw, a very big one, I must never leave this on after putting it online
 		if (!m_login_manager.canSameIDLogin() && !cmd_akli.getInfo().valid)
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(pi->uid) + "].\tAuthKey ja foi utilizada antes.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1056, 0));
 
-		// ### Isso aqui é uma falha de segurança faltal, muito grande nunca posso deixar isso ligado depois que colocar ele online
+		// ### This is a fatal security flaw, a very big one, I must never leave this on after putting it online
 		if (!m_login_manager.canSameIDLogin() && 
 #if defined(_WIN32)
 			_stricmp(kol.keys[0], cmd_akli.getInfo().key) != 0
@@ -1362,7 +1362,7 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 
 		_session.m_pi.mi = cmd_mi.getInfo();
 
-		// Passa o Online ID para a estrutura MemberInfo, para não da erro depois
+		// Pass the Online ID to the MemberInfo structure, to avoid errors later
 		pi->mi.oid = _session.m_oid;
 		pi->mi.state_flag.stFlagBit.visible = 1u;
 		pi->mi.state_flag.stFlagBit.whisper = pi->whisper;
@@ -1370,7 +1370,7 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 
 		if (pi->m_cap.stBit.game_master/* & 4*/) {
 
-			_session.m_gi.setGMUID(pi->uid);	// Set o UID do GM dados
+			_session.m_gi.setGMUID(pi->uid);	// Set the GM UID data
 
 			pi->mi.state_flag.stFlagBit.visible = _session.m_gi.visible;
 			pi->mi.state_flag.stFlagBit.whisper = _session.m_gi.whisper;
@@ -1380,17 +1380,17 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 					+ std::to_string(pi->uid) + "][OID=" + std::to_string(_session.m_oid) + "] Logou.", CL_FILE_LOG_AND_CONSOLE));
 		}
 
-		// Verifica se o player tem a capacidade e level para entrar no server
-		if (m_si.propriedade.stBit.only_rookie && pi->level >= 6/*Beginner E maior*/)
+		// Check whether the player has the capability and level to enter the server
+		if (m_si.propriedade.stBit.only_rookie && pi->level >= 6/*Beginner E or higher*/)
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(pi->uid) + ", LEVEL="
 					+ std::to_string((unsigned short)pi->level) + "] nao pode entrar no server por que o server eh so para rookie.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1052, 0));
 
-		/*Nega ele não pode ser nenhum para lançar o erro*/
+		/*Negation, it cannot be none in order to throw the error*/
 		if (m_si.propriedade.stBit.mantle && !(pi->m_cap.stBit.mantle || pi->m_cap.stBit.game_master))
 			throw exception("[game_server::requestLogin][Error] Player[UID=" + std::to_string(pi->uid) + ", CAP=" + std::to_string(pi->m_cap.ulCapability)
 					+ "] nao tem a capacidade para entrar no server mantle.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1053, 0));
 
-		// Verifica se o Player já está logado
+		// Check whether the Player is already logged in
 		auto player_logado = HasLoggedWithOuterSocket(_session);
 
 		if (!m_login_manager.canSameIDLogin() && player_logado != nullptr) {
@@ -1405,51 +1405,51 @@ void game_server::requestLogin(player& _session, packet *_packet) {
 						STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1054, 0));
 		}
 
-		// Junta Flag de block do server, ao do player
+		// Joins the server's block Flag with the player's
 		pi->block_flag.m_flag.ullFlag |= m_si.flag.ullFlag;
 
-		// Authorized a ficar online no server por tempo indeterminado
+		// Authorized to stay online on the server indefinitely
 		_session.m_is_authorized = 1u;
 
-		// Registra no Banco de dados que o player está logado no Game Server
-		snmdb::NormalManagerDB::getInstance().add(5, new CmdRegisterLogon(pi->uid, 0/*Logou*/), game_server::SQLDBResponse, this);
+		// Register in the Database that the player is logged in to the Game Server
+		snmdb::NormalManagerDB::getInstance().add(5, new CmdRegisterLogon(pi->uid, 0/*Logged in*/), game_server::SQLDBResponse, this);
 
-		// Resgistra o Login do Player no server
+		// Register the Player's Login on the server
 		snmdb::NormalManagerDB::getInstance().add(7, new CmdRegisterLogonServer(pi->uid, std::to_string(m_si.uid)), game_server::SQLDBResponse, this);
 
 		_smp::message_pool::getInstance().push(new message("[game_server::requestLogin][Log] Player[OID=" + std::to_string(_session.m_oid) + ", UID=" + std::to_string(pi->uid) + ", NICKNAME=" 
 				+ std::string(pi->nickname) + "] Autenticou com sucesso.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Verifica se o papel tem limite por dia, se não anula o papel shop do player
+		// Check whether the papel has a daily limit, if not cancel the player's papel shop
 		sPapelShopSystem::getInstance().init_player_papel_shop_info(_session);
 
 #if _DEBUG
 		_smp::message_pool::getInstance().push(new message("[game_server::requestLogin][Log] Enviando os pacotes principais do jogo para o player: " + std::to_string(pi->uid), CL_FILE_LOG_AND_CONSOLE));
 #endif
 
-		// Cria o login manager para carregar o cache das informações e itens completo do player
-		m_login_manager.createTask(_session, kol, _pi, cv_side_c/*esses valores não vai usar mais se ficar tudo bem aqui no game_server*/, this);
+		// Create the login manager to load the cache of the player's complete information and items
+		m_login_manager.createTask(_session, kol, _pi, cv_side_c/*these values will no longer be used if everything goes well here in the game_server*/, this);
 
-		// Time que check o TTL, para prevenção de Bots mal feitos
+		// Time that checks the TTL, to prevent poorly made Bots
 		_session.m_tick_bot = std::clock();
 
-		// Entra com sucesso
+		// Enters successfully
 		packet p;
 
 		packet_func::pacote044(p, &_session, m_si, 0xD3);
 
-		// Entra com sucesso
+		// Enters successfully
 		packet_func::session_send(p, &_session, 0);
 
 	}catch (exception& e) {
 
-		// Error no login, set falso o autoriza o player a continuar conectado com o Game Server
+		// Error on login, set false the authorization for the player to stay connected to the Game Server
 		_session.m_is_authorized = 0u;
 
-		// Error Sistema
+		// System Error
 		packet p((unsigned short)0x44);
 
-		// Pronto agora sim, mostra o erro que eu quero
+		// Done, now it shows the error I want
 		p.addUint8(0xE2);
 		p.addInt32(500020);
 
@@ -1473,8 +1473,8 @@ void game_server::requestEnterChannel(player& _session, packet *_packet) {
 
 		unsigned char channel = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterChannel");
 
 		// Enter Channel
@@ -1482,7 +1482,7 @@ void game_server::requestEnterChannel(player& _session, packet *_packet) {
 
 	}catch (exception& e) {
 
-		// Tem que ter a resposta
+		// It must have the response
 		packet p;
 		packet_func::pacote04E(p, &_session, 6, (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::CHANNEL) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x5700052);
 
@@ -1497,11 +1497,11 @@ void game_server::requestEnterOtherChannelAndLobby(player& _session, packet *_pa
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("EnterOtherChannelAndLobby");
 
-		// Lobby anterior que o player estava
+		// Previous Lobby the player was in
 		unsigned char lobby = _session.m_pi.lobby;
 
 		auto c = enterChannel(_session, _packet->readUint8());
@@ -1513,7 +1513,7 @@ void game_server::requestEnterOtherChannelAndLobby(player& _session, packet *_pa
 
 		_smp::message_pool::getInstance().push(new message("[game_server::requestEnterOtherChannelAndLobby][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		
-		// Relança
+		// Rethrow
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::CHANNEL)
 			throw;
 	}
@@ -1528,8 +1528,8 @@ void game_server::requestChangeServer(player& _session, packet *_packet) {
 
 		int32_t server_uid = _packet->readUint32();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeServer");
 
 		auto it = std::find_if(m_server_list.begin(), m_server_list.end(), [&](auto& _el) {
@@ -1542,7 +1542,7 @@ void game_server::requestChangeServer(player& _session, packet *_packet) {
 					+ "], mas ele nao esta no server list mais.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 0x7500001, 1));
 
 		if (_session.m_pi.lobby != (unsigned char)~0 && _session.m_pi.lobby == 176u/*Grand Prix*/
-			&& !it->propriedade.stBit.grand_prix/*Não é Grand Prix o Server*/)
+			&& !it->propriedade.stBit.grand_prix/*The Server is not Grand Prix*/)
 			throw exception("[game_server::requestChangeServer][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] tentou trocar de server para o Server[UID=" + std::to_string(server_uid) 
 					+ "], mas o player esta na lobby grand prix e o server que ele quer entrar nao e' grand prix.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 0x7500002, 2));
@@ -1574,7 +1574,7 @@ void game_server::requestChangeServer(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[requestChangeServer][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// Envia server lista novamente para o player ele foi proibido de entrar no server ou não conseguiu por algum motivo ou erro
+		// Sends the server list again to the player, he was forbidden to enter the server or could not for some reason or error
 		sendServerListAndChannelListToSession(_session);
 		/*p.init_plain((unsigned short)0x1D4);
 
@@ -1612,8 +1612,8 @@ void game_server::requestUCCWebKey(player& _session, packet *_packet) {
 
 		_packet->readBuffer(&ctx_uwk, sizeof(ctx_UCCWebKey));
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UCCWebKey");
 
 		if (ctx_uwk.uid == 0)
@@ -1626,9 +1626,9 @@ void game_server::requestUCCWebKey(player& _session, packet *_packet) {
 
 		player *s = (player*)m_session_manager.findSessionByUID(ctx_uwk.uid);
 
-		// ----------- PRECISA TERMINAR ELE AINDA, SÓ FUNCIONA PARA O DONO DA UCC ---------------------------
-		// Player não está nesse server, se nao tiver, procura no banco de dados
-		// [Já fiz] Por Hora envio error, por que não sei se os player que vão ver ucc de outro player envia esse pacote
+		// ----------- STILL NEEDS TO BE FINISHED, ONLY WORKS FOR THE UCC OWNER ---------------------------
+		// Player is not on this server, if not, search in the database
+		// [Already done] For now I send an error, because I do not know whether players who view another player's ucc send this packet
 		if (s == nullptr)
 			throw exception("[game_server::requestUCCWebKey][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou gerar chave web de UCC[ITEM_ID="
 					+ std::to_string(ctx_uwk.item_id) + "] do player[UID=" + std::to_string(ctx_uwk.uid) + "], mas o player nao esta nesse server. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 3, 0x5100103));
@@ -1639,7 +1639,7 @@ void game_server::requestUCCWebKey(player& _session, packet *_packet) {
 			throw exception("[game_server::requestUCCWebKey][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou gerar chave web de UCC[ITEM_ID="
 					+ std::to_string(ctx_uwk.item_id) + "] do player[UID=" + std::to_string(ctx_uwk.uid) + "], mas o ele nao tem a UCC. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 4, 0x5100104));
 
-		// Gera Web Key UCC
+		// Generate UCC Web Key
 		CmdGeraUCCWebKey cmd_guwk(_session.m_pi.uid, pWi->id, true);	// Waiter
 
 		snmdb::NormalManagerDB::getInstance().add(0, &cmd_guwk, nullptr, nullptr);
@@ -1655,7 +1655,7 @@ void game_server::requestUCCWebKey(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("[UCC::SelfDesignSystem::GeraWebKey][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] gerou Web Key[KEY=" + key + "] da UCC[TYPEID=" 
 				+ std::to_string(pWi->_typeid) + ", ID=" + std::to_string(pWi->id) + "] do player[UID=" + std::to_string(ctx_uwk.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para Gera UCC Web Key
+		// Response to Generate UCC Web Key
 		p.init_plain((unsigned short)0x153);
 
 		p.addUint8(0);	// OK
@@ -1673,8 +1673,8 @@ void game_server::requestUCCWebKey(player& _session, packet *_packet) {
 
 		p.init_plain((unsigned short)0x153);
 
-		p.addUint8(1);	// Error Acho
-		p.addUint8(1);	// ACHO
+		p.addUint8(1);	// Error I think
+		p.addUint8(1);	// I THINK
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::GAME_SERVER) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 0x5100100);
 
 		packet_func::session_send(p, &_session, 1);
@@ -1690,12 +1690,12 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 
 		unsigned char opt = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("UCCSystem");
 
 		switch (opt) {
-		case 0:	// Salva para sempre[definitivo]
+		case 0:	// Save forever [permanent]
 		{
 			uint32_t ucc_typeid = _packet->readUint32();
 			std::string ucc_idx = _packet->readString();
@@ -1729,7 +1729,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 				throw exception("[game_server::requestUCCSystem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou salvar definitivo a UCC[TYPEID="
 						+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "], mas o name eh invalido. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 7, 0x5200107));
 
-			// Save definitivo UCC
+			// Save permanent UCC
 
 			// UPDATE ON SERVER
 			auto it = std::find_if(_session.m_pi.mp_wi.begin(), _session.m_pi.mp_wi.end(), [&](auto& el) {
@@ -1741,7 +1741,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 					+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "], mas ele nao tem essa UCC. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 5, 0x5200105));
 
 			// TEMPORARY 2, FOREVER 1
-			it->second.ucc.status = 1;		// Definitivo
+			it->second.ucc.status = 1;		// Permanent
 #if defined(_WIN32)
 			strcpy_s(it->second.ucc.name, ucc_name.c_str());
 			strcpy_s(it->second.ucc.copier_nick, _session.m_pi.nickname);
@@ -1775,7 +1775,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 
 			p.addUint8(opt);
 
-			p.addUint8(1);	// no outro fala que � op��o de erro, mas n�o sei n�o
+			p.addUint8(1);	// in the other one it says it is an error option, but I do not know
 
 			p.addInt32(it->second.id);
 			p.addUint32(it->second._typeid);
@@ -1789,7 +1789,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 		case 1:	// Info
 		{
 			int32_t ucc_id = _packet->readInt32();
-			unsigned char owner = _packet->readUint8();	// acho que 1 � do pr�prio player, 0 de outro player
+			unsigned char owner = _packet->readUint8();	// I think 1 is the player's own, 0 from another player
 
 			WarehouseItemEx wi{ 0 };
 
@@ -1799,8 +1799,8 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 
 			auto pWi = _session.m_pi.findWarehouseItemById(ucc_id);
 
-			// N�o achou o UCC no Player, tenta no DB para ver se � de outro player
-			// Por Hora envia uma Exception
+			// Did not find the UCC on the Player, tries the DB to see whether it is from another player
+			// For now sends an Exception
 			if (pWi == nullptr) {
 
 				CmdFindUCC cmd_fu(ucc_id, true);	// Waiter
@@ -1818,7 +1818,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 
 				wi = cmd_fu.getInfo();
 
-				// passa a referencia da ucc que pegou no banco de dados
+				// passes the reference of the ucc retrieved from the database
 				pWi = &wi;
 			}
 
@@ -1846,7 +1846,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 			
 			break;
 		}
-		case 2:	// C�piar
+		case 2:	// Copy
 		{
 			uint32_t ucc_typeid = _packet->readUint32();
 			std::string ucc_idx = _packet->readString();
@@ -1909,7 +1909,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 						+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "] para UCC_CPY[ID=" + std::to_string(cpy_id) + "], mas nao eh uma UCC valida. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 12, 0x5200112));
 			// FIM CHECK UCC VALID FOR SERVER
 
-			// Copiar UCC
+			// Copy UCC
 
 			// UPDATE ON SERVER
 			auto it = std::find_if(_session.m_pi.mp_wi.begin(), _session.m_pi.mp_wi.end(), [&](auto& el) {
@@ -1920,7 +1920,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 				throw exception("[game_server::requestUCCSystem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou copiar a UCC[TYPEID="
 						+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "], mas ele nao tem essa UCC. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 5, 0x5200105));
 
-			// Copia permanente
+			// Permanent copy
 			pWi->ucc.status = 1;
 #if defined(_WIN32)
 			strcpy_s(pWi->ucc.idx, sizeof(pWi->ucc.idx), it->second.ucc.idx);
@@ -1970,13 +1970,13 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 			p.addString(pWi->ucc.idx);
 			p.addUint16(pWi->ucc.seq);
 
-			p.addUint8(1);	// no outro fala que � op��o de erro, mas n�o sei n�o
+			p.addUint8(1);	// in the other one it says it is an error option, but I do not know
 
 			packet_func::session_send(p, &_session, 1);
 
 			break;
 		}
-		case 3:	// Salve tempor�rio
+		case 3:	// Save temporary
 		{
 			uint32_t ucc_typeid = _packet->readUint32();
 			std::string ucc_idx = _packet->readString();
@@ -2005,7 +2005,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 				throw exception("[game_server::requestUCCSystem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou salvar temporario a UCC[TYPEID="
 						+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "], mas o idx eh invalido. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 6, 0x5200106));
 
-			// Save tempor�rio UCC
+			// Save temporary UCC
 			
 			// UPDATE ON SERVER
 			auto it = std::find_if(_session.m_pi.mp_wi.begin(), _session.m_pi.mp_wi.end(), [&](auto& el) {
@@ -2017,13 +2017,13 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 						+ std::to_string(ucc_typeid) + ", IDX=" + ucc_idx + "], mas ele nao tem essa UCC. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 5, 0x5200105));
 
 			// TEMPORARY 2, FOREVER 1
-			it->second.ucc.status = 2;		// Tempor�rio
+			it->second.ucc.status = 2;		// Temporary
 #if defined(_WIN32)
 			strcpy_s(it->second.ucc.name, sizeof(it->second.ucc.name), "0");
 #elif defined(__linux__)
 			strcpy(it->second.ucc.name, "0");
 #endif
-			SYSTEMTIME si{ 0 };	// tempor�rio n�o tem data de desenho
+			SYSTEMTIME si{ 0 };	// temporary has no drawing date
 
 			// UPDATE ON DB
 			CmdUpdateUCC cmd_uu(_session.m_pi.uid, it->second, si, CmdUpdateUCC::TEMPORARY, true);	// Waiter
@@ -2046,7 +2046,7 @@ void game_server::requestUCCSystem(player& _session, packet *_packet) {
 
 			p.addUint32(it->second._typeid);
 			p.addString(it->second.ucc.idx);
-			p.addUint8(1);	// no outro fala que � op��o de erro, mas n�o sei n�o
+			p.addUint8(1);	// in the other one it says it is an error option, but I do not know
 
 			packet_func::session_send(p, &_session, 1);
 
@@ -2079,17 +2079,17 @@ void game_server::requestChat(player& _session, packet *_packet) {
 		nickname = _packet->readString();
 		msg = _packet->readString();
 
-		// Verifica a mensagem com palavras proibida e manda para o log e bloquea o chat dele
+		// Check the message for forbidden words and send it to the log and block their chat
 	#ifdef _DEBUG
 		_smp::message_pool::getInstance().push(new message("Player UID: " + std::to_string(_session.m_pi.uid) + ".\tNickname: " + nickname, CL_ONLY_FILE_LOG));
 		_smp::message_pool::getInstance().push(new message("Player UID: " + std::to_string(_session.m_pi.uid) + ".\tmessage: " + msg, CL_ONLY_FILE_LOG));
 	#endif
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("Chat");
 
-		// Teste Add All Card para quem manda msg na lobby
+		// Test Add All Card for whoever sends a msg in the lobby
 		/*auto card = sIff::getInstance().getCard();
 		stItem item{ 0 };
 		BuyItem bi{ 0 };
@@ -2138,14 +2138,14 @@ void game_server::requestChat(player& _session, packet *_packet) {
 		//	}else
 		//		_smp::message_pool::getInstance().push(new message("[CardAddTest][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao conseguiu inicializar Card[TYPEID=" + std::to_string(bi._typeid) + "]", CL_FILE_LOG_AND_CONSOLE));
 		//}
-		// Fim do Teste
+		// End of Test
 
 		channel *c = findChannel(_session.m_pi.channel);
 
 		if (c != nullptr) {
 
 			// LOG GM
-			// Envia para todo os GM do server essa message
+			// Sends this message to all the GMs of the server
 			auto gm = m_player_manager.findAllGM();
 
 			if (!gm.empty()) {
@@ -2158,12 +2158,12 @@ void game_server::requestChat(player& _session, packet *_packet) {
 				if (index != std::string::npos)
 					from.replace(index, 1, " \\1");
 
-				// Normal rotina notify gm global chat
+				// Normal routine notify gm global chat
 				for (auto& el : gm) {
 					if (((el->m_gi.channel &&  el->m_pi.channel == c->getInfo()->id) || el->m_gi.whisper || el->m_gi.isOpenPlayerWhisper(_session.m_pi.uid))
 						&& /* Check SAME Channel and Room*/(el->m_pi.channel != _session.m_pi.channel || el->m_pi.mi.sala_numero != _session.m_pi.mi.sala_numero)) {
 							
-						// Responde no chat do player
+						// Replies in the player's chat
 						p.init_plain((unsigned short)0x40);
 
 						p.addUint8(0);
@@ -2186,9 +2186,9 @@ void game_server::requestChat(player& _session, packet *_packet) {
 				packet_func::lobby_broadcast(*c, p, 0);
 			}
 
-			// Envia a mensagem para o discord chat log se estiver ativado
+			// Sends the message to the discord chat log if enabled
 
-			// Verifica se o m_chat_discod flag está ativo para enviar o chat para o discord
+			// Check whether the m_chat_discod flag is active to send the chat to discord
 			if (m_si.rate.smart_calculator && m_chat_discord)
 				sendMessageToDiscordChatHistory(
 					"[Channel=" + std::string(c->getInfo()->name) + ", ROOM=" + std::to_string(_session.m_pi.mi.sala_numero) + "]",		// From
@@ -2215,8 +2215,8 @@ void game_server::requestChangeChatMacroUser(player& _session, packet *_packet) 
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeChatMacroUser");
 
 		chat_macro_user cmu{ 0 };
@@ -2225,7 +2225,7 @@ void game_server::requestChangeChatMacroUser(player& _session, packet *_packet) 
 
 		// UPDATE ON GAME
 
-		// Se vazio substitiu por um macro padrão
+		// If empty, replace with a default macro
 		for (auto i = 0u; i < (sizeof(cmu.macro) / sizeof(cmu.macro[0])); ++i)
 			if (std::empty(cmu.macro[i]) || cmu.macro[i][0] == '\0')
 #if defined(_WIN32)
@@ -2260,8 +2260,8 @@ void game_server::requestPlayerInfo(player& _session, packet *_packet) {
 		_smp::message_pool::getInstance().push(new message("Player UID: " + std::to_string(_session.m_pi.uid) + ".\tPlayer Info request uid: " + std::to_string(uid) + "\tseason: " + std::to_string((int)season), CL_ONLY_FILE_LOG));
 #endif // _DEBUG
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("PlayerInfo");
 
 		player *s = nullptr;
@@ -2289,8 +2289,8 @@ void game_server::requestPlayerInfo(player& _session, packet *_packet) {
 
 			MemberInfoEx mi = cmd_mi.getInfo();
 
-			// Verifica se não é o mesmo UID, pessoas diferentes
-			// Quem quer ver a info não é GM aí verifica se o player é GM
+			// Check whether it is not the same UID, different people
+			// Whoever wants to see the info is not a GM, so check whether the player is a GM
 			if (uid != _session.m_pi.uid && !_session.m_pi.m_cap.stBit.game_master && mi.capability.stBit.game_master/* & 4/*(GM)*/) {
 				
 				packet_func::pacote089(p, &_session, uid, season, 3);
@@ -2477,8 +2477,8 @@ void game_server::requestPlayerInfo(player& _session, packet *_packet) {
 			return;
 		}
 
-		// Verifica se não é o mesmo UID, pessoas diferentes
-		// Quem quer ver a info não é GM aí verifica se o player é GM
+		// Check whether it is not the same UID, different people
+		// Whoever wants to see the info is not a GM, so check whether the player is a GM
 		if (uid != _session.m_pi.uid && !_session.m_pi.m_cap.stBit.game_master && pi->m_cap.stBit.game_master/* & 4/*(GM)*/) {
 			
 			packet_func::pacote089(p, &_session, uid, season, 3);
@@ -2568,8 +2568,8 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("PrivateMessage");
 
 		nickname = _packet->readString();
@@ -2583,10 +2583,10 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 			throw exception("[game_server::requestPrivateMessage][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar message privada[msg=" + msg + "] para o player[NICKNAME="
 				+ nickname + "], mas message esta vazia. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 4, 5));
 
-		// Verifica se o player tem os itens necessários(PREMIUM USER OR GM) para usar essa função
+		// Check whether the player has the necessary items (PREMIUM USER OR GM) to use this function
 		if (nickname.compare("#SC") == 0 || nickname.compare("#CS") == 0) {
 
-			// Só sai do Private message se for comando do Smart Calculator, se não faz as outras verificações para enviar o PM
+			// Only leaves Private message if it is a Smart Calculator command, otherwise does the other checks to send the PM
 			if (m_si.rate.smart_calculator && checkSmartCalculatorCmd(_session, msg, (nickname.compare("#SC") == 0 ? eTYPE_CALCULATOR_CMD::SMART_CALCULATOR : eTYPE_CALCULATOR_CMD::CALCULATOR_STADIUM)))
 				return;
 		}
@@ -2602,13 +2602,13 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 			throw exception("[game_server::requestPrivateMessage][WARNING] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar message privada[msg=" + msg + "] para o player[NICKNAME="
 					+ nickname + "], mas o whisper do player esta bloqueado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 5, 4));
 
-		if ((s->m_pi.lobby == (unsigned char)~0/*não está na lobby*/ && s->m_pi.mi.sala_numero == -1/*e não está em nenhum sala*/) || s->m_pi.place == 2)
+		if ((s->m_pi.lobby == (unsigned char)~0/*is not in the lobby*/ && s->m_pi.mi.sala_numero == -1/*and is not in any room*/) || s->m_pi.place == 2)
 			throw exception("[game_server::requestPrivateMessage][WARNING] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar message privada[msg=" + msg + "] para o player[NICKNAME="
 					+ nickname + "], mas o player nao pode receber message agora, por que nao pode ver o chat. pode estar no Papel Shop e Etc.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 3, 4));
 
-		// Arqui procura por palavras inapropriadas na message
+		// Here it searches for inappropriate words in the message
 
-		// Envia para todo os GM do server essa message
+		// Sends this message to all the GMs of the server
 		auto gm = m_player_manager.findAllGM();
 
 		if (!gm.empty()) {
@@ -2617,8 +2617,8 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 
 			for (auto& el : gm) {
 				if ((el->m_gi.whisper || el->m_gi.isOpenPlayerWhisper(_session.m_pi.uid) || el->m_gi.isOpenPlayerWhisper(s->m_pi.uid))
-					&& /*Nao envia o log de PM novamente para o GM que enviou ou recebeu PM*/(el->m_pi.uid != _session.m_pi.uid && el->m_pi.uid != s->m_pi.uid)) {
-					// Responde no chat do player
+					&& /*Does not send the PM log again to the GM who sent or received the PM*/(el->m_pi.uid != _session.m_pi.uid && el->m_pi.uid != s->m_pi.uid)) {
+					// Replies in the player's chat
 					p.init_plain((unsigned short)0x40);
 
 					p.addUint8(0);
@@ -2635,7 +2635,7 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 		// Log
 		_smp::message_pool::getInstance().push(new message("[PrivateMessage][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] enviou a Message[" + msg + "] para o player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Resposta para o que enviou a private message
+		// Response to whoever sent the private message
 		p.init_plain((unsigned short)0x84);
 
 		p.addUint8(0);	// FROM
@@ -2645,7 +2645,7 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, &_session, 1);
 
-		// Resposta para o player que vai receber a private message
+		// Response to the player who will receive the private message
 		p.init_plain((unsigned short)0x84);
 
 		p.addUint8(1);	// TO
@@ -2655,9 +2655,9 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 
 		packet_func::session_send(p, s, 1);
 
-		// Envia a mensagem para o Chat History do discord se ele estiver ativo
+		// Sends the message to the discord Chat History if it is active
 		
-		// Verifica se o m_chat_discod flag está ativo para enviar o chat para o discord
+		// Check whether the m_chat_discod flag is active to send the chat to discord
 		if (m_si.rate.smart_calculator && m_chat_discord)
 			sendMessageToDiscordChatHistory(
 				"[PM]",																												// From
@@ -2681,7 +2681,7 @@ void game_server::requestPrivateMessage(player& _session, packet *_packet) {
 		)
 			p.addString(s->m_pi.nickname);
 		else
-			p.addString(nickname);	// Player não está online usa o nickname que ele forneceu
+			p.addString(nickname);	// Player is not online, uses the nickname he provided
 
 		packet_func::session_send(p, &_session, 1);
 	}
@@ -2694,8 +2694,8 @@ void game_server::requestChangeWhisperState(player& _session, packet *_packet) {
 
 		auto whisper = _packet->readUint8();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ChangeWisperState");
 
 		if (whisper > 1)
@@ -2718,8 +2718,8 @@ void game_server::requestNotifyNotDisplayPrivateMessageNow(player& _session, pac
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("requestNotifyNotDisplayPrivateMessageNow");
 
 		std::string nickname = _packet->readString();
@@ -2729,7 +2729,7 @@ void game_server::requestNotifyNotDisplayPrivateMessageNow(player& _session, pac
 					+ "] nao pode ver mensagem agora, mas o nickname de quem enviou a mensagem para ele eh invalido(empty). Hacker ou Bug.", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 0x750050, 0));
 
-		// Procura o player pelo nickname, para ver se ele está online
+		// Search for the player by nickname, to see whether he is online
 		auto s = reinterpret_cast< player* >(m_player_manager.findSessionByNickname(nickname));
 
 		if (s != nullptr && 
@@ -2744,7 +2744,7 @@ void game_server::requestNotifyNotDisplayPrivateMessageNow(player& _session, pac
 			_smp::message_pool::getInstance().push(new message("[game_server::requestNotifyNotDisplayPrivateMessageNow][Log] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] recebeu mensagem do Player[UID=" + std::to_string(s->m_pi.uid) + ", NICKNAME=" + nickname + "], mas ele nao pode ver a mensagem agora.", CL_FILE_LOG_AND_CONSOLE));
 
-			// Envia para o player que o player não pode receber mensagem agora
+			// Sends to the player that the player cannot receive messages right now
 			packet p((unsigned short)0x40);
 
 			p.addUint8(4u);
@@ -2785,8 +2785,8 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 
 		unsigned short cmd = _packet->readUint16();
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("CommonCmdGM");
 
 		switch (cmd) {
@@ -2939,7 +2939,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 		}
 		case CCG_CHANGE_WIND_VERSUS:
 		{
-			// Troca o Vento só no modo versus
+			// Changes the Wind only in versus mode
 			if (!(_session.m_pi.m_cap.stBit.game_master/* & 4*/))
 				throw exception("[game_server::requestCommonCmdGM][CHANGE_WIND_VERSUS][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao eh GM mas tentou executar comando GM. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 0x5700100));
 
@@ -2955,7 +2955,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 		}
 		case CCG_CHANGE_WEATHER:
 		{
-			// Troca o tempo(Weather) da sala Lounge ou no Jogo(Game, Tourney, VS e etc)
+			// Changes the weather (Weather) of the Lounge room or in the Game (Game, Tourney, VS and etc)
 			if (!(_session.m_pi.m_cap.stBit.game_master/* & 4*/))
 				throw exception("[game_server::requestCommonCmdGM][CHANGE_WEATHER][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao eh GM mas tentou executar comando GM. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 0x5700100));
 
@@ -3009,7 +3009,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 			bi._typeid = item_typeid;
 			bi.qntd = item_qntd;
 			
-			item_manager::initItemFromBuyItem(s->m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+			item_manager::initItemFromBuyItem(s->m_pi, item, bi, false, 0, 0, 1/*~not Check Level*/);
 
 			if (item._typeid == 0)
 				throw exception("[game_server::requestCommonCmdGM][GIVE_ITEM][ErrorSystem] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar presente para o player[UID="
@@ -3029,7 +3029,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 		}
 		case CCG_GOLDENBELL:
 		{
-			// Envia item para todos da sala
+			// Sends item to everyone in the room
 			if (!(_session.m_pi.m_cap.stBit.game_master/* & 4*/))
 				throw exception("[game_server::requestCommonCmdGM][GOLDENBELL][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao eh GM mas tentou executar comando GM. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 0x5700100));
 
@@ -3048,7 +3048,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 		}
 		case CCG_IDENTITY:
 		{
-			// Troca a Capacidade do player
+			// Changes the player's Capability
 			if (!(_session.m_pi.m_cap.stBit.game_master/* & 4*/))
 				throw exception("[game_server::requestCommonCmdGM][IDENTITY][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao eh GM mas tentou executar comando GM. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 0x5700100));
 
@@ -3079,7 +3079,7 @@ void game_server::requestCommonCmdGM(player& _session, packet *_packet) {
 
 		p.addString(_session.m_pi.nickname);
 
-		if (STDA_ERROR_DECODE(e.getCodeError()) == 9/*Não pode enviar item, foi bloqueado*/)
+		if (STDA_ERROR_DECODE(e.getCodeError()) == 9/*Cannot send item, it was blocked*/)
 			p.addString("Nao pode executar esse comando, voce foi bloqueado pelo ADM.");
 		else
 			p.addString("Nao conseguiu executar o comando.");
@@ -3095,8 +3095,8 @@ void game_server::requestCommandNoticeGM(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("CommandNoticeGM");
 
 		if (!(_session.m_pi.m_cap.stBit.game_master/* & 4*/))
@@ -3148,8 +3148,8 @@ void game_server::requestTranslateSubPacket(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("TranslateSubPacket");
 
 		switch (sub_packet_id) {
@@ -3200,7 +3200,7 @@ void game_server::requestTranslateSubPacket(player& _session, packet *_packet) {
 
 			// UPDATE ON GAME
 
-			// Resposta para Msg Off
+			// Response to Msg Off
 			p.init_plain((unsigned short)0x95);
 
 			p.addUint16(sub_packet_id);	// Sub Packet Id
@@ -3243,8 +3243,8 @@ void game_server::requestSendTicker(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("SendTicker");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.ticker)
@@ -3259,18 +3259,18 @@ void game_server::requestSendTicker(player& _session, packet *_packet) {
 
 		try {
 			
-			// Log de Gastos de CP(Cookie Point)
+			// CP (Cookie Point) Spending Log
 			CPLog cp_log;
 
 			cp_log.setType(CPLog::TYPE::TICKER);
 
 			cp_log.setCookie(1ull);
-			// fim do inicializa log de gastos de CP
+			// end of the CP spending log initialization
 
 			_session.m_pi.consomeCookie(1);
 
-			// Add o Ticker para lista de ticker do server
-			m_ticker.push_back((int)std::time(nullptr) + 3/*Segundos*/, _session.m_pi.nickname, msg, BroadcastList::TYPE::TICKER);
+			// Add the Ticker to the server's ticker list
+			m_ticker.push_back((int)std::time(nullptr) + 3/*Seconds*/, _session.m_pi.nickname, msg, BroadcastList::TYPE::TICKER);
 
 			msg = verifyAndEncode(msg);
 
@@ -3278,10 +3278,10 @@ void game_server::requestSendTicker(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[game_server::requestSendTicker][Log] Messgae Ticker. Hex: " + hex_util::StringToHexString(msg), CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-			// Add o Ticker para Commando DB para o Auth Server mandar para os outros serveres
+			// Add the Ticker to Command DB so the Auth Server sends it to the other servers
 			snmdb::NormalManagerDB::getInstance().add(6, new CmdInsertTicker(_session.m_pi.uid, m_si.uid, msg), game_server::SQLDBResponse, this);
 
-			// Salva CP Log
+			// Save CP Log
 			_session.saveCPLog(cp_log);
 
 			// Log
@@ -3300,19 +3300,19 @@ void game_server::requestSendTicker(player& _session, packet *_packet) {
 			if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 20)) {
 				
 				throw exception("[game_server::requestSendTicker][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar ticker[MESSAGE="
-						+ msg + "], mas ele nao tem cookies suficiente[HAVE=" + std::to_string(_session.m_pi.cookie) + ", REQ=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 4/*NÃO TEM COOKIES SUFICIENTE*/));
+						+ msg + "], mas ele nao tem cookies suficiente[HAVE=" + std::to_string(_session.m_pi.cookie) + ", REQ=1]", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 4/*NOT ENOUGH COOKIES*/));
 			
-			}else if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*Tem alterações no Cookie do player no DB*/)) {
+			}else if (STDA_ERROR_CHECK_SOURCE_AND_ERROR(e.getCodeError(), STDA_ERROR_TYPE::PLAYER_INFO, 200/*There are changes to the player's Cookie in the DB*/)) {
 				
 				throw exception("[game_server::requestSendTicker][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou enviar ticker[MESSAGE=" 
-						+ msg + ", mas tem alteracoes no Cookie dele no Banco de dados.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 4/*Tem alterações no Cookie do player no DB*/));
+						+ msg + ", mas tem alteracoes no Cookie dele no Banco de dados.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 1, 4/*There are changes to the player's Cookie in the DB*/));
 			
 			}else {
 
-				// Devolve os Cookies gasto do player, por que não conseguiu enviar o ticker dele
+				// Returns the Cookies spent by the player, because the ticker could not be sent
 				_session.m_pi.addCookie(1);
 
-				// Relança a exception para da uma resposta para o cliente
+				// Rethrows the exception to give a response to the client
 				throw;
 			}
 		}
@@ -3321,7 +3321,7 @@ void game_server::requestSendTicker(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[game_server::requestSendTicker][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// estou usando pacote de troca nickname, por que não sei qual o pangya manda, quando da erro no mandar ticker, nunca peguei esse erro
+		// I am using the change nickname packet, because I do not know which one pangya sends when there is an error sending the ticker, I never caught this error
 		p.init_plain((unsigned short)0x50);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::GAME_SERVER) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 1/*UNKNOWN ERROR*/);
@@ -3337,8 +3337,8 @@ void game_server::requestQueueTicker(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("QueueTicker");
 
 		if (_session.m_pi.block_flag.m_flag.stBit.ticker)
@@ -3361,7 +3361,7 @@ void game_server::requestQueueTicker(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[game_server::requestQueueTicker][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// estou usando pacote de troca nickname, por que n�o sei qual o pangya manda, quando da erro no mandar ticker, nunca peguei esse erro
+		// I am using the change nickname packet, because I do not know which one pangya sends when there is an error sending the ticker, I never caught this error
 		packet p((unsigned short)0x50);
 
 		p.addUint32((STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::GAME_SERVER) ? STDA_SYSTEM_ERROR_DECODE(e.getCodeError()) : 1/*UNKNOWN ERROR*/);
@@ -3375,8 +3375,8 @@ void game_server::requestExceptionClientMessage(player& _session, packet *_packe
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("ExceptionClientMessage");
 
 		unsigned char tipo = _packet->readUint8();
@@ -3397,8 +3397,8 @@ void game_server::requestCheckGameGuardAuthAnswer(player& _session, packet *_pac
 
 	try {
 
-		// Verifica se session está autorizada para executar esse ação, 
-		// se ele não fez o login com o Server ele não pode fazer nada até que ele faça o login
+		// Check whether the session is authorized to perform this action, 
+		// if it did not log in to the Server it cannot do anything until it logs in
 		CHECK_SESSION_IS_AUTHORIZED("CheckGameGuardAuthAnswer");
 
 		if (m_GameGuardAuth) {
@@ -3429,7 +3429,7 @@ void game_server::requestCheckGameGuardAuthAnswer(player& _session, packet *_pac
 
 				_smp::message_pool::getInstance().push(new message("[game_server::requestCheckGameGuardAuthAnswer][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] CSAuth Fail. " + sd, CL_FILE_LOG_AND_CONSOLE));
 
-				// Disconnect o player
+				// Disconnect the player
 				DisconnectSession(&_session);
 
 				// Log
@@ -3456,7 +3456,7 @@ void game_server::requestCheckGameGuardAuthAnswer(player& _session, packet *_pac
 
 				_smp::message_pool::getInstance().push(new message("[game_server::requestCheckGameGuardAuthAnswer][Error] Player[UID=" + std::to_string(_session.m_pi.uid) + "] CSAuth Fail. " + sd, CL_FILE_LOG_AND_CONSOLE));
 				
-				// Disconnect o player
+				// Disconnect the player
 				DisconnectSession(&_session);
 			}
 
@@ -3472,7 +3472,7 @@ void game_server::requestCheckGameGuardAuthAnswer(player& _session, packet *_pac
 			_smp::message_pool::getInstance().push(new message("[game_server::requestCheckGameGuardAuthAnswer][Error][WARNING] Player[UID=" + std::to_string(_session.m_pi.uid) 
 					+ "] enviou GameGuardAuth Answer, mas o GameGuard Auth no server esta desabilitado.", CL_FILE_LOG_AND_CONSOLE));
 
-			// desconecta ele
+			// disconnect him
 			DisconnectSession(&_session);
 		}
 
@@ -3527,7 +3527,7 @@ void game_server::setRatePang(uint32_t _pang) {
 
 void game_server::setRateExp(uint32_t _exp) {
 
-	// Reseta flag antes de atualizar ela 
+	// Reset the flag before updating it 
 	m_si.event_flag.stBit.exp_x2 = m_si.event_flag.stBit.exp_x_plus = 0u;
 
 	// Update Flag Event
@@ -3538,7 +3538,7 @@ void game_server::setRateExp(uint32_t _exp) {
 	else
 		m_si.event_flag.stBit.exp_x2 = m_si.event_flag.stBit.exp_x_plus = 0u;
 
-	// Update rate Experiência
+	// Update Experience rate
 	m_si.rate.exp = (unsigned short)_exp;
 };
 
@@ -3553,7 +3553,7 @@ void game_server::setRateClubMastery(uint32_t _club_mastery) {
 
 void game_server::setAngelEvent(uint32_t _angel_event) {
 
-	// Evento para reduzir o quit rate, diminui 1 quit a cada jogo concluído
+	// Event to reduce the quit rate, decreases 1 quit for each completed game
 	m_si.event_flag.stBit.angel_wing = _angel_event;
 
 	// Update Event Angel
@@ -3586,7 +3586,7 @@ void game_server::authCmdShutdown(int32_t _time_sec) {
 
 	try {
 
-		// Shut down com tempo
+		// Shut down with time
 		if (m_shutdown == nullptr) {
 			
 			// Log
@@ -3679,8 +3679,8 @@ void game_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _pl
 			_smp::message_pool::getInstance().push(new message("[game_server::authCmdDisconnectPlayer][log] Comando do Auth Server, Server[UID=" + std::to_string(_req_server_uid) 
 					+ "] pediu para desconectar o Player[UID=" + std::to_string(s->m_pi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Deconecta o Player
-			if (_force)	// Força o Disconect do player, sem verificar as regras do Game Server
+			// Disconnect the Player
+			if (_force)	// Forces the Disconnect of the player, without checking the Game Server rules
 				DisconnectSession(s);
 			else {
 
@@ -3698,18 +3698,18 @@ void game_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _pl
 				try {
 					same_id_login = ini.readInt("OPTION", "SAME_ID_LOGIN");
 				}catch (exception& e) {
-					// Não precisa mostrar o error
+					// No need to show the error
 					UNREFERENCED_PARAMETER(e);
 				}
 
-				// Só desconecta aqui se a flag do server de poder logar com o mesmo id estiver desativada
+				// Only disconnects here if the server flag allowing login with the same id is disabled
 				if (!same_id_login)
 					DisconnectSession(s);
 			}
 
 		}else {
 
-			// Não encontrou o player no server, então desconecta no banco de dados
+			// Did not find the player on the server, so disconnects in the database
 			snmdb::NormalManagerDB::getInstance().add(5, new CmdRegisterLogon(_player_uid, 1/*Logout*/), game_server::SQLDBResponse, this);
 			
 			// Log
@@ -3727,7 +3727,7 @@ void game_server::authCmdDisconnectPlayer(uint32_t _req_server_uid, uint32_t _pl
 };
 
 void game_server::authCmdConfirmDisconnectPlayer(uint32_t /*_player_uid*/) {
-	// Game Server não usa esse Comando
+	// Game Server does not use this Command
 	return;
 };
 
@@ -3809,7 +3809,7 @@ void game_server::authCmdReloadGlobalSystem(uint32_t _tipo) {
 
 void game_server::authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi) {
 
-	// Game Server ainda não usa esse funcionalidade de pedir o info do player que está conectado em outro server
+	// Game Server does not use this feature yet of requesting the info of a player who is connected to another server
 	UNREFERENCED_PARAMETER(_req_server_uid);
 
 	try {
@@ -3933,7 +3933,7 @@ void game_server::ggAuthCmdCheckAnswer(uint32_t _error, uint32_t _socket_id) {
 
 			_smp::message_pool::getInstance().push(new message("[game_server::ggAuthCmdCheckAnswer][Error] Player[UID=" + std::to_string(session->m_pi.uid) + "] CSAuth Fail. " + sd, CL_FILE_LOG_AND_CONSOLE));
 				
-			// Disconnect o player
+			// Disconnect the player
 			DisconnectSession(session);
 		}
 
@@ -3983,7 +3983,7 @@ uint32_t game_server::ggAuthCreateUser(uint32_t _socket_id) {
 #endif
 				) + "] envia o pedido para criar o User Game Guard Auth para o Game Guard Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Request Create User para o player(SOCKET)
+		// Request Create User for the player(SOCKET)
 		m_game_guard->sendCreateUser((uint32_t)
 #if defined(_WIN32)
 			p->m_sock
@@ -4021,7 +4021,7 @@ uint32_t game_server::ggAuthDeleteUser(uint32_t _socket_id) {
 		_smp::message_pool::getInstance().push(new message("[game_server::ggAuthDeleteUser][Log] Player[SOCKET=" 
 				+ std::to_string(_socket_id) + "] envia o pedido para deletar o User Game Guard Auth para o Game Guard Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Request Delete User para o player(SOCKET)
+		// Request Delete User for the player(SOCKET)
 		m_game_guard->sendDeleteUser(_socket_id);
 
 	}catch (exception& e) {
@@ -4071,7 +4071,7 @@ uint32_t game_server::ggAuthGetQuery(uint32_t _socket_id) {
 #endif
 				) + "] envia o pedido de Auth Query para o Game Guard Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Request Auth Query para o player(SOCKET)
+		// Request Auth Query for the player(SOCKET)
 		m_game_guard->sendGetQuery((uint32_t)
 #if defined(_WIN32)
 			p->m_sock
@@ -4137,7 +4137,7 @@ uint32_t game_server::ggAuthCheckAnswer(uint32_t _socket_id, GG_AUTH_DATA& _data
 				) + "] DATA{" + sd 
 				+ "} envia o pedido de verificacao do Auth Answer para o Game Guard Auth Server.", CL_FILE_LOG_AND_CONSOLE));
 
-		// Request Check Auth Answer para o player(SOCKET)
+		// Request Check Auth Answer for the player(SOCKET)
 		m_game_guard->sendCheckAnswer((uint32_t)
 #if defined(_WIN32)
 			p->m_sock
@@ -4240,7 +4240,7 @@ void game_server::onAcceptCompleted(session *_session) {
 	sSyncBlockExecOnePerTime::getInstance().getPlayer(_session->m_oid + 1u);
 #endif
 
-	packet _packet((unsigned short)0x3F);	// Tipo Packet Game Server initial packet no compress e no crypt
+	packet _packet((unsigned short)0x3F);	// Packet Type Game Server initial packet no compress and no crypt
 
 	_packet.addInt8(1);	// OPTION 1
 	_packet.addInt8(1);	// OPTION 2
@@ -4275,7 +4275,7 @@ void game_server::onDisconnected(session *_session) {
 
 	_smp::message_pool::getInstance().push(new message("[game_server::onDisconnected][Log] Player Desconectou. ID: " + std::string(_player->m_pi.id) + "  UID: " + std::to_string(_player->m_pi.uid), CL_FILE_LOG_AND_CONSOLE));
 
-	/// Novo
+	/// New
 	channel *_channel = findChannel(_player->m_pi.channel);
 
 	try {
@@ -4291,19 +4291,19 @@ void game_server::onDisconnected(session *_session) {
 	// Register Player Logon ON DB, 0 Login, 1 Logout
 	snmdb::NormalManagerDB::getInstance().add(5, new CmdRegisterLogon(_player->m_pi.uid, 1/*Logout*/), game_server::SQLDBResponse, this);
 
-	// Remove o Context do player se tiver no Smart Calculator
+	// Remove the player's Context if it is in the Smart Calculator
 	if (m_si.rate.smart_calculator)
 		sSmartCalculator::getInstance().removeAllPlayerCtx(_player->m_pi.uid);
 
 };
 
 void game_server::onHeartBeat() {
-	// Aqui depois tenho que colocar uma verificão que eu queira fazer no server
-	// Esse função é chamada na thread monitor
+	// Here later I have to put a check that I want to do on the server
+	// This function is called in the monitor thread
 
 	try {
 
-		// Server ainda não está totalmente iniciado
+		// Server is not fully started yet
 		if (m_state != INITIALIZED)
 			return;
 
@@ -4312,31 +4312,31 @@ void game_server::onHeartBeat() {
 			el->checkInviteTime();
 
 		// Begin Check System Singleton Static
-		// Carrega IFF_STRUCT
+		// Load IFF_STRUCT
 		if (!sIff::getInstance().isLoad())
 			sIff::getInstance().load();
 
-		// Carrega Card System
+		// Load Card System
 		if (!sCardSystem::getInstance().isLoad())
 			sCardSystem::getInstance().load();
 
-		// Carrega Comet Refill System
+		// Load Comet Refill System
 		if (!sCometRefillSystem::getInstance().isLoad())
 			sCometRefillSystem::getInstance().load();
 
-		// Carrega Papel Shop System
+		// Load Papel Shop System
 		if (!sPapelShopSystem::getInstance().isLoad())
 			sPapelShopSystem::getInstance().load();
 
-		// Carrega Box System
+		// Load Box System
 		if (!sBoxSystem::getInstance().isLoad())
 			sBoxSystem::getInstance().load();
 
-		// Carrega Memorial System
+		// Load Memorial System
 		if (!sMemorialSystem::getInstance().isLoad())
 			sMemorialSystem::getInstance().load();
 
-		// Carrega Cube Coin System
+		// Load Cube Coin System
 		if (!sCubeCoinSystem::getInstance().isLoad())
 			sCubeCoinSystem::getInstance().load();
 
@@ -4352,7 +4352,7 @@ void game_server::onHeartBeat() {
 		if (!sAttendanceRewardSystem::getInstance().isLoad())
 			sAttendanceRewardSystem::getInstance().load();
 
-		// Map Dados Estáticos
+		// Map Static Data
 		if (!sMap::getInstance().isLoad())
 			sMap::getInstance().load();
 
@@ -4376,7 +4376,7 @@ void game_server::onHeartBeat() {
 		if (!sLoginRewardSystem::getInstance().isLoad())
 			sLoginRewardSystem::getInstance().load();
 
-		// Carrega Smart Calculator Lib, Só inicializa se ele estiver ativado
+		// Load Smart Calculator Lib, Only initializes if it is enabled
 		if (m_si.rate.smart_calculator && !sSmartCalculator::getInstance().hasStopped() && !sSmartCalculator::getInstance().isLoad())
 			sSmartCalculator::getInstance().load();
 
@@ -4400,9 +4400,9 @@ void game_server::onHeartBeat() {
 
 		// Check Daily Quest
 		if (MgrDailyQuest::checkCurrentQuest(m_dqi))
-			MgrDailyQuest::updateDailyQuest(m_dqi);	// Atualiza daily quest
+			MgrDailyQuest::updateDailyQuest(m_dqi);	// Update daily quest
 
-		// Check Update Dia do Papel Shop System
+		// Check Update Day of the Papel Shop System
 		sPapelShopSystem::getInstance().updateDia();
 
 		if (sTreasureHunterSystem::getInstance().checkUpdateTimePointCourse()) {
@@ -4494,12 +4494,12 @@ bool game_server::checkCommand(std::stringstream& _command) {
 	_command >> s;
 
 	if (!s.empty() && s.compare("exit") == 0)
-		return true;	// Sai
+		return true;	// Exit
 	else if (!s.empty() && s.compare("reload_files") == 0)
 		reload_files();
 	else if (!s.empty() && s.compare("reload_socket_config") == 0) {
 
-		// Ler novamento o arquivo de configuração do socket
+		// Read the socket configuration file again
 		if (m_accept_sock != nullptr)
 			m_accept_sock->reload_config_file();
 		else
@@ -4538,7 +4538,7 @@ bool game_server::checkCommand(std::stringstream& _command) {
 		}else
 			_smp::message_pool::getInstance().push(new message("[game_server::checkCommand][Error] Unknown Command: \"rate " + sTipo + "\"", CL_ONLY_CONSOLE));
 
-		// Digitou um tipo conhecido
+		// Typed a known type
 		if (tipo != -1l && (tipo >= 0l && tipo <= 8l)) {
 
 			uint32_t qntd = 0u;
@@ -4671,7 +4671,7 @@ bool game_server::checkCommand(std::stringstream& _command) {
 		}else
 			_smp::message_pool::getInstance().push(new message("[game_server::checkCommand][Error] Unknown Command: \"reload_system " + sTipo + "\"", CL_ONLY_CONSOLE));
 
-		// Digitou um tipo conhecido
+		// Typed a known type
 		if (tipo != -1l && (tipo >= 0l && tipo <= 18l))
 			reloadGlobalSystem((uint32_t)tipo);
 		else
@@ -4688,16 +4688,16 @@ bool game_server::checkCommand(std::stringstream& _command) {
 			if (m_si.rate.smart_calculator) {
 
 				if (sTipo.compare("reload") == 0)
-					sSmartCalculator::getInstance().load(); // Recarrega
+					sSmartCalculator::getInstance().load(); // Reload
 				else if (sTipo.compare("close") == 0) {
 
-					// Set Flag stopped para não reiniciar sozinho no onHearBeat
+					// Set stopped Flag so it does not restart by itself in onHearBeat
 					sSmartCalculator::getInstance().setStop(true);
 
-					sSmartCalculator::getInstance().close(); // Fecha
+					sSmartCalculator::getInstance().close(); // Close
 
 				}else if (sTipo.compare("start") == 0)
-					sSmartCalculator::getInstance().load(); // Inicia(Load)
+					sSmartCalculator::getInstance().load(); // Start(Load)
 				else if (sTipo.compare("chat_discord") == 0) {
 
 					m_chat_discord = !m_chat_discord;
@@ -4746,9 +4746,9 @@ bool game_server::checkCommand(std::stringstream& _command) {
 		constexpr char MESSAGE_BOT_GM_EVENT_START_PART1[] = "Bot GM Event comecou, o jogo comeca em ";
 		constexpr char MESSAGE_BOT_GM_EVENT_START_PART2[] = " minutos. Os premios sao ";
 
-		auto duration_event_interval = 2; // Minutos para começar o jogo
+		auto duration_event_interval = 2; // Minutes until the game starts
 
-		// Calcula reward
+		// Calculate reward
 		auto reward = sBotGMEvent::getInstance().calculeReward();
 
 		std::string reward_str = "{";
@@ -4799,7 +4799,7 @@ bool game_server::checkCommand(std::stringstream& _command) {
 	}
 	else if (!s.empty() && s.compare("scratch") == 0) {
 		
-		// !@ Teste
+		// !@ Test
 		packet p((unsigned short)0x1EB);
 
 		p.addUint32(0u);
@@ -4808,12 +4808,12 @@ bool game_server::checkCommand(std::stringstream& _command) {
 		for (auto& c : v_channel)
 			packet_func::channel_broadcast(*c, p, 1);
 	}
-	else if (!s.empty() && s.compare("upt_coin_cube_location") == 0) { // !@ Teste
+	else if (!s.empty() && s.compare("upt_coin_cube_location") == 0) { // !@ Test
 
-		// !@ Teste
+		// !@ Test
 		sCoinCubeLocationUpdateSystem::getInstance().forceUpdate();
 	}
-	else if (!s.empty() && s.compare("msg_gz") == 0) { // !@ Teste
+	else if (!s.empty() && s.compare("msg_gz") == 0) { // !@ Test
 
 		std::string sTipo = "";
 
@@ -4826,7 +4826,7 @@ bool game_server::checkCommand(std::stringstream& _command) {
 		if (!sTipo.empty())
 			opt_broadcast = atoi(sTipo.c_str());
 
-		// !@ Teste, [549, 550], [531, 531], [0, 1], (531 e opção 0x15, é o HIO Event timer)
+		// !@ Test, [549, 550], [531, 531], [0, 1], (531 and option 0x15, is the HIO Event timer)
 		packet p;
 
 		uint32_t count = 1u;
@@ -4839,7 +4839,7 @@ bool game_server::checkCommand(std::stringstream& _command) {
 
 			for (auto i = 0u; i < count; ++i) {
 
-				p.addUint32(opt_broadcast); // Option, 15 Running Time, ou exibir a msg
+				p.addUint32(opt_broadcast); // Option, 15 Running Time, or display the msg
 				p.addString("<PARAMS><RunningTime>10</RunningTime><TYPEID>469762063</TYPEID><BOX_TYPEID>436207963</BOX_TYPEID><QTY>7</QTY><NICKNAME>Saitama(rock)</NICKNAME><NICKNAME>Genos(idea)</NICKNAME><EVENTSTARTTIME>2017-07-29 17:50:31.447</EVENTSTARTTIME><EVENTNEXTTIME>2017-07-29 19:50:31.447</EVENTNEXTTIME><WinnerEventNotice>Parabens</WinnerEventNotice><BroadCastReservedNoticesIdx>531</BroadCastReservedNoticesIdx></PARAMS>");
 			}
 
@@ -4859,24 +4859,24 @@ bool game_server::checkCommand(std::stringstream& _command) {
 
 bool game_server::checkPacket(session& _session, packet* _packet) {
 	
-	///--------------- INICIO CHECK PACKET SESSION
-	// a função Check Packet da estrutura já valida e atualiza os dados, dos pacotes salvo na memória rotativa 
-	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Dentro do Interval */
-		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Mesmo pacote */
+	///--------------- START CHECK PACKET SESSION
+	// the Check Packet function of the structure already validates and updates the data of the packets saved in the rotating memory 
+	if (/*(std::clock() - _session.m_check_packet.tick) <= CHK_PCKT_INTERVAL_LIMIT /* Within the Interval */
+		/*&& _session.m_check_packet.packet_id == _packet->getTipo() /* Same packet */
 		_session.m_check_packet.checkPacketId(_packet->getTipo())) {
 		
-		uint32_t limit_count = CHK_PCKT_COUNT_LIMIT;	// Padrão
+		uint32_t limit_count = CHK_PCKT_COUNT_LIMIT;	// Default
 
-		// Game Server Vou deixar em 10x, por que é mais dificil atacar ele
+		// Game Server I will leave at 10x, because it is harder to attack
 		switch (_packet->getTipo()) {
-		case 0xB9:	// SD, OPT, REQUEST INFO + USADA
-			limit_count += 100;	// Sobe o limite para 100 por que o player pode ter 100 SD's
+		case 0xB9:	// SD, OPT, REQUEST INFO + USED
+			limit_count += 100;	// Raises the limit to 100 because the player can have 100 SD's
 			break;
 		case 0x03:	// MSG
-			limit_count += 10;	// Sobe o limit para 10 por que é msg
+			limit_count += 10;	// Raises the limit to 10 because it is a msg
 			break;
 		case 0x0A:	// Change Room Info
-			limit_count += 20;	// Sobe o limit +20 por que quando esta na sala e troca o map da, para trocar rápido
+			limit_count += 20;	// Raises the limit +20 because when in the room and changing the map, to change quickly
 			break;
 		case 0x1C:	// Sync shot
 			limit_count += 10;
@@ -4887,46 +4887,46 @@ bool game_server::checkPacket(session& _session, packet* _packet) {
 		case 0x2F:	// Info player
 			limit_count += 10;
 			break;
-		case 0x20:	// Att dados do player, tem vez que ele manda 10 de uma vez, que é os itens equipado do player, deixa mais 50 que é trocar o mascot muito rápido
+		case 0x20:	// Update player data, sometimes it sends 10 at once, which are the player's equipped items, leaves 50 more for switching the mascot very quickly
 			limit_count += 50;
 			break;
-		case 0x18:	// Att In Chat or out Chat State on Game
+		case 0x18:	// Update In Chat or out Chat State on Game
 			limit_count += 50;
 			break;
-		case 0x14:	// Barra de acerta pangya
+		case 0x14:	// Pangya hit bar
 			limit_count += 150;
 			break;
-		case 0x16:	// Troca de taco
+		case 0x16:	// Club change
 			limit_count += 30;
 			break;
-		case 0x48:	// Carregando o versus course
+		case 0x48:	// Loading the versus course
 			limit_count += 30;
 			break;
-		case 0xBA:	// Request Invite Player, quando invite na sala guild ele convida todos da lobby que estão disponível para entrar na sala de guild battle, então aumenta +20 aqui para garantir
+		case 0xBA:	// Request Invite Player, when inviting in the guild room it invites everyone in the lobby who is available to enter the guild battle room, so +20 is added here to be safe
 			limit_count += 20;
 			break;
-		case 0xEB:	// Pede info do character no lounge, size cabeca, velocidade e etc
+		case 0xEB:	// Requests character info in the lounge, head size, speed and etc
 			limit_count += 100;
 			break;
-		case 0x63:	// Att coordenadas do player, tem vez que ele manda mais de 3 rapido, add +150 para garantir
+		case 0x63:	// Update player coordinates, sometimes it sends more than 3 quickly, add +150 to be safe
 			limit_count += 150;
 			break;
-		case 0x143:	// Pede pagina do mail, ele enviar varios pacote 146 para pegar de uma pagina 20 item, então add + 20 para garantir
-		case 0x146:	// Pega Item no Mail, ele enviar varios pacote 146 para pegar de uma pagina 20 item, então add + 20 para garantir
-		case 0x147: // Pede para deletar mail, ele enviar varios pacote 147 para deletar os 20 mail que estão na página, antão add + 20 para garantir
+		case 0x143:	// Requests mail page, it sends several 146 packets to get a page of 20 items, so add + 20 to be safe
+		case 0x146:	// Gets Item from Mail, it sends several 146 packets to get a page of 20 items, so add + 20 to be safe
+		case 0x147: // Requests to delete mail, it sends several 147 packets to delete the 20 mails on the page, so add + 20 to be safe
 			limit_count += 20;
 			break;
-		case 0x12D: // Pacote de reposta de valores iniciais de camera Inicial do Grand Zodiac, o server manda 10 valores ele manda os 10 de volta em resposta, aumenta para 10 o limite
+		case 0x12D: // Response packet for the initial camera values of Grand Zodiac, the server sends 10 values and it sends the 10 back in response, raises the limit to 10
 			limit_count += 5;
 			break;
-		case 0x12E:	// Aumenta mais 20, no pacote de marcar no course, para não da dc, muito rápido
+		case 0x12E:	// Raises another 20, in the mark on course packet, to avoid dc, very fast
 			limit_count += 20;
 			break;
 		default:
-			limit_count += 2;	// Sobe para 5 por que o game server é mais difícil de atacar ele
+			limit_count += 2;	// Raises to 5 because the game server is harder to attack
 		}
 
-		if (_session.m_check_packet.incrementCount() >= limit_count/*_session.m_check_packet.count++ >= limit_count /* deu o limit de count DERRUBA a session */) {
+		if (_session.m_check_packet.incrementCount() >= limit_count/*_session.m_check_packet.count++ >= limit_count /* reached the count limit DROPS the session */) {
 
 			_session.m_check_packet.clearLast();
 
@@ -4937,23 +4937,23 @@ bool game_server::checkPacket(session& _session, packet* _packet) {
 
 			return false;
 		}
-	}/*else // Zera o contador, não entrou no intervalo ou não é o mesmo pacote
+	}/*else // Reset the counter, it was not in the interval or is not the same packet
 		_session.m_check_packet.count = 0;*/
 
-	// Att packet ID
+	// Update packet ID
 	//_session.m_check_packet.packet_id = _packet->getTipo();
 
-	// Att tick
+	// Update tick
 	//_session.m_check_packet.tick = std::clock();
 
-	///--------------- FIM CHECK PACKET SESSION
+	///--------------- END CHECK PACKET SESSION
 
 	return true;
 };
 
 void game_server::config_init() {
 
-	// Tipo Server
+	// Server Type
 	m_si.tipo = 1;
 
 	m_si.img_no = m_reader_ini.readInt("SERVERINFO", "ICONINDEX");
@@ -4977,14 +4977,14 @@ void game_server::config_init() {
 		_smp::message_pool::getInstance().push(new message("[game_server::config_init][ErrorSystem] SERVERINFO->GAMEGUARDAUTH. " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Recupera Valores de rate do server do banco de dados
+	// Retrieves the server's rate Values from the database
 	CmdRateConfigInfo cmd_rci(m_si.uid, true);	// Waiter
 
 	snmdb::NormalManagerDB::getInstance().add(0, &cmd_rci, nullptr, nullptr);
 
 	cmd_rci.waitEvent();
 
-	if (cmd_rci.getException().getCodeError() != 0 || cmd_rci.isError()/*Deu erro na consulta não tinha o rate config info para esse server, pode ser novo*/) {
+	if (cmd_rci.getException().getCodeError() != 0 || cmd_rci.isError()/*The query failed, there was no rate config info for this server, it may be new*/) {
 
 		if (cmd_rci.getException().getCodeError() != 0)
 			_smp::message_pool::getInstance().push(new message("[game_server::config_init][ErrorSystem] " + cmd_rci.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -4998,22 +4998,22 @@ void game_server::config_init() {
 		m_si.rate.treasure = 100;
 		m_si.rate.memorial_shop = 100;
 		m_si.rate.chuva = 100;
-		m_si.rate.grand_zodiac_event_time = 1u;	// Ativo por padrão
-		m_si.rate.grand_prix_event = 1u;		// Ativo por padrão
-		m_si.rate.golden_time_event = 1u;		// Ativo por padrão
-		m_si.rate.login_reward_event = 1u;		// Ativo por padrão
-		m_si.rate.bot_gm_event = 1u;			// Ativo por padrão
-		m_si.rate.smart_calculator = 1u;		// Atibo por padrão
+		m_si.rate.grand_zodiac_event_time = 1u;	// Active by default
+		m_si.rate.grand_prix_event = 1u;		// Active by default
+		m_si.rate.golden_time_event = 1u;		// Active by default
+		m_si.rate.login_reward_event = 1u;		// Active by default
+		m_si.rate.bot_gm_event = 1u;			// Active by default
+		m_si.rate.smart_calculator = 1u;		// Active by default
 		
-		setAngelEvent(0u);						// Desativado por padrão
+		setAngelEvent(0u);						// Disabled by default
 		setRatePang(100u);
 		setRateExp(100u);
 		setRateClubMastery(100u);
 
-		// Atualiza no banco de dados
+		// Update in the database
 		snmdb::NormalManagerDB::getInstance().add(8, new CmdUpdateRateConfigInfo(m_si.uid, m_si.rate), game_server::SQLDBResponse, this);
 	
-	}else {	// Conseguiu recuperar com sucesso os valores do server
+	}else {	// Successfully retrieved the server values
 
 		m_si.rate.scratchy = cmd_rci.getInfo().scratchy;
 		m_si.rate.papel_shop_rare_item = cmd_rci.getInfo().papel_shop_rare_item;
@@ -5037,7 +5037,7 @@ void game_server::config_init() {
 	// Log
 	_smp::message_pool::getInstance().push(new message("[game_server::config_init][Log] Rate Config Info [" + m_si.rate.toString() + "]", CL_FILE_LOG_AND_CONSOLE));
 
-	m_si.app_rate = 100;	// Esse aqui nunca usei, deixei por que no DB do s4 tinha só cópiei
+	m_si.app_rate = 100;	// I never used this one, I left it because the s4 DB had it, I just copied it
 };
 
 void game_server::reload_files() {
@@ -5059,142 +5059,142 @@ void game_server::reload_files() {
 
 void game_server::init_systems() {
 
-	// Para previnir de da exception no destructor do versus::treasure system
+	// To prevent an exception in the destructor of the versus::treasure system
 	auto lixo = sRandomGen::getInstance().isGood();
 
-	// Carrega IFF_STRUCT
+	// Load IFF_STRUCT
 	if (!sIff::getInstance().isLoad())
 		sIff::getInstance().load();
 
-	// Carrega Card System
+	// Load Card System
 	if (!sCardSystem::getInstance().isLoad())
 		sCardSystem::getInstance().load();
 
-	// Carrega Comet Refill System
+	// Load Comet Refill System
 	if (!sCometRefillSystem::getInstance().isLoad())
 		sCometRefillSystem::getInstance().load();
 
-	// Carrega Papel Shop System
+	// Load Papel Shop System
 	if (!sPapelShopSystem::getInstance().isLoad())
 		sPapelShopSystem::getInstance().load();
 
-	// Carrega Box System
+	// Load Box System
 	if (!sBoxSystem::getInstance().isLoad())
 		sBoxSystem::getInstance().load();
 
-	// Carrega Memorial System
+	// Load Memorial System
 	if (!sMemorialSystem::getInstance().isLoad())
 		sMemorialSystem::getInstance().load();
 
-	// Carrega Cube Coin System
+	// Load Cube Coin System
 	if (!sCubeCoinSystem::getInstance().isLoad())
 		sCubeCoinSystem::getInstance().load();
 
-	// Carrega Treasure Hunter System
+	// Load Treasure Hunter System
 	if (!sTreasureHunterSystem::getInstance().isLoad())
 		sTreasureHunterSystem::getInstance().load();
 
-	// Carrega Drop System
+	// Load Drop System
 	if (!sDropSystem::getInstance().isLoad())
 		sDropSystem::getInstance().load();
 
-	// Carrega Attendance Reward System
+	// Load Attendance Reward System
 	if (!sAttendanceRewardSystem::getInstance().isLoad())
 		sAttendanceRewardSystem::getInstance().load();
 
-	// Carrega Map Dados Estáticos
+	// Load Map Static Data
 	if (!sMap::getInstance().isLoad())
 		sMap::getInstance().load();
 
-	// Carrega Approach Mission System
+	// Load Approach Mission System
 	if (!sApproachMissionSystem::getInstance().isLoad())
 		sApproachMissionSystem::getInstance().load();
 
-	// Carrega Grand Zodiac Event System
+	// Load Grand Zodiac Event System
 	if (!sGrandZodiacEvent::getInstance().isLoad())
 		sGrandZodiacEvent::getInstance().load();
 
-	// Carrega Coin Cube Location Update Syatem
+	// Load Coin Cube Location Update Syatem
 	if (!sCoinCubeLocationUpdateSystem::getInstance().isLoad())
 		sCoinCubeLocationUpdateSystem::getInstance().load();
 
-	// Carrega Golden Time System
+	// Load Golden Time System
 	if (!sGoldenTimeSystem::getInstance().isLoad())
 		sGoldenTimeSystem::getInstance().load();
 
-	// Carrega Login Reward System
+	// Load Login Reward System
 	if (!sLoginRewardSystem::getInstance().isLoad())
 		sLoginRewardSystem::getInstance().load();
 
-	// Carrega Bot GM Event
+	// Load Bot GM Event
 	if (!sBotGMEvent::getInstance().isLoad())
 		sBotGMEvent::getInstance().load();
 
-	// Coloca aqui para ele não dá erro na hora de destruir o Room Grand Prix static instance
+	// Put here so it does not error when destroying the Room Grand Prix static instance
 	RoomGrandPrix::initFirstInstance();
 
-	// Coloca aqui para ele não dá erro na hora de destruir o Room Grand Zodiac Event static instance
+	// Put here so it does not error when destroying the Room Grand Zodiac Event static instance
 	RoomGrandZodiacEvent::initFirstInstance();
 
-	// Coloca aqui para ele não dá erro na hora de destruir o Room Bot GM Event static instance
+	// Put here so it does not error when destroying the Room Bot GM Event static instance
 	RoomBotGMEvent::initFirstInstance();
 
 };
 
 void game_server::reload_systems() {
 
-	// Recarrega IFF_STRUCT
+	// Reload IFF_STRUCT
 	sIff::getInstance().load();
 
-	// Recarrega Card System
+	// Reload Card System
 	sCardSystem::getInstance().load();
 
-	// Recarrega Comet Refill System
+	// Reload Comet Refill System
 	sCometRefillSystem::getInstance().load();
 
-	// Recarrega Papel Shop System
+	// Reload Papel Shop System
 	sPapelShopSystem::getInstance().load();
 
-	// Recarrega Box System
+	// Reload Box System
 	sBoxSystem::getInstance().load();
 
-	// Recarrega Memorial System
+	// Reload Memorial System
 	sMemorialSystem::getInstance().load();
 
-	// Recarrega Cube Coin System
+	// Reload Cube Coin System
 	sCubeCoinSystem::getInstance().load();
 
-	// Recarrega Treasure Hunter System
+	// Reload Treasure Hunter System
 	sTreasureHunterSystem::getInstance().load();
 
-	// Recarrega Drop System
+	// Reload Drop System
 	sDropSystem::getInstance().load();
 
-	// Recarrega Attendance Reward System
+	// Reload Attendance Reward System
 	sAttendanceRewardSystem::getInstance().load();
 
-	// Recarrega Map Dados Estáticos
+	// Reload Map Static Data
 	sMap::getInstance().load();
 
-	// Recarrega Approach Mission System
+	// Reload Approach Mission System
 	sApproachMissionSystem::getInstance().load();
 
-	// Recarrega Grand Zodiac Event System
+	// Reload Grand Zodiac Event System
 	sGrandZodiacEvent::getInstance().load();
 
-	// Recarrega Coin Cube Location Update Syatem
+	// Reload Coin Cube Location Update Syatem
 	sCoinCubeLocationUpdateSystem::getInstance().load();
 
-	// Recarrega Golden Time System
+	// Reload Golden Time System
 	sGoldenTimeSystem::getInstance().load();
 
-	// Recarrega Login Reward System
+	// Reload Login Reward System
 	sLoginRewardSystem::getInstance().load();
 
-	// Recarrega Bot GM Event
+	// Reload Bot GM Event
 	sBotGMEvent::getInstance().load();
 
-	// Recarrega Smart Calculator Lib, só recarrega se ele estiver ativado
+	// Reload Smart Calculator Lib, only reloads if it is enabled
 	if (m_si.rate.smart_calculator)
 		sSmartCalculator::getInstance().load();
 };
@@ -5208,75 +5208,75 @@ void game_server::reloadGlobalSystem(uint32_t _tipo) {
 			reload_systems();
 			break;
 		case 1:		// IFF
-			// Recarrega IFF_STRUCT
+			// Reload IFF_STRUCT
 			sIff::getInstance().load();
 			break;
 		case 2:		// Card
-			// Recarrega Card System
+			// Reload Card System
 			sCardSystem::getInstance().load();
 			break;
 		case 3:		// Comet Refill
-			// Recarrega Comet Refill System
+			// Reload Comet Refill System
 			sCometRefillSystem::getInstance().load();
 			break;
 		case 4:		// Papel Shop
-			// Recarrega Papel Shop System
+			// Reload Papel Shop System
 			sPapelShopSystem::getInstance().load();
 			break;
 		case 5:		// Box
-			// Recarrega Box System
+			// Reload Box System
 			sBoxSystem::getInstance().load();
 			break;
 		case 6:		// Memorial Shop
-			// Recarrega Memorial System
+			// Reload Memorial System
 			sMemorialSystem::getInstance().load();
 			break;
 		case 7:		// Cube e Coin
-			// Recarrega Cube Coin System
+			// Reload Cube Coin System
 			sCubeCoinSystem::getInstance().load();
 			break;
 		case 8:		// Treasure Hunter
-			// Recarrega Treasure Hunter System
+			// Reload Treasure Hunter System
 			sTreasureHunterSystem::getInstance().load();
 			break;
 		case 9:		// Drop
-			// Recarrega Drop System
+			// Reload Drop System
 			sDropSystem::getInstance().load();
 			break;
 		case 10:	// Attendance Reward
-			// Recarrega Attendance Reward System
+			// Reload Attendance Reward System
 			sAttendanceRewardSystem::getInstance().load();
 			break;
-		case 11:	// Map Course Dados
-			// Recarrega Map Dados Estáticos
+		case 11:	// Map Course Data
+			// Reload Map Static Data
 			sMap::getInstance().load();
 			break;
 		case 12:	// Approach Mission
-			// Recarrega Approach Mission
+			// Reload Approach Mission
 			sApproachMissionSystem::getInstance().load();
 			break;
 		case 13:	// Grand Zodiac Event
-			// Recarrega Grand Zodiac Event
+			// Reload Grand Zodiac Event
 			sGrandZodiacEvent::getInstance().load();
 			break;
 		case 14:	// Coin Cube Location Update System
-			// Recarrega Coin Cube Location Update Syatem
+			// Reload Coin Cube Location Update Syatem
 			sCoinCubeLocationUpdateSystem::getInstance().load();
 			break;
 		case 15:	// Golden Time System
-			// Recarrega Golden Time System
+			// Reload Golden Time System
 			sGoldenTimeSystem::getInstance().load();
 			break;
 		case 16:	// Login Reward System
-			// Recarrega Login Reward System
+			// Reload Login Reward System
 			sLoginRewardSystem::getInstance().load();
 			break;
 		case 17:	// Bot GM Event
-			// Recarrega Bot GM Event
+			// Reload Bot GM Event
 			sBotGMEvent::getInstance().load();
 			break;
 		case 18:	// Smart Calculator Lib
-			// Recarrega Smart Calculator Lib
+			// Reload Smart Calculator Lib
 			sSmartCalculator::getInstance().load();
 			break;
 		default:
@@ -5312,7 +5312,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		case 2:	// Mastery
 			setRateClubMastery(_qntd);
 			break;
-		case 3:	// Chuva
+		case 3:	// Rain
 			m_si.rate.chuva = (short)_qntd;
 			break;
 		case 4:	// Treasure Hunter
@@ -5334,7 +5334,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.grand_zodiac_event_time = (short)_qntd;
 
-			// Recarrega o Grand Zodiac Event se ele foi ativado
+			// Reload the Grand Zodiac Event if it was activated
 			if (m_si.rate.grand_zodiac_event_time)
 				reloadGlobalSystem(13/*Grand Zodiac Event*/);
 
@@ -5350,7 +5350,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.golden_time_event = (short)_qntd;
 			
-			// Recarrega o Golden Time Event se ele foi ativado
+			// Reload the Golden Time Event if it was activated
 			if (m_si.rate.golden_time_event)
 				reloadGlobalSystem(15/*Golden Time Event*/);
 
@@ -5360,7 +5360,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.login_reward_event = (short)_qntd;
 
-			// Recarrega o Login Reward Event se ele foi ativado
+			// Reload the Login Reward Event if it was activated
 			if (m_si.rate.login_reward_event)
 				reloadGlobalSystem(16/*Login Reward Event*/);
 
@@ -5370,7 +5370,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.bot_gm_event = (short)_qntd;
 
-			// Recarrega o Bot GM Event se ele foi ativado
+			// Reload the Bot GM Event if it was activated
 			if (m_si.rate.bot_gm_event)
 				reloadGlobalSystem(17/*Bot GM Event*/);
 			
@@ -5380,7 +5380,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 		{
 			m_si.rate.smart_calculator = (short)_qntd;
 
-			// Recarrega o Smart Calculator System se ele foi ativado
+			// Reload the Smart Calculator System if it was activated
 			if (m_si.rate.smart_calculator)
 				reloadGlobalSystem(18/*Smart Calculator*/);
 
@@ -5391,7 +5391,7 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 					+ std::to_string(_qntd) + "], tipo desconhecido.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 120, 0));
 		}
 
-		// Update no DB os server do server que foram alterados
+		// Update in the DB the server's values that were changed
 		snmdb::NormalManagerDB::getInstance().add(8, new CmdUpdateRateConfigInfo(m_si.uid, m_si.rate), game_server::SQLDBResponse, this);
 
 		// Log
@@ -5414,11 +5414,11 @@ void game_server::updateRateAndEvent(uint32_t _tipo, uint32_t _qntd) {
 
 void game_server::shutdown_time(int32_t _time_sec) {
 
-	if (_time_sec <= 0)	// Desliga o Server Imediatemente
+	if (_time_sec <= 0)	// Shuts down the Server immediately
 		shutdown();
 	else {
 
-		// Se for correção de intervalo não notifica o cliente
+		// If it is an interval correction, does not notify the client
 		bool fixing_interval = false;
 		
 		uint32_t wait = 0u;
@@ -5429,107 +5429,107 @@ void game_server::shutdown_time(int32_t _time_sec) {
 		DWORD interval = 0u;
 		float diff = 0.f;
 
-		int32_t elapsed_sec = (m_shutdown != nullptr) ? (int)std::round(m_shutdown->getElapsed() / 1000.f)/*Mili para segundos*/ : 0;
+		int32_t elapsed_sec = (m_shutdown != nullptr) ? (int)std::round(m_shutdown->getElapsed() / 1000.f)/*Milli to seconds*/ : 0;
 
 		_time_sec -= elapsed_sec;
 
-		if ((diff = ((_time_sec - 600/*10 minuto*/) / 1800.f/*30 Minutos em segundos*/)) >= 1.f) { // Intervalo de 30 min
+		if ((diff = ((_time_sec - 600/*10 minutes*/) / 1800.f/*30 Minutes in seconds*/)) >= 1.f) { // 30 min interval
 
 			if ((_time_sec % 1800) == 0) {
 
-				// Intervalo
-				interval = 60000 * 30; // 30 minutos em milisegundos
+				// Interval
+				interval = 60000 * 30; // 30 minutes in milliseconds
 
-				wait = interval * (int)diff;	// 30 * diff minutos em milisegundos
+				wait = interval * (int)diff;	// 30 * diff minutes in milliseconds
 			
 			}else {
 
-				// Correção do intervalo
+				// Interval correction
 				wait = interval = (_time_sec % 1800) * 1000;
 
 				fixing_interval = true;
 
 			}
 
-			type = 0u; // minuto
+			type = 0u; // minute
 
-		}else if ((diff = ((_time_sec - 60/*1 minuto*/) / 600.f/*10 Minutos em segundos*/)) >= 1.f) {	// Intervalo de 10 min
+		}else if ((diff = ((_time_sec - 60/*1 minute*/) / 600.f/*10 Minutes in seconds*/)) >= 1.f) {	// 10 min interval
 
 			if ((_time_sec % 600) == 0) {
 				
-				// Intervalo
-				interval = 60000 * 10;	// 10 minutos em milisegundos
+				// Interval
+				interval = 60000 * 10;	// 10 minutes in milliseconds
 
-				wait = interval * (int)diff;	// 10 * diff minutos em milisegundos
+				wait = interval * (int)diff;	// 10 * diff minutes in milliseconds
 			
 			}else {
 
-				// Correção do intervalo
+				// Interval correction
 				wait = interval = (_time_sec % 600) * 1000;
 
 				fixing_interval = true;
 
 			}
 
-			type = 0u;	// minuto
+			type = 0u;	// minute
 
-		}else if ((diff = ((_time_sec - 10/*10 segundos*/) / 60.f/*1 Minuto em segundos*/)) >= 1.f) {	// Intervalo de 1 min
+		}else if ((diff = ((_time_sec - 10/*10 seconds*/) / 60.f/*1 Minute in seconds*/)) >= 1.f) {	// 1 min interval
 
 			
 			if ((_time_sec % 60) == 0) {
 				
-				// Intervalo
-				interval = 60 * 1000;	// 1 minuto
+				// Interval
+				interval = 60 * 1000;	// 1 minute
 
-				wait = interval * (int)diff;	// 1 * diff minutos em milisegundos
+				wait = interval * (int)diff;	// 1 * diff minutes in milliseconds
 			
 			}else {
 
-				// Correção do intervalo
+				// Interval correction
 				wait = interval = (_time_sec % 60) * 1000;
 
 				fixing_interval = true;
 
 			}
 
-			type = 0u;	// minuto
+			type = 0u;	// minute
 
-		}else if ((diff = ((_time_sec - 1/*1 segundo*/) / 10.f/*10 segundos*/)) >= 1.f) {			// Intervalo de 10 segundos
+		}else if ((diff = ((_time_sec - 1/*1 second*/) / 10.f/*10 seconds*/)) >= 1.f) {			// 10 second interval
 			
 			if ((_time_sec % 10) == 0) {
 			
-				// Intervalo
-				interval = 10 * 1000;	// 10 segundos
+				// Interval
+				interval = 10 * 1000;	// 10 seconds
 
-				wait = interval * (int)diff;	// 10 * diff segundos em milisegundos
+				wait = interval * (int)diff;	// 10 * diff seconds in milliseconds
 			
 			}else {
 
-				// Correção do intervalo
+				// Interval correction
 				wait = interval = (_time_sec % 10) * 1000;
 
 				fixing_interval = true;
 
 			}
 
-		}else {		// Intervalo de 1 segundo
+		}else {		// 1 second interval
 
 			diff = std::round(_time_sec / 1.f);
 
-			// Intervalo
-			interval = 1000;	// 1 segundo
+			// Interval
+			interval = 1000;	// 1 second
 			
-			wait = interval * (int)diff;	// 1 * diff segundos em milesegundos
+			wait = interval * (int)diff;	// 1 * diff seconds in milliseconds
 
 		}
 
-		// Não notifica o cliente se for a correção do intervalo
+		// Does not notify the client if it is the interval correction
 		if (!fixing_interval) {
 
 			// UPDATE ON GAME
 			packet p((unsigned short)0xF8);
 
-			p.addUint8(type);	// Tipo do Tempo, 1 = segundos ou 0 = Minutos
+			p.addUint8(type);	// Time Type, 1 = seconds or 0 = Minutes
 
 			p.addUint16((unsigned short)(type == 0 ? (unsigned short)std::round(_time_sec / 60.f) : _time_sec));
 
@@ -5544,7 +5544,7 @@ void game_server::shutdown_time(int32_t _time_sec) {
 			// Make Time
 			job _job(server::end_time_shutdown, this, (void*)(size_t)_time_sec);
 
-			// Se o Shutdown Timer estiver criado descria e cria um novo
+			// If the Shutdown Timer is created, destroy it and create a new one
 			if (m_shutdown != nullptr)
 				unMakeTime(m_shutdown);
 
@@ -5578,7 +5578,7 @@ void* game_server::check_player() {
 
 		DWORD ret = 0u;
 
-		// Usa o Evento de Shutdown para parar a thread
+		// Uses the Shutdown Event to stop the thread
 #if defined(_WIN32)
 		while (EventShutdownServer != INVALID_HANDLE_VALUE && (ret = WaitForSingleObject(EventShutdownServer, 10000)) == WAIT_TIMEOUT) {
 #elif defined(__linux__)
@@ -5588,11 +5588,11 @@ void* game_server::check_player() {
 			if (m_state != INITIALIZED)
 				continue;
 
-			// Verifica Game Guard Auth do player
+			// Check the player's Game Guard Auth
 			if (m_GameGuardAuth)
 				m_player_manager.checkPlayersGameGuard();
 
-			// Verifica se os itens dos players está tudo normal
+			// Check whether the players' items are all normal
 			m_player_manager.checkPlayersItens();
 		}
 
@@ -5631,10 +5631,10 @@ void game_server::makeGrandZodiacEventRoom() {
 
 		auto rt = sGrandZodiacEvent::getInstance().getInterval();
 
-		// Verifica se já enviou a mensagem, se não envia ela
+		// Check whether the message was already sent, if not send it
 		if (rt != nullptr && !rt->m_sended_message) {
 
-			// Marca que a mensagem já foi envia, que vou enviar ela agora
+			// Mark that the message was already sent, since I will send it now
 			sGrandZodiacEvent::getInstance().setSendedMessage();
 
 			rt->m_sended_message = true;
@@ -5642,12 +5642,12 @@ void game_server::makeGrandZodiacEventRoom() {
 			constexpr char MESSAGE_ZODIAC_EVENT_START_PART1[] = "<PARAMS><RunningTime>";
 			constexpr char MESSAGE_ZODIAC_EVENT_START_PART2[] = "</RunningTime><BroadCastReservedNoticesIdx>531</BroadCastReservedNoticesIdx></PARAMS>";
 
-			auto duration_event_interval = rt->getDiffInterval() / (1000 * 60); // Minutos
+			auto duration_event_interval = rt->getDiffInterval() / (1000 * 60); // Minutes
 
-			// Arredonda para o próximo multiplo de 10, se a diferença for de 1min
+			// Rounds to the next multiple of 10, if the difference is 1min
 			auto resto = duration_event_interval % 10;
 			
-			// Até 1 minuto ele arredonda ele para um multiplo de 10
+			// Up to 1 minute it rounds to a multiple of 10
 			if (resto == 9)
 				duration_event_interval++;
 
@@ -5673,9 +5673,9 @@ void game_server::makeGrandZodiacEventRoom() {
 
 		if (rt != nullptr) {
 
-			// Chama a função em cada canal, o canal sabe o que fazer, se cria mais salas ou não
+			// Calls the function in each channel, the channel knows what to do, whether to create more rooms or not
 			for (auto& el : v_channel)
-				// Verifica se já tem room, criada no canal se não cria
+				// Check whether there is already a room created in the channel, if not create it
 				el->makeGrandZodiacEventRoom(*rt);
 		
 		}else
@@ -5691,13 +5691,13 @@ void game_server::makeListOfPlayersToGoldenTime() {
 
 	try {
 		
-		// (Primeira mensagem) - Mensagem que o round do Golden Time começou
-		// ou Mensagem que o round do Golden Time vai ser calculado nesse momento
+		// (First message) - Message that the Golden Time round has started
+		// or Message that the Golden Time round will be calculated at this moment
 
-		// tem que ser primeiro por que ele atualiza o round se não tiver round atual
+		// must be first because it updates the round if there is no current round
 		bool is_first_message = sGoldenTimeSystem::getInstance().checkFirstMessage();
 
-		// Pega o round atual
+		// Get the current round
 		auto current_round = sGoldenTimeSystem::getInstance().getCurrentRound();
 
 		if (current_round == nullptr) {
@@ -5705,13 +5705,13 @@ void game_server::makeListOfPlayersToGoldenTime() {
 			// Log
 			_smp::message_pool::getInstance().push(new message("[game_server::makeListOfPlayersToGoldenTime][Error] current_round(nullptr) is invalid", CL_FILE_LOG_AND_CONSOLE));
 
-			// Check Next Round Golden Time Event, por que o current_round é inválido
+			// Check Next Round Golden Time Event, because current_round is invalid
 			sGoldenTimeSystem::getInstance().checkNextRound();
 
 			return;
 		}
 
-		stRound copy_round = *current_round; // Cópia para quando trocar o current time no Golden Time System
+		stRound copy_round = *current_round; // Copy for when the current time changes in the Golden Time System
 
 		if (is_first_message) {
 
@@ -5728,7 +5728,7 @@ void game_server::makeListOfPlayersToGoldenTime() {
 			for (auto& el : v_channel)
 				packet_func::channel_broadcast(*el, p, 1);
 
-			return; // Sai, essa msg é enviada assim que muda de dia
+			return; // Exit, this msg is sent as soon as the day changes
 		}else {
 
 			// Send msg
@@ -5763,7 +5763,7 @@ void game_server::makeListOfPlayersToGoldenTime() {
 			_smp::message_pool::getInstance().push(new message("[game_server::makeListOfPlayersToGoldenTime][Log] Nenhum player ganhou no Golden Time Event. Round(" 
 					+ _formatDate(current_round->time) + ")", CL_FILE_LOG_AND_CONSOLE));
 			
-			// Nenhum player ganhou esse Golden Time
+			// No player won this Golden Time
 			packet p((unsigned short)0x1D3);
 
 			p.addUint32(1); // Count
@@ -5810,7 +5810,7 @@ void game_server::makeListOfPlayersToGoldenTime() {
 				return ret;
 			};
 
-			// Mensagem que o round do Golden Time está bombando, tem mais da metada da capacidade de players do servidor participando do Evento
+			// Message that the Golden Time round is booming, more than half of the server's player capacity is participating in the Event
 			if (players.size() > (uint32_t)m_si.max_user) {
 				
 				// Send msg
@@ -5825,7 +5825,7 @@ void game_server::makeListOfPlayersToGoldenTime() {
 					packet_func::channel_broadcast(*el, p, 1);
 			}
 
-			// Calcula o(s) player(s) que ganharam o prêmio do Golden Time Event
+			// Calculate the player(s) who won the Golden Time Event prize
 			auto reward = sGoldenTimeSystem::getInstance().calculeRoundReward(players);
 
 			// Log
@@ -5833,7 +5833,7 @@ void game_server::makeListOfPlayersToGoldenTime() {
 					+ "] ITEM[TYPEID=" + std::to_string(current_round->item._typeid) + ", QNTD=" + std::to_string(current_round->item.qntd) 
 					+ ", QNTD_TIME=" + std::to_string(current_round->item.qntd_time) + "] Player(s)[" + printAllPlayerUID(reward.players) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-			// Send Msg que o(s) players(s) ganharam, e coloca os itens no mail dele(s)
+			// Send Msg that the player(s) won, and put the items in their mail
 			packet p((unsigned short)0x1D3);
 
 			p.addUint32(1); // Count
@@ -5846,11 +5846,11 @@ void game_server::makeListOfPlayersToGoldenTime() {
 			for (auto& el : v_channel)
 				packet_func::channel_broadcast(*el, p, 1);
 
-			// Send FireWorks na cabeça do(s) player(s) que ganharam e estão na lobby
+			// Send FireWorks over the head of the player(s) who won and are in the lobby
 			for (auto& el : v_channel)
 				el->sendFireWorksWinnerGoldenTime(reward.players);
 
-			// Insere o item no mail do(s) player(s)
+			// Insert the item into the player(s)' mail
 			sGoldenTimeSystem::getInstance().sendRewardToMailOfPlayers(reward);
 		}
 
@@ -5863,8 +5863,8 @@ void game_server::makeListOfPlayersToGoldenTime() {
 
 		if (next_round == nullptr) {
 
-			// Acabou o Golden Time Event, e não tem outro marcado
-			// Envia a msg que acabou de vez
+			// The Golden Time Event is over, and there is no other scheduled
+			// Sends the msg that it is over for good
 			packet p((unsigned short)0x1D3);
 
 			p.addUint32(1); // Count
@@ -5877,8 +5877,8 @@ void game_server::makeListOfPlayersToGoldenTime() {
 
 		}else if (isSameDay(next_round->time, current)) {
 
-			// Ainda é o Mesmo Golden Time Event (mesmo dia), round diferente
-			// Envia msg que acabou esse round e passa o horário e o item(Reward) do próximo
+			// It is still the Same Golden Time Event (same day), different round
+			// Sends msg that this round is over and gives the time and the item (Reward) of the next one
 			packet p((unsigned short)0x1D3);
 
 			p.addUint32(1); // Count
@@ -5894,8 +5894,8 @@ void game_server::makeListOfPlayersToGoldenTime() {
 		
 		}else {
 
-			// Outro dia é outro Golden Time Event
-			// Envia msg que acabou o Golden Time Event de hoje e passa a data do próximo Golden Time Event (agendado)
+			// Another day is another Golden Time Event
+			// Sends msg that today's Golden Time Event is over and gives the date of the next Golden Time Event (scheduled)
 			packet p((unsigned short)0x1D3);
 
 			p.addUint32(1); // Count
@@ -5935,10 +5935,10 @@ void game_server::makeBotGMEventRoom() {
 
 		std::vector< stReward > reward;
 
-		// Verifica se já enviou a mensagem, se não envia ela
+		// Check whether the message was already sent, if not send it
 		if (rt != nullptr && !rt->m_sended_message) {
 
-			// Marca que a mensagem já foi envia, que vou enviar ela agora
+			// Mark that the message was already sent, since I will send it now
 			sBotGMEvent::getInstance().setSendedMessage();
 
 			rt->m_sended_message = true;
@@ -5947,9 +5947,9 @@ void game_server::makeBotGMEventRoom() {
 			constexpr char MESSAGE_BOT_GM_EVENT_START_PART2[] = "\", o jogo comeca em ";
 			constexpr char MESSAGE_BOT_GM_EVENT_START_PART3[] = " minutos. Os premios sao ";
 
-			auto duration_event_interval = 2; // Minutos para começar o jogo
+			auto duration_event_interval = 2; // Minutes until the game starts
 
-			// Calcula reward
+			// Calculate reward
 			reward = sBotGMEvent::getInstance().calculeReward();
 
 			std::string reward_str = "{";
@@ -6007,7 +6007,7 @@ void game_server::makeBotGMEventRoom() {
 
 			for (auto i = 0u; i < 2u; ++i) {
 
-				p.addUint32(eBROADCAST_TYPES::BT_MESSAGE_PLAIN);	// (Type MESSAGE PLAIN) Vou usar com o Bot GM Event
+				p.addUint32(eBROADCAST_TYPES::BT_MESSAGE_PLAIN);	// (Type MESSAGE PLAIN) I will use it with the Bot GM Event
 				p.addString(msg);
 			}
 
@@ -6017,11 +6017,11 @@ void game_server::makeBotGMEventRoom() {
 
 		if (rt != nullptr) {
 
-			// Chama a função para o canal que a sala vai ser criada, o canal sabe o que fazer
+			// Calls the function for the channel where the room will be created, the channel knows what to do
 			auto c = findChannel(rt->m_channel_id);
 
 			if (c != nullptr)
-				// Verifica se já tem room, criada no canal se não cria
+				// Check whether there is already a room created in the channel, if not create it
 				c->makeBotGMEventRoom(*rt, reward);
 		
 		}else
@@ -6040,12 +6040,12 @@ bool game_server::checkSmartCalculatorCmd(player& _session, std::string& _msg, e
 
 	try {
 
-		// Verifica se o Smart Calculator System está ativo
+		// Check whether the Smart Calculator System is active
 		if (!m_si.rate.smart_calculator)
 			throw exception("[game_server::checkSmartCalculatorCmd][Error] Player[UID=" + std::to_string(_session.m_pi.uid)
 					+ "] Smart Calculator esta desativado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME_SERVER, 100002, 0));
 
-		// Verifica a permisão para usar o Smart Calculator
+		// Check the permission to use the Smart Calculator
 		if (!_session.m_pi.m_cap.stBit.game_master && !_session.m_pi.m_cap.stBit.gm_normal 
 				&& (!_session.m_pi.m_cap.stBit.premium_user || (_type == eTYPE_CALCULATOR_CMD::SMART_CALCULATOR && !sPremiumSystem::getInstance().isPremium2(_session.m_pi.pt._typeid))
 					|| (_type == eTYPE_CALCULATOR_CMD::CALCULATOR_STADIUM && !sPremiumSystem::getInstance().isPremiumTicket(_session.m_pi.pt._typeid))))
@@ -6060,7 +6060,7 @@ bool game_server::checkSmartCalculatorCmd(player& _session, std::string& _msg, e
 
 		ret = c->execSmartCalculatorCmd(_session, _msg, _type);
 
-		// Teste debug
+		// Debug test
 #ifdef _DEBUG
 		if (!ret) {
 
@@ -6111,7 +6111,7 @@ void game_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[game_server::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -6124,16 +6124,16 @@ void game_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 	{
 		auto& m_dqi = reinterpret_cast<CmdDailyQuestInfo*>(&_pangya_db)->getInfo();	// cmd_dqi.getInfo();
 
-		// Atualiza daily quest
+		// Update daily quest
 		if (MgrDailyQuest::checkCurrentQuest(m_dqi)) {
 			MgrDailyQuest::updateDailyQuest(m_dqi);
 			
-			// Chama o outra de novo para pegar a date que foi atualizado
+			// Calls the other one again to get the date that was updated
 			//cmd_dqi.exec();
 #if defined(_WIN32)
-			Sleep(100);	// Espera 100 milli segundo
+			Sleep(100);	// Wait 100 milliseconds
 #elif defined(__linux__)
-			usleep(100000);	// Espera 100 milli segundo
+			usleep(100000);	// Wait 100 milliseconds
 #endif
 
 			snmdb::NormalManagerDB::getInstance().add(1, new CmdDailyQuestInfo, game_server::SQLDBResponse, _arg);
@@ -6144,13 +6144,13 @@ void game_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 		}
 		break;
 	}
-	case 2:	// Atualiza DailyQuest Info do server
+	case 2:	// Update the server's DailyQuest Info
 	{
-		// Atualiza daily quest
+		// Update daily quest
 		gs->getDailyQuestInfo() = reinterpret_cast<CmdDailyQuestInfo*>(&_pangya_db)->getInfo();	// cmd_dqi.getInfo();
 		break;
 	}
-	case 3:	// Atualiza Chat Macro User
+	case 3:	// Update Chat Macro User
 	{
 
 		auto cmd_ucmu = reinterpret_cast< CmdUpdateChatMacroUser* >(&_pangya_db);
@@ -6178,10 +6178,10 @@ void game_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 	}
 	case 5:	// Register Player Logon ON DB, 0 Login, 1 Logout
 	{
-		// Não usa por que é um UPDATE
+		// Not used because it is an UPDATE
 		break;
 	}
-	case 6:	// Insert Ticker no DB
+	case 6:	// Insert Ticker in DB
 	{
 		auto cmd_it = reinterpret_cast< CmdInsertTicker* >(&_pangya_db);
 
@@ -6190,9 +6190,9 @@ void game_server::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _
 
 		break;
 	}
-	case 7: // Register Logon do player no Server
+	case 7: // Register Logon of the player on the Server
 	{
-		// Não usa por que é um update
+		// Not used because it is an update
 		break;
 	}
 	case 8:	// Update Server Rate Config Info

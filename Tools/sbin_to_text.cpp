@@ -1,6 +1,6 @@
-// Arquivo sbin_to_text.cpp
-// Criado em 01/07/2023 as 06:02 por Acrisio
-// Definição e Implementação do Tradutor do arquivo .sbin do PangYa do PC todas as versões
+// File sbin_to_text.cpp
+// Created on 01/07/2023 at 06:02 by Acrisio
+// Definition and implementation of the translator for the PangYa PC .sbin file, all versions
 
 #include <iostream>
 #include <fstream>
@@ -91,7 +91,7 @@ std::string BufferToHexString(unsigned char* buffer, size_t size) {
 		}
 	}
 
-	// Resto
+	// Remainder
 	if((size % 16) != 0) {
 		for(i = 0; i < (16 - (size % 16)); i++) {
 			ss << std::uppercase << std::hex << std::setw(2) << std::setfill('-');

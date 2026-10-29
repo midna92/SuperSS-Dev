@@ -1,6 +1,6 @@
-// Arquivo cmd_add_item.hpp
-// Criado em 31/05/2018 as 10:17 por Acrisio
-// Defini��o da classe CmdAddItem
+// File cmd_add_item.hpp
+// Created on 31/05/2018 at 10:17 by Acrisio
+// Definition of the class CmdAddItem
 
 #pragma once
 #ifndef _STDA_CMD_ADD_ITEM_HPP

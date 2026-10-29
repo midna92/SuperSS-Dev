@@ -1,6 +1,6 @@
-// Arquivo mysql_db.h
-// Criado em 23/07/2017 por Acrisio
-// Definição da classe mysql_db
+// File mysql_db.h
+// Created on 23/07/2017 by Acrisio
+// Definition of class mysql_db
 
 #pragma once
 #ifndef _STDA_MYSQL_DB_H
@@ -74,7 +74,7 @@ namespace stdA {
 			CRITICAL_SECTION m_cs;
 
 /*#ifdef _DEBUG
-			// CRITICAL_SECTION DEBUG TEM 4 Bytes a+
+			// CRITICAL_SECTION DEBUG has 4 extra bytes
 			char cs_debug[4];
 #endif*/
     };

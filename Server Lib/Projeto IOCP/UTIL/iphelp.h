@@ -1,6 +1,6 @@
-// Arquivo iphelp.h
-// Criado em 21/10/2017 por Acrisio
-// Definição da classe ip_help
+// File iphelp.h
+// Created on 21/10/2017 by Acrisio
+// Definition of the class ip_help
 
 #pragma once
 #ifndef _STDA_IPHELP_H

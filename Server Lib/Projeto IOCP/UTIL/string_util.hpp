@@ -1,7 +1,7 @@
-// Arquivo string_util.hpp
-// Criado em 11/11/2018 as 13:58 por Acrisio
-// Update em 13/12/2018 as 21:42 por Acrisio
-// Definição dos tipos e metôdos auxíliares de string
+// File string_util.hpp
+// Created on 11/11/2018 at 13:58 by Acrisio
+// Updated on 13/12/2018 at 21:42 by Acrisio
+// Definition of the string types and helper methods
 
 #pragma once
 #ifndef _STDA_STRING_UTIL_HPP
@@ -178,7 +178,7 @@ namespace stdA {
 
 		}else if (errno == EILSEQ) {
 
-			// Converte a string malformada do mesmo jetio
+			// Convert the malformed string the same way
 			ws = std::wstring(_str.begin(), _str.end());
 
 		}else
@@ -225,7 +225,7 @@ namespace stdA {
 
 		}else if (errno == EILSEQ) {
 
-			// Converte a string malformada do mesmo jetio
+			// Convert the malformed string the same way
 			s = std::string(_wstr.begin(), _wstr.end());
 
 		}else
@@ -243,9 +243,9 @@ namespace stdA {
 
 		while ((pos = _str.find(_delimiter)) != std::string::npos) {
 
-			ret.push_back(_str.substr(0, pos /*+ _delimiter.length() - Não pega o delimiter*/));
+			ret.push_back(_str.substr(0, pos /*+ _delimiter.length() - Does not include the delimiter*/));
 
-			_str.erase(0, pos + _delimiter.length()); // Mas tira ele
+			_str.erase(0, pos + _delimiter.length()); // But remove it
 		}
 
 		if (!_str.empty())

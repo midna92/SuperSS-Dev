@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_quest.hpp
-// Criado em 11/11/2018 as 13:17 por Acrisio
-// Defini��o da classe CmdDeleteQuest
+// File cmd_delete_quest.hpp
+// Created on 11/11/2018 at 13:17 by Acrisio
+// Definition of the class CmdDeleteQuest
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_QUEST_HPP

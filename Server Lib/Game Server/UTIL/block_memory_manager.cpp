@@ -1,6 +1,6 @@
-// Arquivo block_memory_manager.cpp
-// Criado em 17/11/2018 as 18:00 por Acrisio
-// Implementa��o da classe BlockMemoryManager
+// File block_memory_manager.cpp
+// Created on 17/11/2018 at 18:00 by Acrisio
+// Implementation of the BlockMemoryManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ BlockMemoryManager::~BlockMemoryManager() {
 
 void BlockMemoryManager::clear() {
 
-	// Acho que desaloca a mem�ria, se n�o tenho que rodar em um loop, para desalocar ela
+	// I think it deallocates the memory, if not I have to run in a loop, to deallocate it
 	if (!mp_block.empty())
 		mp_block.clear();
 }
@@ -31,7 +31,7 @@ void BlockMemoryManager::blockUID(uint32_t _uid) {
 
 	auto it = mp_block.find(_uid);
 
-	if (it == mp_block.end()) {	// N�o tem Cria um
+	if (it == mp_block.end()) {	// Does not have one, Creates one
 
 		auto itt = mp_block.insert(std::make_pair(_uid, BlockCtx{ 0u }));
 

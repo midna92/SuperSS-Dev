@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_nick.hpp
-// Criado em 01/04/2018 as 12:50 por Acrisio
-// Defini��o da classe CmdVerifyNick
+// File cmd_verify_nick.hpp
+// Created on 01/04/2018 at 12:50 by Acrisio
+// Definition of class CmdVerifyNick
 
 #pragma once
 #ifndef _STDA_CMD_VERIFY_NICK_HPP

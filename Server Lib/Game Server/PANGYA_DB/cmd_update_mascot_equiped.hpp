@@ -1,6 +1,6 @@
-// Arquivo cmd_update_mascot_equiped.hpp
-// Criado em 25/03/2018 as 11:42 por Acrisio
-// Defini��o da classe CmdUpdateMascotEquiped
+// File cmd_update_mascot_equiped.hpp
+// Created on 25/03/2018 at 11:42 by Acrisio
+// Definition of class CmdUpdateMascotEquiped
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_MASCOT_EQUIPED_HPP

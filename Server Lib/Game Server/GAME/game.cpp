@@ -1,6 +1,6 @@
 // Arquivo game.cpp
-// Criado em 12/08/2018 as 14:50 por Acrisio
-// Implementação da classe Game
+// Created on 12/08/2018 at 14:50 by Acrisio
+// Implementation of the Game class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -52,7 +52,7 @@
 							  if (_packet == nullptr) \
 									throw exception("[Game::request" + std::string((method)) +"][Error] _packet is nullptr", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME, 6, 0)); \
 
-// Ponteiro de session
+// Session pointer
 #define INIT_PLAYER_INFO(_method, _msg, __session) auto pgi = getPlayerInfo((__session)); \
 	if (pgi == nullptr) \
 		throw exception("[Game::" + std::string((_method)) + "][Error] player[UID=" + std::to_string((__session)->m_pi.uid) + "] " + std::string((_msg)) + ", mas o game nao tem o info dele guardado. Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME, 1, 4)); \
@@ -70,14 +70,14 @@
 #define ART_DRAGON_ORB 0x1A0001F8u					// 20%
 
 // Artefact Frozen Flame
-#define ART_FROZEN_FLAME 0x1A0001FAu				// Mantém os itens Active Equipados, ou sejá não consome eles
+#define ART_FROZEN_FLAME 0x1A0001FAu				// Keep the Active items Equipped, that is, do not consume them
 
 uint32_t devil_wings[]{ 0x08016801, 0x08058801, 0x08098801, 0x080dc801, 0x08118801, 0x08160801, 0x08190801, 0x081e2801, 0x08214801, 0x08254801, 0x082d480d, 0x08314801, 0x0839c801 };
 uint32_t obsidian_wings[]{ 0x0801680c, 0x0805880c, 0x0809880c, 0x080dc80c, 0x0811880c, 0x0816080c, 0x0819080c, 0x081e280c, 0x0821480c, 0x0825480c, 0x0829480c, 0x082d4806, 0x0831480a, 0x0839c80a };
 uint32_t corrupt_wings[]{ 0x08016810, 0x08058810, 0x08098810, 0x080dc810, 0x08118810, 0x08160810, 0x08190810, 0x081e2810, 0x08214810, 0x08254810, 0x08294812, 0x082d4803, 0x0831480d, 0x0839c80d };
-uint32_t hasegawa_chirain[]{ 0x8190809, 0x8254808 };	// Item de manter chuva
+uint32_t hasegawa_chirain[]{ 0x8190809, 0x8254808 };	// Keep rain item
 uint32_t hat_spooky_halloween[]{ 0x0801880b, 0x0805a832, 0x0809a835, 0x080d084c, 0x0811a831, 0x0815a062, 0x0818e05c, 0x081d8837, 0x08212059, 0x08252026 };
-uint32_t hat_lua_sol[]{ 0x8018803, 0x805A828, 0x809A827, 0x80D083F, 0x811A823, 0x815A855, 0x818E050, 0x81D8825, 0x821204A, 0x8252015 };	// Dá 20% de Exp e Pang
+uint32_t hat_lua_sol[]{ 0x8018803, 0x805A828, 0x809A827, 0x80D083F, 0x811A823, 0x815A855, 0x818E050, 0x81D8825, 0x821204A, 0x8252015 };	// Gives 20% Exp and Pang
 uint32_t hat_birthday[]{ 0x08000885, 0x0805a81c, 0x08080832, 0x080d0836, 0x08100038, 0x0815a047, 0x0818e048, 0x081d881e, 0x0821203c, 0x08252013, 0x0829200e, 0x082d6000 };
 
 // Motion Item da Treasure Hunter Point Também
@@ -109,20 +109,20 @@ Game::Game(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, uns
 	__atomic_store_n(&m_sync_send_init_data, 0u, __ATOMIC_RELAXED);
 #endif
 
-	// Tirei o make player info da classe base e coloquei para a base da classe mais alta
+	// I removed make player info from the base class and put it in the base of the highest class
 	/*for (auto& el : m_players)
 		makePlayerInfo(*el);*/
 
 	// Inicializar Artefact Info Of Game
 	initArtefact();
 	
-	// Inicializar o rate chuva dos itens equipado dos players no jogo
+	// Initialize the rain rate of the players' equipped items in the game
 	initPlayersItemRainRate();
 
 	// Inicializa a flag persist rain next hole
 	initPlayersItemRainPersistNextHole();
 	
-	// Map Dados Estáticos
+	// Map Static Data
 	if (!sMap::getInstance().isLoad())
 		sMap::getInstance().load();
 
@@ -325,7 +325,7 @@ std::vector< player* > Game::getSessions(player *_session) {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// Se _session for diferente de nullptr retorna todas as session, menos a que foi passada no _session
+	// If _session is different from nullptr returns all sessions, except the one passed in _session
 	for (auto& el : m_players)
 		if (el != nullptr && el->getState() && el->m_pi.mi.sala_numero != -1 && (_session == nullptr || _session != el))
 			v_sessions.push_back(el);
@@ -399,7 +399,7 @@ void Game::requestActiveAutoCommand(player& _session, packet *_packet) {
 
 		INIT_PLAYER_INFO("requestActiveAutoCommand", "tentou ativar Auto Command no jogo", &_session);
 
-		if (!pgi->premium_flag) { // (não é)!PREMIUM USER
+		if (!pgi->premium_flag) { // (is not)!PREMIUM USER
 
 			auto pWi = _session.m_pi.findWarehouseItemByTypeid(AUTO_COMMAND_TYPEID);
 
@@ -430,7 +430,7 @@ void Game::requestActiveAutoCommand(player& _session, packet *_packet) {
 
 		_smp::message_pool::getInstance().push(new message("[Game::requestActiveAutoCommand][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		// !@ Não sei o que esse pacote faz, não encontrei no meu antigo pangya
+		// !@ I do not know what this packet does, I did not find it in my old pangya
 		// Resposta Error
 		p.init_plain((unsigned short)0x22B);
 
@@ -459,7 +459,7 @@ void Game::requestActiveAssistGreen(player& _session, packet *_packet) {
 			throw exception("[Game::requestActiveAssistGreen][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou ativar Assist[TYPEID="
 					+ std::to_string(item_typeid) + "] do Green, mas o Assist Mode do player nao esta ligado. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::GAME, 2, 0x5200102));
 
-		// Resposta para Active Assist Green
+		// Reply to Active Assist Green
 		p.init_plain((unsigned short)0x26B);
 
 		p.addUint32(0);	// OK
@@ -542,7 +542,7 @@ void Game::requestTeamFinishHole(player& _session, packet *_packet) {
 	return std::find((_arr2), LAST_ELEMENT_IN_ARRAY((_arr2)), _element) != LAST_ELEMENT_IN_ARRAY((_arr2)); \
 }) != LAST_ELEMENT_IN_ARRAY((_arr1))) \
 
-// Usa o Padrão delas
+// Use their Default
 bool Game::stopTime() {
 
 	clear_time();
@@ -594,25 +594,25 @@ void Game::requestPlayerReportChatGame(player& _session, packet *_packet) {
 
 	try {
 
-		// Verifica se o player já reportou o jogo
+		// Check if the player already reported the game
 		auto it = m_player_report_game.find(_session.m_pi.uid);
 
 		if (it != m_player_report_game.end()) {
 
-			// Player já reportou o jogo
+			// Player already reported the game
 			p.init_plain((unsigned short)0x94);
 
-			p.addUint8(1u);	// Player já reportou o jogo
+			p.addUint8(1u);	// Player already reported the game
 
 			packet_func::session_send(p, &_session, 1);
 
-		}else { // Primeira vez que o palyer report o jogo
+		}else { // First time the player reports the game
 
-			// add ao mapa de uid de player que reportaram o jogo
+			// add to the map of player uids that reported the game
 			m_player_report_game[_session.m_pi.uid] = _session.m_pi.uid;
 
-			// Faz Log de quem está na sala, quando pangya, o update enviar o chat log verifica o chat
-			// por que parece que o pangya não envia o chat, ele só cria um arquivo, acho que quem envia é o update
+			// Log who is in the room, when pangya sends the update the chat log checks the chat
+			// because it seems pangya does not send the chat, it only creates a file, I think the update is what sends it
 			std::string log = "";
 
 			for (auto& el : m_players)
@@ -623,7 +623,7 @@ void Game::requestPlayerReportChatGame(player& _session, packet *_packet) {
 			_smp::message_pool::getInstance().push(new message("[Game::requestPlayerReportChatGame][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 						+ "] reportou o chat do jogo na sala[NUMERO=" + std::to_string(m_ri.numero) + "] Log{" + log + "}", CL_FILE_LOG_AND_CONSOLE));
 
-			// Reposta para o cliente
+			// Reply to the client
 			p.init_plain((unsigned short)0x94);
 
 			p.addUint8(0u); // Sucesso
@@ -637,7 +637,7 @@ void Game::requestPlayerReportChatGame(player& _session, packet *_packet) {
 
 		p.init_plain((unsigned short)0x94);
 
-		p.addUint8(1u);	// 1 já foi feito report do jogo por esse player
+		p.addUint8(1u);	// 1 the game was already reported by this player
 
 		packet_func::session_send(p, &_session, 1);
 	}
@@ -655,10 +655,10 @@ void Game::initPlayersItemRainRate() {
 #endif
 		&& s->isConnected()) {	// Check Player Connected
 			
-			if (s->m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+			if (s->m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainRate][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.", 
 						CL_FILE_LOG_AND_CONSOLE));
-				continue;// Kika aqui "deletePlayer(s);"
+				continue;// Kick here "deletePlayer(s);"
 			}
 
 			// Devil Wings
@@ -697,7 +697,7 @@ void Game::initPlayersItemRainRate() {
 				m_rv.rain += 10;
 			}
 
-			// Hat Spooky Halloween -- Esse aqui "tenho que colocar a regra para funcionar só na epoca do halloween"
+			// Hat Spooky Halloween -- This one "I have to put the rule to work only during Halloween season"
 			if (FIND_ELEMENT_ARRAY_OF_ARRAY(s->m_pi.ei.char_info->parts_typeid, hat_spooky_halloween)) {
 #ifdef _DEBUG
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainRate][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Hat Spooky Halloween no Character[TYPEID="
@@ -720,7 +720,7 @@ void Game::initPlayersItemRainRate() {
 					m_rv.rain += it->efeito_qntd;
 			}
 
-			// Mascot Poltergeist -- Esse aqui "tenho que colocar a regra para funcionar só na epoca do halloween"
+			// Mascot Poltergeist -- This one "I have to put the rule to work only during Halloween season"
 			if (s->m_pi.ei.mascot_info != nullptr && s->m_pi.ei.mascot_info->_typeid == 0x40000029/*Poltergeist*/) {
 #ifdef _DEBUG
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainRate][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Mascot Poltergeist[TYPEID=" 
@@ -753,10 +753,10 @@ void Game::initPlayersItemRainPersistNextHole() {
 #endif
 		&& s->isConnected()) {	// Check Player Connected
 
-			if (s->m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+			if (s->m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.",
 						CL_FILE_LOG_AND_CONSOLE));
-				continue;// Kika aqui "deletePlayer(s);"
+				continue;// Kick here "deletePlayer(s);"
 			}
 
 			// Devil Wings
@@ -765,7 +765,7 @@ void Game::initPlayersItemRainPersistNextHole() {
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Devil Wings no Character[TYPEID="
 						+ std::to_string(s->m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(s->m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
@@ -776,7 +776,7 @@ void Game::initPlayersItemRainPersistNextHole() {
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Obsidian Wings no Character[TYPEID="
 						+ std::to_string(s->m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(s->m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
@@ -787,7 +787,7 @@ void Game::initPlayersItemRainPersistNextHole() {
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Corrupt Wings no Character[TYPEID="
 						+ std::to_string(s->m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(s->m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
@@ -798,23 +798,23 @@ void Game::initPlayersItemRainPersistNextHole() {
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Hasegawa Chirain Item Part no Character[TYPEID="
 						+ std::to_string(s->m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(s->m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
 
-			// Hat Spooky Halloween -- Esse aqui "tenho que colocar a regra para funcionar só na epoca do halloween"
+			// Hat Spooky Halloween -- This one "I have to put the rule to work only during Halloween season"
 			if (FIND_ELEMENT_ARRAY_OF_ARRAY(s->m_pi.ei.char_info->parts_typeid, hat_spooky_halloween)) {
 #ifdef _DEBUG
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Hat Spooky Halloween no Character[TYPEID="
 						+ std::to_string(s->m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(s->m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
 
-			// Card Efeito 31 Persist chuva para o proximo hole
+			// Card Effect 31 Persist rain to the next hole
 			auto it = std::find_if(s->m_pi.v_cei.begin(), s->m_pi.v_cei.end(), [](auto& _el) {
 				return sIff::getInstance().getItemSubGroupIdentify22(_el._typeid) == 2/*Special*/ && _el.efeito == 31;
 			});
@@ -824,7 +824,7 @@ void Game::initPlayersItemRainPersistNextHole() {
 				_smp::message_pool::getInstance().push(new message("[Game::initPlayersItemRainPersistNextHole][Log] player[UID=" + std::to_string(s->m_pi.uid) + "] esta equipado com Card[TYPEID="
 						+ std::to_string(it->_typeid) + ", EFEITO=" + std::to_string(it->efeito) + ", EFEITO_QNTD=" + std::to_string(it->efeito_qntd) + "] especial", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
-				// sai por que só precisa que 1 player tenha o item para valer para o game todo
+				// leave because only 1 player needs to have the item for it to apply to the whole game
 				m_rv.persist_rain = 1;
 				return;
 			}
@@ -868,10 +868,10 @@ void Game::initArtefact() {
 
 PlayerGameInfo::eCARD_WIND_FLAG Game::getPlayerWindFlag(player& _session) {
 
-	if (_session.m_pi.ei.char_info == nullptr) {	// Player n�o est� com character equipado, kika dele do jogo
+	if (_session.m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 		_smp::message_pool::getInstance().push(new message("[Game::getPlayerWindFlag][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.",
 			CL_FILE_LOG_AND_CONSOLE));
-		return PlayerGameInfo::eCARD_WIND_FLAG::NONE;// Kika aqui "deletePlayer(s);"
+		return PlayerGameInfo::eCARD_WIND_FLAG::NONE;// Kick here "deletePlayer(s);"
 	}
 
 	// 3 R, 17 SR, 13 SC, 12 N
@@ -922,7 +922,7 @@ int Game::initCardWindPlayer(PlayerGameInfo* _pgi, unsigned char _wind) {
 	case PlayerGameInfo::eCARD_WIND_FLAG::SECRET:
 		if (_wind >= 5)		// High(strong) Wind
 			return -2;
-		else if (_wind > 0) // Low(weak) Wind, 1m não precisa diminuir
+		else if (_wind > 0) // Low(weak) Wind, 1m does not need to decrease
 			return -1;
 		break;
 	}
@@ -934,15 +934,15 @@ PlayerGameInfo::stTreasureHunterInfo Game::getPlayerTreasureInfo(player& _sessio
 
 	PlayerGameInfo::stTreasureHunterInfo pti{ 0 };
 
-	if (_session.m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+	if (_session.m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 		_smp::message_pool::getInstance().push(new message("[Game::getPlayerTreasureInfo][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.",
 			CL_FILE_LOG_AND_CONSOLE));
-		return pti;// Kika aqui "deletePlayer(s);"
+		return pti;// Kick here "deletePlayer(s);"
 	}
 
 	std::vector< CardEquipInfoEx* > v_cei;
 
-	// 9 N, 10 R, 14 SR por Score. 8 N, R, SR todos score
+	// 9 N, 10 R, 14 SR per Score. 8 N, R, SR all scores
 	std::for_each(_session.m_pi.v_cei.begin(), _session.m_pi.v_cei.end(), [&](auto& _el) {
 		if ((_session.m_pi.ei.char_info->id == _el.parts_id && _session.m_pi.ei.char_info->_typeid == _el.parts_typeid)
 			&& sIff::getInstance().getItemSubGroupIdentify22(_el._typeid) == 1/*Caddie*/ && (_el.efeito == 8 || _el.efeito == 9 || _el.efeito == 10 || _el.efeito == 14))
@@ -973,7 +973,7 @@ PlayerGameInfo::stTreasureHunterInfo Game::getPlayerTreasureInfo(player& _sessio
 		}
 	}
 
-	// Card Efeito 18 Aumenta o treasure point para qualquer score por 2 horas
+	// Card Effect 18 Increases the treasure point for any score for 2 hours
 	auto it = std::find_if(_session.m_pi.v_cei.begin(), _session.m_pi.v_cei.end(), [](auto& _el) {
 		return sIff::getInstance().getItemSubGroupIdentify22(_el._typeid) == 2/*Special*/ && _el.efeito == 18;
 	});
@@ -987,13 +987,13 @@ PlayerGameInfo::stTreasureHunterInfo Game::getPlayerTreasureInfo(player& _sessio
 		pti.all_score += (unsigned char)it->efeito_qntd;
 	}
 
-	/// Todos que dão Drop Rate da treasue hunter point, então aonde dá o drop rate já vai dá o treasure point
-	/// Angel Wings deixa que ela é uma excessão não tem os valores no IFF, é determinado pelo server e o ProjectG
-	// Passarinho gordo aumenta 30 treasure hunter point para todos scores
+	/// All that give Drop Rate also give treasure hunter point, so wherever the drop rate is given the treasure point is given too
+	/// Angel Wings is an exception, it does not have the values in the IFF, it is determined by the server and ProjectG
+	// Fat bird increases 30 treasure hunter point for all scores
 	//if (_session.m_pi.ei.mascot_info != nullptr && _session.m_pi.ei.mascot_info->_typeid == MASCOT_FAT_BIRD) 
 		//pti.all_score += 30;	// +30 all score
 
-	// Verifica se está com asa de anjo equipada (shop ou gacha), aumenta 30 treasure hunter point para todos scores
+	// Check if the angel wings are equipped (shop or gacha), increases 30 treasure hunter point for all scores
 	if (_session.m_pi.ei.char_info->AngelEquiped() && _session.m_pi.ui.getQuitRate() < GOOD_PLAYER_ICON)
 		pti.all_score += 30;	// +30 all score
 
@@ -1004,7 +1004,7 @@ void Game::updatePlayerAssist(player& _session) {
 
 	INIT_PLAYER_INFO("updatePlayerAssist", "tentou atualizar assist pang no jogo", &_session);
 
-	if (pgi->assist_flag && pgi->level > 10/*Maior que 10 "great of Beginner A" Junior E ~ Inifinit Legend I*/)
+	if (pgi->assist_flag && pgi->level > 10/*Greater than 10 "great of Beginner A" Junior E ~ Inifinit Legend I*/)
 		pgi->data.pang = (uint64_t)(pgi->data.pang * 0.7f);	// - 30% dos pangs
 
 }
@@ -1042,7 +1042,7 @@ DropItemRet Game::requestInitDrop(player& _session) {
 	// Init Course Info Drop System
 	ci.artefact = m_ri.artefato;
 	ci.char_motion = pgi->char_motion_item;
-	ci.course = hole->getCourse() & 0x7F;		// Course do Hole, Por que no SSC, cada hole é um course
+	ci.course = hole->getCourse() & 0x7F;		// Hole Course, because in SSC each hole is a course
 	ci.hole = pgi->hole;
 	ci.seq_hole = (unsigned char)m_course->findHoleSeq(pgi->hole);
 	ci.qntd_hole = m_ri.qntd_hole;
@@ -1054,14 +1054,14 @@ DropItemRet Game::requestInitDrop(player& _session) {
 		ci.angel_wings = 0u;
 
 	// Artefact Pang Drop
-	if (m_ri.qntd_hole == ci.seq_hole && m_ri.qntd_hole == 18) {	// Ultimo Hole, de 18h Game
+	if (m_ri.qntd_hole == ci.seq_hole && m_ri.qntd_hole == 18) {	// Last Hole, of the 18h Game
 		auto art_pang = sDropSystem::getInstance().drawArtefactPang(ci, (uint32_t)m_players.size());
 
 		if (art_pang._typeid != 0) {	// Dropou
 
 			dir.v_drop.push_back(art_pang);
 
-			if (art_pang.qntd >= 30) {	// Envia notice que o player ganhou jackpot
+			if (art_pang.qntd >= 30) {	// Send a notice that the player won the jackpot
 
 				packet p((unsigned short)0x40);
 
@@ -1081,7 +1081,7 @@ DropItemRet Game::requestInitDrop(player& _session) {
 	// Drop Event Course
 	auto course = sDropSystem::getInstance().findCourse(ci.course & 0x7F);
 
-	if (course != nullptr) {	// tem Drop nesse Course
+	if (course != nullptr) {	// has Drop in this Course
 		auto drop_event = sDropSystem::getInstance().drawCourse(*course, ci);
 
 		if (!drop_event.empty())	// Dropou
@@ -1094,7 +1094,7 @@ DropItemRet Game::requestInitDrop(player& _session) {
 	if (mana_drop._typeid != 0) // Dropou
 		dir.v_drop.push_back(mana_drop);
 
-	// Drop Grand Prix Ticket, não drop no Grand Prix
+	// Drop Grand Prix Ticket, does not drop in Grand Prix
 	if (m_ri.qntd_hole == ci.seq_hole && m_ri.tipo != RoomInfo::TIPO::GRAND_PRIX) {
 		auto gp_ticket = sDropSystem::getInstance().drawGrandPrixTicket(ci, _session);
 
@@ -1112,7 +1112,7 @@ DropItemRet Game::requestInitDrop(player& _session) {
 		pgi->sys_achieve.incrementCounter(0x6C400053u/*SSC Ticket*/, (int)ssc.size());
 	}
 
-	// Adiciona para a lista de drop's do player
+	// Add to the player's drop list
 	if (!dir.v_drop.empty())
 		pgi->drop_list.v_drop.insert(pgi->drop_list.v_drop.end(), dir.v_drop.begin(), dir.v_drop.end());
 
@@ -1139,7 +1139,7 @@ void Game::requestSaveDrop(player& _session) {
 
 			if ((it = v_item.find(item._typeid)) == v_item.end())	// Novo item
 				v_item.insert(std::make_pair(item._typeid, item));
-			else {	// J� tem
+			else {	// Already has
 				it->second.qntd += item.qntd;
 				it->second.STDA_C_ITEM_QNTD = (short)it->second.qntd;
 			}
@@ -1177,7 +1177,7 @@ DropItemRet Game::requestInitCubeCoin(player& _session, packet *_packet) {
 		unsigned char opt = _packet->readUint8();
 		unsigned char count = _packet->readUint8();
 
-		// Player que tacou e tem drops (Coin ou Cube)
+		// Player who hit and has drops (Coin or Cube)
 		if (opt == 1 && count > 0) {
 
 			DropItemRet dir;
@@ -1210,15 +1210,15 @@ DropItemRet Game::requestInitCubeCoin(player& _session, packet *_packet) {
 				switch (tipo) {
 				case 0: // Coin
 				{
-					// Tipo 3 Coin da borda do green ganha menos pangs ganha de 1 a 50, Tipo 4 Coin no chão qualquer lugar ganha mais pang de 1 a 200
+					// Type 3 Coin from the edge of the green earns fewer pangs, from 1 to 50, Type 4 Coin on the ground anywhere earns more pang, from 1 to 200
 					dir.v_drop.push_back({ COIN_TYPEID, (unsigned char)hole->getCourse(),
 											(unsigned char)hole->getNumero(),
 											(short)(sRandomGen::getInstance().rIbeMt19937_64_chrono() % (pCube->flag_location == 0 ? 50 : 200) + 1),
 											(pCube->flag_location == 0) ? DropItem::eTYPE::COIN_EDGE_GREEN : DropItem::eTYPE::COIN_GROUND });
 
-					// Achievement, coin do chão sem ser da borda do green
+					// Achievement, coin from the ground that is not from the edge of the green
 					if (pCube->flag_location != 0)
-						pgi->sys_achieve.incrementCounter(0x6C400037u/*Coin do chão, sem ser da borda do green*/);
+						pgi->sys_achieve.incrementCounter(0x6C400037u/*Coin from the ground, not from the edge of the green*/);
 
 					break;
 				}
@@ -1234,7 +1234,7 @@ DropItemRet Game::requestInitCubeCoin(player& _session, packet *_packet) {
 				}	// End Switch
 			}
 
-			// Add os Cube Coin para o player list drop
+			// Add the Cube Coins to the player drop list
 			pgi->drop_list.v_drop.insert(pgi->drop_list.v_drop.begin(), dir.v_drop.begin(), dir.v_drop.end());
 
 			return dir;
@@ -1255,7 +1255,7 @@ void Game::requestCalculePang(player& _session) {
 	// Course Rate of Pang
 	auto course = sIff::getInstance().findCourse((m_ri.course & 0x7F) | 0x28000000u);
 
-	// Rate do course, tem uns que é 10% a+ tem outros que é 30% a mais que o pangya JP deixou
+	// Course rate, some are 10% more and others 30% more than pangya JP left
 	float course_rate = (course != nullptr && course->rate_pang >= 1.f) ? course->rate_pang : 1.f;
 	float pang_rate = 0.f;
 
@@ -1270,8 +1270,8 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 	try {
 
-		// Aqui dados do jogo ele passa o holein no lugar do mad_conduta <-> holein, agora quando ele passa o info user é invertido(Normal)
-		// Inverte para salvar direito no banco de dados
+		// Here, in the game data he passes holein in place of mad_conduta <-> holein, now when he passes the info user it is inverted (Normal)
+		// Invert to save correctly in the database
 		auto tmp_holein = pgi->ui.hole_in;
 
 #ifdef _DEBUG
@@ -1283,7 +1283,7 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 		if (option == 0) { // Terminou VS
 
-			// Verifica se o Angel Event está ativo de tira 1 quit do player que concluí o jogo
+			// Check if the Angel Event is active and remove 1 quit from the player who completed the game
 			if (m_ri.angel_event) {
 				
 				pgi->ui.quitado = -1;
@@ -1297,8 +1297,8 @@ void Game::requestSaveInfo(player& _session, int option) {
 			pgi->ui.jogado = 1;
 			pgi->ui.media_score = pgi->data.score;
 
-			// Os valores que eu não colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui é o contador de jogos que o player começou é o mesmo do jogado, só que esse aqui usa para o disconnect
+			// The values I did not set
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as played, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -1307,9 +1307,9 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 1) { // Quitou ou tomou DC
+		}else if (option == 1) { // Quit or got DC
 			
-			// Quitou ou saiu não ganha pangs
+			// Quit or left, does not earn pangs
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
 
@@ -1317,14 +1317,14 @@ void Game::requestSaveInfo(player& _session, int option) {
 			pgi->ui.combo = DECREASE_COMBO_VALUE * -1;
 			pgi->ui.jogado = 1;
 			
-			// Verifica se tomou DC ou Quitou, ai soma o membro certo
+			// Check if he got DC or Quit, then add to the right member
 			if (!_session.m_connection_timeout)
 				pgi->ui.quitado = 1;
 			else
 				pgi->ui.disconnect = 1;
 
-			// Os valores que eu não colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui é o contador de jogos que o player começou é o mesmo do jogado, só que esse aqui usa para o disconnect
+			// The values I did not set
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as played, but this one is used for disconnect
 
 			pgi->ui.media_score = pgi->data.score;
 
@@ -1335,7 +1335,7 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 2) { // Não terminou o hole 1, alguem saiu ai volta para sala sem contar o combo, só conta o jogo que começou
+		}else if (option == 2) { // Did not finish hole 1, someone left so return to the room without counting the combo, only counts the game that started
 
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
@@ -1343,8 +1343,8 @@ void Game::requestSaveInfo(player& _session, int option) {
 			pgi->ui.exp = 0;
 			pgi->ui.jogado = 1;
 
-			// Os valores que eu não colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui é o contador de jogos que o player começou é o mesmo do jogado, só que esse aqui usa para o disconnect
+			// The values I did not set
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as played, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -1357,7 +1357,7 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.clear();
 
-			// Verifica se o Angel Event está ativo de tira 1 quit do player que concluí o jogo
+			// Check if the Angel Event is active and remove 1 quit from the player who completed the game
 			if (m_ri.angel_event) {
 
 				pgi->ui.quitado = -1;
@@ -1371,8 +1371,8 @@ void Game::requestSaveInfo(player& _session, int option) {
 			pgi->ui.jogado = 1;
 			pgi->ui.media_score = 0;
 
-			// Os valores que eu não colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui é o contador de jogos que o player começou é o mesmo do jogado, só que esse aqui usa para o disconnect
+			// The values I did not set
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as played, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -1381,9 +1381,9 @@ void Game::requestSaveInfo(player& _session, int option) {
 
 			pgi->ui.tempo = (uint32_t)diff;
 
-		}else if (option == 5/*Não conta quit*/) {
+		}else if (option == 5/*Does not count quit*/) {
 
-			// Quitou ou saiu não ganha pangs
+			// Quit or left, does not earn pangs
 			pgi->data.pang = 0u;
 			pgi->data.bonus_pang = 0u;
 
@@ -1391,8 +1391,8 @@ void Game::requestSaveInfo(player& _session, int option) {
 			pgi->ui.jogado = 1;
 			pgi->ui.media_score = pgi->data.score;
 
-			// Os valores que eu não colocava
-			pgi->ui.jogados_disconnect = 1;		// Esse aqui é o contador de jogos que o player começou é o mesmo do jogado, só que esse aqui usa para o disconnect
+			// The values I did not set
+			pgi->ui.jogados_disconnect = 1;		// This is the counter of games the player started, it is the same as played, but this one is used for disconnect
 
 			auto diff = getLocalTimeDiff(m_start_time);
 
@@ -1431,16 +1431,16 @@ void Game::requestUpdateItemUsedGame(player& _session) {
 
 	auto& ui = pgi->used_item;
 
-	// Club Mastery // ((m_ri.course & 0x7f) == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE ? 1.5f : 1.f), SSSC sobrecarrega essa função para colocar os valores dele
+	// Club Mastery // ((m_ri.course & 0x7f) == RoomInfo::TIPO::SPECIAL_SHUFFLE_COURSE ? 1.5f : 1.f), SSSC overrides this function to put its own values
 	ui.club.count += (uint32_t)(1.f * 10.f * ui.club.rate * TRANSF_SERVER_RATE_VALUE(m_rv.clubset) * TRANSF_SERVER_RATE_VALUE(ui.rate.club));
 
-	// Passive Item exceto Time Booster e Auto Command, que soma o contador por uso, o cliente passa o pacote, dizendo que usou o item
+	// Passive Item except Time Booster and Auto Command, which add to the counter per use, the client sends the packet saying it used the item
 	for (auto& el : ui.v_passive) {
 		
-		// Verica se é o ultimo hole, terminou o jogo, ai tira soma 1 ao count do pirulito que consome por jogo
+		// Check if it is the last hole, the game ended, then add 1 to the count of the lollipop that is consumed per game
 		if (CHECK_PASSIVE_ITEM(el.second._typeid) && el.second._typeid != TIME_BOOSTER_TYPEID/*Time Booster*/ && el.second._typeid != AUTO_COMMAND_TYPEID) {
 			
-			// Item de Exp Boost que só consome 1 Por Jogo, só soma no requestFinishItemUsedGame
+			// Exp Boost item that consumes only 1 Per Game, only added in requestFinishItemUsedGame
 			if (std::find(passive_item_exp_1perGame, LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame), el.second._typeid) == LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame))
 				el.second.count++;
 		
@@ -1457,7 +1457,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 
 	INIT_PLAYER_INFO("requestFinishItemUsedGame", "tentou finalizar itens usado no jogo", &_session);
 
-	// Player já finializou os itens usados, verifica para não finalizar dua vezes os itens do player
+	// Player already finalized the used items, check to avoid finalizing the player's items twice
 	if (pgi->finish_item_used) {
 
 		_smp::message_pool::getInstance().push(new message("[Game::requestFinishItemUsedGame][WARNING] Player[UID=" + std::to_string(_session.m_pi.uid) + "] ja finalizou os itens. Bug", CL_FILE_LOG_AND_CONSOLE));
@@ -1469,15 +1469,15 @@ void Game::requestFinishItemUsedGame(player& _session) {
 
 	uint32_t tmp_counter_typeid = 0u;
 
-	// Add +1 ao itens que consome 1 só por jogo
-	// Item de Exp Boost que só consome 1 Por Jogo
+	// Add +1 to items that consume only 1 per game
+	// Exp Boost item that consumes only 1 Per Game
 	std::for_each(ui.v_passive.begin(), ui.v_passive.end(), [&](auto& _el) {
 
 		if (std::find(passive_item_exp_1perGame, LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame), _el.second._typeid) != LAST_ELEMENT_IN_ARRAY(passive_item_exp_1perGame))
 			_el.second.count++;
 	});
 
-	// Verifica se é premium 2 e se ele tem o auto caliper para poder somar no Achievement
+	// Check if it is premium 2 and has the auto caliper to be able to add to the Achievement
 	if (_session.m_pi.m_cap.stBit.premium_user && sPremiumSystem::getInstance().isPremium2(_session.m_pi.pt._typeid)) {
 
 		auto it_ac = ui.v_passive.find(AUTO_CALIPER_TYPEID);
@@ -1489,7 +1489,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 			if (qntd == (unsigned short)~0u)
 				qntd = m_ri.qntd_hole;
 
-			// Adiciona Auto Caliper para ser contado no Achievement
+			// Add Auto Caliper to be counted in the Achievement
 			auto it_p_ac = ui.v_passive.insert({ 
 				AUTO_CALIPER_TYPEID, 
 				{ AUTO_CALIPER_TYPEID , qntd }
@@ -1507,7 +1507,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 		
 		if (el.second.count > 0u) {
 			
-			// Item Aqui tem o Achievemente de passive item
+			// Item Here there is the passive item Achievement
 			if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::ITEM && !sIff::getInstance().IsItemEquipable(el.second._typeid)/*Nega == Passive Item*/) {
 
 				pgi->sys_achieve.incrementCounter(0x6C400075u/*Passive Item*/, el.second.count);
@@ -1516,11 +1516,11 @@ void Game::requestFinishItemUsedGame(player& _session) {
 					pgi->sys_achieve.incrementCounter(tmp_counter_typeid, el.second.count);
 			}
 
-			// Só atualiza o Auto Caliper se não for Premium 2
+			// Only updates the Auto Caliper if not Premium 2
 			if (!_session.m_pi.m_cap.stBit.premium_user || !sPremiumSystem::getInstance().isPremium2(_session.m_pi.pt._typeid) || el.second._typeid != AUTO_CALIPER_TYPEID/*Auto Caliper*/) {
 
-				// Tira todos itens passivo, antes estava Item e AuxPart, não ia Ball por que eu fiz errado, só preciso verifica se é item e passivo para somar o achievement
-				// Para tirar os itens, tem que tirar(atualizar) todos.
+				// Remove all passive items, before it was Item and AuxPart, Ball was not included because I did it wrong, I only need to check if it is an item and passive to add the achievement
+				// To remove the items, all of them must be removed (updated).
 				auto pWi = _session.m_pi.findWarehouseItemByTypeid(el.second._typeid);
 
 				if (pWi != nullptr) {
@@ -1549,7 +1549,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 
 		if (el.second.count > 0u) {
 
-			// Aqui tem achievement de Item Active
+			// Here there is an Item Active achievement
 			if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::ITEM && sIff::getInstance().IsItemEquipable(el.second._typeid)) {
 				
 				pgi->sys_achieve.incrementCounter(0x6C40004Fu/*Active Item*/, el.second.count);
@@ -1558,11 +1558,11 @@ void Game::requestFinishItemUsedGame(player& _session) {
 					pgi->sys_achieve.incrementCounter(tmp_counter_typeid, el.second.count);
 			}
 
-			// Só tira os itens Active se a sala não estiver com o artefact Frozen Flame,
-			// se ele estiver com artefact Frozen Flame ele mantém os Itens Active, não consome e nem desequipa do inventório do player
+			// Only removes the Active items if the room does not have the Frozen Flame artifact,
+			// if he has the Frozen Flame artifact he keeps the Active Items, does not consume them nor unequip them from the player's inventory
 			if (m_ri.artefato != ART_FROZEN_FLAME) {
 
-				// Limpa o Item Slot do player, dos itens que foram usados(Ativados) no jogo
+				// Clear the player's Item Slot of the items that were used (Activated) in the game
 				if (el.second.count <= el.second.v_slot.size()) {
 				
 					for (auto i = 0u; i < el.second.count; ++i)
@@ -1594,12 +1594,12 @@ void Game::requestFinishItemUsedGame(player& _session) {
 	// Update Item Equiped Slot ON DB
 	snmdb::NormalManagerDB::getInstance().add(25, new CmdUpdateItemSlot(_session.m_pi.uid, (uint32_t*)_session.m_pi.ue.item_slot), Game::SQLDBResponse, this);
 
-	// Se for o Master da sala e ele estiver com artefato tira o mana dele
-	// Antes tirava assim que começava o jogo, mas aí o cliente atualizava a sala tirando o artefact aí no final não tinha como ver se o frozen flame estava equipado
-	// e as outras pessoas que estão na lobby não sabe qual artefect que está na sala, por que o master mesmo mando o pacote pra tirar da sala quando o server tira o mana dele no init game
+	// If he is the room Master and has an artifact, remove his mana
+	// Before, it was removed as soon as the game started, but then the client updated the room removing the artifact, so at the end there was no way to see if the frozen flame was equipped
+	// and the other people in the lobby do not know which artifact is in the room, because the master himself sent the packet to remove it from the room when the server takes his mana in init game
 	if (m_ri.artefato != 0 && m_ri.master == _session.m_pi.uid) {
 
-		// Tira Artefact Mana do master da sala
+		// Remove Artifact Mana from the room master
 		auto pWi = _session.m_pi.findWarehouseItemByTypeid(m_ri.artefato + 1);
 
 		if (pWi != nullptr) {
@@ -1652,7 +1652,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 			item.clubset_workshop.rank = pClub->clubset_workshop.rank;
 			item.clubset_workshop.recovery = pClub->clubset_workshop.recovery_pts;
 
-			snmdb::NormalManagerDB::getInstance().add(12, new CmdUpdateClubSetWorkshop(_session.m_pi.uid, *pClub, CmdUpdateClubSetWorkshop::F_TRANSFER_MASTERY_PTS/*Usa o transfere que é o mesmo que o add*/), Game::SQLDBResponse, this);
+			snmdb::NormalManagerDB::getInstance().add(12, new CmdUpdateClubSetWorkshop(_session.m_pi.uid, *pClub, CmdUpdateClubSetWorkshop::F_TRANSFER_MASTERY_PTS/*Use transfer, which is the same as add*/), Game::SQLDBResponse, this);
 
 			// Add Begin Vector
 			v_item.insert(v_item.begin(), item);
@@ -1662,7 +1662,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 					+ std::to_string(ui.club._typeid) + "] que ele nao tem. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Flag de que o palyer já finalizou os itens usados no jogo, para não finalizar duas vezes
+	// Flag that the player already finalized the items used in the game, to avoid finalizing twice
 	pgi->finish_item_used = 1u;
 
 	// Atualiza ON Jogo
@@ -1679,7 +1679,7 @@ void Game::requestFinishItemUsedGame(player& _session) {
 			p.addUint32(el.flag_time);
 			p.addBuffer(&el.stat, sizeof(el.stat));
 			p.addUint32((el.STDA_C_ITEM_TIME > 0) ? el.STDA_C_ITEM_TIME : el.STDA_C_ITEM_QNTD);
-			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes cada, 15 bytes desconhecido
+			p.addZeroByte(25);	// 10 PCL[C0~C4] 2 Bytes each, 15 unknown bytes
 			if (el.type == 0xCC)
 				p.addBuffer(&el.clubset_workshop, sizeof(el.clubset_workshop));
 		}
@@ -1706,10 +1706,10 @@ void Game::requestFinishHole(player& _session, int option) {
 
 		pgi->data.total_tacada_num += pgi->data.tacada_num;
 
-		// Score do hole
+		// Hole score
 		score_hole = (char)(pgi->data.tacada_num - hole->getPar().par);
 
-		// Tacadas do hole
+		// Hole shots
 		tacada_hole = pgi->data.tacada_num;
 
 		pgi->data.score += score_hole;
@@ -1734,14 +1734,14 @@ void Game::requestFinishHole(player& _session, int option) {
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole
+		// Zero the hole penalties
 		pgi->data.penalidade = 0u;
 
-	}else if (option == 1) {	// Não acabou o hole então faz os calculos para o jogo todo
+	}else if (option == 1) {	// The hole did not end, so do the calculations for the whole game
 
 		auto pair = m_course->findRange(pgi->hole);
 
-		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it) {
+		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h or 18h it checks*/; ++it) {
 			pgi->data.total_tacada_num += it->second.getPar().total_shot;
 
 			pgi->data.score += it->second.getPar().range_score[1];	// Max Score
@@ -1755,14 +1755,14 @@ void Game::requestFinishHole(player& _session, int option) {
 		// Giveup Flag
 		pgi->data.giveup = 0u;
 
-		// Zera as penalidades do hole do player
+		// Zero the player's hole penalties
 		pgi->data.penalidade = 0u;
 	}
 
-	// Aqui tem que atualiza o PGI direitinho com outros dados
+	// Here the PGI must be properly updated with other data
 	pgi->progress.hole = (short)m_course->findHoleSeq(pgi->hole);
 
-	// Dados Game Progress do Player
+	// Player Game Progress data
 	if (option == 0) {
 		
 		if (pgi->progress.hole > 0) {
@@ -1779,9 +1779,9 @@ void Game::requestFinishHole(player& _session, int option) {
 
 		auto pair = m_course->findRange(pgi->hole);
 
-		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h ou 18h ele verifica*/; ++it) {
+		for (auto it = pair.first; it != pair.second && it->first <= m_ri.qntd_hole/*9h or 18h it checks*/; ++it) {
 			
-			pgi->progress.finish_hole[it->first - 1] = 0;	// não terminou
+			pgi->progress.finish_hole[it->first - 1] = 0;	// did not finish
 
 			pgi->progress.par_hole[it->first - 1] = it->second.getPar().par;
 
@@ -1796,10 +1796,10 @@ void Game::requestSaveRecordCourse(player& _session, int game, int option) {
 
 	INIT_PLAYER_INFO("requestSaveRecordCourse", "tentou salvar record do course do player no jogo", &_session);
 
-	if (_session.m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+	if (_session.m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 		_smp::message_pool::getInstance().push(new message("[Game::requestSaveRecordCourse][Log] player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.", CL_FILE_LOG_AND_CONSOLE));
-		return;// Kika aqui "deletePlayer(s);"
+		return;// Kick here "deletePlayer(s);"
 	}
 
 	MapStatistics *pMs = nullptr;
@@ -1852,7 +1852,7 @@ void Game::requestSaveRecordCourse(player& _session, int game, int option) {
 		}
 	}
 
-	// Salva os dados normais
+	// Save the normal data
 	pMs->tacada += pgi->ui.tacada;
 	pMs->putt += pgi->ui.putt;
 	pMs->hole += pgi->ui.hole;
@@ -1872,7 +1872,7 @@ void Game::requestSaveRecordCourse(player& _session, int game, int option) {
 	// UPDATE ON DB
 	snmdb::NormalManagerDB::getInstance().add(5, new CmdUpdateMapStatistics(_session.m_pi.uid, ms, pgi->assist_flag), Game::SQLDBResponse, this);
 
-	// UPDATE ON GAME, se ele fez record, e add 1000 para ele
+	// UPDATE ON GAME, if he set a record, and add 1000 for him
 	if (make_record) {
 
 		// Log
@@ -1880,10 +1880,10 @@ void Game::requestSaveRecordCourse(player& _session, int game, int option) {
 				+ std::to_string((unsigned short)(m_ri.course & 0x7F)) +" (" + std::to_string((unsigned short)pMs->course) + "), SCORE=" + std::to_string((short)pMs->best_score) + ", PANG=" 
 				+ std::to_string(pMs->best_pang) + ", CHARACTER=" + std::to_string(pMs->character_typeid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
-		// Add 1000 pang por ele ter quebrado o  record dele
+		// Add 1000 pang because he broke his record
 		_session.m_pi.addPang(1000);
 
-		// Resposta para make record
+		// Reply to make record
 		packet p((unsigned short)0xB9);
 
 		p.addInt8(m_ri.course & 0x7F);
@@ -1905,21 +1905,21 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 #endif
 	&& _session.isConnected()) {	// Check Player Connected
 
-		if (_session.m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+		if (_session.m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 			_smp::message_pool::getInstance().push(new message("[Game::requestInitItemUsedGame][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.",
 					CL_FILE_LOG_AND_CONSOLE));
-			return;// Kika aqui "deletePlayer(s);"
+			return;// Kick here "deletePlayer(s);"
 		}
 
-		if (_session.m_pi.ei.comet == nullptr) {	// Player não está com Comet(Ball) equipado, kika dele do jogo
+		if (_session.m_pi.ei.comet == nullptr) {	// Player does not have a Comet(Ball) equipped, kick him from the game
 			_smp::message_pool::getInstance().push(new message("[Game::requestInitItemUsedGame][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao esta com Ball equipado. kika ele do jogo. pode ser Bug.",
 					CL_FILE_LOG_AND_CONSOLE));
-			return;// Kika aqui "deletePlayer(s);"
+			return;// Kick here "deletePlayer(s);"
 		}
 
 		auto& ui = _pgi.used_item;
 
-		// Zera os Itens usados
+		// Zero the used Items
 		ui.clear();
 
 		/// ********** Itens Usado **********
@@ -1944,11 +1944,11 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 
 		for (auto i = 0u; i < (sizeof(_session.m_pi.ue.item_slot) / sizeof(_session.m_pi.ue.item_slot[0])); ++i) {
 			
-			// Diferente de 0 item está equipado
+			// Different from 0 the item is equipped
 			if (_session.m_pi.ue.item_slot[i] != 0) {
-				if ((it = ui.v_active.find(_session.m_pi.ue.item_slot[i])) == ui.v_active.end())	// Não tem add o novo
+				if ((it = ui.v_active.find(_session.m_pi.ue.item_slot[i])) == ui.v_active.end())	// Does not have it, add the new one
 					ui.v_active.insert(std::make_pair((uint32_t)_session.m_pi.ue.item_slot[i], UsedItem::Active{ (uint32_t)_session.m_pi.ue.item_slot[i], 0u, std::vector< unsigned char >{(unsigned char)i} }));
-				else	// Já tem add só o slot
+				else	// Already has, add only the slot
 					it->second.v_slot.push_back((unsigned char)i);	// Slot
 			}
 		}
@@ -2082,7 +2082,7 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 		// Club Mastery Boost
 		std::for_each(ui.v_passive.begin(), ui.v_passive.end(), [&](auto& _el) {
 			if (std::find(passive_item_club_boost, LAST_ELEMENT_IN_ARRAY(passive_item_club_boost), _el.second._typeid) != LAST_ELEMENT_IN_ARRAY(passive_item_club_boost))
-				ui.rate.club += 200;	// Por Hora só tem 1 item
+				ui.rate.club += 200;	// For now there is only 1 item
 		});
 
 		// Character Parts Equipado
@@ -2095,7 +2095,7 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 			ui.rate.exp += 20;	// 20% Hat Birthday
 		}
 
-		// Hat Lua e sol que na epoca do evento dava +20% Exp e Pang, voud colocar para ele dá direto aqui
+		// Moon and Sun Hat that gave +20% Exp and Pang during the event, I will make it give directly here
 		if (FIND_ELEMENT_ARRAY_OF_ARRAY(_session.m_pi.ei.char_info->parts_typeid, hat_lua_sol)) {
 #ifdef _DEBUG
 			_smp::message_pool::getInstance().push(new message("[Game::requestInitItemUsedGame][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] esta equipado com Hat Lua e Sol no Character[TYPEID="
@@ -2106,18 +2106,18 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 			ui.rate.pang += 20;	// 20% Hat Lua e Sol
 		}
 
-		// Verifica se está com o anel que da +1.1% de Club Mastery
+		// Check if the ring that gives +1.1% Club Mastery is equipped
 		if (std::find(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), KURAFAITO_RING_CLUBMASTERY) != LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts)) {
 #ifdef _DEBUG
 			_smp::message_pool::getInstance().push(new message("[Game::requestInitItemUsedGame][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] esta equipado com Anel (Kurafaito) que da Club Mastery +1.1% no Character[TYPEID="
 					+ std::to_string(_session.m_pi.ei.char_info->_typeid) + ", ID=" + std::to_string(_session.m_pi.ei.char_info->id) + "]", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-			ui.rate.club += 10;	// Kurafaito Ring da + 10% no Club Mastery
+			ui.rate.club += 10;	// Kurafaito Ring gives + 10% Club Mastery
 		}
 
 		// Character AuxParts Equipado
-		// Aux parts tem seus próprios valores de rate no iff
+		// Aux parts have their own rate values in the iff
 		std::for_each(_session.m_pi.ei.char_info->auxparts, LAST_ELEMENT_IN_ARRAY(_session.m_pi.ei.char_info->auxparts), [&](auto& _el) {
 
 			if (_el != 0 && sIff::getInstance().getItemGroupIdentify(_el) == iff::AUX_PART) {
@@ -2138,8 +2138,8 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 					else if (auxpart->efeito.exp_rate > 0)
 						ui.rate.exp += auxpart->efeito.exp_rate;
 
-					// Drop item, aqui ele add os 120% e no Drop System ele trata isso direito
-					// Todos itens que dá drop rate da treasure hunter point
+					// Drop item, here it adds the 120% and the Drop System handles this properly
+					// All items that give drop rate also give treasure hunter point
 					if (auxpart->efeito.drop_rate > 100) {
 						
 						if (auxpart->efeito.drop_rate > 100)
@@ -2147,7 +2147,7 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 						else if (auxpart->efeito.drop_rate > 0)
 							ui.rate.drop += auxpart->efeito.drop_rate;
 
-						// Passaro gordo que usa isso aqui, mas pode adicionar mais mascot que dé drop rate e treasure hunter point
+						// Fat bird uses this, but more mascots that give drop rate and treasure hunter point can be added
 						_pgi.thi.all_score += 15;	// Add +15 ao all score
 					}
 				}
@@ -2174,8 +2174,8 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 				else if (mascot->efeito.exp_rate > 0)
 					ui.rate.exp += mascot->efeito.exp_rate;
 
-				// Drop item, aqui ele add os 120% e no Drop System ele trata isso direito
-				// Todos itens que dá drop rate da treasure hunter point
+				// Drop item, here it adds the 120% and the Drop System handles this properly
+				// All items that give drop rate also give treasure hunter point
 				if (mascot->efeito.drop_rate > 100) {
 
 					if (mascot->efeito.drop_rate > 100)
@@ -2183,7 +2183,7 @@ void Game::requestInitItemUsedGame(player& _session, PlayerGameInfo& _pgi) {
 					else if (mascot->efeito.drop_rate > 0)
 						ui.rate.drop += mascot->efeito.drop_rate;
 
-					// Passaro gordo que usa isso aqui, mas pode adicionar mais mascot que dé drop rate e treasure hunter point
+					// Fat bird uses this, but more mascots that give drop rate and treasure hunter point can be added
 					_pgi.thi.all_score += 15;	// Add +15 ao all score
 				}
 
@@ -2225,7 +2225,7 @@ void Game::requestSendTreasureHunterItem(player& _session) {
 			bi._typeid = el._typeid;
 			bi.qntd = el.qntd;
 
-			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Não verifica o Level*/);
+			item_manager::initItemFromBuyItem(_session.m_pi, item, bi, false, 0, 0, 1/*Does not check the Level*/);
 
 			if (item._typeid == 0) {
 				_smp::message_pool::getInstance().push(new message("[Game::requestSendTreasureHunterItem][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou inicializar item[TYPEID="
@@ -2237,7 +2237,7 @@ void Game::requestSendTreasureHunterItem(player& _session) {
 			v_item.push_back(item);
 		}
 
-		// Add Item, se tiver Item
+		// Add Item, if there is an Item
 		if (!v_item.empty()) {
 			
 			auto rai = item_manager::addItem(v_item, _session, 0, 0);
@@ -2259,7 +2259,7 @@ void Game::requestSendTreasureHunterItem(player& _session) {
 		p.addUint32(el._typeid);
 		p.addInt32(el.id);
 		p.addUint32(el.qntd);
-		p.addUint8(0);	// Opt Acho, mas nunca vi diferente de 0
+		p.addUint8(0);	// Opt I think, but I never saw anything other than 0
 
 		p.addUint16((unsigned short)(el.stat.qntd_dep / 0x8000));
 		p.addUint16((unsigned short)(el.stat.qntd_dep % 0x8000));
@@ -2279,10 +2279,10 @@ unsigned char Game::checkCharMotionItem(player& _session) {
 #endif
 	&& _session.isConnected()) {	// Check Player Connected
 
-		if (_session.m_pi.ei.char_info == nullptr) {	// Player não está com character equipado, kika dele do jogo
+		if (_session.m_pi.ei.char_info == nullptr) {	// Player does not have a character equipped, kick him from the game
 			_smp::message_pool::getInstance().push(new message("[Game::checkCharMotionItem][Log] player[UID=" + std::to_string(_session.m_pi.uid) + "] nao esta com Character equipado. kika ele do jogo. pode ser Bug.",
 				CL_FILE_LOG_AND_CONSOLE));
-			// Kika aqui "deletePlayer(s);"
+			// Kick here "deletePlayer(s);"
 
 			return 0;
 		}
@@ -2308,97 +2308,97 @@ void Game::sendUpdateInfoAndMapStatistics(player& _session, int _option) {
 
 	p.addBuffer(&_session.m_pi.ti_current_season, sizeof(TrofelInfo));
 
-	// Ainda tenho que ajeitar esses Map Statistics no Pacote Principal, No Banco de dados e no player_info class
+	// I still have to fix these Map Statistics in the Main Packet, in the Database and in the player_info class
 	if (_option == -1) {
 
-		// -1 12 Bytes, os 2 tipos de dados do Map Statistics
+		// -1 12 Bytes, the 2 data types of the Map Statistics
 		p.addInt64(-1);
 		p.addInt32(-1);
 
 	}else {
-		// Normal essa season
+		// Normal this season
 		if (_session.m_pi.a_ms_normal[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// Não tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_ms_normal[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Normal rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 
-		// Natural essa season
+		// Natural this season
 		if (_session.m_pi.a_ms_natural[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// N�o tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_ms_natural[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Natural rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 
-		// Normal Assist essa season
+		// Normal Assist this season
 		if (_session.m_pi.a_msa_normal[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// Não tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_msa_normal[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Normal Assist rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 
-		// Natural Assist essa season
+		// Natural Assist this season
 		if (_session.m_pi.a_msa_natural[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// Não tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_msa_natural[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Natural Assist rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 
-		// Grand Prix essa season
+		// Grand Prix this season
 		if (_session.m_pi.a_ms_grand_prix[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// Não tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_ms_grand_prix[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Grand Prix rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 
-		// Grand Prix Assist essa season
+		// Grand Prix Assist this season
 		if (_session.m_pi.a_msa_grand_prix[m_ri.course & 0x7F].course != (m_ri.course & 0x7F))
-			p.addInt8(-1);	// Não tem
+			p.addInt8(-1);	// Does not have
 		else {
 			p.addInt8((char)m_ri.course & 0x7F);
 			p.addBuffer(&_session.m_pi.a_msa_grand_prix[m_ri.course & 0x7F], sizeof(MapStatistics));
 		}
 
 		// Grand Prix Assist rest season
-		// tem que fazer o map statistics soma de todas season
+		// must make the map statistics sum of all seasons
 		//p.addInt8((char)m_ri.course & 0x7F);
 		//p.addBuffer(&_session.m_pi.aa_ms_normal_todas_season[0][m_ri.course & 0x7F], sizeof(MapStatistics));
-		p.addInt8(-1);	// Não tem
+		p.addInt8(-1);	// Does not have
 	}
 
 	packet_func::session_send(p, &_session, 1);
@@ -2410,7 +2410,7 @@ void Game::sendFinishMessage(player& _session) {
 
 	packet p((unsigned short)0x40);
 
-	p.addUint8(16);	// Msg que terminou o game
+	p.addUint8(16);	// Msg that the game ended
 
 	p.addString(_session.m_pi.nickname);
 	p.addUint16(0);	// Size Msg
@@ -2428,7 +2428,7 @@ void Game::requestCalculeRankPlace() {
 		m_player_order.clear();
 
 	for (auto& el : m_player_info)
-		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// menos os que quitaram
+		if (el.second->flag != PlayerGameInfo::eFLAG_GAME::QUIT)	// except those who quit
 			m_player_order.push_back(el.second);
 
 	std::sort(m_player_order.begin(), m_player_order.end(), Game::sort_player_rank);
@@ -2493,7 +2493,7 @@ bool Game::AllCompleteGameAndClear() {
 	pthread_mutex_lock(&m_cs_sync_finish_game);
 #endif
 
-	// Da error Aqui
+	// Errors here
 	for (auto& el : m_players) {
 
 		try {
@@ -2531,7 +2531,7 @@ bool Game::PlayersCompleteGameAndClear() {
 	pthread_mutex_lock(&m_cs_sync_finish_game);
 #endif
 
-	// Da error Aqui
+	// Errors here
 	for (auto& el : m_players) {
 		
 		try {
@@ -2581,7 +2581,7 @@ unsigned char Game::requestPlace(player& _session) {
 	if (!_session.getState())
 		throw exception("[Game::requestPlace][Error] player nao esta connectado.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TOURNEY_BASE, 1, 0));
 
-	// Valor padrão
+	// Default value
 	unsigned short hole = 0u;
 
 	INIT_PLAYER_INFO("requestPlace", "tentou pegar o lugar[Hole] do player no jogo", &_session);
@@ -2592,14 +2592,14 @@ unsigned char Game::requestPlace(player& _session) {
 
 		if (hole == (unsigned short)~0/*Error*/) {
 
-			// Valor padrão
+			// Default value
 			hole = 0u;
 
 			_smp::message_pool::getInstance().push(new message("[Game::requestPlace][Error] player[UID=" + std::to_string(_session.m_pi.uid) + "] tentou pegar a sequencia do hole[NUMERO="
 					+ std::to_string(pgi->hole) + "], mas ele nao encontrou no course do game na sala[NUMERO=" + std::to_string(m_ri.numero) + "]", CL_FILE_LOG_AND_CONSOLE));
 		}
 	
-	}else if (pgi->init_first_hole)	// Só cria mensagem de log se o player já inicializou o primeiro hole do jogo e tem um valor inválido no pgi->hole (não é uma sequência de hole válida)
+	}else if (pgi->init_first_hole)	// Only creates a log message if the player already initialized the first hole of the game and has an invalid value in pgi->hole (not a valid hole sequence)
 		_smp::message_pool::getInstance().push(new message("[Game::requesPlace][Error] Player[UID=" + std::to_string(_session.m_pi.uid) 
 				+ "] tentou pegar o hole[NUMERO=" + std::to_string(pgi->hole) + "] em que o player esta na sala[NUMERO=" + std::to_string(m_ri.numero) 
 				+ "], mas ele esta carregando o course ou tem algum error.", CL_FILE_LOG_AND_CONSOLE));
@@ -2641,12 +2641,12 @@ void Game::requestReadSyncShotData(player& _session, packet *_packet, ShotSyncDa
 
 	try {
 
-		// Decrypt Packet Dados, que esse o cliente encripta com a chave segura da sala
+		// Decrypt Packet Data, which the client encrypts with the room's secure key
 		//DECRYPT16((_packet->getBuffer() + 2), (_packet->getSize() - 2), m_ri.key);
 
 		_packet->readBuffer(&_ssd, sizeof(_ssd));
 
-		// Decrypt Packet Dados, que esse o cliente encripta com a chave segura da sala
+		// Decrypt Packet Data, which the client encrypts with the room's secure key
 		DECRYPT16((unsigned char*)&_ssd, sizeof(_ssd), m_ri.key);
 
 		if (_ssd.pang > 40000u)
@@ -2794,7 +2794,7 @@ stGameShotValue Game::getGameShotValueToSmartCalculator(player& _session, unsign
 		if (pwr_by_condition_actived && _session.m_pi.ei.char_info != nullptr
 			&& _session.m_pi.ei.char_info->isAuxPartEquiped(0x70210001u) && pgi->item_active_used_shot != 0u
 			&& pgi->item_active_used_shot == POWER_MILK_TYPEID)
-			pwr_by_condition_actived = false; // Usou Milk, encheu 1 ps perde a condição para ativar o efeito
+			pwr_by_condition_actived = false; // Used Milk, filled 1 ps loses the condition to activate the effect
 
 		auto power_extra = _session.m_pi.getExtraPower(pwr_by_condition_actived);
 
@@ -2871,7 +2871,7 @@ stGameShotValue Game::getGameShotValueToSmartCalculator(player& _session, unsign
 
 void Game::clear_time() {
 
-	// Garantir que qualquer exception derrube o server
+	// Ensure any exception brings the server down
 	try {
 
 		if (m_timer != nullptr)
@@ -2906,10 +2906,10 @@ void Game::initAchievement(player& _session) {
 			pgi->sys_achieve.incrementCounter(0x6C4000BBu/*Short Game*/);
 
 		if (m_ri.master == _session.m_pi.uid) {
-			pgi->sys_achieve.incrementCounter(0x6C400098u/*Master da Sala*/);
+			pgi->sys_achieve.incrementCounter(0x6C400098u/*Room Master*/);
 
 			if (m_ri.artefato > 0)
-				pgi->sys_achieve.incrementCounter(0x6C400099u/*Master da Sala com Artefact*/);
+				pgi->sys_achieve.incrementCounter(0x6C400099u/*Room Master with Artifact*/);
 		}
 
 		if (_session.m_pi.ei.char_info != nullptr) {
@@ -2944,16 +2944,16 @@ void Game::initAchievement(player& _session) {
 		ct = SysAchievement::getQntdHoleCounterTypeId(m_ri.qntd_hole);
 
 		if (ct > 0u)
-			pgi->sys_achieve.incrementCounter(ct/*Qntd Hole Counter Item*/);
+			pgi->sys_achieve.incrementCounter(ct/*Hole Counter Item Count*/);
 
-		// Fim do inicializa o Achievement
+		// End of Achievement initialization
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[Game::initAchievement][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -2979,8 +2979,8 @@ void Game::records_player_achievement(player& _session) {
 		if (pgi->ui.total_distancia > 0)
 			pgi->sys_achieve.incrementCounter(0x6C400056u/*Yards*/, pgi->ui.total_distancia);
 
-		// Bug o valor é 0 por que (int)0.9f é 0 ele trunca não arredondo, e tem que truncar mesmo
-		// Para fixa esse bug é só fazer >= 1.f sempre vai ser (int) >= 1(truncado)
+		// Bug: the value is 0 because (int)0.9f is 0, it truncates and does not round, and it really has to truncate
+		// To fix this bug just do >= 1.f, it will always be (int) >= 1 (truncated)
 		if (pgi->ui.best_drive >= 1.f)
 			pgi->sys_achieve.incrementCounter(0x6C400057u/*Best Drive*/, (int)pgi->ui.best_drive);
 
@@ -3004,7 +3004,7 @@ void Game::records_player_achievement(player& _session) {
 		_smp::message_pool::getInstance().push(new message("[Game::records_player_achievement][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -3015,7 +3015,7 @@ void Game::update_sync_shot_achievement(player& _session, Location& _last_locati
 
 	try {
 
-		// Só conta se o player acertou o hole
+		// Only counts if the player made the hole
 		if (pgi->shot_sync.state_shot.display.stDisplay.acerto_hole) {
 
 			// Long-putt
@@ -3035,11 +3035,11 @@ void Game::update_sync_shot_achievement(player& _session, Location& _last_locati
 					pgi->sys_achieve.incrementCounter(0x6C400032u/*Long Putt 17y+*/);
 			}
 
-			// Fez o hole de Beam Impact
+			// Made the hole with Beam Impact
 			if (pgi->shot_sync.state_shot.display.stDisplay.beam_impact)
 				pgi->sys_achieve.incrementCounter(0x6C40006Fu/*Beam Impact*/);
 
-			// Fez o hole com
+			// Made the hole with
 			if (pgi->shot_sync.state_shot.shot.stShot.spin_front)
 				pgi->sys_achieve.incrementCounter(0x6C400064u/*Spin Front*/);
 
@@ -3062,13 +3062,13 @@ void Game::update_sync_shot_achievement(player& _session, Location& _last_locati
 			if (pgi->shot_sync.state_shot.display.stDisplay.chip_in_without_special_shot && !pgi->shot_sync.state_shot.display.stDisplay.special_shot/*Nega*/)
 				pgi->sys_achieve.incrementCounter(0x6C40005Bu/*Fez sem usar power shot*/);
 
-			// o pacote12 passa primeiro depois que o server response ele passa esse pacote1B, então esse valor sempre vai está certo
+			// packet12 goes first, then after the server responds it sends this packet1B, so this value will always be correct
 			// Fez Errando pangya
 			if (pgi->shot_data.acerto_pangya_flag & 2/*Errou pangya*/ && !pgi->shot_sync.state_shot.shot.stShot.club_putt/*Nega*/)
 				pgi->sys_achieve.incrementCounter(0x6C400059u/*Fez errando pangya*/);
 		}
 
-		// Tacada Power Shot ou Double Power Shot
+		// Power Shot or Double Power Shot stroke
 		if (pgi->shot_sync.state_shot.shot.stShot.power_shot)
 			pgi->sys_achieve.incrementCounter(0x6C400051u/*Power Shot*/);
 
@@ -3080,7 +3080,7 @@ void Game::update_sync_shot_achievement(player& _session, Location& _last_locati
 		_smp::message_pool::getInstance().push(new message("[Game::update_sync_shot_achievement][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -3106,7 +3106,7 @@ void Game::rain_hole_consecutivos_count(player& _session) {
 				pgi->sys_achieve.incrementCounter(0x6C40009Cu/*3 Holes consecutivos*/, count);
 
 			if ((count = chr._4_pluss_count.getCountHolesRainBySeq(seq)) > 0u)
-				pgi->sys_achieve.incrementCounter(0x6C40009Du/*4 ou mais Holes consecutivos*/, count);
+				pgi->sys_achieve.incrementCounter(0x6C40009Du/*4 or more consecutive Holes*/, count);
 		}
 
 	}catch (exception& e) {
@@ -3114,7 +3114,7 @@ void Game::rain_hole_consecutivos_count(player& _session) {
 		_smp::message_pool::getInstance().push(new message("[Game::rain_hole_consecutivos_count][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -3131,11 +3131,11 @@ void Game::score_consecutivos_count(player& _session) {
 
 			score = SysAchievement::getScoreNum(pgi->progress.tacada[i], pgi->progress.par_hole[i]);
 
-			// Change Score, Soma o Count do Score	
+			// Change Score, Add the Score Count	
 			if ((score != last_score || i == (m_ri.qntd_hole - 1)/*Ultimo hole*/) && last_score != -2/*Primeiro Hole*/) {
 
-				// 1 == 2, 2 ou mais Holes com o mesmo score
-				if (count >= 1u && last_score >= 0/*Scores que tem no achievement*/) {
+				// 1 == 2, 2 or more Holes with the same score
+				if (count >= 1u && last_score >= 0/*Scores in the achievement*/) {
 
 					switch (last_score) {
 					case 0: // HIO
@@ -3177,7 +3177,7 @@ void Game::score_consecutivos_count(player& _session) {
 		_smp::message_pool::getInstance().push(new message("[Game::score_consecutivos_count][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -3192,7 +3192,7 @@ void Game::rain_count(player& _session) {
 
 			INIT_PLAYER_INFO("rain_count_players", "tentou atualizar o achievement contador de chuva do player no jogo", &_session);
 
-			// Pega pela quantidade de holes jogados
+			// Take by the number of holes played
 			auto seq = m_course->findHoleSeq(pgi->hole);
 
 			if ((count = m_course->countHolesRainBySeq(seq)) > 0u)
@@ -3204,7 +3204,7 @@ void Game::rain_count(player& _session) {
 		_smp::message_pool::getInstance().push(new message("[Game::rain_count][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
 		if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) != STDA_ERROR_TYPE::SYS_ACHIEVEMENT)
-			throw;	// relança exception
+			throw;	// rethrow exception
 	}
 }
 
@@ -3301,7 +3301,7 @@ void Game::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just leaves, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[Game::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -3326,7 +3326,7 @@ void Game::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* _arg) {
 		break;
 	}
 	case 0:
-	default:	// 25 é update item equipado slot
+	default:	// 25 is update equipped item slot
 		break;
 	}
 }
@@ -3343,7 +3343,7 @@ void Game::makePlayerInfo(player& _session) {
 
 	PlayerGameInfo *pgi = makePlayerInfoObject(_session);
 
-	// Bloqueia o OID para ninguém pegar ele até o torneio acabar
+	// Block the OID so nobody takes it until the tournament ends
 	sgs::gs::getInstance().blockOID(_session.m_oid);
 
 	// Update Place player
@@ -3353,11 +3353,11 @@ void Game::makePlayerInfo(player& _session) {
 	pgi->oid = _session.m_oid;
 	pgi->level = (unsigned char)_session.m_pi.mi.level;
 
-	// Entrou no Jogo depois de ele ter começado
+	// Entered the Game after it had started
 	if (m_state)
 		pgi->enter_after_started = 1u;
 
-	// Typeid do Mascot Equipado
+	// Typeid of the Equipped Mascot
 	if (_session.m_pi.ei.mascot_info != nullptr)
 		pgi->mascot_typeid = _session.m_pi.ei.mascot_info->_typeid;
 
@@ -3369,7 +3369,7 @@ void Game::makePlayerInfo(player& _session) {
 	pgi->card_wind_flag = getPlayerWindFlag(_session);
 
 	// Treasure Hunter Points Card Player Initialize Data
-	// Não pode ser chamado depois do Init Item Used Game, por que ele vai add os pontos dos itens que dá Drop rate e treasure hunter point
+	// Cannot be called after Init Item Used Game, because it will add the points of the items that give Drop rate and treasure hunter point
 	pgi->thi = getPlayerTreasureInfo(_session);
 
 	// Flag Assist
@@ -3378,10 +3378,10 @@ void Game::makePlayerInfo(player& _session) {
 	if (pWi != nullptr)
 		pgi->assist_flag = 1u;
 
-	// Verifica se o player está com o motion item equipado
+	// Check if the player has the motion item equipped
 	pgi->char_motion_item = checkCharMotionItem(_session);
 
-	// Motion Item da Treasure Hunter Point também
+	// Treasure Hunter Point Motion Item too
 	if (pgi->char_motion_item)
 		pgi->thi.all_score += 20;	// +20 all score
 
@@ -3397,24 +3397,24 @@ void Game::makePlayerInfo(player& _session) {
 
 			if (it.first->second->uid != _session.m_pi.uid) {
 
-				// Add novo PlayerGameInfo para a (session*), que tem um novo player conectado na session.
-				// Isso pode acontecer quando um player entrou no jogo saiu com ticket ou tomou dc e desconectou do server, 
-				// e outro player pegou essa session e tentou entrar no mesmo jogo que o player estava
+				// Add new PlayerGameInfo for the (session*), which has a new player connected to the session.
+				// This can happen when a player entered the game, left with a ticket or got dc and disconnected from the server, 
+				// and another player took this session and tried to enter the same game the player was in
 
 				try {
 
-					// pega o antigo PlayerGameInfo para usar no Log
+					// get the old PlayerGameInfo to use in the Log
 					auto pgi_ant = m_player_info.at(&_session);
 
 					// Novo PlayerGameInfo
 					m_player_info.at(&_session) = pgi;
 
-					// Log de que trocou o PlayerGameInfo da session
+					// Log that the session's PlayerGameInfo was replaced
 					_smp::message_pool::getInstance().push(new message("[Game::makePlayerInfo][WARNING][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
 							+ "] esta trocando o PlayerGameInfo[UID=" + std::to_string(pgi_ant->uid) + "] do player anterior que estava conectado com essa session, pelo o PlayerGameInfo[UID="
 							+ std::to_string(pgi->uid) + "] do player atual da session.", CL_FILE_LOG_AND_CONSOLE));
 
-					// Libera a memória do antigo player info
+					// Free the memory of the old player info
 					delete pgi_ant;
 
 				}catch (std::out_of_range& e) {
@@ -3451,7 +3451,7 @@ void Game::clearAllPlayerInfo() {
 
 			sgs::gs::getInstance().unblockOID(el.second->oid);	// Desbloqueia o OID
 
-			// Libera a memória
+			// Free the memory
 			delete el.second;
 		}
 	}

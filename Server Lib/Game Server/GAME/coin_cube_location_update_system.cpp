@@ -1,6 +1,6 @@
 // Arquivo coin_cube_location_update_system.cpp
-// Criado em 16/10/2020 as 20:46 por Acrisio
-// Implementa��o da classe CoinCubeLocationUpdateSystem
+// Created on 16/10/2020 at 20:46 by Acrisio
+// Implementation of the CoinCubeLocationUpdateSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -61,7 +61,7 @@
 
 #define END_CHECK			 } \
 
-#define _VERSION_PACKET_CALCULE 0x12F // 0x12 � o pacote que da para fazer o calculo em todos os modos, 0x12F s� pode fazer o calculo no tournament(base)
+#define _VERSION_PACKET_CALCULE 0x12F // 0x12 is the packet that can do the calculation in all modes, 0x12F can only do the calculation in tournament(base)
 
 #define RAIO_CUBE_COLISION 5 * SCALE_PANGYA // 5y
 
@@ -162,14 +162,14 @@ void* CoinCubeLocationUpdateSystem::translateOrder() {
 			
 			try {
 
-				// Verifica se j� est� na hora de atualizar os spawn location da coin e do cube
+				// Check if it is time to update the coin and cube spawn locations
 				if (m_update_location_time == 0u)
 					std::time(&m_update_location_time);
 				else if ((m_update_location_time + (UPDATE_TIME_INTERVALE_HOUR * 60 * 60)) < std::time(nullptr))
 					update_spwan_location();
 
-				// Verifica se tem pedido para calcular tacada
-				pedido = m_pedidos.getFirst(5 * 1000); // Espera 5 segundos por um pedido
+				// Check if there is a request to calculate the shot
+				pedido = m_pedidos.getFirst(5 * 1000); // Wait 5 seconds for a request
 
 				switch (pedido.type) {
 				case CalculeCoinCubeUpdateOrder::eTYPE::COIN:
@@ -284,14 +284,14 @@ void CoinCubeLocationUpdateSystem::initialize() {
 	// Log
 	_smp::message_pool::getInstance().push(new message("[CoinCubeLocationUpdateSystem::initialize][Log] Cube Coin Location Update System carregado com sucesso!", CL_FILE_LOG_AND_CONSOLE));
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -321,7 +321,7 @@ void CoinCubeLocationUpdateSystem::clear() {
 
 void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _cccuo) {
 
-	// Wiz City n�o calcula
+	// Wiz City does not calculate
 	if ((_cccuo.course & 0x7Fu) != RoomInfo::eCOURSE::WIZ_CITY) {
 
 #if _VERSION_PACKET_CALCULE == 0x12F
@@ -349,12 +349,12 @@ void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _
 		if (club.m_club_info.m_type == eCLUB_TYPE::PT)
 			return;
 
-		// Pelo pacote12F funciona s� em tournament base
+		// By packet12F works only in tournament base
 		qt.init_shot(&ball, &club, &wind, _cccuo.shot_data_for_cube, distance);
 
 		do {
 
-			qt.ballProcess(STEP_TIME); // S� vai at� o max height
+			qt.ballProcess(STEP_TIME); // Only goes up to the max height
 
 		} while (ball.m_num_max_height < 0 && ball.m_count < 5000);
 
@@ -372,7 +372,7 @@ void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _
 
 		Club3D club(sAllClubInfo3D::getInstance().m_clubs[_pgi.shot_data.club], calculeTypeDistance(distance));
 
-		// N�o Calcula Putt
+		// Does Not Calculate Putt
 		if (club.m_club_info.m_type == eCLUB_TYPE::PT)
 			return;
 
@@ -395,12 +395,12 @@ void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _
 			_pgi.shot_data.ball_effect[0],
 			_pgi.shot_data.mira);
 
-		// Pelo pacote 12, funciona em todos os modos
+		// By packet 12, works in all modes
 		qt.init_shot(&ball, &club, &wind, options);
 
 		do {
 
-			qt.ballProcess(STEP_TIME); // S� vai at� o max height
+			qt.ballProcess(STEP_TIME); // Only goes up to the max height
 
 		} while (ball.m_num_max_height < 0 && ball.m_count < 5000);
 
@@ -411,11 +411,11 @@ void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _
 
 #endif // _VERSION_PACKET_CALCULE
 
-		// Verifica se ele atingiu uma altura boa para o spinning cube spawnar
-		if ((ball.m_position.m_y - _cccuo.last_location.y) < ALTURA_MIN_TO_CUBE_SPAWN) // Altura menor que 70 n�o coloca o spinning cube para os spawns poss�veis
+		// Check if it reached a good height for the spinning cube to spawn
+		if ((ball.m_position.m_y - _cccuo.last_location.y) < ALTURA_MIN_TO_CUBE_SPAWN) // Height less than 70 does not put the spinning cube in the possible spawns
 			return; // Sai
 
-		// Verifica se o cube pode ser um poss�vel spawn e se sim adiciona ele para a lista<map>
+		// Check if the cube can be a possible spawn and if so add it to the list<map>
 		checkAndAddCoinCube(_cccuo.course & 0x7Fu, _cccuo.hole, CubeEx(
 			0u,
 			Cube::eTYPE::CUBE,
@@ -432,7 +432,7 @@ void CoinCubeLocationUpdateSystem::calculeShotCube(CalculeCoinCubeUpdateOrder& _
 
 void CoinCubeLocationUpdateSystem::calculeShotCoin(CalculeCoinCubeUpdateOrder& _cccuo) {
 	
-	// Verifica se a coin pode ser um poss�vel spawn e se sim adiciona ela para a lista<map>
+	// Check if the coin can be a possible spawn and if so add it to the list<map>
 	checkAndAddCoinCube(_cccuo.course & 0x7Fu, _cccuo.hole, CubeEx(
 		0u,
 		Cube::eTYPE::COIN,
@@ -457,7 +457,7 @@ void CoinCubeLocationUpdateSystem::checkAndAddCoinCube(unsigned char _course_id,
 
 		if (it_hole != it_course->second.end()) {
 
-			// Verifica se o cube est� no raio de outro cube se n�o add o cube ou aumenta o rate do outro cube
+			// Check if the cube is within the radius of another cube, if not add the cube or increase the other cube's rate
 			Location lc{ _cube.location.x, _cube.location.y, _cube.location.z };
 
 			auto it = std::find_if(it_hole->second.begin(), it_hole->second.end(), [&](auto& _el) {
@@ -508,7 +508,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 		return _a.rate > _b.rate;
 	};
 
-	// CoinCubeUpdate para atualiza no banco de dados
+	// CoinCubeUpdate to update in the database
 	std::vector< CoinCubeUpdate > v_coin_cube_update;
 
 	Map::stCtx *map_ctx = nullptr;
@@ -520,7 +520,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 
 	for (auto& el_course : m_course_coin_cube) {
 
-		// Wiz City n�o atualiza nada
+		// Wiz City does not update anything
 		if ((el_course.first & 0x7Fu) == RoomInfo::eCOURSE::WIZ_CITY)
 			continue;
 
@@ -564,12 +564,12 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 
 			auto it_h = it_c->second.find(el_hole.first);
 
-			// Adiciona os cube/coin que conseguiu esse hole n�o tem nenhum cube/coin
+			// Add the cubes/coins obtained in this hole, there are no cubes/coins
 			if (it_h == it_c->second.end()) {
 
 				for (auto& el_cube : el_hole.second) {
 
-					// Adiciona se tiver espa�o
+					// Add if there is space
 					if (count_new_add_hole < limit) {
 
 						// Add new Cube/Coin Location
@@ -588,7 +588,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 				continue;
 			}
 
-			// Sort cubes por rate
+			// Sort cubes by rate
 			std::sort(it_h->second.begin(), it_h->second.end(), sort_per_rate);
 			std::sort(el_hole.second.begin(), el_hole.second.end(), sort_per_rate);
 			std::sort(v_coin_cube_update.begin(), v_coin_cube_update.end(), [](CoinCubeUpdate& _rhs, CoinCubeUpdate& _lhs) {
@@ -601,7 +601,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 				lc.y = el_cube.location.y;
 				lc.z = el_cube.location.z;
 
-				// Atualiza o rate da mesma location - no que j� est�o sendo atualizados
+				// Update the rate of the same location - among those already being updated
 				auto it_upt_cc = std::find_if(v_coin_cube_update.begin(), v_coin_cube_update.end(), [&](CoinCubeUpdate& _el) {
 					return (_el.course_id & 0x7Fu) == (el_course.first & 0x7Fu) && _el.hole_number == el_hole.first && _el.cube.tipo == el_cube.tipo
 						&& std::abs(lc.diff(*(Location*)&_el.cube.location)) <= RAIO_CUBE_COLISION;
@@ -616,7 +616,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 					continue;
 				}
 
-				// Atualiza o rate da mesma location
+				// Update the rate of the same location
 				auto it_upt = std::find_if(it_h->second.begin(), it_h->second.end(), [&](auto& _el) {
 					return _el.tipo == el_cube.tipo && std::abs(lc.diff(*(Location*)&_el.location)) <= RAIO_CUBE_COLISION;
 				});
@@ -637,7 +637,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 					continue;
 				}
 
-				// Adiciona se tiver espa�o
+				// Add if there is space
 				if ((it_h->second.size() + count_new_add_hole) < limit) {
 
 					// Add new Cube/Coin Location
@@ -654,7 +654,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 					continue;
 				}
 
-				// Verifica se o rate passou do outro que est� nos atualizados e substitui
+				// Check if the rate exceeded the other one in the updated ones and replace it
 				it_upt_cc = std::find_if(v_coin_cube_update.begin(), v_coin_cube_update.end(), [&](CoinCubeUpdate& _el) {
 					return (_el.course_id & 0x7Fu) == (el_course.first & 0x7Fu) && _el.hole_number == el_hole.first && _el.cube.tipo == el_cube.tipo
 						&& _el.cube.rate < el_cube.rate;
@@ -671,7 +671,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 					continue;
 				}
 
-				// Verifica se o rate passou do outro e substitui
+				// Check if the rate exceeded the other one and replace it
 				it_upt = std::find_if(it_h->second.begin(), it_h->second.end(), [&](auto& _el) {
 					return _el.tipo == el_cube.tipo && _el.rate < el_cube.rate;
 				});
@@ -679,7 +679,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 				// Update
 				if (it_upt != it_h->second.end()) {
 
-					// Atualiza a location do Cube/Coin
+					// Update the Cube/Coin location
 					el_cube.id = it_upt->id;
 
 					v_coin_cube_update.push_back(CoinCubeUpdate{
@@ -701,7 +701,7 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 	// reset
 	count_new_add_hole = 0u;
 
-	// Adiciona no baco de dados
+	// Add to the database
 	if (!v_coin_cube_update.empty()) {
 		
 		CmdUpdateCoinCubeLocation cmd_uccl(true); // Waiter;
@@ -719,13 +719,13 @@ void CoinCubeLocationUpdateSystem::update_spwan_location() {
 		}
 	}
 
-	// Atualizou o Spwan location da coin e do cube
+	// Updated the coin and cube Spawn location
 	std::time(&m_update_location_time);
 
-	// Atualiza os current e esse
+	// Update the current ones and this one
 	load();
 
-	// Atualiza o sistema de cube e coin
+	// Update the cube and coin system
 	sCubeCoinSystem::getInstance().load();
 
 	// Log

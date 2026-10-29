@@ -1,6 +1,6 @@
-// Arquivo extra_power.cpp
-// Criado em 07/10/2020 as 14:03 por Acrisio
-// Implemeta��o da classe ExtraPower
+// File extra_power.cpp
+// Created on 07/10/2020 at 14:03 by Acrisio
+// Implementation of the ExtraPower class
 
 #if defined(_WIN32)
 #include <WinSock2.h>

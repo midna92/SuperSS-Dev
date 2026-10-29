@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 07/03/2018 as 22:17 por Acrisio
-// Implemenatação da classe player_manager
+// File player_manager.cpp
+// Created on 07/03/2018 at 22:17 by Acrisio
+// Implementation of class player_manager
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -38,7 +38,7 @@ using namespace stdA;
 player_manager::player_manager(threadpool& _threadpool, uint32_t _max_session) : session_manager(_threadpool, _max_session) {
 
 	if (m_max_session != ~0u) {
-		// Reserva na memória o tamanho de todos os players que pode ter o server
+		// Reserves memory for the size of all the players the server can have
 		m_sessions.reserve(m_max_session);
 
 		for (auto i = 0u; i < m_max_session; ++i)
@@ -184,7 +184,7 @@ bool player_manager::deleteSession(session *_session) {
 #endif
 	) {
 		
-		// Se não liberar aqui da deadlock
+		// If not released here it deadlocks
 #if defined(_WIN32)
 		LeaveCriticalSection(&m_cs);
 #elif defined(__linux__)
@@ -205,7 +205,7 @@ bool player_manager::deleteSession(session *_session) {
 		
 		m_count--;
 
-		// Libera OID
+		// Releases OID
 		freeOID(tmp_oid/*_session->m_oid*/);
 	}
 
@@ -226,7 +226,7 @@ void player_manager::checkPlayersItens() {
 
 	try {
 
-		// !@ WARNING tem que ter o thread safe aqui, pode testar um player, e ele não está online mais
+		// !@ WARNING there must be thread safety here, a player may be tested and no longer be online
 
 		for (auto& s : m_sessions) {
 
@@ -259,16 +259,16 @@ void player_manager::checkPlayersGameGuard() {
 
 	try {
 
-		// !@ WARNING tem que ter o thread safe aqui, pode testar um player, e ele não está online mais
+		// !@ WARNING there must be thread safety here, a player may be tested and no longer be online
 		//EnterCriticalSection(&m_cs);
 
 		for (auto& s : m_sessions) {
 
-			if (s->isCreated() && s->isConnected() && checkGameGuard(*(player*)s)) // derruba player
+			if (s->isCreated() && s->isConnected() && checkGameGuard(*(player*)s)) // disconnects player
 #if defined(_WIN32)
-				shutdown(s->m_sock, SD_RECEIVE); // derruba o player
+				shutdown(s->m_sock, SD_RECEIVE); // disconnects the player
 #elif defined(__linux__)
-				shutdown(s->m_sock.fd, SD_RECEIVE); // derruba o player
+				shutdown(s->m_sock.fd, SD_RECEIVE); // disconnects the player
 #endif
 		}
 
@@ -276,7 +276,7 @@ void player_manager::checkPlayersGameGuard() {
 
 	}catch (exception& e) {
 
-		// libera
+		// releases
 		//LeaveCriticalSection(&m_cs);
 
 		_smp::message_pool::getInstance().push(new message("[player_manager::checkPlayersGameGuard][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -327,9 +327,9 @@ inline void player_manager::checkItemBuff(player& _session) {
 	CHECK_PLAYER(_session);
 	
 	// Item Buff
-	for (auto it = _session.m_pi.v_ib.begin(); it != _session.m_pi.v_ib.end(); /*Incrementa em baixo*/) {
+	for (auto it = _session.m_pi.v_ib.begin(); it != _session.m_pi.v_ib.end(); /*Incremented below*/) {
 
-		// Acabou o tempo
+		// Time ran out
 		if (getLocalTimeDiffDESC(it->end_date) <= 0ll) {
 					
 			// Log
@@ -338,7 +338,7 @@ inline void player_manager::checkItemBuff(player& _session) {
 					+ ", EFEITO=" + std::to_string(it->efeito) + ", EFEITO_QNTD=" + std::to_string(it->efeito_qntd) + ", END_DATE=" 
 					+ _formatDate(it->end_date) + "] excluindo ele do vector.", CL_FILE_LOG_AND_CONSOLE));
 
-			// Esse não precisa avisar para o cliente que acabou
+			// Does not need to notify the client that it ended
 
 			// Delete Item Buff from player vector
 			it = _session.m_pi.v_ib.erase(it);
@@ -352,9 +352,9 @@ inline void player_manager::checkCardSpecial(player& _session) {
 	CHECK_PLAYER(_session);
 
 	// Card Equipped Special
-	for (auto it = _session.m_pi.v_cei.begin(); it != _session.m_pi.v_cei.end(); /*Incrementa em baixo*/) {
+	for (auto it = _session.m_pi.v_cei.begin(); it != _session.m_pi.v_cei.end(); /*Incremented below*/) {
 
-		// Acabou o tempo
+		// Time ran out
 		if (it->tipo == IFF::Card::CARD_SUB_TYPE::T_SPECIAL && getLocalTimeDiffDESC(it->end_date) <= 0ll) {
 					
 			// Log
@@ -367,7 +367,7 @@ inline void player_manager::checkCardSpecial(player& _session) {
 			// UPDATE END_DATE TO TEST
 			//GetLocalTime(&it->end_date);
 
-			// Esse não precisa avisar para o cliente que acabou
+			// Does not need to notify the client that it ended
 			/*packet pk((unsigned short)0x160);
 
 			pk.addUint32(0);	// OK
@@ -377,10 +377,10 @@ inline void player_manager::checkCardSpecial(player& _session) {
 			pk.addUint32(it->parts_typeid);
 			pk.addInt32(it->parts_id);
 			pk.addUint32(it->slot);
-			pk.addUint32(1);		// Acho que seja o active date, como estava no meu antigo
+			pk.addUint32(1);		// I think this is the active date, as it was in my old one
 			pk.addBuffer(&it->use_date, sizeof(it->use_date));
 			pk.addBuffer(&it->end_date, sizeof(it->end_date));
-			pk.addUint16(0);		// Não sei o que é ainda
+			pk.addUint16(0);		// Don't know what this is yet
 
 			packet_func::session_send(pk, &_session, 1);*/
 
@@ -398,7 +398,7 @@ inline void player_manager::checkCaddie(player& _session) {
 	// Caddie
 	for (auto& el : _session.m_pi.mp_ci) {
 
-		// Caddie por tempo
+		// Timed Caddie
 		if (el.second.rent_flag == 2 && getLocalTimeDiffDESC(el.second.end_date) <= 0ll) {
 
 			// Put Update Item on vector update item of player
@@ -411,7 +411,7 @@ inline void player_manager::checkCaddie(player& _session) {
 						+ "] Caddie[TYPEID=" + std::to_string(el.second._typeid) + ", ID=" + std::to_string(el.second.id) 
 						+ ", END_DATE=" + _formatDate(el.second.end_date) + "] Entrou de ferias, coloca no vector de update itens.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Verifica se o Caddie está equipado e desequipa
+				// Checks if the Caddie is equipped and unequips it
 				if ((_session.m_pi.ei.cad_info != nullptr && _session.m_pi.ei.cad_info->id == el.second.id) || _session.m_pi.ue.caddie_id == el.second.id) {
 				
 					_session.m_pi.ei.cad_info = nullptr;
@@ -458,7 +458,7 @@ inline void player_manager::checkMascot(player& _session) {
 	// Mascot
 	for (auto& el : _session.m_pi.mp_mi) {
 
-		// Mascot por Tempo
+		// Timed Mascot
 		if (el.second.tipo == 1 && getLocalTimeDiffDESC(el.second.data) <= 0ll) {
 
 			// Put Update Item on vector update item of player
@@ -471,7 +471,7 @@ inline void player_manager::checkMascot(player& _session) {
 						+ "] Mascout[TYPEID=" + std::to_string(el.second._typeid) + ", ID=" + std::to_string(el.second.id)
 						+ ", END_DATE=" + _formatDate(el.second.data) + "] acabou o tempo dele, coloca no vector de update itens.", CL_FILE_LOG_AND_CONSOLE));
 
-				// Verifica se o Mascot está equipado e desequipa
+				// Checks if the Mascot is equipped and unequips it
 				if ((_session.m_pi.ei.mascot_info != nullptr && _session.m_pi.ei.mascot_info->id == el.second.id) || _session.m_pi.ue.mascot_id == el.second.id) {
 				
 					_session.m_pi.ei.mascot_info = nullptr;
@@ -491,7 +491,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 	// Warehouse
 	for (auto& el : _session.m_pi.mp_wi) {
 
-		// Item Por tempo
+		// Timed Item
 		if (((el.second.flag & 0x20) || (el.second.flag & 0x40) || (el.second.flag & 0x60)) 
 				&& el.second.end_date_unix_local > 0) {
 
@@ -509,7 +509,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 							+ "] Warehouse Item[TYPEID=" + std::to_string(el.second._typeid) + ", ID=" + std::to_string(el.second.id)
 							+ ", END_DATE=" + formatDateLocal(el.second.end_date_unix_local) + "] acabou o tempo dele, coloca no vector de update itens.", CL_FILE_LOG_AND_CONSOLE));
 
-					// Verifica se o item é um PART e se ele está equipado e deseequipa ele
+					// Checks if the item is a PART and if it is equipped, and unequips it
 					if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::PART && _session.m_pi.isPartEquiped(el.second._typeid, el.second.id)) {
 
 						auto ci = _session.m_pi.findCharacterByTypeid((iff::CHARACTER << 26) | sIff::getInstance().getItemCharIdentify(el.second._typeid));
@@ -520,7 +520,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 
 							if (part != nullptr) {
 
-								// Deseequipa o Part do character e coloca os Parts Default do Character no lugar
+								// Unequips the character Part and puts the Default Character Parts in its place
 								ci->unequipPart(part);
 
 								_smp::message_pool::getInstance().push(new message("[player_manager::checkWarehouse][Log] Player[UID=" + std::to_string(_session.m_pi.uid)
@@ -541,7 +541,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 										+ "] nao tem o Part[TYPEID=" + std::to_string(el.second._typeid) + "] do Character[TYPEID=" + std::to_string(ci->_typeid) + "], no IFF_STRUCT desequipa ele. Hacker ou Bug", CL_FILE_LOG_AND_CONSOLE));
 							}
 
-							// Update no DB
+							// Update in DB
 							snmdb::NormalManagerDB::getInstance().add(2, new CmdUpdateCharacterAllPartEquiped(_session.m_pi.uid, *ci), player_manager::SQLDBResponse, nullptr);
 
 						}else
@@ -550,7 +550,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 						
 					}
 
-					// Verifica se é ClubSet e desequipa ele, e coloca o CV
+					// Checks if it is a ClubSet and unequips it, and puts the CV
 					if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::CLUBSET && _session.m_pi.ei.clubset != nullptr 
 							&& _session.m_pi.ei.clubset->id == el.second.id || _session.m_pi.ue.clubset_id == el.second.id) {
 
@@ -561,7 +561,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 							_session.m_pi.ei.clubset = &it->second;
 							_session.m_pi.ue.clubset_id = it->second.id;
 
-							// Atualiza o ClubSet Enchant no Equiped Item do Player
+							// Updates the ClubSet Enchant in the Player's Equipped Item
 							_session.m_pi.ei.csi = { it->second.id, it->second._typeid, it->second.c };
 
 							IFF::ClubSet *cs = sIff::getInstance().findClubSet(it->second._typeid);
@@ -577,7 +577,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 								+ std::to_string(it->second.id) + "] no lugar." : "."), CL_FILE_LOG_AND_CONSOLE));
 					}
 
-					// Verifica se é um Comet(Ball) e desequipa ele, e coloca a bola padrão
+					// Checks if it is a Comet (Ball) and unequips it, and puts the default ball
 					if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::BALL && _session.m_pi.ei.comet != nullptr 
 							&& _session.m_pi.ei.comet->id == el.second.id || _session.m_pi.ue.ball_typeid == el.second._typeid) {
 
@@ -595,7 +595,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 								+ std::to_string(it->second.id) + "] padrao no lugar." : "."), CL_FILE_LOG_AND_CONSOLE));
 					}
 
-					// Verifica se é SKIN, para desequipar ele
+					// Checks if it is a SKIN, to unequip it
 					if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::SKIN) {
 
 						for (auto i = 0u; i < (sizeof(_session.m_pi.ue.skin_typeid) / sizeof(_session.m_pi.ue.skin_typeid[0])); ++i) {
@@ -614,7 +614,7 @@ inline void player_manager::checkWarehouse(player& _session) {
 						}
 					}
 
-					// Verifica se é o Premium Ticket
+					// Checks if it is the Premium Ticket
 					if (sIff::getInstance().getItemGroupIdentify(el.second._typeid) == iff::ITEM && sPremiumSystem::getInstance().isPremiumTicket(el.second._typeid)) {
 
 						// Log
@@ -637,7 +637,7 @@ bool player_manager::checkGameGuard(player& _session) {
 		auto now = std::time(nullptr);
 
 		if (!_session.m_gg.m_auth_reply)
-			return true;	// Desconecta o player, ele não respondeu
+			return true;	// Disconnects the player, it did not respond
 		else if (_session.m_gg.m_auth_time < now) {
 
 			DWORD err = _session.m_gg.m_csa.GetAuthQuery();
@@ -649,7 +649,7 @@ bool player_manager::checkGameGuard(player& _session) {
 						+ ", Index: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwIndex) + ", Value1: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue1) 
 						+ ", Value2: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue2) + ", Value3: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue3), CL_FILE_LOG_AND_CONSOLE));
 
-				// Error, ao pegar GetAuthQuery
+				// Error getting GetAuthQuery
 				return true;
 			}
 		}
@@ -657,7 +657,7 @@ bool player_manager::checkGameGuard(player& _session) {
 		auto now = time(nullptr);
 
 		if (!_session.m_gg.m_auth_reply)
-			return true;	// Desconecta o player ele não respondeu
+			return true;	// Disconnects the player, it did not respond
 		else if (_session.m_gg.m_auth_time < now) {
 
 			DWORD err = _session.m_gg.m_csa.GetAuthQuery();
@@ -686,7 +686,7 @@ bool player_manager::checkGameGuard(player& _session) {
 						+ ", Index: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwIndex) + ", Value1: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue1) 
 						+ ", Value2: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue2) + ", Value3: " + std::to_string(_session.m_gg.m_csa.m_AuthQuery.dwValue3), CL_FILE_LOG_AND_CONSOLE));
 
-				// Error, ao pegar GetAuthQuery
+				// Error getting GetAuthQuery
 				return true;
 			}
 		}
@@ -708,7 +708,7 @@ void player_manager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void
 		return;
 	}
 
-	// Por Hora só sai, depois faço outro tipo de tratamento se precisar
+	// For now it just exits, I will add other handling later if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[player_manager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;
@@ -767,17 +767,17 @@ uint32_t player_manager::getNewOID() {
 		return el.second.ucFlag == 0;
 	});
 
-	if (it != m_indexes.end()) {	// Achei 1 index desocupado
+	if (it != m_indexes.end()) {	// Found 1 free index
 
-		it->second.flag.busy = 1; // BUSY OCUPDADO
+		it->second.flag.busy = 1; // BUSY OCCUPIED
 
 		oid = it->first;
 
-	}else {	// Add um novo index no mapa de oid
+	}else {	// Add a new index to the oid map
 		
 		oid = (uint32_t)m_indexes.size();
 
-		m_indexes[oid] = { 1/*BUSY OCUPDADO*/ };
+		m_indexes[oid] = { 1/*BUSY OCCUPIED*/ };
 	}
 
 #if defined(_WIN32)
@@ -801,7 +801,7 @@ void player_manager::freeOID(uint32_t _oid) {
 
 	if (it != m_indexes.end()) {
 
-		it->second.flag.busy = 0; // WAITING DESOCUPADO LIVRE
+		it->second.flag.busy = 0; // WAITING FREE
 
 		if (it->second.flag.block)
 			_smp::message_pool::getInstance().push(new message("[player_manager::freeOID][WARNING] index[OID=" + std::to_string(it->first) + "] esta bloqueado, nao pode liberar ele agora", CL_FILE_LOG_AND_CONSOLE));

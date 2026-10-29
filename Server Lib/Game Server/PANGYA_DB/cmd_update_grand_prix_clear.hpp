@@ -1,6 +1,6 @@
-// Arquivo cmd_update_grand_prix_clear.hpp
-// Criado em 14/06/2019 as 10:35 por Acrisio
-// Defini��o da classe CmdUpdateGrandPrixClear
+// File cmd_update_grand_prix_clear.hpp
+// Created on 14/06/2019 at 10:35 by Acrisio
+// Definition of class CmdUpdateGrandPrixClear
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_GRAND_PRIX_CLEAR_HPP

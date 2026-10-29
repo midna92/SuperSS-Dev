@@ -1,6 +1,6 @@
-// Arquivo club_info3d.cpp
-// Criado em 03/10/2020 as 15:10 por Acrisio
-// Implementa��o da classe ClubInfo3D
+// File club_info3d.cpp
+// Created on 03/10/2020 at 15:10 by Acrisio
+// Implementation of the ClubInfo3D class
 
 #if defined(_WIN32)
 #include <WinSock2.h>
@@ -34,7 +34,7 @@ AllClubInfo3D::AllClubInfo3D() : m_clubs() {
 	m_clubs.push_back(ClubInfo3D(eCLUB_TYPE::IRON, 0.30f, 0.57f, 114.0f, 44.0f, 120.0f)); // I8
 	m_clubs.push_back(ClubInfo3D(eCLUB_TYPE::IRON, 0.25f, 0.53f, 110.0f, 48.0f, 110.0f)); // I9
 	
-	// PW e SW
+	// PW and SW
 	m_clubs.push_back(ClubInfo3D(eCLUB_TYPE::PW, 0.18f, 0.49f, 107.0f, 52.0f, 100.0f)); // PW
 	m_clubs.push_back(ClubInfo3D(eCLUB_TYPE::PW, 0.17f, 0.42f, 93.0f, 56.0f, 80.0f));   // SW
 	

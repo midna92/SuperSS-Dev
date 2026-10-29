@@ -1,6 +1,6 @@
-// Arquivo cmd_mail_box_info2.hpp
-// Criado em 13/01/2021 as 11:55 por Acrisio
-// Defini��o da classe CmdMailBoxInfo2
+// File cmd_mail_box_info2.hpp
+// Created on 13/01/2021 at 11:55 by Acrisio
+// Definition of the class CmdMailBoxInfo2
 
 #pragma once
 #ifndef _STDA_CMD_MAIL_BOX_INFO2_HPP

@@ -1,6 +1,6 @@
-// Arquivo versus_base.hpp
-// Criado em 20/10/2018 as 15:23 por Acrisio
-// Defini��o da classe VersusBase
+// File versus_base.hpp
+// Created on 20/10/2018 at 15:23 by Acrisio
+// Definition of the VersusBase class
 
 #pragma once
 #ifndef _STDA_VERSUS_BASE_HPP
@@ -101,7 +101,7 @@ namespace stdA {
 
 			virtual void sendInitialData(player& _session) override;
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void requestInitHole(player& _session, packet *_packet) override;
 			virtual bool requestFinishLoadHole(player& _session, packet *_packet) override;
 			virtual void requestFinishCharIntro(player& _session, packet *_packet) override;
@@ -110,7 +110,7 @@ namespace stdA {
 			virtual void changeHole() = 0;
 			virtual void finishHole() = 0;
 
-			// Server enviou a resposta do InitShot para o cliente
+			// Server sent the InitShot response to the client
 			virtual void requestInitShotSended(player& _session, packet *_packet) override;
 
 			virtual void requestInitShot(player& _session, packet *_packet) override;
@@ -124,7 +124,7 @@ namespace stdA {
 			virtual void requestActivePowerShot(player& _session, packet *_packet) override;
 			virtual void requestChangeClub(player& _session, packet  *_packet) override;
 			virtual void requestUseActiveItem(player& _session, packet *_packet) override;
-			virtual void requestChangeStateTypeing(player& _session, packet *_packet) override;	// Escrevendo
+			virtual void requestChangeStateTypeing(player& _session, packet *_packet) override;	// Typing
 			virtual void requestMoveBall(player& _session, packet *_packet) override;
 			virtual void requestChangeStateChatBlock(player& _session, packet *_packet) override;
 			virtual void requestActiveBooster(player& _session, packet *_packet) override;
@@ -156,7 +156,7 @@ namespace stdA {
 			// Game
 			virtual bool requestFinishGame(player& _session, packet *_packet) override;
 
-			// Tempo
+			// Time
 			virtual void startTime(void* _quem);
 			/*virtual bool stopTime();
 			virtual bool pauseTime();
@@ -164,21 +164,21 @@ namespace stdA {
 			virtual void timeIsOver(void* _quem);
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finalize Game
 			virtual bool init_game() override;
 
-			// Request Trate Shot Sync Data
+			// Request Handle Shot Sync Data
 			virtual void requestTranslateSyncShotData(player& _session, ShotSyncData& _ssd) override;
 			virtual void requestReplySyncShotData(player& _session) override;
 
-			// Request Trata Finish Hole Data
+			// Request Handle Finish Hole Data
 			virtual void requestTranslateFinishHoleData(player& _session, UserInfoEx& _ui);
 
 			virtual bool checkNextStepGame(player& _session);
 
 			virtual bool checkEndGame(player& _session) override;
 
-			// Verifica se o player turno exit no jogo
+			// Check whether the turn player exists in the game
 			virtual bool checkPlayerTurnExistOnGame();
 
 			// Check and clear if true
@@ -265,44 +265,44 @@ namespace stdA {
 
 			virtual void clear_all_flag_sync();
 
-			// Initialize Treasure Hunter Info do VersusBase
+			// Initialize Treasure Hunter Info of the VersusBase
 			virtual void init_treasure_hunter_info();
 
-			// Terminou Hole Update on Game
+			// Hole Finished Update on Game
 			virtual void updateFinishHole();
 
-			// Atuliza o Treasure Hunter Point no Jogo
+			// Updates the Treasure Hunter Point in the Game
 			virtual void updateTreasureHunterPoint();
 
-			// Sorteia o Treasure Hunter Item do Versus
+			// Draws the Treasure Hunter Item of the Versus
 			virtual void requestDrawTreasureHunterItem();
 
 			// Sync Shot Player Turn
 			virtual void sendSyncShot();
 
-			// Envia o pacote que finaliza a tacada,
-			// e se tiver item capturado como coin e spinning cube, manda nesse pacote
+			// Sends the packet that finishes the shot,
+			// and if there is a captured item such as coin and spinning cube, sends it in this packet
 			virtual void sendEndShot(player& _session, DropItemRet& _cube);
 
-			// Envia Drop Item que o player ganhou no Jogo
+			// Sends the Drop Item that the player won in the Game
 			virtual void sendDropItem(player& _session);
 
-			// Envia o Placar do Jogo, Os Scores Finais, pang e experi�ncia e etc
+			// Sends the Game Scoreboard, the Final Scores, pang and experience and etc
 			virtual void sendPlacar(player& _session);
 
-			// Envia o Treasure Hunter Item sorteado s� a interface(Visual)
+			// Sends the drawn Treasure Hunter Item, only the interface (Visual)
 			virtual void sendTreasureHunterItemDrawGUI(player& _session);
 
-			// Envia reposta do Finish Load Hole
+			// Sends the Finish Load Hole response
 			virtual void sendReplyFinishLoadHole();
 
 			// Send Rate Of Hole VersusBase, Mascot, Voice Club
 			virtual void sendRatesOfVersusBase();
 
-			// Send Resposra para o Finish Char Intro
+			// Send Response for the Finish Char Intro
 			virtual void sendReplyFinishCharIntro();
 
-			// Send Player Turn dados (Vento e oid do player que vai tacar)
+			// Send Player Turn data (Wind and oid of the player who will shoot)
 			virtual void sendPlayerTurn();
 
 			virtual void changeTurn();
@@ -310,16 +310,16 @@ namespace stdA {
 			// Common Command GM Change Wind Versus
 			virtual void CCGChangeWind(player& _gm, unsigned char _wind, unsigned short _degree);
 
-			// Verifica se � a ultima tacada do hole, para passar para o proximo hole
+			// Checks whether it is the last shot of the hole, to move on to the next hole
 			virtual int checkEndShotOfHole(player& _session);
 
-			// Sortea Item Drop do Hole, pode dropar ou n�o
+			// Draws the Drop Item of the Hole, it may or may not drop
 			virtual void drawDropItem(player& _session);
 
-			// Limpa os pontos e o TreasureHunterInfo
+			// Clears the points and the TreasureHunterInfo
 			virtual void clear_treasure_hunter();
 
-			// Calcula Turnos
+			// Calculates Turns
 			virtual void init_turn_hole_start();
 			virtual PlayerGameInfo* getNextPlayerTurnHole();
 			virtual PlayerGameInfo* requestCalculePlayerTurn();
@@ -346,15 +346,15 @@ namespace stdA {
 #endif
 
 		protected:
-			uint32_t m_max_player = 4;					// No m�ximo 4 jogadores
+			uint32_t m_max_player = 4;					// At most 4 players
 			
-			PlayerGameInfo *m_player_turn;					// PlayerGameInfo do player que est� tacando ou vai tacar
+			PlayerGameInfo *m_player_turn;					// PlayerGameInfo of the player who is shooting or is about to shoot
 
-			uint32_t m_count_pause;					// Count de pause no Versus Base, 3x � o m�ximo permitido
+			uint32_t m_count_pause;					// Pause count in the Versus Base, 3x is the maximum allowed
 
 			uint32_t m_seed_mascot_effect;				// Seed Mascot Effect Random
 
-			uint32_t m_flag_next_step_game;			// Flag que guarda a proxima passo que o game vai d� depois que um player sai
+			uint32_t m_flag_next_step_game;			// Flag that stores the next step the game will take after a player leaves
 			
 			TreasureHunterVersusInfo m_thi;
 

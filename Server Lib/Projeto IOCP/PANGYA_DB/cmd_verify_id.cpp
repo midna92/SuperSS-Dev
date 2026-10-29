@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_id.cpp
-// Criado em 17/03/2018 as 20:15 por Acrisio
-// Implementação da classe CmdVerifyID
+// File cmd_verify_id.cpp
+// Created on 17/03/2018 at 20:15 by Acrisio
+// Implementation of class CmdVerifyID
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,10 +23,10 @@ void CmdVerifyID::lineResult(result_set::ctx_res* _result, uint32_t /*_index_res
 
 	checkColumnNumber(2, (uint32_t)_result->cols);
 
-	// Aqui faz as coisas
+	// Does the work here
 	m_uid = IFNULL(atoi, _result->data[0]);
 	std::string id_req((is_valid_c_string(_result->data[1])) ? _result->data[1] : "");
-	// Fim
+	// End
 
 	if (m_id.compare(id_req) != 0)
 		throw exception("[CmdVerifyID::lineResult][Error] ID do player info nao e igual ao requisitado. ID Req: " + m_id + " != " + id_req, STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_DB, 3, 0));

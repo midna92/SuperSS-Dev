@@ -1,6 +1,6 @@
-// Arquivo guild_type.hpp
-// Criado em 29/12/2019 as 11:41 por Acrisio
-// Definição dos tipos usados no guild battle
+// File guild_type.hpp
+// Created on 29/12/2019 at 11:41 by Acrisio
+// Definition of the types used in guild battle
 
 #pragma once
 #ifndef _STDA_GUILD_TYPE_HPP
@@ -15,7 +15,7 @@ namespace stdA {
 #pragma pack(1)
 #endif
 
-	// Dados dos holes no jogo
+	// Hole data in the game
 	struct Dados {
 		unsigned short score;
 		uint32_t tacada;
@@ -27,9 +27,9 @@ namespace stdA {
 		void clear() {
 			memset(this, 0, sizeof(GuildMatch));
 		};
-		uint32_t uid[2];		// Guild UID: [0] e [1]
-		uint32_t point[2];		// Guild Point: [0] e [1]
-		uint32_t pang[2];		// Guild Pang: [0] e [1]
+		uint32_t uid[2];		// Guild UID: [0] and [1]
+		uint32_t point[2];		// Guild Point: [0] and [1]
+		uint32_t pang[2];		// Guild Pang: [0] and [1]
 	};
 
 	// Guild Points

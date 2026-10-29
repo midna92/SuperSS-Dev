@@ -1,6 +1,6 @@
-// Arquivo pangya_db.cpp
-// Criado em 05/12/2017 por Acrisio
-// Implementação da classe pangya_base_db
+// File pangya_db.cpp
+// Created on 05/12/2017 by Acrisio
+// Implementation of class pangya_base_db
 
 #if defined(_WIN32)
 #pragma pack(1)

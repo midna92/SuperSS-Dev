@@ -1,6 +1,6 @@
-// Arquivo timer.cpp
-// Criado em 01/01/2018 por Acrisio
-// Implementação da classe timer
+// File timer.cpp
+// Created on 01/01/2018 by Acrisio
+// Implementation of class timer
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -14,7 +14,7 @@
 #include "../TYPE/stda_error.h"
 #include "../UTIL/message_pool.h"
 
-#define LIMIT_COUNT_TRY 3	// 3x é o limite de vezes que ele vai tentar execitar a função se der outro erro diferente de ERROR_IO_PENDING
+#define LIMIT_COUNT_TRY 3	// 3x is the limit of times it will try to execute the function if it gives an error other than ERROR_IO_PENDING
 
 using namespace stdA;
 
@@ -138,7 +138,7 @@ timer::~timer() {
 
 		destroy();
 
-		// Espera pelo fim do timer
+		// Wait for the timer to end
 #if defined(_WIN32)
 		if (m_hTimer != nullptr && m_hTimer != INVALID_HANDLE_VALUE)
 #elif defined(__linux__)
@@ -192,7 +192,7 @@ void timer::restart() {
 	if (getState() != STOPPED && getState() != STOPPING && getState() != STOP)
 		stop();
 
-	// Espera pelo fim do timer
+	// Wait for the timer to end
 	if (getState() == STOPPING || getState() == PAUSING)
 		check_event_end();
 
@@ -234,7 +234,7 @@ void timer::start() {
 	if (getState() == RUNNING)
 		throw exception("[tmer::start][Error] Timer already is running, stop it before of init", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 2, 1));
 
-	// Espera pelo fim do timer
+	// Wait for the timer to end
 	if (getState() == STOPPING || getState() == PAUSING)
 		check_event_end();
 
@@ -310,7 +310,7 @@ void timer::destroy() {
 			&& (getState() == STOPPING || getState() == PAUSING))
 		check_event_end();
 
-	// Para Timer
+	// Stop Timer
 	_stop(STOP);
 
 	if (!m_table_interval.empty()) {
@@ -346,7 +346,7 @@ void timer::init() {
 	if (getState() == RUNNING)
 		throw exception("[timer::init][Error] Timer already is running, stop before init it.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 2, 0));
 
-	// Espera pelo fim do timer
+	// Wait for the timer to end
 	if (getState() == STOPPING || getState() == PAUSING)
 		check_event_end();
 
@@ -367,7 +367,7 @@ void timer::init() {
 #endif
 			m_time = m_time_fix;
 	
-	// Ainda tenho que implementar direito a tabela de periodo de tempos
+	// I still have to properly implement the time period table
 	if (!m_table_interval.empty()) {
 		
 		if (m_tipo == PERIODIC)
@@ -376,28 +376,28 @@ void timer::init() {
 			periodic = m_time;
 	}
 
-	// Resata o Event de espera de fim do callback do timer
+	// Reset the Event that waits for the end of the timer callback
 #if defined(_WIN32)
 	ResetEvent(m_hEvent);
 
-	setState(STANDBY);	// Esperando a thread callback ser inicializada
+	setState(STANDBY);	// Waiting for the callback thread to be initialized
 
 	if (!CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue,
 			(WAITORTIMERCALLBACK)timer::callback, this,
-			0/*Chama o callback em 1 milliseconds, para inicializar o timer Callback*/,
-			(m_tipo == PERIODIC) ? periodic : m_time/*Agora é o tempo que ele vai ficar chamando o callback em tempos e tempos*/,
+			0/*Call the callback in 1 millisecond, to initialize the timer Callback*/,
+			(m_tipo == PERIODIC) ? periodic : m_time/*Now it is the time interval at which it will keep calling the callback periodically*/,
 			WT_EXECUTEINTIMERTHREAD))
 		throw exception("[timer::init][Error] Nao conseguiu criar TimerQueueTimer", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 3, GetLastError()));
 #elif defined(__linux__)
 	if (m_hEvent != nullptr)
 		m_hEvent->reset();
 
-	setState(STANDBY);	// Esperando a thread callback ser inicializada
+	setState(STANDBY);	// Waiting for the callback thread to be initialized
 
 	if (!QueueTimer::CreateTimerQueueTimer(&m_hTimer, m_hTimerQueue,
 			(WaitOrTimerCallback)timer::callback, this,
-			0/*Chama o callback em 1 milliseconds, para inicializar o timer Callback*/,
-			(m_tipo == PERIODIC) ? periodic : m_time/*Agora é o tempo que ele vai ficar chamando o callback em tempos e tempos*/,
+			0/*Call the callback in 1 millisecond, to initialize the timer Callback*/,
+			(m_tipo == PERIODIC) ? periodic : m_time/*Now it is the time interval at which it will keep calling the callback periodically*/,
 			WT_EXECUTEINTIMERTHREAD))
 		throw exception("[timer::init][Error] Nao conseguiu criar TimerQueueTimer", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 3, errno));
 #endif
@@ -409,8 +409,8 @@ void timer::_stop(TIMER_STATE _state) {
 
 		check_event_end();
 
-		// Já tinha requisitado para parar o tempo, aguardou ele terminar, agora só retorna.
-		// não precisa chamar a função que deleta(pause, stop, cancel) o timer de novo
+		// Had already requested to stop the timer, waited for it to finish, now just returns.
+		// no need to call the function that deletes (pause, stop, cancel) the timer again
 		return;
 	}
 
@@ -428,10 +428,10 @@ void timer::_stop(TIMER_STATE _state) {
 		pthread_mutex_lock(&m_cs);
 #endif
 
-		// Para não tentar excluír antes depois que entrou na critical secção e tentar excluír de novo
+		// So it does not try to delete before, after entering the critical section, and try to delete again
 		if (getState() != _state + 1 && getState() != _state + 2) {
 
-			setState((TIMER_STATE)(_state + 1));	// Executando o request
+			setState((TIMER_STATE)(_state + 1));	// Executing the request
 
 			BOOL error = 0;
 			DWORD lastError = 0u;
@@ -443,12 +443,12 @@ void timer::_stop(TIMER_STATE _state) {
 				if (m_hTimer != nullptr && m_hTimer != INVALID_HANDLE_VALUE && (error = DeleteTimerQueueTimer(m_hTimerQueue, m_hTimer, m_hEvent)) == 0 && (lastError = GetLastError()) != ERROR_IO_PENDING)
 					_smp::message_pool::getInstance().push(new message("[timer::_stop][Error] Ao deletar timer. Error Code: " + STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 12, lastError), CL_FILE_LOG_AND_CONSOLE));
 				
-			} while (error == 0/*Error in DeleteTimerQueueTimer*/ && lastError != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Tenta De novo
+			} while (error == 0/*Error in DeleteTimerQueueTimer*/ && lastError != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Try Again
 
-			// Ele está esperando o callback do timer terminar
+			// It is waiting for the timer callback to finish
 			if (lastError == ERROR_IO_PENDING) {
 			
-				// Libera para a função Callback poder limpar os dados dela antes de verifica o final dela
+				// Release so the Callback function can clear its data before checking its end
 				LeaveCriticalSection(&m_cs);
 
 #elif defined(__linux__)
@@ -457,12 +457,12 @@ void timer::_stop(TIMER_STATE _state) {
 				if (m_hTimer != INVALID_HANDLE_VALUE && (error = QueueTimer::DeleteTimerQueueTimer(m_hTimerQueue, m_hTimer, m_hEvent)) <= 0 && error != ERROR_IO_PENDING)
 					_smp::message_pool::getInstance().push(new message("[timer::_stop][Error] Ao deletar timer. Error Code: " + STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 12, error), CL_FILE_LOG_AND_CONSOLE));
 
-			} while (error <= 0/*Error in DeleteTimerQueueTimer*/ && error != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Tenta De novo
+			} while (error <= 0/*Error in DeleteTimerQueueTimer*/ && error != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Try Again
 
-			// Ele está esperando o callback do timer terminar
+			// It is waiting for the timer callback to finish
 			if (error == ERROR_IO_PENDING) {
 			
-				// Libera para a função Callback poder limpar os dados dela antes de verifica o final dela
+				// Release so the Callback function can clear its data before checking its end
 				pthread_mutex_unlock(&m_cs);
 
 #endif
@@ -474,7 +474,7 @@ void timer::_stop(TIMER_STATE _state) {
 
 				m_hTimer = INVALID_HANDLE_VALUE;
 
-				setState((TIMER_STATE)(_state + 2));	// Executado o Request	(Ação concluída)
+				setState((TIMER_STATE)(_state + 2));	// Request Executed	(Action completed)
 			}
 		}
 
@@ -513,10 +513,10 @@ void timer::_stop_from_callback(TIMER_STATE _state) {
 		pthread_mutex_lock(&m_cs);
 #endif
 
-		// Para não tentar excluír antes depois que entrou na critical secção e tentar excluír de novo
+		// So it does not try to delete before, after entering the critical section, and try to delete again
 		if (getState() != _state + 1 && getState() != _state + 2) {
 
-			setState((TIMER_STATE)(_state + 1));	// Executando o request
+			setState((TIMER_STATE)(_state + 1));	// Executing the request
 
 			BOOL error = 0;
 			DWORD lastError = 0u;
@@ -528,7 +528,7 @@ void timer::_stop_from_callback(TIMER_STATE _state) {
 				if (m_hTimer != nullptr && m_hTimer != INVALID_HANDLE_VALUE && (error = DeleteTimerQueueTimer(m_hTimerQueue, m_hTimer, m_hEvent)) == 0 && (lastError = GetLastError()) != ERROR_IO_PENDING)
 					_smp::message_pool::getInstance().push(new message("[timer::_stop][Error] Ao deletar timer. Error Code: " + STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 12, lastError), CL_FILE_LOG_AND_CONSOLE));
 
-			} while (error == 0/*Error in DeleteTimerQueueTimer*/ && lastError != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Tenta De novo
+			} while (error == 0/*Error in DeleteTimerQueueTimer*/ && lastError != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Try Again
 		}
 
 		LeaveCriticalSection(&m_cs);
@@ -539,7 +539,7 @@ void timer::_stop_from_callback(TIMER_STATE _state) {
 				if (m_hTimer != INVALID_HANDLE_VALUE && (error = QueueTimer::DeleteTimerQueueTimer(m_hTimerQueue, m_hTimer, m_hEvent)) <= 0 && error != ERROR_IO_PENDING)
 					_smp::message_pool::getInstance().push(new message("[timer::_stop][Error] Ao deletar timer. Error Code: " + STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 12, error), CL_FILE_LOG_AND_CONSOLE));
 
-			} while (error <= 0/*Error in DeleteTimerQueueTimer*/ && error != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Tenta De novo
+			} while (error <= 0/*Error in DeleteTimerQueueTimer*/ && error != ERROR_IO_PENDING && count++ < LIMIT_COUNT_TRY);	// Try Again
 		}
 
 		pthread_mutex_unlock(&m_cs);
@@ -579,7 +579,7 @@ void timer::check_event_end() {
 		throw exception("[timer::check_event_end][Error] Ao esperar evento.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 8, GetLastError()));
 #elif defined(__linux__)
 	if (m_hEvent != nullptr && m_hEvent->wait(INFINITE) != WAIT_OBJECT_0)
-		throw exception("[timer::check_event_end][Error] Ao esperar evento.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 8, errno)); // talvez o errno tenha outro erro(lixo)
+		throw exception("[timer::check_event_end][Error] Ao esperar evento.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::TIMER, 8, errno)); // maybe errno has another error (garbage)
 #endif
 
 	// Teste
@@ -602,7 +602,7 @@ void timer::hasTimerTick() {
 		_smp::message_pool::getInstance().push(new message("[timer::hasTimerTick][Log] Timer Callback has initialized with succes!, Now Timer is running", CL_FILE_LOG_AND_CONSOLE));
 #endif // _DEBUG
 
-		// Troca estado do timer
+		// Change timer state
 		setState(RUNNING);
 
 #if defined(_WIN32)
@@ -611,7 +611,7 @@ void timer::hasTimerTick() {
 		clock_gettime(CLOCK_TICK_TO_TIMER, &m_start);
 #endif
 
-	}else {	// Timer já está  inicializado
+	}else {	// Timer is already  initialized
 
 #if defined(_WIN32)
 		QueryPerformanceCounter(&m_elapsed);
@@ -623,17 +623,17 @@ void timer::hasTimerTick() {
 		auto d = (DWORD)DIFF_TICK(m_elapsed, m_start, m_frequency);
 #endif
 
-		//// Coloca o Job no pool para tratar ele
+		//// Put the Job in the pool to handle it
 		//m_arg->_job_pl.push(m_arg->_job.newInstanceJob());
 
-		// Para o Tempo Antes de Colocar o Job no Job Pool [Para evitar de dar deadlock]
+		// Stop the Timer Before Putting the Job in the Job Pool [To avoid a deadlock]
 		if (m_tipo == NORMAL) {
 			
 			if ((d + 10) >= m_time) {
 
 				_stop_from_callback(STOP);	// No Check End Be Cause, this is Callback function, if check get deadlock
 
-				// Coloca o Job no pool para tratar ele
+				// Put the Job in the pool to handle it
 				m_arg->_job_pl.push(m_arg->_job.newInstanceJob());
 
 #ifdef _DEBUG
@@ -646,7 +646,7 @@ void timer::hasTimerTick() {
 			if ((d + 10) >= m_time)
 				_stop_from_callback(STOP);	// No Check End Be Cause, this is Callback function, if check get deadlock
 
-			// Coloca o Job no pool para tratar ele
+			// Put the Job in the pool to handle it
 			m_arg->_job_pl.push(m_arg->_job.newInstanceJob());
 
 #ifdef _DEBUG
@@ -658,7 +658,7 @@ void timer::hasTimerTick() {
 			//if ((d + 10) >= m_time) {
 				//_stop_from_callback(STOP);	// No Check End Be Cause, this is Callback function, if check get deadlock
 
-			// Coloca o Job no pool para tratar ele
+			// Put the Job in the pool to handle it
 			m_arg->_job_pl.push(m_arg->_job.newInstanceJob());
 
 #ifdef _DEBUG

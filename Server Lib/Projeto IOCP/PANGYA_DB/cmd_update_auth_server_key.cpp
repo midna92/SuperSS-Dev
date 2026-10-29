@@ -1,6 +1,6 @@
-// Arquivo cmd_update_auth_server_key.cpp
-// Criado em 15/12/2018 as 18:53 por Acrisio
-// Implementação da classe CmdUpdateAuthServerKey
+// File cmd_update_auth_server_key.cpp
+// Created on 15/12/2018 at 18:53 by Acrisio
+// Implementation of class CmdUpdateAuthServerKey
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateAuthServerKey::~CmdUpdateAuthServerKey() {
 
 void CmdUpdateAuthServerKey::lineResult(result_set::ctx_res* /* _result */, uint32_t /* _index_result */) {
 
-    // Não usa por que é um UPDATE
+    // Not used because it's an UPDATE
     return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo random_gen.hpp
-// Criado em 15/08/2019 as 07:43 por Acrisio
-// Definição a classe RandomGen
+// File random_gen.hpp
+// Created on 15/08/2019 at 07:43 by Acrisio
+// Definition of the class RandomGen
 
 #pragma once
 #ifndef _STDA_RANDOM_GEN_HPP

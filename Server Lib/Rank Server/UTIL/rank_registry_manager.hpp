@@ -1,6 +1,6 @@
-// Arquivo rank_registry_manager.hpp
-// Criado em 16/06/2020 as 15:17 por Acrisio
-// Defini��o da classe RankRegistryManager
+// File rank_registry_manager.hpp
+// Created on 16/06/2020 at 15:17 by Acrisio
+// Definition of the class RankRegistryManager
 
 #pragma once
 #ifndef _STDA_RANK_REGISTRY_MANAGER_HPP
@@ -21,11 +21,11 @@
 
 namespace stdA {
 
-	// Limite de registros por p�gina
+	// Limit of records per page
 	constexpr uint32_t LIMIT_REGISTRY_FOR_PAGE = 12u;
 
 	// Found Player typedef
-	typedef std::pair< uint32_t /*Position do player*/, int32_t /*Page or -1 error*/ > FoundPlayer;
+	typedef std::pair< uint32_t /*Player position*/, int32_t /*Page or -1 error*/ > FoundPlayer;
 
 	class RankRegistryManager {
 		public:
@@ -36,31 +36,31 @@ namespace stdA {
 
 			bool isLoad();
 
-			// Coloca a p�gina que o player pediu no packet se ele tiver
+			// Put the page the player requested in the packet if it exists
 			void pageToPacket(packet& _packet, search_dados& _sd);
 
-			// Colocar a posi��o e o valor do player no packet se ele tiver
+			// Put the player's position and value in the packet if present
 			void playerPositionToPacket(packet& _packet, player& _session, search_dados& _sd);
 
-			// Envia o info completo do player com character info e os overall completo
+			// Send the player's complete info with character info and the complete overall
 			void sendPlayerFullInfo(player& _session, uint32_t _uid/*Player Info*/);
 
-			// Envia a p�gina em que o player procurado foi encontrado
+			// Send the page where the searched player was found
 			void sendPageFoundPlayer(player& _session, FoundPlayer& _fp, search_dados& _sd);
 
-			// Procura um player pelo nickname e enviar a p�gina onde ele est� se ele estiver no rank
+			// Search for a player by nickname and send the page where they are if they are in the rank
 			void searchPlayerByNicknameAndSendPage(player& _session, std::string _nickname, search_dados& _sd);
 
-			// Procura um player pela position e enviar a p�gina onde ele est� se ele estiver no rank
+			// Search for a player by position and send the page where they are if they are in the rank
 			void searchPlayerByRankAndSendPage(player& _session, uint32_t _position, search_dados& _sd);
 
-			// Procura um player por nickname no Rank Menu->Item
+			// Search for a player by nickname in the Rank Menu->Item
 			FoundPlayer searchPlayerByNickname(std::string _nickname, search_dados& _sd);
 
-			// Procura um player pelo rank dele no Rank Menu->Item
+			// Search for a player by their rank in the Rank Menu->Item
 			FoundPlayer searchPlayerByRank(uint32_t _position, search_dados& _sd);
 
-			// Cria log de todos os registro em uma arquivo com data
+			// Create a log of all the records in a file with the date
 			void makeLog();
 
 		protected:

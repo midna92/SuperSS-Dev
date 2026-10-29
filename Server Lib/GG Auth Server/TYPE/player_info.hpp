@@ -1,6 +1,6 @@
-// Arquivo player_info.hpp
-// Criado em 02/02/2021 as 17:04 por Acrisio
-// Definição da classe PlayerInfo
+// File player_info.hpp
+// Created on 02/02/2021 at 17:04 by Acrisio
+// Definition of class PlayerInfo
 
 #pragma once
 #ifndef _STDA_PLAYER_INFO_HPP

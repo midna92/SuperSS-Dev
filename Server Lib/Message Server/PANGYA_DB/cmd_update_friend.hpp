@@ -1,6 +1,6 @@
-// Arquivo cmd_update_friend.hpp
-// Criado em 05/08/2018 as 22:15 por Acrisio
-// Defini��o da classe CmdUpdateFriend.hpp
+// File cmd_update_friend.hpp
+// Created on 05/08/2018 at 22:15 by Acrisio
+// Definition of class CmdUpdateFriend.hpp
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_FRIEND_HPP

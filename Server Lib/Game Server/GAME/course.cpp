@@ -1,6 +1,6 @@
 // Arquivo course.cpp
-// Criado em 12/08/2018 as 12:54 por Acrisio
-// Implementa��o da classe Course
+// Created on 12/08/2018 at 12:54 by Acrisio
+// Implementation of the Course class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -38,9 +38,9 @@ Course::Course(RoomInfoEx& _ri, unsigned char _channel_rookie, float _star, uint
 
 	init_hole();
 
-	init_dados_rain();		// Inicializar os dados de chuva no course, para ser usado no achievement
+	init_dados_rain();		// Initialize the rain data in the course, to be used in the achievement
 
-	// Deixa esse s� com int16(short), por que s� vejo n�mero baixo, n�o passa do valor m�ximo do int16
+	// Leave this one only as int16(short), because I only see low numbers, it does not exceed the maximum int16 value
 	m_seed_rand_game = (unsigned short)sRandomGen::getInstance().rIbeMt19937_64_chrono();
 }
 
@@ -218,7 +218,7 @@ uint32_t Course::countHolesRainBySeq(uint32_t _seq) {
 float Course::getMediaAllParHoles() {
 
 	if (m_hole.empty())
-		return 1.0f;	// N�o tem nenhum hole inicializado
+		return 1.0f;	// No hole initialized
 
 	uint32_t count = 0u;
 
@@ -231,10 +231,10 @@ float Course::getMediaAllParHoles() {
 float Course::getMediaAllParHolesBySeq(uint32_t _seq) {
 
 	if (_seq <= 0 || _seq > m_hole.size())
-		return 1.0f;	// Sequ�ncia inv�lida
+		return 1.0f;	// Invalid sequence
 
 	if (m_hole.empty())
-		return 1.0f;	// N�o tem nenhum hole inicializado
+		return 1.0f;	// No hole initialized
 
 	uint32_t count = 0u;
 
@@ -250,7 +250,7 @@ ConsecutivosHolesRain& Course::getConsecutivesHolesRain() {
 
 void Course::init_seq() {
 
-	// Verifica se � Grand Prix e se tem Special Hole
+	// Check if it is Grand Prix and has a Special Hole
 	if (m_ri.grand_prix.active && m_ri.grand_prix.dados_typeid > 0) {
 
 		// Grand Prix Special Hole
@@ -259,7 +259,7 @@ void Course::init_seq() {
 		if (!sh.empty()) {
 
 			// Sort Sequencie
-			// Ordena do menor para o maior por sequ�ncia do hole
+			// Sort from lowest to highest by hole sequence
 			std::sort(sh.begin(), sh.end(), [&](auto& _1, auto& _2) {
 				return _1.seq < _2.seq;
 			});
@@ -267,17 +267,17 @@ void Course::init_seq() {
 			for (auto& el : sh)
 				m_seq.push_back(Sequencia((unsigned char)el.course, (unsigned short)el.hole));
 
-			// Completa os 18 Holes
+			// Completes the 18 Holes
 			if (m_seq.size() < 18) {
 
 				for (auto i = m_seq.size() + 1; i <= 18u; ++i)
-					m_seq.push_back(Sequencia((unsigned char)m_ri.course/*Course padr�o do Grand Prix*/, (unsigned short)i));
+					m_seq.push_back(Sequencia((unsigned char)m_ri.course/*Grand Prix default Course*/, (unsigned short)i));
 			}
 
-			// Tem Special Hole
+			// Has Special Hole
 			m_grand_prix_special_hole = true;
 
-			// Sai da fun��o por que os holes speciais do Prand Prix
+			// Leave the function because of the Grand Prix special holes
 			return;
 		}
 	}
@@ -332,12 +332,12 @@ void Course::init_seq() {
 
 		Lottery::LotteryCtx *lc = nullptr;
 
-		// 17 Holes S�
+		// 17 Holes Only
 		for (auto i = 0u; i < 18; ++i)
 			if ((lc = lottery.spinRoleta(true)) != nullptr && lc->value != hole_ssc)
 				m_seq.push_back(Sequencia((unsigned short)lc->value));
 
-		// ultimo Hole � do SSC
+		// last Hole is from SSC
 		m_seq.push_back(Sequencia((unsigned short)hole_ssc));
 
 		break;
@@ -375,7 +375,7 @@ void Course::init_hole() {
 
 	if (m_ri.grand_prix.active && m_ri.grand_prix.dados_typeid > 0) {
 
-		// Grand Prix n�o tem cube
+		// Grand Prix has no cube
 		cube_coin.stFlag.enable = 0u;
 		
 		try {
@@ -385,7 +385,7 @@ void Course::init_hole() {
 			// Grand Prix Data -> Rule
 			if (gp != nullptr) {
 
-				// Aqui inicializa as regras do Grand Prix de vento
+				// Here the Grand Prix wind rules are initialized
 				switch (gp->rule) {
 				case ONLY_1M_RULE:
 					m_wind_range[1] = 1;
@@ -394,8 +394,8 @@ void Course::init_hole() {
 					m_wind_range[0] = 9;
 					m_wind_range[1] = 15;
 					break;
-				case HOLE_CUP_MAGNET_RULE:	// Ainda n�o sei esses aqui, como funciona
-				case NO_TURNING_BACK_RULE:	// Ainda n�o sei esses aqui, como funciona
+				case HOLE_CUP_MAGNET_RULE:	// I do not know yet how these work
+				case NO_TURNING_BACK_RULE:	// I do not know yet how these work
 					break;
 				case WIND_3M_A_5M_RULE:
 					m_wind_range[0] = 2;
@@ -431,7 +431,7 @@ void Course::init_hole() {
 
 	auto rate_good_weather = (m_rate_rain <= 0) ? 1000 : ((m_rate_rain < 1000) ? 1000 - m_rate_rain : 1);
 
-	// Coloquei 4 pra 1, antes estava 3 pra 1
+	// I set 4 to 1, before it was 3 to 1
 	loterry.push(rate_good_weather, 0);
 	loterry.push(rate_good_weather, 0);
 	loterry.push(rate_good_weather, 0);
@@ -495,7 +495,7 @@ void Course::init_hole() {
 
 			if (m_ri.tipo == RoomInfo::SPECIAL_SHUFFLE_COURSE && m_ri.modo == Hole::eMODO::M_SHUFFLE_COURSE) {
 
-				if (i == 18)	// Ultimo Hole � do SSC
+				if (i == 18)	// Last Hole is from SSC
 					new_course = RoomInfo::CHRONICLE_1_CHAOS;
 				else {
 					
@@ -510,13 +510,13 @@ void Course::init_hole() {
 			if (i % 3 == 0)
 				cube_coin.stFlag.enable_cube = 1u;
 
-			// Coin todos os holes
+			// Coin all holes
 			if (cube_coin.stFlag.enable)
 				cube_coin.stFlag.enable_coin = 1u;
 
 			if (m_ri.grand_prix.active && m_ri.grand_prix.dados_typeid > 0 && m_grand_prix_special_hole) {
 				
-				// A fun��o init_seq j� inicializa a sequ�ncia se for Grand Prix e se ele tiver Special Hole
+				// The init_seq function already initializes the sequence if it is Grand Prix and it has a Special Hole
 				m_hole.insert(std::make_pair((unsigned short)i, Hole(m_seq[i - 1].m_course, m_seq[i - 1].m_hole, pin, Hole::eMODO(m_ri.modo), (unsigned char)m_ri.hole_repeat, weather, wind.wind, wind.degree.getDegree(), cube_coin)));
 			
 			}else
@@ -530,17 +530,17 @@ void Course::init_hole() {
 
 void Course::init_dados_rain() {
 
-	// Inicializa dados de chuva em holes consecutivos
+	// Initialize rain data in consecutive holes
 	m_chr.clear();
 
-	// Inicializa dados do n�mero de holes com chuva
+	// Initialize data of the number of holes with rain
 	m_holes_rain.clear();
 
 	uint32_t count = 0u;
 
 	for (auto& el : m_hole) {
 
-		// Quantidade de holes que tem o Game
+		// Number of holes the Game has
 		if (el.first <= m_ri.qntd_hole) {
 
 			if (el.second.getWeather() == 2) {
@@ -551,10 +551,10 @@ void Course::init_dados_rain() {
 				count++;
 			}
 			
-			// �ltimo hole ou acabou a sequ�ncia de chuva consecutivas
+			// Last hole or the consecutive rain sequence ended
 			if (count > 1u && (el.second.getWeather() != 2 || el.first == m_ri.qntd_hole)) {
 
-				if (count >= 4)			// 4 ou mais Holes consecutivos
+				if (count >= 4)			// 4 or more consecutive Holes
 					m_chr._4_pluss_count.setRain(el.first - 1, 1u);
 				else if (count == 3)	// 3 Holes consecutivos
 					m_chr._3_count.setRain(el.first - 1, 1u);

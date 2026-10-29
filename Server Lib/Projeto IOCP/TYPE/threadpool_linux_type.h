@@ -1,6 +1,6 @@
-// Arquivo threadpool_linux_type.h
-// Criado em 11/06/2021 as 10:39 por Acrisio
-// Definição dos tipos usados no porte do threadpool linux
+// File threadpool_linux_type.h
+// Created on 11/06/2021 at 10:39 by Acrisio
+// Definition of the types used in the Linux threadpool port
 
 #pragma once
 #ifndef _STDA_THREADPOOL_LINUX_TYPE_H

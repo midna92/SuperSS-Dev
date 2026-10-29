@@ -1,6 +1,6 @@
-// Arquivo cmd_find_caddie.cpp
-// Criado em 22/05/2018 as 21:12 por Acrisio
-// Implementa��o da classe CmdFindCaddie
+// File cmd_find_caddie.cpp
+// Created on 22/05/2018 at 21:12 by Acrisio
+// Implementation of the class CmdFindCaddie
 
 #if defined(_WIN32)
 #pragma pack(1)

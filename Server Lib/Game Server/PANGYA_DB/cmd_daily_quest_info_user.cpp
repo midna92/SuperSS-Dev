@@ -1,6 +1,6 @@
-// Arquivo cmd_daily_quest_info_user.cpp
-// Criado em 24/03/2018 as 19:58 por Acrisio
-// Implementa��o da classe CmdDailyQuesInfoUser
+// File cmd_daily_quest_info_user.cpp
+// Created on 24/03/2018 at 19:58 by Acrisio
+// Implementation of the class CmdDailyQuesInfoUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ void CmdDailyQuestInfoUser::lineResult(result_set::ctx_res* _result, uint32_t /*
 
 		m_dqiu.now_date = IFNULL(atoi, _result->data[0]);
 		m_dqiu.accept_date = IFNULL(atoi, _result->data[1]);
-		m_dqiu.count = 3;			// POR ENQUANTO O COUNT � EST�TICO EM 3, MAS DEPOIS VOU COLOCAR NO DB DIREITO
+		m_dqiu.count = 3;			// FOR NOW THE COUNT IS STATIC AT 3, BUT LATER I WILL PUT IT IN THE DB PROPERLY
 		m_dqiu.current_date = IFNULL(atoi, _result->data[2]);
 		for (auto i = 0; i < 3; i++)
 			m_dqiu._typeid[i] = IFNULL(atoi, _result->data[3 + i]);		// i + 3 (3 + 3) = 6

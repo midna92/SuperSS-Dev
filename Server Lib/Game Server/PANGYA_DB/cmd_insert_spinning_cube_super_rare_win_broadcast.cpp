@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_spinning_cube_super_rare_win_broadcast.cpp
-// Criado em 18/07/2018 as 22:44 por Acrisio
-// Implementa��o da classe CmdInsertSpinningCubeSuperRareWinBroadcast
+// File cmd_insert_spinning_cube_super_rare_win_broadcast.cpp
+// Created on 18/07/2018 at 22:44 by Acrisio
+// Implementation of the class CmdInsertSpinningCubeSuperRareWinBroadcast
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ CmdInsertSpinningCubeSuperRareWinBroadcast::~CmdInsertSpinningCubeSuperRareWinBr
 void CmdInsertSpinningCubeSuperRareWinBroadcast::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo logger.hpp
-// Criado em 21/11/2020 as 15:56 por Acrisio
-// Defini��o da classe Logger
+// File logger.hpp
+// Created on 21/11/2020 at 15:56 by Acrisio
+// Definition of the class Logger
 
 #pragma once
 #ifndef _STDA_LOGGER_HPP

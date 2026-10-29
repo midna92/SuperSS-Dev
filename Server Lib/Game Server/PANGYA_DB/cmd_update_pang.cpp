@@ -1,6 +1,6 @@
-// Arquivo cmd_update_pang.cpp
-// Criado em 13/05/2018 as 10:58 por Acrisio
-// Implementa��o da classe CmdUpdatePang
+// File cmd_update_pang.cpp
+// Created on 13/05/2018 at 10:58 by Acrisio
+// Implementation of class CmdUpdatePang
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdatePang::~CmdUpdatePang() {
 
 void CmdUpdatePang::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// Aqui � update ent�o nao usa o _result e nem o index
+	// This is an update so it does not use _result or the index
 	return;
 }
 

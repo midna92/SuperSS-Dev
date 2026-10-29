@@ -1,6 +1,6 @@
-// Arquivo cmd_warehouse_item.hpp
-// Criado em 18/03/2018 as 22:01 por Acrisio
-// Defini��o da classe CmdWarehouseItem
+// File cmd_warehouse_item.hpp
+// Created on 18/03/2018 at 22:01 by Acrisio
+// Definition of class CmdWarehouseItem
 
 #pragma once
 #ifndef _STDA_CMD_WAREHOUSE_ITEM_HPP

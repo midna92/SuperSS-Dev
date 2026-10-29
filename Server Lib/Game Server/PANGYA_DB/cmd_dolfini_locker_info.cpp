@@ -1,6 +1,6 @@
-// Arquivo cmd_dolfini_locker_info.cpp
-// Criado em 22/03/2018 as 21:19 por Acrisio
-// Implementa��o da classe CmdDolfiniLockerInfo
+// File cmd_dolfini_locker_info.cpp
+// Created on 22/03/2018 at 21:19 by Acrisio
+// Implementation of the class CmdDolfiniLockerInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ void CmdDolfiniLockerInfo::lineResult(result_set::ctx_res* _result, uint32_t _in
 
 	uint32_t uid_req = 0u;
 
-	if (_index_result == 0) {	// Primeira consulta retorna o info do dolfini locker 
+	if (_index_result == 0) {	// First query returns the dolfini locker info 
 
 		checkColumnNumber(4, (uint32_t)_result->cols);
 
@@ -33,7 +33,7 @@ void CmdDolfiniLockerInfo::lineResult(result_set::ctx_res* _result, uint32_t _in
 		m_df.pang = IFNULL(atoll, _result->data[2]);
 		m_df.locker = (unsigned char)IFNULL(atoi, _result->data[3]);
 
-	}else if (_index_result == 1) {	// Segunda consulta retorna os itens guardado no dolfini locker
+	}else if (_index_result == 1) {	// Second query returns the items stored in the dolfini locker
 		
 		checkColumnNumber(10, (uint32_t)_result->cols);
 
@@ -54,7 +54,7 @@ void CmdDolfiniLockerInfo::lineResult(result_set::ctx_res* _result, uint32_t _in
 			//strcpy_s(dli.item.sd_copier_nick, _result->data[6]);
 		dli.item.sd_status = (unsigned char)IFNULL(atoi, _result->data[7]);
 		dli.index = IFNULL(atoll, _result->data[8]);
-		dli.item.qntd = IFNULL(atoi, _result->data[9]);	// DOLFINI_LOCKER_FLAG, mas � quantidade
+		dli.item.qntd = IFNULL(atoi, _result->data[9]);	// DOLFINI_LOCKER_FLAG, but it is quantity
 
 		m_df.v_item.push_back(dli);
 	}

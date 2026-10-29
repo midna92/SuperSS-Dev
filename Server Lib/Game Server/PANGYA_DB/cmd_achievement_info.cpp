@@ -1,6 +1,6 @@
-// Arquivo cmd_achievement_info.cpp
-// Criado em 21/03/2018 as 21:56 por Acrisio
-// Implementa��o da classe CmdAchievementInfo
+// File cmd_achievement_info.cpp
+// Created on 21/03/2018 at 21:56 by Acrisio
+// Implementation of the class CmdAchievementInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -48,10 +48,10 @@ void CmdAchievementInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_in
 	cii.value = IFNULL(atoi, _result->data[8]);
 	qsi.clear_date_unix = IFNULL(atoi, _result->data[9]);
 
-	// !@ Aqui mais para frente quando add daily quest, pode ter 1 ou mas da mesma quest
-	// ou seja vai ter duplicate de typeid, aqui e da erro
-	// tem que user multimap ou resolver de outro jeito
-	// AJEITEI J�, s� ainda n�o suporta mais de 2 com msm ID, por que ai ele sempre vai pegar o primeiro
+	// !@ Later on, when adding daily quest, there can be 1 or more of the same quest
+	// that is, there will be duplicate typeid, and here it errors
+	// need to use multimap or solve it another way
+	// ALREADY FIXED, it just doesn't support more than 2 with the same ID yet, because then it will always take the first one
 	if ((i = map_ai.find(ai._typeid)) == map_ai.end() || (map_ai.count(ai._typeid) == 1 && i->second.id != ai.id)) {
 		ai.active = (unsigned char)IFNULL(atoi, _result->data[0]);
 		ai.status = IFNULL(atoi, _result->data[3]);
@@ -73,7 +73,7 @@ void CmdAchievementInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_in
 
 		if (cii.id > 0)
 			i->second.map_counter_item[cii.id] = cii;
-	}else { // tem mais de 1 achievement com o mesmo typeid
+	}else { // there is more than 1 achievement with the same typeid
 		auto er = map_ai.equal_range(ai._typeid);
 		auto it = er.second;
 
@@ -90,7 +90,7 @@ void CmdAchievementInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_in
 			}
 		}
 
-		if (it == er.second) {	// Add um novo achievement
+		if (it == er.second) {	// Add a new achievement
 			ai.active = (unsigned char)IFNULL(atoi, _result->data[0]);
 			ai.status = IFNULL(atoi, _result->data[3]);
 

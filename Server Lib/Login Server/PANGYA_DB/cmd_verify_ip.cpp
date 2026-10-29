@@ -1,6 +1,6 @@
-// Arquivo cmd_verify_ip.cpp
-// Criado em 30/030/2018 as 10:05 por Acrisio
-// Implementa��o da classe CmdVerifyIP
+// File cmd_verify_ip.cpp
+// Created on 30/030/2018 at 10:05 by Acrisio
+// Implementation of the CmdVerifyIP class
 
 #if defined(_WIN32)
 #pragma pack(1)

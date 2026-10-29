@@ -1,6 +1,6 @@
-// Arquivo cmd_add_daily_quest.hpp
-// Criado em 24/03/2018 as 21:15 por Acrisio
-// Defini��o da classe CmdAddDailyQuest
+// File cmd_add_daily_quest.hpp
+// Created on 24/03/2018 at 21:15 by Acrisio
+// Definition of the class CmdAddDailyQuest
 
 #pragma once
 #ifndef _STDA_CMD_ADD_DAILY_QUEST_HPP

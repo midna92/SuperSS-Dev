@@ -1,6 +1,6 @@
-// Arquivo cmd_update_login_reward.hpp
-// Criado em 27/10/2020 as 19:59 por Acrisio
-// Defini��o da classe CmdUpdateLoginReward
+// File cmd_update_login_reward.hpp
+// Created on 27/10/2020 at 19:59 by Acrisio
+// Definition of class CmdUpdateLoginReward
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_LOGIN_REWARD_HPP

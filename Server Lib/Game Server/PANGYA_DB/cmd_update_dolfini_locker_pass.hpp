@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_pass.hpp
-// Criado em 02/06/2018 as 15:17 por Acrisio
-// Defini��o da classe CmdUpdateDolfiniLockerPass
+// File cmd_update_dolfini_locker_pass.hpp
+// Created on 02/06/2018 at 15:17 by Acrisio
+// Definition of class CmdUpdateDolfiniLockerPass
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_DOLFINI_LOCKER_PASS_HPP

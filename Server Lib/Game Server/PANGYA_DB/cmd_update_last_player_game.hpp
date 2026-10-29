@@ -1,6 +1,6 @@
-// Arquivo cmd_update_last_player_game.hpp
-// Criado em 28/10/2018 as 14:18 por Acrisio
-// Defini��o da classe CmdUpdateLastPlayerGame
+// File cmd_update_last_player_game.hpp
+// Created on 28/10/2018 at 14:18 by Acrisio
+// Definition of class CmdUpdateLastPlayerGame
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_LAST_PLAYER_GAME_HPP

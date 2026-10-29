@@ -1,6 +1,6 @@
-// Arquivo rank_character.cpp
-// Criado em 16/06/2020 as 18:32 por Acrisio
-// Implementa��o da classe RankCharacter
+// File rank_character.cpp
+// Created on 16/06/2020 at 18:32 by Acrisio
+// Implementation of the class RankCharacter
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -58,10 +58,10 @@ void RankCharacter::playerInfoToPacket(packet& _packet) {
 
 	_packet.addUint8((unsigned char)m_level);
 	
-	// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+	// Options discontinued in Fresh UP!, but it still keeps them in the packets
 	_packet.addUint8(m_term_s5_type);
 
-	// Op��es descontinuadas no Fresh UP!, por�m ele ainda mant�m nos packet
+	// Options discontinued in Fresh UP!, but it still keeps them in the packets
 	_packet.addUint8(m_class_type);
 
 	_packet.addString(m_id);

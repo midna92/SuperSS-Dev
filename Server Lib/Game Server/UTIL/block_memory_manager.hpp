@@ -1,6 +1,6 @@
-// Arquivo block_memory_manager.hpp
-// Criado em 17/11/2018 as 17:54 por Acrisio
-// Defini��o da classe BlockMemoryManager
+// File block_memory_manager.hpp
+// Created on 17/11/2018 at 17:54 by Acrisio
+// Definition of the BlockMemoryManager class
 
 #pragma once
 #ifndef _STDA_BLOCK_MEMORY_MANAGER_HPP

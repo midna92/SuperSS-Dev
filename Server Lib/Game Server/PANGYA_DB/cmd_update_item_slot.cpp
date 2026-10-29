@@ -1,6 +1,6 @@
-// Arquivo cmd_update_item_slot.cpp
-// Criado em 25/03/2018 as 10:05 por Acrisio
-// Implementa��o da classe CmdUpdateItemSlot
+// File cmd_update_item_slot.cpp
+// Created on 25/03/2018 at 10:05 by Acrisio
+// Implementation of class CmdUpdateItemSlot
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -32,7 +32,7 @@ CmdUpdateItemSlot::~CmdUpdateItemSlot() {
 
 void CmdUpdateItemSlot::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um update
+	// Not used because it is an update
 	return;
 }
 

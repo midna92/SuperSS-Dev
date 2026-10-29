@@ -1,6 +1,6 @@
-// Arquivo cmd_update_mascot_info.cpp
-// Criado em 23/09/2018 as 20:46 por Acrisio
-// Implementa��o da classe CmdUpdateMascotInfo
+// File cmd_update_mascot_info.cpp
+// Created on 23/09/2018 at 20:46 by Acrisio
+// Implementation of class CmdUpdateMascotInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -26,7 +26,7 @@ CmdUpdateMascotInfo::~CmdUpdateMascotInfo() {
 
 void CmdUpdateMascotInfo::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

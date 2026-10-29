@@ -1,6 +1,6 @@
-// Arquivo cmd_auth_key_game_info.hpp
-// Criado em 01/04/2018 as 20:09 por Acrisio
-// Definição da classe CmdAuthKeyGameInfo
+// File cmd_auth_key_game_info.hpp
+// Created on 01/04/2018 at 20:09 by Acrisio
+// Definition of class CmdAuthKeyGameInfo
 
 #pragma once
 #ifndef _STDA_CMD_AUTH_KEY_GAME_INFO_HPP

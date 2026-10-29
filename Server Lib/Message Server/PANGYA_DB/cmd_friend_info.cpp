@@ -1,6 +1,6 @@
-// Arquivo cmd_friend_info_cpp
-// Criado em 30/07/2018 as 00:24 por Acrisio
-// Implementa��o da classe CmdFriendInfo
+// File cmd_friend_info_cpp
+// Created on 30/07/2018 at 00:24 by Acrisio
+// Implementation of class CmdFriendInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_card_qntd.cpp
-// Criado em 31/05/2018 as 09:59 por Acrisio
-// Implementa��o da classe CmdUpdateCardQntd
+// File cmd_update_card_qntd.cpp
+// Created on 31/05/2018 at 09:59 by Acrisio
+// Implementation of class CmdUpdateCardQntd
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateCardQntd::~CmdUpdateCardQntd() {
 
 void CmdUpdateCardQntd::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdUpdateCardQntd::prepareConsulta(database& _db) {

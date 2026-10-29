@@ -1,6 +1,6 @@
-// Arquivo player_info.h
-// Criado em 04/03/2018 as 12:30  por Acrisio
-// Definição da classe PlayerInfo
+// File player_info.h
+// Created on 04/03/2018 at 12:30  by Acrisio
+// PlayerInfo class definition
 
 #pragma once
 #ifndef _STDA_PLAYER_INFO_H
@@ -37,12 +37,12 @@ namespace stdA {
 												   105u, 125u, 145u, 165u, 330u,					// BEGINNER
 												   248u, 278u, 308u, 338u, 675u,					// JUNIOR
 												   506u, 546u, 586u, 626u, 1253u,					// SENIOR
-												   1002u, 1052u, 1102u, 1152u, 2304u,				// AMADOR
+												   1002u, 1052u, 1102u, 1152u, 2304u,				// AMATEUR
 												   1843u, 1903u, 1963u, 2023u, 4046u,				// SEMI PRO
 												   3237u, 3307u, 3377u, 3447u, 6894u,				// PRO
-												   5515u, 5595u, 5675u, 5755u, 11511u,				// NACIONAL
+												   5515u, 5595u, 5675u, 5755u, 11511u,				// NATIONAL
 												   8058u, 8148u, 8238u, 8328u, 16655u,				// WORLD PRO
-												   8328u, 8428u, 8528u, 8628u, 17255u,				// MESTRE
+												   8328u, 8428u, 8528u, 8628u, 17255u,				// MASTER
 												   9490u, 9690u, 9890u, 10090u, 20181u,			// TOP_MASTER
 												   20181u, 20481u, 20781u, 21081u, 42161u,			// WORLD_MASTER
 												   37945u, 68301u, 122942u, 221296u, 442592u,		// LEGEND
@@ -54,7 +54,7 @@ namespace stdA {
 				};
 				inline bool operator < (const stIdentifyKey& _ik) const {
 
-					// Classifica pelo ID, depois o typeid
+					// Sorts by ID, then by typeid
 					if (id != _ik.id)
 						return id < _ik.id;
 					else
@@ -143,22 +143,22 @@ namespace stdA {
 			FriendInfo* findFriendInfoById(std::string _id);
 			FriendInfo* findFriendInfoByNickname(std::string _nickname);
 
-			// Itens Equipaveis
+			// Equippable Items
 			WarehouseItemEx* findWarehouseItemById(int32_t _id);
 			WarehouseItemEx* findWarehouseItemByTypeid(uint32_t _typeid);
-			WarehouseItemEx* findWarehouseItemByTypeidAndId(uint32_t _typeid, int32_t _id);	// Precisa desse para caso tenho um item com o mesmo id, mas com typeid diferente
+			WarehouseItemEx* findWarehouseItemByTypeidAndId(uint32_t _typeid, int32_t _id);	// Needed in case I have an item with the same id, but with a different typeid
 
 			CharacterInfo* findCharacterById(int32_t _id);
 			CharacterInfo* findCharacterByTypeid(uint32_t _typeid);
-			CharacterInfo* findCharacterByTypeidAndId(uint32_t _typeid, int32_t _id);	// Precisa desse para caso tenho um item com o mesmo id, mas com typeid diferente
+			CharacterInfo* findCharacterByTypeidAndId(uint32_t _typeid, int32_t _id);	// Needed in case I have an item with the same id, but with a different typeid
 
 			CaddieInfoEx* findCaddieById(int32_t _id);
 			CaddieInfoEx* findCaddieByTypeid(uint32_t _typeid);
-			CaddieInfoEx* findCaddieByTypeidAndId(uint32_t _typeid, int32_t _id);	// Precisa desse para caso tenho um item com o mesmo id, mas com typeid diferente
+			CaddieInfoEx* findCaddieByTypeidAndId(uint32_t _typeid, int32_t _id);	// Needed in case I have an item with the same id, but with a different typeid
 
 			MascotInfoEx* findMascotById(int32_t _id);
 			MascotInfoEx* findMascotByTypeid(uint32_t _typeid);
-			MascotInfoEx* findMascotByTypeidAndId(uint32_t _typeid, int32_t _id);	// Precisa desse para caso tenho um item com o mesmo id, mas com typeid diferente
+			MascotInfoEx* findMascotByTypeidAndId(uint32_t _typeid, int32_t _id);	// Needed in case I have an item with the same id, but with a different typeid
 
 			MyRoomItem* findMyRoomItemById(int32_t _id);	// Furniture
 			MyRoomItem* findMyRoomItemByTypeid(uint32_t _typeid);
@@ -169,7 +169,7 @@ namespace stdA {
 			CardEquipInfoEx* findCardEquipedById(int32_t _id, uint32_t _char_typeid, uint32_t _slot);
 			CardEquipInfoEx* findCardEquipedByTypeid(uint32_t _typeid, uint32_t _char_typeid = 0u, uint32_t _slot = 0u, uint32_t _tipo = 0u, uint32_t _efeito = 0u);
 
-			// Troféu especial
+			// Special Trophy
 			TrofelEspecialInfo* findTrofelEspecialById(int32_t _id);
 			TrofelEspecialInfo* findTrofelEspecialByTypeid(uint32_t _typeid);
 			TrofelEspecialInfo* findTrofelEspecialByTypeidAndId(uint32_t _typeid, int32_t _id);
@@ -204,7 +204,7 @@ namespace stdA {
 			std::vector< CardEquipInfoEx >::iterator findCardEquipedItById(int32_t _id, uint32_t _char_typeid, uint32_t _slot);
 			std::vector< CardEquipInfoEx >::iterator findCardEquipedItByTypeid(uint32_t _typeid, uint32_t _char_typeid = 0u, uint32_t _slot = 0u, uint32_t _tipo = 0u, uint32_t _efeito = 0u);
 
-			// Troféu especial
+			// Special Trophy
 			std::vector< TrofelEspecialInfo>::iterator findTrofelEspecialItById(int32_t _id);
 			std::vector< TrofelEspecialInfo>::iterator findTrofelEspecialItByTypeid(uint32_t _typeid);
 			std::vector< TrofelEspecialInfo>::iterator findTrofelEspecialItByTypeidAndId(uint32_t _typeid, int32_t _id);
@@ -238,75 +238,75 @@ namespace stdA {
 
 			// --- Checkers
 
-			// Verifica se ele tem Item Boost equipado (agora só pang mastery e nitro) exp acho que não precisa agora
+			// Checks if it has a Boost Item equipped (now only pang mastery and nitro) exp I think is not needed now
 			PlayerRoomInfo::uItemBoost checkEquipedItemBoost();
 
-			// Verifica se fez record em todos course, que pode fazer record
-			// Cria um map com todos os maps que foram feito record, no normal, grand prix e natural, excluido o record assit
+			// Checks if a record was made on every course that can have a record
+			// Creates a map with all the maps where a record was made, in normal, grand prix and natural, excluding the assist record
 			bool isMasterCourse();
 
-			// Verifica se está com o item equipado
+			// Checks if the item is equipped
 			bool checkEquipedItem(uint32_t _typeid);
 
-			// Soma dos score dos record do natural(mas o JP pega o do grand prix)
+			// Sum of the natural record scores (but JP takes the grand prix one)
 			int32_t getSumRecordGrandPrix();
 
-			// verifica se é um amigo
+			// checks if it is a friend
 			bool isFriend(uint32_t _uid);
 
-			// Tem o item(Possuí o item)
+			// Has the item (Possesses the item)
 			bool ownerCaddieItem(uint32_t _typeid);
 			bool ownerHairStyle(uint32_t _typeid);
 			bool ownerSetItem(uint32_t _typeid);
-			bool ownerItem(uint32_t _typeid, int option = 0);	// Verifica todos os itens;
+			bool ownerItem(uint32_t _typeid, int option = 0);	// Checks all the items;
 			bool ownerMailBoxItem(unsigned _typeid);
 
 			bool isPartEquiped(uint32_t _typeid, int32_t _id);
 			bool isAuxPartEquiped(uint32_t _typeid);
 
-			// Consome moedas
+			// Consumes coins
 			void consomeMoeda(uint64_t _pang, uint64_t _cookie);
 			void consomeCookie(uint64_t _cookie);
 			void consomePang(uint64_t _pang);
 
-			// Adiciona moedas
+			// Adds coins
 			void addMoeda(uint64_t _pang, uint64_t _cookie);
 			void addCookie(uint64_t _cookie);
 			void addPang(uint64_t _pang);
 
-			// Atualiza os valores do server com o que está no banco de dados
+			// Updates the server values with what is in the database
 			void updateMoeda();
 			void updateCookie();
 			void updatePang();
 			
-			// Adiciona Pang Estático
+			// Adds Static Pang
 			static void addPang(uint32_t _uid, uint64_t _pang);
 
-			// Adiciona Cookie Point(CP) Estático
+			// Adds Static Cookie Point(CP)
 			static void addCookie(uint32_t _uid, uint64_t _cookie);
 
-			// Add (Soma) User Info
+			// Add (Sum) User Info
 			void addUserInfo(UserInfoEx& _ui, uint64_t _total_pang_win_game = 0ull);
 
 			// Update User Info ON DB
 			void updateUserInfo();
 
-			// Update User Info ON DB Estático
+			// Update User Info ON DB Static
 			static void updateUserInfo(uint32_t _uid, UserInfoEx& _ui);
 
 			// Update Trofel Info
 			void updateTrofelInfo(uint32_t _trofel_typeid, unsigned char _trofel_rank);
 
-			// Update Trofel Info Estático
+			// Update Trophy Info Static
 			static void updateTrofelInfo(uint32_t _uid, uint32_t _trofel_typeid, unsigned char _trofel_rank);
 
 			// Update Medal
 			void updateMedal(uMedalWin _medal_win);
 
-			// Update Medal Estático
+			// Update Medal Static
 			static void updateMedal(uint32_t _uid, uMedalWin _medal_win);
 
-			// Adiciona Exp
+			// Adds Exp
 			int addExp(uint32_t _exp);
 
 			// update location player on DB
@@ -345,13 +345,13 @@ namespace stdA {
 			MapStatistics a_msa_natural[MS_NUM_MAPS];
 			MapStatistics a_ms_grand_prix[MS_NUM_MAPS];
 			MapStatistics a_msa_grand_prix[MS_NUM_MAPS];
-			MapStatistics aa_ms_normal_todas_season[9][MS_NUM_MAPS];	// Esse aqui é diferente, explico ele no pacote principal
+			MapStatistics aa_ms_normal_todas_season[9][MS_NUM_MAPS];	// This one is different, I explain it in the main packet
 			std::map< size_t, StateCharacterLounge > mp_scl;
 
-			std::multimap< int32_t/*ID*/, CharacterInfo > mp_ce;		// Tem que usar multimap aqui, para nao ficar realocando memória, uso o ponteiro de um element, para o item equipado
-			std::multimap< int32_t/*ID*/, CaddieInfoEx > mp_ci;		// Tem que usar multimap aqui, para nao ficar realocando memória, uso o ponteiro de um element, para o item equipado
-			std::multimap< int32_t/*ID*/, MascotInfoEx > mp_mi;		// Tem que usar multimap aqui, para nao ficar realocando memória, uso o ponteiro de um element, para o item equipado
-			std::multimap< int32_t/*ID*/, WarehouseItemEx > mp_wi;		// Tem que usar multimap aqui, para nao ficar realocando memória, uso o ponteiro de um element, para o item equipado
+			std::multimap< int32_t/*ID*/, CharacterInfo > mp_ce;		// Must use multimap here, so as not to keep reallocating memory, I use the pointer of an element, for the equipped item
+			std::multimap< int32_t/*ID*/, CaddieInfoEx > mp_ci;		// Must use multimap here, so as not to keep reallocating memory, I use the pointer of an element, for the equipped item
+			std::multimap< int32_t/*ID*/, MascotInfoEx > mp_mi;		// Must use multimap here, so as not to keep reallocating memory, I use the pointer of an element, for the equipped item
+			std::multimap< int32_t/*ID*/, WarehouseItemEx > mp_wi;		// Must use multimap here, so as not to keep reallocating memory, I use the pointer of an element, for the equipped item
 			
 			std::map< uint32_t/*UID*/, FriendInfo > mp_fi;	// Friend List
 
@@ -367,11 +367,11 @@ namespace stdA {
 
 			std::vector< TrofelEspecialInfo > v_tsi_current_season;
 			std::vector< TrofelEspecialInfo > v_tsi_rest_season;
-			std::vector< TrofelEspecialInfo > v_tgp_current_season;	// Trofel Grand Prix
-			std::vector< TrofelEspecialInfo > v_tgp_rest_season; // Trofel Grand Prix
+			std::vector< TrofelEspecialInfo > v_tgp_current_season;	// Grand Prix Trophy
+			std::vector< TrofelEspecialInfo > v_tgp_rest_season; // Grand Prix Trophy
 			std::vector< MyRoomItem > v_mri;		// MyRoomItem
 
-			std::vector< GrandPrixClear > v_gpc;	// Grand Prix Clear os grand prix que o player já jogou
+			std::vector< GrandPrixClear > v_gpc;	// Grand Prix Clear the grand prix the player has already played
 
 			MyRoomConfig mrc;
 			DolfiniLocker df;	// DolfiniLocker
@@ -389,17 +389,17 @@ namespace stdA {
 				float r;	// Face
 			};
 			stLocation location;
-			unsigned char place;			// Lugar que o player está no momento
+			unsigned char place;			// Place where the player is at the moment
 			unsigned char lobby;			// Lobby
 			unsigned char channel;			// Channel
-			unsigned char whisper : 1, : 0;	// Whisper 0 e 1, 0 OFF, 1 ON
+			unsigned char whisper : 1, : 0;	// Whisper 0 and 1, 0 OFF, 1 ON
 			uint32_t state;
 			uint32_t state_lounge;
-			unsigned char m_state_logged;		// State logged que usa no login server, e que eu possa usar aqui, por que tbm tenho que prevenir contra ataques DDoS
+			unsigned char m_state_logged;		// Logged state used in the login server, and that I can use here, because I also have to prevent DDoS attacks
 #define m_cap mi.capability
 			uint64_t grand_zodiac_pontos;
 
-			uint64_t m_legacy_tiki_pts; // Point Shop(Tiki Shop antigo)
+			uint64_t m_legacy_tiki_pts; // Point Shop (old Tiki Shop)
 
 			// Mail Box
 			PlayerMailBox m_mail_box;

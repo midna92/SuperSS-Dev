@@ -1,6 +1,6 @@
-// Arquivo cmd_find_mascot.cpp
-// Criado em 22/05/2018 as 22:06 por Acrisio
-// Implementa��o da classe CmdFindMascot
+// File cmd_find_mascot.cpp
+// Created on 22/05/2018 at 22:06 by Acrisio
+// Implementation of the class CmdFindMascot
 
 #if defined(_WIN32)
 #pragma pack(1)

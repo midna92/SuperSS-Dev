@@ -1,6 +1,6 @@
-// Arquivo cmd_add_part.hpp
-// Criado em 31/05/2018 as 11:09 por Acrisio
-// Defini��o da classe CmdAddPart
+// File cmd_add_part.hpp
+// Created on 31/05/2018 at 11:09 by Acrisio
+// Definition of the class CmdAddPart
 
 #pragma once
 #ifndef _STDA_CMD_ADD_PART_HPP

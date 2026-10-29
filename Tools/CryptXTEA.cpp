@@ -1,12 +1,12 @@
-// Arquivo CryptXTEA.cpp
-// Criado em 08/12/2015 por Acrisio
-// Implementação da classe CryptXTEA
+// File CryptXTEA.cpp
+// Created on 08/12/2015 by Acrisio
+// Implementation of the class CryptXTEA
 
 #include "CryptXTEA.h"
 
 namespace stdA {
 	unsigned int Keys_GB[4]  = {0x03F607A9, 0x036F5A3E, 0x011002B4, 0x04AB00EA};	// Season 9 FRESH UP
-	unsigned int Keys_TH[4]  = {0x050AD33B, 0x00BAFF09, 0x0452FFDA, 0x02CB4422};	// Season 4.9 e 9
+	unsigned int Keys_TH[4]  = {0x050AD33B, 0x00BAFF09, 0x0452FFDA, 0x02CB4422};	// Season 4.9 and 9
 	unsigned int Keys_JP[4]  = {0x020A5FD4, 0x01EEBDFF, 0x02B3C6A0, 0x04F6A3E1};	// Season 9 FRESH UP pangya JP
 }
 
@@ -74,7 +74,7 @@ void CryptXTEA::EncryptXTEA(unsigned int* keys, unsigned int* dst, unsigned int*
 	unsigned int padrao, padrao2;
 	unsigned int temp, var1, var2;
 	unsigned int valor = 0; // Delta
-	const unsigned int valor2 = 0x61C88647; // Soma
+	const unsigned int valor2 = 0x61C88647; // Sum
 	
 	memmove(dst, src, sizeof(unsigned int) * 2);
 	
@@ -115,7 +115,7 @@ void CryptXTEA::DecryptXTEA(unsigned int* keys, unsigned int* dst, unsigned int*
 	unsigned int padrao, padrao2;
 	unsigned int temp, var1, var2;
 	unsigned int valor = 0xE3779B90; // Delta
-	const unsigned int valor2 = 0x61C88647; // Soma
+	const unsigned int valor2 = 0x61C88647; // Sum
 	
 	memmove(dst, src, sizeof(unsigned int) * 2);
 	
@@ -156,10 +156,10 @@ void CryptXTEA::EncryptUpdatelist(unsigned char* dst, unsigned char* src, unsign
 	unsigned int count = 0, count_encrypt = 0;
 	unsigned int *Keys = NULL;
 
-	// Chave que vai ser usada
+	// Key that will be used
 	switch (option) {
-	case 0:		// S4.9 e 9 TH
-		Keys = Keys_TH;	// S4.9 e 9 TH
+	case 0:		// S4.9 and 9 TH
+		Keys = Keys_TH;	// S4.9 and 9 TH
 		break;
 	case 1:		// S9 Global
 	default:	// S9 Global
@@ -208,10 +208,10 @@ void CryptXTEA::DecryptUpdatelist(unsigned char* dst, unsigned char* src, unsign
 	unsigned int count = 0, count_decrypt = 0;
 	unsigned int *Keys = NULL;
 	
-	// Chave que vai ser usada
+	// Key that will be used
 	switch (option) {
-	case 0:		// S4.9 e 9 TH
-		Keys = Keys_TH;	// S4.9 e 9 TH
+	case 0:		// S4.9 and 9 TH
+		Keys = Keys_TH;	// S4.9 and 9 TH
 		break;
 	case 1:		// S9 Global
 	default:	// S9 Global

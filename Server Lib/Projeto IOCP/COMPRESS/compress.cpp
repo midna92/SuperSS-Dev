@@ -1,6 +1,6 @@
-// Arquivo compress.cpp
-// Criado em 24/09/2017 por Acrisio
-// implementação da classe compress
+// File compress.cpp
+// Created on 24/09/2017 by Acrisio
+// Implementation of class compress
 
 #include "compress.h"
 #include "../UTIL/exception.h"

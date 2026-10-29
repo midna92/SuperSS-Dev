@@ -1,6 +1,6 @@
-// Arquivo result_set.cpp
-// Criado em 28/01/2018 as 15:30 por Acrisio
-// Implementação da classe result_set
+// File result_set.cpp
+// Created on 28/01/2018 at 15:30 by Acrisio
+// Implementation of class result_set
 
 #if defined(_WIN32)
 #pragma pack(1)

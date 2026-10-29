@@ -1,6 +1,6 @@
-// Arquivo cmd_update_daily_quest_user.hpp
-// Criado em 11/11/2018 as 15:56 por Acrisio
-// Defini��o da classe CmdUpdateDailyQuestUser
+// File cmd_update_daily_quest_user.hpp
+// Created on 11/11/2018 at 15:56 by Acrisio
+// Definition of class CmdUpdateDailyQuestUser
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_DAILY_QUEST_USER_HPP

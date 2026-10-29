@@ -1,6 +1,6 @@
-// Arquivo cmd_add_dolfini_locker_item.hpp
-// Criado em 02/06/2018 as 23:20 por Acrisio
-// Defini��o da classe CmdAddDolfiniLockerItem
+// File cmd_add_dolfini_locker_item.hpp
+// Created on 02/06/2018 at 23:20 by Acrisio
+// Definition of the class CmdAddDolfiniLockerItem
 
 #pragma once
 #ifndef _STDA_CMD_ADD_DOLFINI_LOCKER_ITEM_HPP

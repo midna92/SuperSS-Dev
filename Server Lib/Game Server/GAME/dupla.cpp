@@ -1,6 +1,6 @@
 // Arquivo dupla.cpp
-// Criado em 29/12/2019 as 11:44 por Acrisio
-// Implementa��o da classe Dupla
+// Created on 29/12/2019 at 11:44 by Acrisio
+// Implementation of the Dupla class
 
 #if defined(_WIN32)
 #pragma pack(1)

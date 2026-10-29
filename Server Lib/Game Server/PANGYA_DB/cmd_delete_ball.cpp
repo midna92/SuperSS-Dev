@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_ball.cpp
-// Criado em 31/05/2018 as 21:13 por Acrisio
-// Implementa��o da classe CmdDeleteBall
+// File cmd_delete_ball.cpp
+// Created on 31/05/2018 at 21:13 by Acrisio
+// Implementation of the class CmdDeleteBall
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdDeleteBall::~CmdDeleteBall() {
 
 void CmdDeleteBall::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used here because it is an UPDATE
 	return;
 }
 

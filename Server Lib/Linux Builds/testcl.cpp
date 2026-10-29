@@ -34,7 +34,7 @@ int main() {
 
 			command[0] = _getch();
 
-			// Recebeu um valor que é de 2 bytes, então ignora esse
+			// Received a 2 byte value, so ignores this one
 			if (command[1] < 0) {
 
 				command[1] = '\0';
@@ -61,7 +61,7 @@ int main() {
 
 				std::stringstream ss(s);
 
-				// Reseta std::string s
+				// Resets std::string s
 				if (!s.empty()) {
 					s.clear();
 					s.shrink_to_fit();
@@ -74,9 +74,9 @@ int main() {
 				while (!ss.eof()) {
 					if (checkCommand(ss)) {
 
-						shutdown = true;	// Sai do While Principal
+						shutdown = true;	// Exits the Main While
 
-						break;	// Sai do While de comandos
+						break;	// Exits the commands While
 					}
 				}
 

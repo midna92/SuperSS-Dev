@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_spinning_cube_super_rare_win_broadcast.hpp
-// Criado em 18/07/2018 as 22:32 por Acrisio
-// Defini��o da classe CmdInsertSpinningCubeSuperRareWinBroadcast
+// File cmd_insert_spinning_cube_super_rare_win_broadcast.hpp
+// Created on 18/07/2018 at 22:32 by Acrisio
+// Definition of the class CmdInsertSpinningCubeSuperRareWinBroadcast
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_SPINNING_CUBE_SUPER_RARE_WIN_BROADCAST_HPP

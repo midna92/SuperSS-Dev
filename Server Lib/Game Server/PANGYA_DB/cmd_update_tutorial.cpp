@@ -1,6 +1,6 @@
-// Arquivo cmd_update_tutorial.cpp
-// Criado em 28/06/2018 as 22:34 por Acrisio
-// Implementa��o da classe CmdUpdateTutorial
+// File cmd_update_tutorial.cpp
+// Created on 28/06/2018 at 22:34 by Acrisio
+// Implementation of class CmdUpdateTutorial
 
 
 #if defined(_WIN32)
@@ -23,7 +23,7 @@ CmdUpdateTutorial::~CmdUpdateTutorial() {
 
 void CmdUpdateTutorial::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_treasure_hunter_info.hpp
-// Criado em 19/03/2018 as 22:57 por Acrisio
-// Defini��o da classe CmdTreasureHunterInfo
+// File cmd_treasure_hunter_info.hpp
+// Created on 19/03/2018 at 22:57 by Acrisio
+// Definition of the class CmdTreasureHunterInfo
 
 #pragma once
 #ifndef _STDA_CMD_TREASURE_HUNTER_INFO_HPP

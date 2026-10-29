@@ -1,6 +1,6 @@
 // Arquivo golden_time_system.hpp
-// Criado em 20/10/220 as 18:54 por Acrisio
-// Defini��o da classe GoldenTimeSystem
+// Created on 20/10/220 at 18:54 by Acrisio
+// Definition of the GoldenTimeSystem class
 
 #pragma once
 #ifndef  _STDA_GOLDEN_TIME_SYSTEM_HPP

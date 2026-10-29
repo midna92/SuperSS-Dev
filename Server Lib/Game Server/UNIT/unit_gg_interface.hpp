@@ -1,6 +1,6 @@
-// Arquivo unit_gg_interface.hpp
-// Criado em 02/02/2021 as 23:50 por Acrisio
-// Definição da Interface Unit Game Guard Auth Server
+// File unit_gg_interface.hpp
+// Created on 02/02/2021 at 23:50 by Acrisio
+// Definition of the Unit Game Guard Auth Server Interface
 
 #pragma once
 #ifndef _STDA_UNIT_GG_INTERFACE_HPP

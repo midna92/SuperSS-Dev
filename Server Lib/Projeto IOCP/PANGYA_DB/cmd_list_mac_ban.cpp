@@ -1,6 +1,6 @@
-// Arquivo cmd_list_mac_ban.cpp
-// Criado em 22/08/2019 as 10:20 por Acrisio
-// Implementação da classe CmdListMacBan
+// File cmd_list_mac_ban.cpp
+// Created on 22/08/2019 at 10:20 by Acrisio
+// Implementation of class CmdListMacBan
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_card_info.cpp
-// Criado em 21/03/2018 as 22:15 por Acrisio
-// Implementa��o da classe CmdCardInfo
+// File cmd_card_info.cpp
+// Created on 21/03/2018 at 22:15 by Acrisio
+// Implementation of the class CmdCardInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

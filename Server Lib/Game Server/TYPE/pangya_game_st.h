@@ -1,6 +1,6 @@
-// Arquivo pangya_game_st.h
-// Criado em 13/08/2017 por Acrisio
-// Definição das estruturas usadas no pangya game
+// File pangya_game_st.h
+// Created on 13/08/2017 by Acrisio
+// Definition of the structures used in the pangya game
 
 #pragma once
 #ifndef _STDA_PANGYA_GAME_ST_H
@@ -39,7 +39,7 @@ namespace stdA {
 #define ASSIST_ITEM_TYPEID			0x1BE00016u
 
 #define GRAND_PRIX_TICKET			0x1A000264u
-#define LIMIT_GRAND_PRIX_TICKET		50	// Limit de Grand Prix Ticket que o player pode ter, chegou nesse limit não drop mais ele do hole
+#define LIMIT_GRAND_PRIX_TICKET		50	// Limit of Grand Prix Tickets the player can have, once this limit is reached it no longer drops from the hole
 
 #define MULLIGAN_ROSE_TYPEID		0x1800000Eu
 
@@ -62,16 +62,16 @@ namespace stdA {
 #define EXP_POUCH_TYPEID	0x1A00015Du
 #define CP_POUCH_TYPEID		0x1A000160u
 
-#define DECREASE_COMBO_VALUE	10		// No JP é 10, no USA era 3
+#define DECREASE_COMBO_VALUE	10		// In JP it is 10, in the USA it was 3
 
-#define MEDIDA_PARA_YARDS 0.3125f		// Usava 0.31251 Medida interna do pangya que no visual é o Yards
+#define MEDIDA_PARA_YARDS 0.3125f		// Used 0.31251, internal pangya measure that is Yards in the visual
 
-// Icon Player Good(angel), Quiter 1 e 2 
+// Icon Player Good (angel), Quiter 1 and 2 
 constexpr float GOOD_PLAYER_ICON = 3.f;
 constexpr float QUITER_ICON_1 = 20.f;
 constexpr float QUITER_ICON_2 = 30.f;
 
-// Corta com toma, e corta com safety
+// Cuts with toma, and cuts with safety
 const uint32_t active_item_cant_have_2_inveroty[]{ 402653229u, 402653231u, };
 
 constexpr auto TROFEL_GM_EVENT_TYPEID = 0x2D0A3B00u;
@@ -86,23 +86,23 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 	
 	//---------------------Broadcast Types---------------------//
 	enum eBROADCAST_TYPES : unsigned char {
-		BT_HIDE_BROADCAST,				// Pangya JP ficava mandado esse tipo com "<BroadCastReservedNoticesIdx>[531, 532],[549,550]</BroadCastReservedNoticesIdx>" dos que vi
+		BT_HIDE_BROADCAST,				// Pangya JP used to send this type with "<BroadCastReservedNoticesIdx>[531, 532],[549,550]</BroadCastReservedNoticesIdx>" from what I saw
 		BT_SPINNING_CUBE_RARE,
 		BT_SPINNING_CUBE_WIN_PANG_POUCH,
-		BT_GOLDEN_TIME_START_OF_DAY = 11,			// Habilitou o Golden Time Event, ou é a primeira do dia programado
+		BT_GOLDEN_TIME_START_OF_DAY = 11,			// Enabled the Golden Time Event, or it is the first of the scheduled day
 		BT_GOLDEN_TIME_START_ROUND,
-		BT_GOLDEN_TIME_ROUND_MORE_PEOPLE,			// Tem muita pessoas jogando ou em sala lounge
+		BT_GOLDEN_TIME_ROUND_MORE_PEOPLE,			// There are many people playing or in the lounge room
 		BT_GOLDEN_TIME_ROUND_REWARD_PLAYER,
 		BT_GOLDEN_TIME_FINISH_ROUND,
-		BT_GOLDEN_TIME_FINISH_OF_DAY,				// Finaliza o dia do Golden Time Event e fala a data do próximo programado
-		BT_GOLDEN_TIME_FINISH,						// Termina o Evento Golden Time não tem outro evento programado
-		BT_GOLDEN_TIME_ROUND_NOT_HAVE_WINNERS,		// Não teve ganhadores no round
-		BT_MESSAGE_PLAIN = 20,			// Aqui ele mostra uma message normal, como se fosse o do GM broadcast
+		BT_GOLDEN_TIME_FINISH_OF_DAY,				// Ends the day of the Golden Time Event and tells the date of the next scheduled one
+		BT_GOLDEN_TIME_FINISH,						// Ends the Golden Time Event, there is no other scheduled event
+		BT_GOLDEN_TIME_ROUND_NOT_HAVE_WINNERS,		// There were no winners in the round
+		BT_MESSAGE_PLAIN = 20,			// Here it shows a normal message, as if it were the GM broadcast
 		BT_GRAND_ZODIAC_EVENT_START_TIME,
 	};
 	//--------------------------End----------------------------//
 
-	//------------------ Player Estrutura ---------------------//
+	//------------------ Player Structure ---------------------//
 
 	// Player Info
 	struct player_info {
@@ -149,7 +149,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		~stSyncUpdateDB() {
 			
 #if defined(_WIN32)
-			// Libera todas threads que estiverem esperando a condition variable
+			// Releases all threads waiting on the condition variable
 			WakeAllConditionVariable(&m_cv);
 
 			DeleteCriticalSection(&m_cs);
@@ -177,7 +177,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			pthread_mutex_lock(&m_cs);
 #endif
 
-			// Só esse espera e verifica para atualizar a flag os outros modifica a flag para REQUEST_UPDATE
+			// Only this one waits and checks to update the flag, the others modify the flag to REQUEST_UPDATE
 			if (m_state == eSTATE_UPDATE::REQUEST_UPDATE) {
 
 				while (m_state == eSTATE_UPDATE::REQUEST_UPDATE && timeout_count > 0) {
@@ -191,7 +191,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_GAME_ST, 34, error));
 					}
 
-					// Decrementa count de timeout
+					// Decrements timeout count
 					if (error == ERROR_TIMEOUT)
 						--timeout_count;
 #elif defined(__linux__)
@@ -205,7 +205,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 							STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_GAME_ST, 34, error));
 					}
 
-					// Decrementa count de timeout
+					// Decrements timeout count
 					if (error == ETIMEDOUT)
 						--timeout_count;
 #endif
@@ -250,10 +250,10 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			m_state = eSTATE_UPDATE::UPDATE_CONFIRMED;
 
 #if defined(_WIN32)
-			// Acorda as thread que espera a condition variable
+			// Wakes the threads waiting on the condition variable
 			WakeAllConditionVariable(&m_cv);
 #elif defined(__linux__)
-			// Acorda as thread que espera a condition variable
+			// Wakes the threads waiting on the condition variable
 			pthread_cond_broadcast(&m_cv);
 #endif
 
@@ -288,10 +288,10 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			m_state = eSTATE_UPDATE::ERROR_UPDATE;
 
 #if defined(_WIN32)
-			// Acorda as thread que espera a condition variable
+			// Wakes the threads waiting on the condition variable
 			WakeAllConditionVariable(&m_cv);
 #elif defined(__linux__)
-			// Acorda as thread que espera a condition variable
+			// Wakes the threads waiting on the condition variable
 			pthread_cond_broadcast(&m_cv);
 #endif
 
@@ -313,7 +313,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 #endif
 	};
 
-	// Player Location para atualização do no banco de dados
+	// Player Location for updating in the database
 	struct stPlayerLocationDB : public stSyncUpdateDB {
 		stPlayerLocationDB(uint32_t _ul = 0u) : stSyncUpdateDB() {
 			
@@ -340,7 +340,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 #pragma pack(1)
 #endif
 
-	// Log de gastos CP(Cookie Point)
+	// CP (Cookie Point) spending log
 	struct CPLog {
 		public:
 			enum TYPE : unsigned char {
@@ -451,7 +451,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			std::vector< stItem > v_item;
 	};
 
-	// State Flag Para Member Info
+	// State Flag For Member Info
 	union uMemberInfoStateFlag {
 		void clear() { memset(this, 0, sizeof(uMemberInfoStateFlag)); };
 		unsigned char ucByte;
@@ -459,11 +459,11 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			unsigned char channel : 1;			// channel
 			unsigned char visible : 1;			// Visible
 			unsigned char whisper : 1;			// Whisper
-			unsigned char sexo : 1;				// Genero - (ACHO)Já logou mais de uma vez
-			unsigned char azinha : 1;			// Azinha, Quit rate menor que 3%
+			unsigned char sexo : 1;				// Gender - (I THINK) Has logged in more than once
+			unsigned char azinha : 1;			// Azinha (little wing), Quit rate below 3%
 			unsigned char icon_angel : 1;		// Angel Wings
-			unsigned char quiter_1 : 1;			// Quit rate maior que 31% e menor que 41%
-			unsigned char quiter_2 : 1;			// Quit rate maior que 41%
+			unsigned char quiter_1 : 1;			// Quit rate greater than 31% and less than 41%
+			unsigned char quiter_2 : 1;			// Quit rate greater than 41%
 		}stFlagBit;
 	};
 
@@ -475,28 +475,28 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		short limit_count;
 	};
 
-	// Union Capability, que guarda a estrutura de bits do Capability do Player
+	// Union Capability, which stores the bit structure of the Player's Capability
 	union uCapability {
 		uCapability(uint32_t _ul = 0u) : ulCapability(_ul) {};
 		void clear() { ulCapability = 0u; };
 		uint32_t ulCapability;
 		struct {
-			uint32_t A_I_MODE : 1;					// Inteligência Artificial Modo
+			uint32_t A_I_MODE : 1;					// Artificial Intelligence Mode
 			uint32_t : 1;							// Unknwon
 			uint32_t game_master : 1;				// GM(Game Master)
-			uint32_t gm_edit_site : 1;				// GM(Game Master) que pode mexer na parte adm do site
-			uint32_t block_give_item_gm : 1;		// Bloquea o GM de enviar item pelo comando Goldenbell e giveitem
+			uint32_t gm_edit_site : 1;				// GM (Game Master) who can access the admin part of the site
+			uint32_t block_give_item_gm : 1;		// Blocks the GM from sending items through the Goldenbell and giveitem commands
 			uint32_t : 2;							// Unknown
-			uint32_t gm_normal : 1;				// GM player normal, é para poder voltar o GM novamente, isso é para quando o GM quer ficar normal player para poder jogar novamente
+			uint32_t gm_normal : 1;				// Normal player GM, this is to be able to turn back into GM again, it is for when the GM wants to be a normal player to be able to play again
 			uint32_t : 2;							// Unknown
-			uint32_t mantle : 1;					// Player Autorizado ao entrar no matle(Server escondido para usuários normais), server para testes
+			uint32_t mantle : 1;					// Player Authorized to enter matle (Server hidden from normal users), test server
 			uint32_t : 3;							// Unknown
 			uint32_t premium_user : 1;				// Premium User
-			uint32_t title_gm : 1, : 0;			// Title de GM, mostra o Nome GM no lugar no Level ou o Title que o player esteja
+			uint32_t title_gm : 1, : 0;			// GM Title, shows the Name GM in place of the Level or the Title the player has
 		}stBit;
 	};
 
-	// MemberInfo dados principais do player, tem id, nick, guild, level, exp, e etc)
+	// MemberInfo main player data, has id, nick, guild, level, exp, etc)
 	struct MemberInfo {
 		MemberInfo() {
 			clear();
@@ -509,26 +509,26 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		char nick_name[22];
 		char guild_name[17];
 		char guild_mark_img[12];
-		unsigned char ucUnknown35[35];		// ainda não sei direito o que tem aqui
-		uint32_t ulUnknown;			// ainda não o que é aqui direito
+		unsigned char ucUnknown35[35];		// I still do not know exactly what is here
+		uint32_t ulUnknown;			// I still do not know what is here exactly
 		//uint32_t  capability;
 		uCapability capability;
-		uint32_t ulUnknown2;			// ainda não o que é aqui direito
+		uint32_t ulUnknown2;			// I still do not know what is here exactly
 		int32_t  oid;
-		uint32_t ulUnknown3;			// ainda não o que é aqui direito
-		uint64_t ullUnknown;		// ainda não o que é aqui direito
+		uint32_t ulUnknown3;			// I still do not know what is here exactly
+		uint64_t ullUnknown;		// I still do not know what is here exactly
 		unsigned guild_uid;
-		uint32_t guild_mark_img_no;	// só tem no JP
+		uint32_t guild_mark_img_no;	// only exists in JP
 		uMemberInfoStateFlag state_flag;
-		unsigned short flag_login_time;		// 1 é primeira vez que logou, 2 já não é mais a primeira vez que fez login no server
+		unsigned short flag_login_time;		// 1 is the first time he logged in, 2 is no longer the first time he logged in to the server
 		PlayerPapelShopInfo papel_shop;
-		unsigned char ucUnknown16[16];		// ainda não sei direito o que tem aqui
-		char id_NT[22];						// ainda não sei direito o que tem aqui
-		unsigned char ucUnknown107[106];	// ainda não sei direito o que tem aqui
+		unsigned char ucUnknown16[16];		// I still do not know exactly what is here
+		char id_NT[22];						// I still do not know exactly what is here
+		unsigned char ucUnknown107[106];	// I still do not know exactly what is here
 	};
 
-	// MemberInfoEx extendido tem o uid, limite papel shop e tutorial,
-	// so os que nao manda para o pangya no pacote MemberInfo
+	// MemberInfoEx extended has the uid, papel shop limit and tutorial,
+	// only those that are not sent to pangya in the MemberInfo packet
 	struct MemberInfoEx : public MemberInfo {
 		MemberInfoEx() : MemberInfo() {
 			clear();
@@ -603,7 +603,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint32_t best_recovery;
 	};
 
-	// User Info (dados como HIO, ALBA, BUNKER, FAIRWAY e ETC)
+	// User Info (data such as HIO, ALBA, BUNKER, FAIRWAY, etc)
 	struct UserInfo {
 		UserInfo(uint32_t _ul = 0u) {
 			clear();
@@ -622,41 +622,41 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			if (_ui.best_chip_in > best_chip_in)
 				best_chip_in = _ui.best_chip_in;
 
-			// Combo e Todal Combos
-			if (_ui.combo < 0) {	// Negativo
+			// Combo and Total Combos
+			if (_ui.combo < 0) {	// Negative
 
-				// tira só do combo, não de todos os combos que foram feitos
+				// subtracts only from the combo, not from all the combos that were made
 				if (combo <= DECREASE_COMBO_VALUE)
 					combo = 0;
 				else
 					combo += _ui.combo;
 
-			}else {					// Positivo
+			}else {					// Positive
 
 				combo += _ui.combo;
 
-				// Só soma o all combo se combo > que all_combo
+				// Only adds the all combo if combo > all_combo
 				if (combo > all_combo)
 					all_combo += _ui.combo;
 			}
 
-			// Event Angel ativado, quitado < 0
+			// Event Angel enabled, quit < 0
 			if (_ui.quitado < 0) {
 
-				// Se for 0 não subtrai
+				// If it is 0 do not subtract
 				if ((quitado + _ui.quitado) <= 0)
 					quitado = 0;
 				else
 					quitado += _ui.quitado;
 
-			}else // Normal soma o quit do player se ele quitou
+			}else // Normal adds the player quit if he quit
 				quitado += _ui.quitado;
 
 			// Skin (Pang Battle)
 			if ((skin_all_in_count + _ui.skin_all_in_count) >= 5) {
 
 				skin_all_in_count = 0l;
-				skin_pang += 1000; // dá 1000 pangs por que ele jogou 5 Pang Battle
+				skin_pang += 1000; // gives 1000 pangs because he played 5 Pang Battles
 			
 			}else
 				skin_all_in_count += _ui.skin_all_in_count;
@@ -702,7 +702,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			skin_win += _ui.skin_win;
 			skin_lose += _ui.skin_lose;
 			skin_run_hole += _ui.skin_run_hole;
-			//skin_all_in_count += _ui.skin_all_in_count; // aqui adiciona lá em cima, por que ele reseta em 5
+			//skin_all_in_count += _ui.skin_all_in_count; // here it adds above, because it resets at 5
 			skin_strike_point += _ui.skin_strike_point;
 			disconnect += _ui.disconnect;
 			jogados_disconnect += _ui.jogados_disconnect;
@@ -718,18 +718,18 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		int32_t putt;
 		int32_t tempo;
 		int32_t tempo_tacada;
-		float best_drive;			// Max Distancia
+		float best_drive;			// Max Distance
 		int32_t acerto_pangya;
 		int32_t timeout;
 		int32_t ob;
 		int32_t total_distancia;
 		int32_t hole;
-		int32_t hole_in;		// Aqui é os holes que não foram concluídos Ex: Give up, ou no Match o outro player ganho sem precisar do player terminar o hole
+		int32_t hole_in;		// Here are the holes that were not completed Ex: Give up, or in Match the other player won without the player needing to finish the hole
 		int32_t hio;
 		short bunker;
 		int32_t fairway;
 		int32_t albatross;
-		int32_t mad_conduta;	// Aqui é hole in, mas no info não tras ele por que ele já foi salvo no hole alí em cima
+		int32_t mad_conduta;	// Here is hole in, but the info does not bring it because it was already saved in the hole above
 		int32_t putt_in;
 		float best_long_putt;
 		float best_chip_in;
@@ -737,15 +737,15 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		unsigned char level;
 		uint64_t pang;
 		int32_t media_score;
-		char best_score[5];				// Best Score Por Estrela, mas acho que o pangya nao usa mais isso
+		char best_score[5];				// Best Score Per Star, but I think pangya no longer uses this
 		unsigned char event_flag;
-		int64_t best_pang[5];			// Best Pang por Estrela, mas acho que o pangya nao usa mais isso
-		int64_t sum_pang;				// A soma do pangs das 5 estrela acho
+		int64_t best_pang[5];			// Best Pang per Star, but I think pangya no longer uses this
+		int64_t sum_pang;				// The sum of the pangs of the 5 stars I think
 		int32_t jogado;
 		int32_t team_hole;
 		int32_t team_win;
 		int32_t team_game;
-		int32_t ladder_point;				// Ladder é o Match acho, de tourneio não sei direito
+		int32_t ladder_point;				// Ladder is Match I think, for tourney I am not sure
 		int32_t ladder_hole;
 		int32_t ladder_win;
 		int32_t ladder_lose;
@@ -753,23 +753,23 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		int32_t combo;
 		int32_t all_combo;
 		int32_t quitado;
-		int64_t skin_pang;			// Skin é o Pang Battle tem valor negativo ele """##### Ajeitei agora(ACHO)
+		int64_t skin_pang;			// Skin is Pang Battle, it has a negative value """##### Fixed now (I THINK)
 		int32_t skin_win;
 		int32_t skin_lose;
 		int32_t skin_all_in_count;
 		int32_t skin_run_hole;				// Correu desistiu (ACHO)
-		int32_t skin_strike_point;			// Antes era o nao_sei
-		int32_t jogados_disconnect;		// Antes era o jogos_nao_sei
+		int32_t skin_strike_point;			// Before it was nao_sei (unknown)
+		int32_t jogados_disconnect;		// Before it was jogos_nao_sei (unknown games)
 		short event_value;
-		int32_t disconnect;				// Vou deixar aqui o disconect count (antes era skin_strike_point)
+		int32_t disconnect;				// I will leave the disconnect count here (before it was skin_strike_point)
 		stMedal medal;
-		int32_t sys_school_serie;			// Sistema antigo do pangya JP que era de Serie de escola, respondia as perguntas se passasse ia pra outra serie é da 1° a 5°
+		int32_t sys_school_serie;			// Old pangya JP system that was like school grades, answered questions and if passed went to another grade, from 1st to 5th
 		int32_t game_count_season;
 		short _16bit_nao_sei;
 		float getMediaScore() {	// AVG SCORE
 			
-			// Verifica se é 0, por que não pode dividir 18 por 0 que dá excessão, 
-			// por que não pode dividir nenhum número por 0
+			// Checks if it is 0, because 18 cannot be divided by 0, it throws an exception, 
+			// because no number can be divided by 0
 			if ((hole - hole_in) == 0)
 				return 0.f;
 
@@ -777,7 +777,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getPangyaShotRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if (tacada == 0)
 				return 0.f;
 
@@ -785,7 +785,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getFairwayRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if ((hole - hole_in) == 0)
 				return 0.f;
 
@@ -793,7 +793,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getPuttRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if (putt == 0)
 				return 0.f;
 
@@ -801,7 +801,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getOBRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if ((tacada + putt) == 0)
 				return 0.f;
 
@@ -809,7 +809,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getMatchWinRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if (team_game == 0)
 				return 0.f;
 
@@ -817,7 +817,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getShotTimeRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if ((tacada + putt) == 0)
 				return 0.f;
 
@@ -825,7 +825,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		float getQuitRate() {
 
-			// Previne divisão por 0
+			// Prevents division by 0
 			if (jogado == 0)
 				return 0.f;
 
@@ -871,14 +871,14 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint64_t total_pang_win_game;
 	};
 
-	// Trofel Info
+	// Trophy Info
 	struct TrofelInfo {
 		void clear() {
 			memset(this, 0, sizeof(TrofelInfo));
 		};
 		void update(uint32_t _type, unsigned char _rank) {
 
-			// Maior que Pro 7
+			// Greater than Pro 7
 			if (_type > 12)
 				throw exception("[TrofelInfo::update][Error] _type[VALUE=" + std::to_string(_type) + "] is invalid", STDA_MAKE_ERROR(STDA_ERROR_TYPE::PANGYA_GAME_ST, 200, 0));
 
@@ -972,24 +972,24 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 
 			return bronze_sum;
 		};
-		short ama_6_a_1[6][3];	// Ama 6~1, Ouro, Prata e Bronze
-		short pro_1_a_7[7][3];	// Pro 1~7, Ouro, Prate e Bronze
-		/*short ama_6[3];		// Ouro, Prata e Bronze
-		short ama_5[3];		// Ouro, Prata e Bronze
-		short ama_4[3];		// Ouro, Prata e Bronze
-		short ama_3[3];		// Ouro, Prata e Bronze
-		short ama_2[3];		// Ouro, Prata e Bronze
-		short ama_1[3];		// Ouro, Prata e Bronze
-		short pro_1[3];		// Ouro, Prata e Bronze
-		short pro_2[3];		// Ouro, Prata e Bronze
-		short pro_3[3];		// Ouro, Prata e Bronze
-		short pro_4[3];		// Ouro, Prata e Bronze
-		short pro_5[3];		// Ouro, Prata e Bronze
-		short pro_6[3];		// Ouro, Prata e Bronze
-		short pro_7[3];		// Ouro, Prata e Bronze*/
+		short ama_6_a_1[6][3];	// Ama 6~1, Gold, Silver and Bronze
+		short pro_1_a_7[7][3];	// Pro 1~7, Gold, Silver and Bronze
+		/*short ama_6[3];		// Gold, Silver and Bronze
+		short ama_5[3];		// Gold, Silver and Bronze
+		short ama_4[3];		// Gold, Silver and Bronze
+		short ama_3[3];		// Gold, Silver and Bronze
+		short ama_2[3];		// Gold, Silver and Bronze
+		short ama_1[3];		// Gold, Silver and Bronze
+		short pro_1[3];		// Gold, Silver and Bronze
+		short pro_2[3];		// Gold, Silver and Bronze
+		short pro_3[3];		// Gold, Silver and Bronze
+		short pro_4[3];		// Gold, Silver and Bronze
+		short pro_5[3];		// Gold, Silver and Bronze
+		short pro_6[3];		// Gold, Silver and Bronze
+		short pro_7[3];		// Gold, Silver and Bronze*/
 	};
 
-	// Trofel Especial Info
+	// Special Trophy Info
 	struct TrofelEspecialInfo {
 		void clear() {
 			memset(this, 0, sizeof(TrofelEspecialInfo));
@@ -999,7 +999,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		int32_t qntd;
 	};
 
-	// Item Equipados
+	// Equipped Items
 	struct UserEquip {
 		void clear() {
 			memset(this, 0, sizeof(UserEquip));
@@ -1009,11 +1009,11 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		int32_t clubset_id;
 		int32_t ball_typeid;
 		int32_t item_slot[10];		// 10 Item slot
-		int32_t skin_id[6];		// 6 skin id, tem o title, frame, stick e etc
-		int32_t skin_typeid[6];	// 6 skin typeid, tem o title, frame, stick e etc
+		int32_t skin_id[6];		// 6 skin ids, has the title, frame, stick, etc
+		int32_t skin_typeid[6];	// 6 skin typeids, has the title, frame, stick, etc
 		int32_t mascot_id;
-		int32_t poster[2];			// Poster, tem 2 o poster A e poster B
-#define m_title skin_typeid[5]	// Titulo Typeid
+		int32_t poster[2];			// Poster, has 2: poster A and poster B
+#define m_title skin_typeid[5]	// Title Typeid
 	};
 
 	// MapStatistics
@@ -1028,7 +1028,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		unsigned char isRecorded() {
 
-			// Player fez record nesse Course
+			// Player set a record on this Course
 			return (best_score != 127 ? 1 : 0);
 		};
 		unsigned char course;
@@ -1045,7 +1045,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		unsigned char event_score;
 	};
 
-	// MapStatisticsEx esse tem o tipo que não vai no pacote que passa pro cliente
+	// MapStatisticsEx this one has the type that does not go in the packet sent to the client
 	struct MapStatisticsEx : public MapStatistics {
 		MapStatisticsEx(uint32_t _ul = 0u) : MapStatistics() {
 			clear();
@@ -1096,17 +1096,17 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 
 			int64_t diff_end_parts_date = isEmpty(end_parts_date) ? 0ll : getLocalTimeDiffDESC(end_parts_date);
 
-			// Não tem mais o parts _typeid acabou o tempo dela
+			// No longer has the parts _typeid, its time ran out
 			if (diff_end_parts_date <= 0) {
 				
 				parts_end_date_unix = 0u;
 
-				// Zera Parts_Typeid
+				// Zero out Parts_Typeid
 				if (parts_typeid > 0) {
 
 					parts_typeid = 0u;
 
-					need_update = 1u;	// Precisa Atulizar para o cliente
+					need_update = 1u;	// Needs to be updated for the client
 				}
 
 			}else
@@ -1137,7 +1137,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		SYSTEMTIME end_date;
 		SYSTEMTIME end_parts_date;
-		unsigned char need_update : 1;			// Precisa Atulizar para o cliente
+		unsigned char need_update : 1;			// Needs to be updated for the client
 	};
 
 	// Club Set Info
@@ -1163,8 +1163,8 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		int32_t id;
 		int32_t _typeid;
-		short slot_c[5];		// Total de slot para upa do stats, força, controle, spin e etc
-		short enchant_c[5];		// Enchant Club, Força, controle, spin e etc
+		short slot_c[5];		// Total slots to upgrade stats, power, control, spin, etc
+		short enchant_c[5];		// Enchant Club, Power, control, spin, etc
 	};
 
 	// Mascot Info
@@ -1185,7 +1185,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		unsigned char flag;
 	};
 
-	// Mascot Info Ex, tem o IsCash flag nele
+	// Mascot Info Ex, has the IsCash flag in it
 	struct MascotInfoEx : public MascotInfo {
 		MascotInfoEx(uint32_t _ul = 0u) : MascotInfo(_ul) {
 			clear();
@@ -1215,8 +1215,8 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		int32_t id;
 		int32_t _typeid;
-		int32_t ano;			// acho que seja só tempo que o item ainda tem
-		short c[5];			// Stats do item ctrl, força etc, se não usa isso o [0] é a quantidade
+		int32_t ano;			// I think it is only the time the item still has left
+		short c[5];			// Item stats ctrl, power, etc, if this is not used [0] is the quantity
 		unsigned char purchase;
 		unsigned char flag;
 		int64_t apply_date;
@@ -1225,13 +1225,13 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		struct UCC {
 			void clear() { memset(this, 0, sizeof(UCC)); };
 			char name[40];
-			unsigned char trade;		// Aqui pode(acho) ser qntd de sd que foi vendida
+			unsigned char trade;		// Here it can (I think) be the quantity of sd that was sold
 			char idx[9];				// 8 
-			//unsigned char flag;		// acho que aqui seja o ultimo byte 0 pra dizer que é uma string isso
+			//unsigned char flag;		// I think this is the last byte 0 to say that this is a string
 			unsigned char status;
-			unsigned short seq;			// aqui é a seq de sd que vendeu
+			unsigned short seq;			// here is the seq of sd that sold
 			char copier_nick[22];
-			int32_t copier;				// uid de quem fez a sd
+			int32_t copier;				// uid of who made the sd
 		};
 		UCC ucc;
 		struct Card {
@@ -1248,7 +1248,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			int32_t mastery;
 			int32_t recovery_pts;
 			int32_t level;
-			int32_t rank;			// UP eu chamo esse
+			int32_t rank;			// UP I call this one
 			int32_t calcRank(short* _c) {
 				int32_t total = c[0] + _c[0] + c[1] + _c[1] + c[2] + _c[2] + c[3] + _c[3] + c[4] + _c[4];
 
@@ -1343,14 +1343,14 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 	// Dolfini Locker Item
 	struct DolfiniLockerItem {
 		void clear() { memset(this, 0, sizeof(DolfiniLockerItem)); };
-		uint64_t index;	// ID do item no dolfini Locker
+		uint64_t index;	// Item ID in the dolfini Locker
 		TradeItem item;
 	};
 
 	// Personal Shop Item
 	struct PersonalShopItem {
 		void clear() { memset(this, 0, sizeof(PersonalShopItem)); };
-		uint32_t index;		// Index Sequência do item no shop
+		uint32_t index;		// Item Sequence Index in the shop
 		TradeItem item;
 	};
 
@@ -1461,7 +1461,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		void clear() { memset(this, 0, sizeof(ItemBuffEx)); };
 		int64_t index;
 		SYSTEMTIME end_date;
-		uint32_t percent;		// Rate, tipo 2 é 0 por que é 100
+		uint32_t percent;		// Rate, type 2 is 0 because it is 100
 	};
 
 	// Guild Info
@@ -1474,7 +1474,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			uid = 0;
 		};
 		uint32_t uid;
-		unsigned char leadder;	// Acho que seja o lider da guild (ACHO) ou não que no meu fica 0
+		unsigned char leadder;	// I think this is the guild leader (I THINK) or not, in mine it is 0
 		char name[32];
 		uint32_t index_mark_emblem;
 		uint64_t ull_unknown;
@@ -1551,7 +1551,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 	//		memset(this, 0, sizeof(QuestStuffInfoEx));
 	//	};
 	//	bool isValid() { return (id > 0 && _typeid != 0); };
-	//	int32_t id;			// ID do quest stuff info
+	//	int32_t id;			// ID of the quest stuff info
 	//};
 
 	// Achievement Info
@@ -1639,7 +1639,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 
 			std::for_each(v_qsi.begin(), v_qsi.end(), [&](auto& el) {
 				
-				// Só Quest que ainda não foi concluída
+				// Only Quests that have not been completed yet
 				if (el.clear_date_unix == 0) {
 					CounterItemInfo *cii = nullptr;
 
@@ -1668,7 +1668,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		unsigned char active;
 		uint32_t _typeid;
 		int32_t id;
-		int32_t status;		// 1 pedente, 2 excluído, 3 ativo, 4 concluído
+		int32_t status;		// 1 pending, 2 deleted, 3 active, 4 completed
 		std::map< int32_t, CounterItemInfo > map_counter_item;
 		std::vector< QuestStuffInfo > v_qsi;
 	};
@@ -1682,8 +1682,8 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			AchievementInfo::clear();
 			quest_base_typeid = 0;
 		};
-		// A ultima quest do Achievement que tem o counter item adicionado no db e depois replica para os outro que nao foi concluído
-		// Se não tiver cria um counter item para todas as quest
+		// The last Achievement quest that has the counter item added in the db and then replicates to the others that were not completed
+		// If there is none, creates a counter item for all the quests
 		uint32_t quest_base_typeid;
 		std::vector< QuestStuffInfo >::iterator getQuestBase() {
 			
@@ -1721,10 +1721,10 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		uint32_t uid;
 		unsigned char season;
-		unsigned char show;		// 12 pacotes enviados pode enviar o pacote089
+		unsigned char show;		// 12 packets sent, can send packet089
 	};
 
-	// Itens Equipado do Player
+	// Player Equipped Items
 	struct EquipedItem {
 		void clear() { memset(this, 0, sizeof(EquipedItem)); };
 		CharacterInfo *char_info;
@@ -1735,7 +1735,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		WarehouseItem *clubset;
 	};
 
-	// Estado do Character no Lounge
+	// Character state in the Lounge
 	struct StateCharacterLounge {
 		StateCharacterLounge() { clear(); };
 		void clear() {
@@ -1744,19 +1744,19 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			walk_speed = 1.f;
 			fUnknown = 1.f;
 		};
-		float camera_zoom;	// Zoom da câmera
-		float scale_head;	// Tamanho da cabeça do character
-		float walk_speed;	// Velocidade que o player anda no lounge
+		float camera_zoom;	// Camera zoom
+		float scale_head;	// Character head size
+		float walk_speed;	// Speed at which the player walks in the lounge
 		float fUnknown;
 	};
 
 	// MyRoom Config
 	struct MyRoomConfig {
 		void clear() { memset(this, 0, sizeof(MyRoomConfig)); };
-		unsigned short allow_enter;		// Se pode ou não entrar no My Room
-		unsigned char public_lock;		// Se tem senha ou não
-		char pass[15];					// Senha
-		unsigned char ucUnknown90[90];	// Não o que é ainda
+		unsigned short allow_enter;		// Whether or not it can enter My Room
+		unsigned char public_lock;		// Whether or not it has a password
+		char pass[15];					// Password
+		unsigned char ucUnknown90[90];	// Do not know what it is yet
 	};
 
 	// MyRoom Item
@@ -1773,7 +1773,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			float r;
 		};
 		Location location;
-		unsigned char equiped : 1, : 0;		// Equipado ou não, 1 YES, 0 NO
+		unsigned char equiped : 1, : 0;		// Equipped or not, 1 YES, 0 NO
 	};
 
 	// Dolfine Locker
@@ -1794,11 +1794,11 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint32_t isLocker() {
 			
 			if (pass[0] == '\0')
-				return 2;	// Senha não foi criada ainda
+				return 2;	// Password has not been created yet
 			else if (!locker && pass_check)
-				return 76;// 1;	// Senha já foi verificada para essa session
+				return 76;// 1;	// Password was already verified for this session
 
-			return 76;	// Senha ainda não foi verificada para essa session
+			return 76;	// Password has not been verified yet for this session
 		};
 		bool ownerItem(uint32_t _typeid) {
 
@@ -1810,12 +1810,12 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		char pass[7];
 		uint64_t pang;
-		unsigned char locker;				// Essa opção tem que ser do server para pedir para o player verificar a senha todas vez do locker
-		unsigned char pass_check : 1, : 0;	// 1 já foi verificado a senha nessa session, 0 ainda não foi verificada
+		unsigned char locker;				// This option has to come from the server to ask the player to verify the password every time for the locker
+		unsigned char pass_check : 1, : 0;	// 1 password was already verified in this session, 0 not verified yet
 		std::vector< DolfiniLockerItem > v_item;
 	};
 
-	/**** Base Item do pacote 0x216 Update Item No Game
+	/**** Base Item of packet 0x216 Update Item In Game
 	**/
 	struct stItem216 {
 		void clear() { memset(this, 0, sizeof(stItem216)); };
@@ -1828,22 +1828,22 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint32_t qntd;
 		unsigned short c[5];
 		unsigned char ucc_idx[9];
-		unsigned char seq;	// ou stats
+		unsigned char seq;	// or stats
 		uint32_t card_typeid;
 		unsigned char card_slot;
 	};
 	/**/
 
-	// Item Generico
+	// Generic Item
 	struct stItem {
 		void clear() { memset(this, 0, sizeof(stItem)); };
 		int32_t id;
 		uint32_t _typeid;
 
-		unsigned char type_iff;		// Tipo que está no iff structure, tipo no Part.iff, 1 parte de baixo da roupa, 3 luva, 8 e 9 UCC etc
+		unsigned char type_iff;		// Type that is in the iff structure, type in Part.iff, 1 lower body clothing, 3 glove, 8 and 9 UCC etc
 		unsigned char type;			// 2 Normal Item
-		unsigned char flag;			// 1 Padrão item fornecido pelo server, 5 UCC_BLANK
-		unsigned char flag_time;	// 6 rental(dia), 2 hora(acho), 4 minuto(acho)
+		unsigned char flag;			// 1 Default item provided by the server, 5 UCC_BLANK
+		unsigned char flag_time;	// 6 rental(day), 2 hour(I think), 4 minute(I think)
 		int32_t qntd;
 
 		char name[64];
@@ -1872,7 +1872,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 
 		struct stDate {
 			void clear() { memset(this, 0, sizeof(stDate)); };
-			uint32_t active : 1, : 0;	// 1 Actived, 0 Desatived
+			uint32_t active : 1, : 0;	// 1 Activated, 0 Deactivated
 			struct stDateSys {
 				void clear() { memset(this, 0, sizeof(stDateSys)); };
 				SYSTEMTIME sysDate[2];				// 0 Begin, 1 End
@@ -1930,20 +1930,20 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		float r;	// face
 	};
 
-	// Canal Info
+	// Channel Info
 	struct ChannelInfo {
-		// Union Flag do Canal, que guarda estrutura de bits da flag do Canal
+		// Channel Union Flag, which holds the Channel flag bit structure
 		union uFlag {
 			uFlag(uint32_t _ul = 0u) : ulFlag(_ul) {};
 			void clear() { ulFlag = 0u; };
 			uint32_t ulFlag;
 			struct {
 				uint32_t : 9;								// Unknown
-				uint32_t junior_bellow : 1;				// De Junior A para baixo
-				uint32_t junior_above : 1;					// De Junior E para cima
-				uint32_t only_rookie : 1;					// Somente Rookie(Iniciante)
-				uint32_t beginner_between_junior : 1;		// De Beginner a Junior
-				uint32_t junior_between_senior : 1, : 0;	// De Junior a Senior
+				uint32_t junior_bellow : 1;				// From Junior A and below
+				uint32_t junior_above : 1;					// From Junior E and above
+				uint32_t only_rookie : 1;					// Rookie (Beginner) only
+				uint32_t beginner_between_junior : 1;		// From Beginner to Junior
+				uint32_t junior_between_senior : 1, : 0;	// From Junior to Senior
 			}stBit;
 		};
 		void clear() {
@@ -2013,7 +2013,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			clear();
 		};
 		void clear() { memset(this, 0, sizeof(AttendanceRewardInfoEx)); };
-		SYSTEMTIME last_login;	// Data do ultimo login
+		SYSTEMTIME last_login;	// Date of last login
 	};
 
 	// Attendance Reward Item Context
@@ -2036,7 +2036,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			void clear() {
 				memset(this, 0, sizeof(LastPlayerGame));
 			};
-			uint32_t sex;	// gender, genero, sexo, 0 masculino, 1 Feminino
+			uint32_t sex;	// gender, 0 male, 1 female
 			char nick[22];
 			char id[22];
 			uint32_t uid;
@@ -2064,7 +2064,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 				memcpy(players[0].id, _pi.id, sizeof(players[0].id));
 #endif
 
-			}	// já está em primeiro não precisa mexer mais, só atualizar o friend e o nick, que ele pode ter mudado
+			}	// already first, no need to move it anymore, just update the friend and the nick, which may have changed
 			
 			players[0].sex = _sex;
 #if defined(_WIN32)
@@ -2091,7 +2091,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 #endif
 		};
 		uint32_t uid;
-		unsigned char sex;	// gender, genero, sexo, 0 masculino, 1 Feminino
+		unsigned char sex;	// gender, 0 male, 1 female
 		char id[22];
 		char nickname[22];
 		char apelido[15];
@@ -2110,9 +2110,9 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			return "QUEST_TYPEID_0=" + std::to_string(_typeid[0]) + ", QUEST_TYPEID_1=" + std::to_string(_typeid[1]) + ", QUEST_TYPEID_2=" 
 					+ std::to_string(_typeid[2]) + ", UPDATE_DATE=" + _formatDate(date);
 		};
-		//char date[20];				// Data
+		//char date[20];				// Date
 		SYSTEMTIME date;			// System Time Windows
-		uint32_t _typeid[3];	// array[3] Typeid da Quest
+		uint32_t _typeid[3];	// array[3] Quest Typeid
 	};
 
 	// Daily Quest Info User
@@ -2120,11 +2120,11 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		void clear() {
 			memset(this, 0, sizeof(DailyQuestInfoUser));
 		};
-		uint32_t now_date;		// Data que a quest está (current quest), do sistema de daily quest
-		uint32_t accept_date;	// Data da ultima quest que foi aceita
-		uint32_t current_date;	// Data que a quest está (current quest), do player
-		uint32_t count;		// count de quest que tem no dia
-		uint32_t _typeid[3];	// Max 3 quest por dia
+		uint32_t now_date;		// Date the quest is at (current quest), from the daily quest system
+		uint32_t accept_date;	// Date of the last quest that was accepted
+		uint32_t current_date;	// Date the quest is at (current quest), from the player
+		uint32_t count;		// count of quests for the day
+		uint32_t _typeid[3];	// Max 3 quests per day
 	};
 
 	// Remove Daily Quest
@@ -2158,7 +2158,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		//uint32_t capability;
 		uCapability capability;
 		int32_t title;
-		int32_t team_point;				// Acho que é o team point
+		int32_t team_point;				// I think it is the team point
 		union uStateFlag {
 			void clear() {
 				memset(this, 0, sizeof(uStateFlag));
@@ -2166,10 +2166,10 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			unsigned char ucByte;
 			struct {
 				unsigned char away : 1;				// AFK
-				unsigned char sexo : 1;				// Genero
-				unsigned char quiter_1 : 1;			// Quit rate maior que 31% e menor que 41%
-				unsigned char quiter_2 : 1;			// Quit rate maior que 41%
-				unsigned char azinha : 1;			// Azinha, Quit rate menor que 3%
+				unsigned char sexo : 1;				// Gender
+				unsigned char quiter_1 : 1;			// Quit rate greater than 31% and less than 41%
+				unsigned char quiter_2 : 1;			// Quit rate greater than 41%
+				unsigned char azinha : 1;			// Azinha, Quit rate less than 3%
 				unsigned char icon_angel : 1;		// Angel Wings
 				unsigned char ucUnknown_bit7 : 1;	// Unknown Bit 7
 				unsigned char ucUnknown_bit8 : 1;	// Unknown Bit 8
@@ -2181,7 +2181,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		char guild_mark_img[12];
 		unsigned short flag_visible_gm;
 		int32_t l_unknown;
-		char nickNT[22];				// Acho
+		char nickNT[22];				// I think
 		char unknown106[106];
 	};
 
@@ -2212,36 +2212,36 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 				unsigned short usFlag;
 				unsigned char ucByte[2];
 				struct {
-					unsigned char team : 1;				// Team que está na sala
-					unsigned char team2 : 1;			// Esse é relacionado com o team, mas acho que seja do torneio team ou guild battle
+					unsigned char team : 1;				// Team that is in the room
+					unsigned char team2 : 1;			// This one is related to the team, but I think it is from the team tournament or guild battle
 					unsigned char away : 1;				// AFK
-					unsigned char master : 1;			// Master da sala
-					unsigned char master2 : 1;			// Master da sala, tbm esse aqui
-					unsigned char sexo : 1;				// Genero
-					unsigned char quiter_1 : 1;			// de 31% a 41% de quit rate
-					unsigned char quiter_2 : 1;			// maior que 41% de quit rate
-					unsigned char azinha : 1;			// menor que 3% de quit rate
-					unsigned char ready : 1;			// se está pronto para começar o jogo, 0 Unready, 1 Ready
-					unsigned char unknown_bit11 : 1;	// Unknown Bit 11, ainda não sei
-					unsigned char unknown_bit12 : 1;	// Unknown Bit 12, ainda não sei
-					unsigned char unknown_bit13 : 1;	// Unknown Bit 13, ainda não sei
-					unsigned char unknown_bit14 : 1;	// Unknown Bit 14, ainda não sei
-					unsigned char unknown_bit15 : 1;	// Unknown Bit 15, ainda não sei
-					unsigned char unknown_bit16 : 1;	// Unknown Bit 16, ainda não sei
+					unsigned char master : 1;			// Room master
+					unsigned char master2 : 1;			// Room master, this one too
+					unsigned char sexo : 1;				// Gender
+					unsigned char quiter_1 : 1;			// from 31% to 41% quit rate
+					unsigned char quiter_2 : 1;			// greater than 41% quit rate
+					unsigned char azinha : 1;			// less than 3% quit rate
+					unsigned char ready : 1;			// whether it is ready to start the game, 0 Unready, 1 Ready
+					unsigned char unknown_bit11 : 1;	// Unknown Bit 11, don't know yet
+					unsigned char unknown_bit12 : 1;	// Unknown Bit 12, don't know yet
+					unsigned char unknown_bit13 : 1;	// Unknown Bit 13, don't know yet
+					unsigned char unknown_bit14 : 1;	// Unknown Bit 14, don't know yet
+					unsigned char unknown_bit15 : 1;	// Unknown Bit 15, don't know yet
+					unsigned char unknown_bit16 : 1;	// Unknown Bit 16, don't know yet
 				}stFlagBit;
 			}uFlag;
 		};
 		StateFlag state_flag;
 		unsigned char level;
 		unsigned char icon_angel;
-		unsigned char ucUnknown_0A;			// Tem o valor 0x0A aqui quase sempre das vezes que vi esse pacote, Pode ser o Place(lugar que o player está) tipo Room = 10(hex:0x0A)
+		unsigned char ucUnknown_0A;			// Has the value 0x0A here almost every time I saw this packet, may be the Place (where the player is) e.g. Room = 10 (hex:0x0A)
 		uint32_t guild_uid;
 		char guild_mark_img[12];
 		uint32_t guild_mark_index;
 		uint32_t uid;
 		uint32_t state_lounge;
-		unsigned short usUnknown_flg;		// Acho que seja uma flag tbm
-		uint32_t state;				// Acho que seja estado de "lugar" pelo que lembro
+		unsigned short usUnknown_flg;		// I think it is a flag too
+		uint32_t state;				// I think it is a "place" state from what I remember
 		struct stLocation {
 			void clear() { memset(this, 0, sizeof(stLocation)); };
 			stLocation& operator+=(stLocation& _add_location) {
@@ -2272,13 +2272,13 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			_stItemBoost stItemBoost;
 		};
 		uint32_t mascot_typeid;
-		uItemBoost flag_item_boost;		// Boost EXP, Pang e etc
-		uint32_t ulUnknown_flg;		// Pode ser a flag de teasure do player, ou de drop item
-		unsigned char id_NT[22];			// Acho que seja o ID na ntreev do player, a empresa que mantêm as contas, no JP era o gamepot
-		unsigned char ucUnknown106[106];	// Unknown 106 bytes que sempre fica com valor 0
-		unsigned char convidado : 1, : 0;	// Flag Convidado, [Não sei bem por que os que entra na sala normal tem valor igual aqui, já que é flag de convidado waiting]
-		float avg_score;					// Media score "media de holes feito pelo player"
-		unsigned char ucUnknown3[3];		// Não sei mas sempre é 0 depois do media score
+		uItemBoost flag_item_boost;		// Boost EXP, Pang etc
+		uint32_t ulUnknown_flg;		// May be the player's treasure flag, or the drop item one
+		unsigned char id_NT[22];			// I think it is the player's ID at ntreev, the company that maintains the accounts, in JP it was gamepot
+		unsigned char ucUnknown106[106];	// Unknown 106 bytes that always stay at value 0
+		unsigned char convidado : 1, : 0;	// Guest Flag, [I don't really know why those that enter a normal room have the same value here, since it is the guest waiting flag]
+		float avg_score;					// Average score "average of holes made by the player"
+		unsigned char ucUnknown3[3];		// Don't know but it is always 0 after the average score
 	};
 
 	// Player Room Info Ex
@@ -2291,7 +2291,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		CharacterInfo ci;
 	};
 
-	// Sala Guild Info
+	// Room Guild Info
 	struct RoomGuildInfo {
 		void clear() {
 			memset(this, 0, sizeof(RoomGuildInfo));
@@ -2300,15 +2300,15 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 		uint32_t guild_1_uid;
 		uint32_t guild_2_uid;
-		char guild_1_mark[12];				// mark string o pangya JP não usa aqui fica 0
-		char guild_2_mark[12];				// mark string o pangya JP não usa aqui fica 0
+		char guild_1_mark[12];				// mark string pangya JP does not use here, stays 0
+		char guild_2_mark[12];				// mark string pangya JP does not use here, stays 0
 		unsigned short guild_1_index_mark;
 		unsigned short guild_2_index_mark;
 		char guild_1_nome[20];
 		char guild_2_nome[20];
 	};
 
-	// Sala Grand Prix Info
+	// Room Grand Prix Info
 	struct RoomGrandPrixInfo {
 		void clear() {
 			memset(this, 0, sizeof(RoomGrandPrixInfo));
@@ -2319,18 +2319,18 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint32_t active;
 	};
 
-	// Union Natural e Short Game Flag da sala, que guarda a estrutura de bits da flag da sala de natural e short game
+	// Natural and Short Game Union Flag of the room, which holds the bit structure of the room's natural and short game flag
 	union uNaturalAndShortGame {
 		uNaturalAndShortGame(uint32_t _ul = 0u) : ulNaturalAndShortGame(_ul) {};
 		void clear() { ulNaturalAndShortGame = 0u; };
 		uint32_t ulNaturalAndShortGame;
 		struct {
-			uint32_t natural : 1;			// Natural Modo
-			uint32_t short_game : 1, : 0;	// Short Game Modo
+			uint32_t natural : 1;			// Natural Mode
+			uint32_t short_game : 1, : 0;	// Short Game Mode
 		}stBit;
 	};
 
-	// SalaInfo
+	// RoomInfo
 	struct RoomInfo {
 		enum eCOURSE : unsigned char {
 			BLUE_LAGOON,
@@ -2398,7 +2398,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			ARTEFATO,
 			NATURAL,
 		};
-		RoomInfo(uint32_t _ul = 0u) {	// Valores padrões
+		RoomInfo(uint32_t _ul = 0u) {	// Default values
 			
 			clear();
 			
@@ -2412,18 +2412,18 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			state = 1;
 			_30s = 30;
 
-			guilds.clear(); // Valores inicias
+			guilds.clear(); // Initial values
 		};
 		char nome[64];
-		unsigned char senha_flag : 1, : 0;	// Sala sem senha = 1, Sala com senha = 0
-		unsigned char state : 1, : 0;		// Sala em espera = 1, Sala em Game = 0
-		unsigned char flag;					// Sala que pode entrar depois que começou = 1
+		unsigned char senha_flag : 1, : 0;	// Room without password = 1, Room with password = 0
+		unsigned char state : 1, : 0;		// Room waiting = 1, Room in Game = 0
+		unsigned char flag;					// Room that can be joined after it has started = 1
 		unsigned char max_player;
 		unsigned char num_player;
 		char key[17];
-		unsigned char _30s;					// Modo Multiplayer do pangya acho, sempre 0x1E (dec: 30) no pangya
+		unsigned char _30s;					// Pangya multiplayer mode I think, always 0x1E (dec: 30) in pangya
 		unsigned char qntd_hole;
-		unsigned char tipo_show;			// esse é o tipo que mostra no pacote, esse pode mudar dependendo do tipo real da sala, fica ou camp, ou VS ou especial, não coloca todos os tipos aqui
+		unsigned char tipo_show;			// this is the type shown in the packet, it can change depending on the real room type, it is either camp, or VS or special, not all types are put here
 		short numero;
 		unsigned char modo;
 		//unsigned char course;
@@ -2431,16 +2431,16 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		uint32_t time_vs;
 		uint32_t time_30s;
 		uint32_t trofel;
-		unsigned short state_flag;			// Quando é sala de 100 player o mais de gm event aqui é 0x100
+		unsigned short state_flag;			// When it is a 100 player room the gm event plus here is 0x100
 		RoomGuildInfo guilds;
 		uint32_t rate_pang;
 		uint32_t rate_exp;
 		unsigned char flag_gm;
-		int		   master;			// Tem valores negativos, por que a sala usa ele para grand prix e etc
-		unsigned char tipo_ex;			// tipo extended, que fala o tipo da sala certinho
-		uint32_t artefato;			// Aqui usa pra GP efeitos especiais do GP
-		//uint32_t natural;			// Aqui usa para Short Game Também
-		uNaturalAndShortGame natural;		// Aqui usa para Short Game Também
+		int		   master;			// Has negative values, because the room uses it for grand prix etc
+		unsigned char tipo_ex;			// extended type, which tells the exact room type
+		uint32_t artefato;			// Used here for GP special effects of the GP
+		//uint32_t natural;			// Also used here for Short Game
+		uNaturalAndShortGame natural;		// Also used here for Short Game
 		RoomGrandPrixInfo grand_prix;
 	};
 
@@ -2465,13 +2465,13 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			channel_rookie = 0u;
 			angel_event = 0u;
 		};
-		char senha[64];						// Senha da sala
-		unsigned char tipo;					// Tipo real da sala
-		unsigned char hole_repeat;			// Número do hole que vai ser repetido
-		uint32_t fixed_hole;			// Aqui é 1 Para Hole(Pin"Beam") Fixo, e 0 para aleatório
-		unsigned char state_afk : 1, : 0;	// Estado afk da sala, usar para depois começar a sala, já que o pangya não mostra se a sala está afk
-		unsigned char channel_rookie : 1;	// Flag que guarda, se o channel é rookie ou não, onde a sala foi criada, vem da Flag do channel
-		unsigned char angel_event : 1;		// Flag que guarda se o Angel Event está ligado
+		char senha[64];						// Room password
+		unsigned char tipo;					// Real room type
+		unsigned char hole_repeat;			// Number of the hole that will be repeated
+		uint32_t fixed_hole;			// Here it is 1 for Fixed Hole (Pin "Beam"), and 0 for random
+		unsigned char state_afk : 1, : 0;	// Room afk state, used to start the room later, since pangya does not show whether the room is afk
+		unsigned char channel_rookie : 1;	// Flag that stores whether the channel where the room was created is rookie or not, comes from the channel Flag
+		unsigned char angel_event : 1;		// Flag that stores whether the Angel Event is on
 	};
 
 	/*struct GameValue {
@@ -2616,7 +2616,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		};
 	};
 
-	// Item Pangya Base Para Pacote216
+	// Pangya Base Item for Packet216
 	struct ItemPangyaBase {
 		void clear() {
 			memset(this, 0, sizeof(ItemPangyaBase));
@@ -2726,7 +2726,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		char unknown2[18];
 		int32_t visit_count;
 		unsigned char lida_yn;
-		int32_t item_num;			// Número de itens que tem nesse anexado a esse email
+		int32_t item_num;			// Number of items attached to this email
 		EmailInfo::item item;
 	};
 
@@ -2771,11 +2771,11 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			char nickname[22];
 			uint32_t ulUnknown;
 			uint32_t guild_uid;
-			uint32_t mark_index;		// Guild, isso é do JP, que ele nao usa o EMBLEM NUMER
+			uint32_t mark_index;		// Guild, this is from JP, which does not use the EMBLEM NUMBER
 			char guild_mark_img[12];
 			uint32_t tipo;
 			unsigned char state;
-			unsigned char ucUnknown_flg;	// Não sei mas sempre peguei o valor 2
+			unsigned char ucUnknown_flg;	// Don't know but I always got the value 2
 			SYSTEMTIME finish_time;
 		};
 		int32_t id;
@@ -2783,9 +2783,9 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		std::vector< stPlayerDados > v_players;
 	};
 
-	// Estrutura que Guarda as informações dos Convites do Canal
+	// Structure that holds the Channel Invite information
 	struct InviteChannelInfo {
-#define STDA_INVITE_TIME_MILLISECONDS		5000	// 5 segundos em millisegundos
+#define STDA_INVITE_TIME_MILLISECONDS		5000	// 5 seconds in milliseconds
 		void clear() { memset(this, 0, sizeof(InviteChannelInfo)); };
 		short room_number;
 		uint32_t invite_uid;
@@ -2793,7 +2793,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		SYSTEMTIME time;
 	};
 
-	// Command Info, os Comando do Auth Server
+	// Command Info, the Auth Server Commands
 	struct CommandInfo {
 		CommandInfo(uint32_t _ul = 0u) {
 			clear();
@@ -2854,8 +2854,8 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 	};
 
 	// Guild Update Activity Info
-	// Guarda os dados das atualizações que os Clubs tem de alterações
-	// Como membro kickado, sair do club e aceito no club
+	// Holds the data of the updates the Clubs have, of changes
+	// Such as member kicked, leaving the club and accepted into the club
 	struct GuildUpdateActivityInfo {
 		enum TYPE_UPDATE : unsigned char {
 			TU_ACCEPTED_MEMBER,
@@ -2865,9 +2865,9 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 		void clear() {
 			memset(this, 0, sizeof(GuildUpdateActivityInfo));
 		};
-		uint64_t index;	// ID do update activity
+		uint64_t index;	// Update activity ID
 		uint32_t club_uid;
-		uint32_t owner_uid;	// Quem fez a Ação
+		uint32_t owner_uid;	// Who performed the Action
 		uint32_t player_uid;
 		TYPE_UPDATE type;
 		time_t reg_date;
@@ -2887,7 +2887,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 			TC_CHARACTER,
 			TC_MASCOT,
 			TC_ITEM_EFFECT_LOUNGE,	// Hermes x2, Twilight, Jester x2
-			TC_ALL,					// CHARACTER, CADDIE, CLUBSET e BALL essa é a ordem
+			TC_ALL,					// CHARACTER, CADDIE, CLUBSET and BALL this is the order
 			TC_UNKNOWN = 255,
 		};
 		struct stItemEffectLounge {
@@ -2897,7 +2897,7 @@ const uint32_t cadie_cauldron_Twilight_item_typeid[]{ 0x0801a812u, 0x08050811u, 
 				TE_FAST_WALK,
 				TE_TWILIGHT,
 			};
-			uint32_t item_id;	// Aqui ele manda 0 o cliente, não sei por que, deveria mandar o id do item equipado
+			uint32_t item_id;	// Here it sends 0 to the client, don't know why, it should send the id of the equipped item
 			TYPE_EFFECT effect;
 		};
 		TYPE_CHANGE type;					// Type Change

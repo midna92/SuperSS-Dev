@@ -1,6 +1,6 @@
-// Arquivo guild_battle.hpp
-// Criado em 28/12/2019 as 17:30 por Acrisio
-// Defini��o da classe GuildBattle
+// File guild_battle.hpp
+// Created on 28/12/2019 at 17:30 by Acrisio
+// Definition of class GuildBattle
 
 #pragma once
 #ifndef _STDA_GUILD_BATTLE_HPP
@@ -28,11 +28,11 @@ namespace stdA {
 
 			void finish_guild_battle(player& _session, int _option);
 
-			// Tempo
+			// Time
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
 			virtual void requestFinishExpGame();

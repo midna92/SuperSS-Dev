@@ -1,6 +1,6 @@
-// Arquivo _3d_type.hpp
-// Criado em 03/10/2020 as 14:39 por Acrisio
-// Defini��o dos tipos usados nos calculos 3D
+// File _3d_type.hpp
+// Created on 03/10/2020 at 14:39 by Acrisio
+// Definition of the types used in 3D calculations
 
 #pragma once
 #ifndef _STDA__3D_TYPE_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_my_room_config.hpp
-// Criado em 22/03/2018 as 20:19 por Acrisio
-// Defini��o da classe CmdMyRoomConfig
+// File cmd_my_room_config.hpp
+// Created on 22/03/2018 at 20:19 by Acrisio
+// Definition of the class CmdMyRoomConfig
 
 #pragma once
 #ifndef _STDA_CMD_MY_ROOM_CONFIG_HPP

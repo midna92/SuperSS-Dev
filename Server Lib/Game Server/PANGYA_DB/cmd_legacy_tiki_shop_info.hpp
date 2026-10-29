@@ -1,6 +1,6 @@
-// Arquivo cmd_legacy_tiki_shop_info.hpp
-// Criado em 26/10/2020 as 15:14 por Acrisio
-// Defini��o da classe CmdLegacyTikiShopInfo
+// File cmd_legacy_tiki_shop_info.hpp
+// Created on 26/10/2020 at 15:14 by Acrisio
+// Definition of the class CmdLegacyTikiShopInfo
 
 #pragma once
 #ifndef _STDA_CMD_LEGACY_TIKI_SHOP_INFO_HPP

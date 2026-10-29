@@ -1,6 +1,6 @@
-// Arquivo message_server.hpp
-// Criado em 29/07/2018 as 13:13 por Acrisio
-// Defini��o da classe message_server
+// File message_server.hpp
+// Created on 29/07/2018 at 13:13 by Acrisio
+// Definition of class message_server
 
 #pragma once
 #ifndef _STDA_MESSAGE_SERVER_HPP
@@ -75,7 +75,7 @@ namespace stdA {
 			void requestKickGuildMember(packet *_packet);
 
 		public:
-			// Auth Server Comandos
+			// Auth Server Commands
 			virtual void authCmdShutdown(int32_t _time_sec) override;
 			virtual void authCmdBroadcastNotice(std::string _notice) override;
 			virtual void authCmdBroadcastTicker(std::string _nickname, std::string _msg) override;
@@ -117,7 +117,7 @@ namespace stdA {
 			virtual void reload_systems();
 			virtual void reloadGlobalSystem(uint32_t _tipo);
 
-			// Update Rate e Event of Server
+			// Update Rate and Event of Server
 			virtual void updateRateAndEvent(uint32_t _tipo, uint32_t _qntd);
 	};
 

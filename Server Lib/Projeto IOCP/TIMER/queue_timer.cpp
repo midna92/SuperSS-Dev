@@ -1,6 +1,6 @@
-// Arquivo queue_timer.cpp
-// Criado em 12/03/2021 as 13:55 por Acrisio
-// Implementação da classe QueueTimer
+// File queue_timer.cpp
+// Created on 12/03/2021 at 13:55 by Acrisio
+// Implementation of class QueueTimer
 
 #include "queue_timer.hpp"
 
@@ -52,8 +52,8 @@ uint32_t QueueTimer::CreateTimerQueueTimer(int32_t* _timerfd, QueueTimer* _queue
 
     try {
 
-        // !@ Na versão do windows ele usar um TimerQueue padrão se não for fornecido um TimerQueue, 
-        // Como estão estou usando essa opção não vou implementar ele agora
+        // !@ In the windows version it uses a default TimerQueue if no TimerQueue is provided, 
+        // Since I'm using this option, I will not implement it now
         if (_timerfd == nullptr || _queue_timer == nullptr || !_queue_timer->is_good())
             return 0u; // Error
 
@@ -75,8 +75,8 @@ uint32_t QueueTimer::DeleteTimerQueueTimer(QueueTimer* _queue_timer, int32_t _ti
 
     try {
 
-        // !@ Esse á a mesma coisa do create, se for null ele usa um TimerQueue padrão,
-        // Mas não vou implementar agora, por que não uso
+        // !@ This is the same as create, if null it uses a default TimerQueue,
+        // But I won't implement it now, because I don't use it
         if (_queue_timer == nullptr || !_queue_timer->is_good())
             return 0u; // Error
 
@@ -97,10 +97,10 @@ uint32_t QueueTimer::ChangeTimerQueueTimer(QueueTimer* _queue_timer, int32_t _ti
     if (_queue_timer != nullptr || !_queue_timer->is_good())
         return 0u; // Error
 
-    // Lança uma exceção
+    // Throw an exception
     _queue_timer->changeTimer(_timerfd, _dueTime, _period);
 
-    return 1u; // Não executa esse código
+    return 1u; // Do not execute this code
 }
 
 uint32_t QueueTimer::DeleteTimerQueueEx(QueueTimer* _queue_timer, Event* _event) {
@@ -112,10 +112,10 @@ uint32_t QueueTimer::DeleteTimerQueueEx(QueueTimer* _queue_timer, Event* _event)
         if (_queue_timer == nullptr)
             return 0u; // Error
 
-        // ignora o erro por enquanto
+        // ignore the error for now
         uint32_t err = _queue_timer->destroy();
 
-        // Suporte Event, para não da deadlock
+        // Event support, to avoid deadlock
         if (_event != nullptr)
             _event->set(1u);
 
@@ -196,10 +196,10 @@ uint32_t QueueTimer::destroy() {
     try {
 
         if (!is_good())
-            return ret; // Já foi destruído
+            return ret; // Already destroyed
 
-        // !@ Acho que não vou fazer agora por notifição, deixa o evento de lado
-        // Para deletar por evento com async, vou ter que criar uma thread de limpeza statica
+        // !@ I think I won't do it now for notification, leave the event aside
+        // To delete by event with async, I will have to create a static cleanup thread
         downAllThread();
 
         if (!m_msgs.empty())
@@ -263,7 +263,7 @@ uint32_t QueueTimer::createTimer(int32_t* _fd, WaitOrTimerCallback _callback, vo
 
         if (_dueTime == 0) {
 
-            timer->time_val.it_value.tv_nsec = 1; // Imediato
+            timer->time_val.it_value.tv_nsec = 1; // Immediate
             timer->time_val.it_value.tv_sec = 0;
         
         }else {
@@ -305,7 +305,7 @@ uint32_t QueueTimer::createTimer(int32_t* _fd, WaitOrTimerCallback _callback, vo
 
         pthread_mutex_unlock(&m_cs);
 
-        // set o fd do retorno
+        // set the return fd
         *_fd = timer->fd;
 
     }catch (exception& e) {
@@ -324,11 +324,11 @@ uint32_t QueueTimer::createTimer(int32_t* _fd, WaitOrTimerCallback _callback, vo
 
 uint32_t QueueTimer::changeTimer(int32_t _fd, uint32_t _dueTime, uint32_t _period) {
 
-    // !@ não vou fazer agora
+    // !@ I won't do it now
     throw exception("[QueueTimer::changeTimer][WARNING] nao vou fazer essa funcao por que nao uso ela no Windows, nao preciso porta para o Linux agora.", 
         STDA_MAKE_ERROR(STDA_ERROR_TYPE::QUEUETIMER, 550, 0));
 
-    return 0u; // !@ não executa esse código
+    return 0u; // !@ do not execute this code
 };
 
 uint32_t QueueTimer::deleteTimer(int32_t _fd, Event* _event) {
@@ -524,7 +524,7 @@ void* QueueTimer::timer_thread() {
 
             try {
 
-                count = epoll_wait(m_epollfd, ev, MIN_THREAD_POOL, 10000); // 1 seg
+                count = epoll_wait(m_epollfd, ev, MIN_THREAD_POOL, 10000); // 1 sec
 
                 if (count == -1) {
 
@@ -568,7 +568,7 @@ void* QueueTimer::timer_thread() {
                         if (errno != EAGAIN)
                             _smp::message_pool::getInstance().push(new message("[QueueTimer::timer_thread::MainLoop][Error][WARNING] failed to read timer fd, Code: " + std::to_string(errno), CL_FILE_LOG_AND_CONSOLE));
 
-                        continue; // Timer ainda não expirou ou outra thread já leu
+                        continue; // Timer has not expired yet or another thread has already read it
 
                     }else if (err > 0 && err != sizeof(buff)) {
 
@@ -645,14 +645,14 @@ void* QueueTimer::io_worker() {
 
             try {
 
-                msg_tmp = m_msgs.get(500); // Meio segundo
+                msg_tmp = m_msgs.get(500); // Half a second
 
                 if (msg_tmp == nullptr)
                     continue;
 
                 try {
 
-                    // Não verifica se está marcada, para ser deletada, executa depois verifica  
+                    // Does not check whether it is marked for deletion, executes and then checks  
                     msg_tmp->te->callback(msg_tmp->te->lpParameter, 1/*TRUE*/);
 
                     // Check Deleting or one time expires
@@ -680,7 +680,7 @@ void* QueueTimer::io_worker() {
 
                     // Time out
                     if (m_thread_pool.size() > MIN_THREAD_POOL)
-                        break; // Termina essa thread
+                        break; // End this thread
 
                 }else
                     _smp::message_pool::getInstance().push(new message("[QueueTimer::io_worker::MainLoop][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -862,7 +862,7 @@ uint32_t QueueTimer::setDeleteTimer(timer_epoll* _timer, Event* _event) {
 
         RETURNV_AND_LEAVE_MUTEX(&m_cs, setDeleteTimer(it, _event));
 
-        // !@ Não usa
+        // !@ Not used
         pthread_mutex_unlock(&m_cs);
 
     }catch (exception& e) {
@@ -893,7 +893,7 @@ uint32_t QueueTimer::setDeleteTimer(std::vector< timer_epoll* >::iterator _it, E
 
             ptr->toDelete = 1u;
 
-            return eSET_DEL::SD_ESTA_EXECUTANDO; // Está executando
+            return eSET_DEL::SD_ESTA_EXECUTANDO; // Is executing
         }
 
         ptr->deleting = 1u;

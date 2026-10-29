@@ -1,6 +1,6 @@
-// Arquivo cmd_ticker_info.hpp
-// Criado em 03/12/2018 as 14:55 por Acrisio
-// Defini��o da classe CmdTickerInfo
+// File cmd_ticker_info.hpp
+// Created on 03/12/2018 at 14:55 by Acrisio
+// Definition of class CmdTickerInfo
 
 #pragma once
 #ifndef _STDA_CMD_TICKER_INFO_HPP

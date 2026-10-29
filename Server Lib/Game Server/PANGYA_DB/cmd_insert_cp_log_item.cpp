@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_cp_log_item.cpp
-// Criado em 24/05/2019 as 04:30 por Acrisio
-// Implementação da classe CmdInsertCPLogItem
+// File cmd_insert_cp_log_item.cpp
+// Created on 24/05/2019 at 04:30 by Acrisio
+// Implementation of the class CmdInsertCPLogItem
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_logon_check.cpp
-// Criado em 30/03/2018 as 18:29 por Acrisio
-// Implementa��o da classe CmdLogonCheck
+// File cmd_logon_check.cpp
+// Created on 30/03/2018 at 18:29 by Acrisio
+// Implementation of class CmdLogonCheck
 
 #if defined(_WIN32)
 #pragma pack(1)

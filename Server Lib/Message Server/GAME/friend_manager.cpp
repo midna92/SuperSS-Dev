@@ -1,6 +1,6 @@
-// Arquivo friend_manager.cpp
-// Criado em 04/08/2018 as 19:52 por Acrisio
-// Implementa��o da classe FriendManager
+// File friend_manager.cpp
+// Created on 04/08/2018 at 19:52 by Acrisio
+// Implementation of the FriendManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -63,7 +63,7 @@ void FriendManager::init(player_info& _pi) {
 	if (isInitialized())
 		clear();
 
-	// Atualiza
+	// Updates
 	m_pi = _pi;
 
 	if (m_pi.uid == 0)
@@ -228,11 +228,11 @@ void FriendManager::addFriend(FriendInfoEx& _fi) {
 
 	auto it = m_friend.find(_fi.uid);
 
-	if (it == m_friend.end())	// add new friend ou Guild Member
+	if (it == m_friend.end())	// add new friend or Guild Member
 		m_friend[_fi.uid] = _fi;
-	else if (it->second.flag.ucFlag != 3 && it->second.flag.ucFlag != _fi.flag.ucFlag)	// Add Guild Member ou Friend
+	else if (it->second.flag.ucFlag != 3 && it->second.flag.ucFlag != _fi.flag.ucFlag)	// Add Guild Member or Friend
 		it->second.flag.ucFlag |= _fi.flag.ucFlag;
-	else // j� tem o amigo na guild e em amigos
+	else // already has the friend in the guild and in friends
 		_smp::message_pool::getInstance().push(new message("[FriendManager::addFriend][Error][Warning] player[UID=" + std::to_string(m_pi.uid) + "] ja tem esse Amigo[UID=" + std::to_string(_fi.uid) + "]", CL_FILE_LOG_AND_CONSOLE));
 
 #if defined(_WIN32)
@@ -349,7 +349,7 @@ std::vector< FriendInfoEx* > FriendManager::getAllFriend(bool _block) {
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// Os Amigos que n�o estiverem bloqueados
+	// The Friends that are not blocked
 	std::for_each(m_friend.begin(), m_friend.end(), [&](auto& el) {
 		if (el.second.flag.stFlag._friend && (!_block || !el.second.state.stState.block))
 			v_friend.push_back(&el.second);
@@ -398,7 +398,7 @@ std::vector< FriendInfoEx* > FriendManager::getAllFriendAndGuildMember(bool _blo
 	pthread_mutex_lock(&m_cs);
 #endif
 
-	// Os Amigos que n�o estiverem bloqueados
+	// The Friends that are not blocked
 	std::for_each(m_friend.begin(), m_friend.end(), [&](auto& el) {
 		if (!_block || !el.second.state.stState.block)
 			v_friend.push_back(&el.second);
@@ -420,7 +420,7 @@ void FriendManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void*
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just exits, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[FriendManager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

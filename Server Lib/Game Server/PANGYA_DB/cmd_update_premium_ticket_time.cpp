@@ -1,6 +1,6 @@
-// Arquivo cmd_update_premium_ticket_time.cpp
-// Criado em 07/12/2019 as 13:07 por Acrisio
-// Implementa��o da classe CmdUpdatePremiumTicketTime
+// File cmd_update_premium_ticket_time.cpp
+// Created on 07/12/2019 at 13:07 by Acrisio
+// Implementation of class CmdUpdatePremiumTicketTime
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdatePremiumTicketTime::~CmdUpdatePremiumTicketTime() {
 
 void CmdUpdatePremiumTicketTime::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

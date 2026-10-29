@@ -1,6 +1,6 @@
-// Arquivo papel_shop_system.hpp
-// Criado em 09/07/2018 as 18:07 por Acrisio
-// Defini��o da classe PapelShopSystem
+// File papel_shop_system.hpp
+// Created on 09/07/2018 at 18:07 by Acrisio
+// Definition of the PapelShopSystem class
 
 #pragma once
 #ifndef _STDA_PAPEL_SHOP_SYSTEM_HPP

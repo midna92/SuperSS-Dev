@@ -1,6 +1,6 @@
-// Arquivo cmd_grand_prix_clear.cpp
-// Criado em 14/06/2019 as 09:13 por Acrisio
-// Implementa��o da classe CmdGrandPrixClear
+// File cmd_grand_prix_clear.cpp
+// Created on 14/06/2019 at 09:13 by Acrisio
+// Implementation of the class CmdGrandPrixClear
 
 #if defined(_WIN32)
 #pragma pack(1)

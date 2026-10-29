@@ -1,6 +1,6 @@
-// Arquivo mssql.h
-// Criado em 27/01/2018 as 23:08 por Acrisio
-// Definição da classe mssql
+// File mssql.h
+// Created on 27/01/2018 at 23:08 by Acrisio
+// Definition of class mssql
 
 #pragma once
 #ifndef _STDA_MSSQL_H
@@ -19,7 +19,7 @@
 
 #include "response.h"
 
-// define SHOW_SUCCESS_INGO_MSG para mostrar as msg que o mssql server retorno mesmo com sucesso
+// define SHOW_SUCCESS_INGO_MSG to show the messages the mssql server returns even on success
 //#define SHOW_SUCCESS_INFO_MSG
 
 namespace stdA {

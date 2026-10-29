@@ -1,6 +1,6 @@
 // Arquivo dupla_manager.cpp
-// Criado em 29/12/2019 as 11:49 por Acrisio
-// Implementa��o da classe DuplaManager
+// Created on 29/12/2019 at 11:49 by Acrisio
+// Implementation of the DuplaManager class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -375,7 +375,7 @@ bool DuplaManager::oneGuildRest() {
 			count[1]++;
 	}
 
-	// Uma das duas guilds, seus membros sairam todos do jogo
+	// One of the two guilds, all its members left the game
 	if (count[0] == 0u || count[1] == 0u)
 		ret = true;
 
@@ -517,7 +517,7 @@ void DuplaManager::SQLDBResponse(uint32_t _msg_id, pangya_db& _pangya_db, void* 
 		return;
 	}
 
-	// Por Hora s� sai, depois fa�o outro tipo de tratamento se precisar
+	// For now it just leaves, later I will do another kind of handling if needed
 	if (_pangya_db.getException().getCodeError() != 0) {
 		_smp::message_pool::getInstance().push(new message("[DuplaManager::SQLDBResponse][Error] " + _pangya_db.getException().getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		return;

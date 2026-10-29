@@ -1,4 +1,4 @@
-// Auth Server.cpp : Este arquivo contém a função 'main'. A execução do programa começa e termina ali.
+// Auth Server.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #if defined(_WIN32)
@@ -52,21 +52,21 @@ int main(int argc, char* argv[]) {
 #endif
 	) {
 
-		// Set o Prefixo do Auth Server no nome dos arquivos de log
+		// Set the Auth Server prefix in the log file names
 		_smp::message_pool::getInstance().setPrefixo("AS");
 
-		// Inicializa log Files
+		// Initialize log files
 		_smp::message_pool::getInstance().reload_log_files();
 
 		_smp::message_pool::getInstance().push(new message("[main][Log] change current directory to " + std::string(argv[2]), CL_FILE_LOG_AND_CONSOLE));
 	
-	}else // Inicializa Log files
+	}else // Initialize log files
 		_smp::message_pool::getInstance().reload_log_files();
     
 #if defined(_WIN32)
 	STDA_SET_SE_EXCEPTION;
 #elif defined(__linux__)
-	// Linux Gera sozinho o miniDump(Core em Unix/Linux)
+	// Linux generates the miniDump by itself (Core on Unix/Linux)
 	rlimit core_limit;
 	
 	core_limit.rlim_cur = RLIM_INFINITY; //0x400000; // 4Mib
@@ -85,7 +85,7 @@ int main(int argc, char* argv[]) {
 
 	SetProcessPriorityBoost(hProcess, 1);
 #elif defined(__linux__)
-	// set priority class e process priority no linux
+	// set priority class and process priority on linux
 	errno = 0;
 
 	int priority = getpriority(PRIO_PROCESS, 0);
@@ -101,7 +101,7 @@ int main(int argc, char* argv[]) {
 
 	if (priority > PRIO_MIN) {
 
-		// -2 se não -1 (menos é mais no Linux)
+		// -2 otherwise -1 (less is more on Linux)
 		priority -= 2;
 
 		if (priority > PRIO_MIN || ++priority > PRIO_MIN) {

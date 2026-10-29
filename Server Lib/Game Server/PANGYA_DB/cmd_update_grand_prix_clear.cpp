@@ -1,6 +1,6 @@
-// Arquivo cmd_update_grand_prix_clear.cpp
-// Criado em 14/06/2019 as 10:41 por Acrisio
-// Implementa��o da classe CmdUpdateGrandPrixClear
+// File cmd_update_grand_prix_clear.cpp
+// Created on 14/06/2019 at 10:41 by Acrisio
+// Implementation of class CmdUpdateGrandPrixClear
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateGrandPrixClear::~CmdUpdateGrandPrixClear() {
 
 void CmdUpdateGrandPrixClear::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

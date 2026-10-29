@@ -1,6 +1,6 @@
-// Arquivo cmd_premium_ticket_info.cpp
-// Criado em 24/03/2018 as 19:24 por Acrisio
-// Implementa��o da classe CmdPremiumTicketInfo
+// File cmd_premium_ticket_info.cpp
+// Created on 24/03/2018 at 19:24 by Acrisio
+// Implementation of the class CmdPremiumTicketInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

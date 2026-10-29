@@ -1,6 +1,6 @@
-// Arquivo smart_calculator_player.hpp
-// Criado em 21/11/2020 as 09:01 por Acrisio
-// Defini��o da clase SmartCalculatorPlayer
+// File smart_calculator_player.hpp
+// Created on 21/11/2020 at 09:01 by Acrisio
+// Definition of the class SmartCalculatorPlayer
 
 #pragma once
 #ifndef _STDA_SMART_CALCULATOR_PLAYER_HPP

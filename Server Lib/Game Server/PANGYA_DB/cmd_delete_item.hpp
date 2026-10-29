@@ -1,6 +1,6 @@
-// Arquivo cmd_delete_item.hpp
-// Criado em 31/05/2018 as 18:29 por Acrisio
-// Defini��o da classe CmdDeleteItem
+// File cmd_delete_item.hpp
+// Created on 31/05/2018 at 18:29 by Acrisio
+// Definition of the class CmdDeleteItem
 
 #pragma once
 #ifndef _STDA_CMD_DELETE_ITEM_HPP

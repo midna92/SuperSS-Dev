@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_command.cpp
-// Criado em 04/12/2018 as 03:56 por Acrisio
-// Implementa��o da classe CmdInsertCommand
+// File cmd_insert_command.cpp
+// Created on 04/12/2018 at 03:56 by Acrisio
+// Implementation of the class CmdInsertCommand
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -23,7 +23,7 @@ CmdInsertCommand::~CmdInsertCommand() {
 
 void CmdInsertCommand::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

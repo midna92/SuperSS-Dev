@@ -1,6 +1,6 @@
-// Arquivo room.h
-// Criado em 24/12/2017 por Acrisio
-// Definição da classe room
+// File room.h
+// Created on 24/12/2017 by Acrisio
+// Definition of the room class
 
 #pragma once
 #ifndef _STDA_ROOM_H
@@ -89,14 +89,14 @@ namespace stdA {
 			// Checks
 			bool checkPass(std::string _pass);
 
-			// Verifica se o Player tem um loja aberta no lounge e se o item está à venda nela
+			// Checks if the Player has an open shop in the lounge and if the item is for sale in it
 			bool checkPersonalShopItem(player& _session, int32_t _item_id);
 
 			// States
 			bool isLocked();
 			bool isFull();
-			bool isGaming();							// Já começou o jogo
-			bool isGamingBefore(uint32_t _uid);	// Já estava no jogo antes
+			bool isGaming();							// The game has already started
+			bool isGamingBefore(uint32_t _uid);	// Was already in the game before
 			bool isKickedPlayer(uint32_t _uid);
 
 			virtual bool isAllReady();
@@ -145,7 +145,7 @@ namespace stdA {
 			void requestFinishCharIntro(player& _session, packet *_packet);
 			void requestFinishHoleData(player& _session, packet *_packet);
 
-			// Server enviou a resposta do InitShot para o cliente
+			// Server sent the InitShot response to the client
 			void requestInitShotSended(player& _session, packet *_packet);
 
 			void requestInitShot(player& _session, packet *_packet);
@@ -222,8 +222,8 @@ namespace stdA {
 			// Smart Calculator Command
 			virtual bool execSmartCalculatorCmd(player& _session, std::string& _msg, eTYPE_CALCULATOR_CMD _type);
 
-			// Pede o Hole que o player está, 
-			// se eles estiver jogando ou 0 se ele não está jogando
+			// Asks for the Hole the player is on, 
+			// if they are playing, or 0 if he is not playing
 			unsigned char requestPlace(player& _session);
 
 			virtual void startGame(player& _session);
@@ -255,7 +255,7 @@ namespace stdA {
 			size_t findIndexSession(uint32_t _uid);
 
 			PlayerRoomInfoEx* makePlayerInfo(player& _session);
-			PlayerRoomInfoEx* makePlayerInvitedInfo(player& _session);	// Cria o Info do Player Convidado
+			PlayerRoomInfoEx* makePlayerInvitedInfo(player& _session);	// Create the Info of the Guest Player
 
 			void geraSecurityKey();
 
@@ -265,7 +265,7 @@ namespace stdA {
 			void updateMaster(player* _session);
 			void updateGuild(player& _session);
 
-			// Jogador Chutado da sala
+			// Player kicked from the room
 			void clear_player_kicked();
 			void addPlayerKicked(uint32_t _uid);
 
@@ -282,13 +282,13 @@ namespace stdA {
 			// Add Bot Tourney Visual to Room
 			void addBotVisual(player& _session);
 
-			// Para as classes filhas, empedir que exclua a sala dependendo do se tem player ou não na sala
+			// For the child classes, prevent the room from being deleted depending on whether there are players in the room or not
 			virtual bool isDropRoom();
 
-			// protected por que é o método unsave(inseguro), sem thread safe
+			// protected because it is the unsafe method, not thread safe
 			uint32_t _getRealNumPlayersWithoutInvited();
 
-			// protected por que é o método unsave(inseguro), sem thread safe
+			// protected because it is the unsafe method, not thread safe
 			bool _haveInvited();
 
         protected:
@@ -305,12 +305,12 @@ namespace stdA {
 			std::vector< InviteChannelInfo > v_invite;
 
 #if defined(_WIN32)
-			CRITICAL_SECTION m_lock_cs;		// Bloquea a sala
+			CRITICAL_SECTION m_lock_cs;		// Locks the room
 #elif defined(__linux__)
 			pthread_mutex_t m_lock_cs;
 #endif
 
-			int32_t m_lock_spin_state;			// Estado do spin(count) do bloquea da sala
+			int32_t m_lock_spin_state;			// State of the spin (count) of the room lock
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;
@@ -319,7 +319,7 @@ namespace stdA {
 #endif
 
 		protected:
-			// Room Tipo Lounge
+			// Lounge type Room
 			unsigned char m_weather_lounge;
 
 			void calcRainLounge();
@@ -327,9 +327,9 @@ namespace stdA {
         protected:
             RoomInfoEx m_ri;
 
-			unsigned char m_channel_owner;	// Id do Canal dono da sala
+			unsigned char m_channel_owner;	// Id of the Channel that owns the room
 
-			bool m_bot_tourney;		// Bot para começa o Modo tourney só com 1 jogador
+			bool m_bot_tourney;		// Bot to start Tourney mode with only 1 player
 
 			bool m_destroying;
 

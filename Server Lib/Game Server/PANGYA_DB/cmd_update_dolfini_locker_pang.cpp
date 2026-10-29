@@ -1,6 +1,6 @@
-// Arquivo cmd_update_dolfini_locker_pang.cpp
-// Criado em 02/06/2018 as 21:45 por Acrisio
-// Implementa��o da classe CmdUpdateDolfiniLockerPang
+// File cmd_update_dolfini_locker_pang.cpp
+// Created on 02/06/2018 at 21:45 by Acrisio
+// Implementation of class CmdUpdateDolfiniLockerPang
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -22,7 +22,7 @@ CmdUpdateDolfiniLockerPang::~CmdUpdateDolfiniLockerPang() {
 
 void CmdUpdateDolfiniLockerPang::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 }
 
 response* CmdUpdateDolfiniLockerPang::prepareConsulta(database& _db) {

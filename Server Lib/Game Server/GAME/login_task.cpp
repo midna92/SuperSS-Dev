@@ -1,6 +1,6 @@
-// Arquivo login_task.cpp
-// Criado em 01/05/2018 as 17:58 por Acrisio
-// Implementação da classe LoginTask
+// File login_task.cpp
+// Created on 01/05/2018 at 17:58 by Acrisio
+// Implementation of the LoginTask class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -48,7 +48,7 @@ void LoginTask::exec() {
 
 	//snmdb::NormalManagerDB::getInstance().add(0, new CmdPlayerInfo(m_pi.uid), LoginManager::SQLDBResponse, this);
 
-	// Troquei a parte de verificação inicial para o game server
+	// I moved the initial verification part to the game server
 	snmdb::NormalManagerDB::getInstance().add(2, new CmdUserEquip(m_pi.uid), LoginManager::SQLDBResponse, this);
 }
 
@@ -70,7 +70,7 @@ ClientVersion& LoginTask::getClientVersion() {
 
 void LoginTask::finishSessionInvalid() {
 
-	// Terminou a Tarefa, muda o estádo do task para finish
+	// Finished the Task, changes the task state to finish
 	m_finish = true;
 }
 
@@ -90,13 +90,13 @@ void LoginTask::sendFailLogin() {
 		_smp::message_pool::getInstance().push(new message("[LoginTask::sendFailLogin][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Terminou a Tarefa, muda o estádo do task para finish
+	// Finished the Task, changes the task state to finish
 	m_finish = true;
 }
 
 void LoginTask::sendCompleteData() {
 
-	// Verifica se a session ainda é valida, essas funções já é thread-safe
+	// Checks whether the session is still valid, these functions are already thread-safe
 	if (!m_session.isConnected() || !m_session.isCreated() || !m_session.getState()) {
 
 		_smp::message_pool::getInstance().push(new message("[LoginTask::sendCompleteData][Error] session is invalid.", CL_FILE_LOG_AND_CONSOLE));
@@ -112,20 +112,20 @@ void LoginTask::sendCompleteData() {
 		auto pi = &m_session.m_pi;
 		game_server* gs = nullptr;
 
-		// Check All Character All Item Equiped is on Warehouse Item of Player
+		// Check All Character All Item Equipped is on Warehouse Item of Player
 		for (auto& el : m_session.m_pi.mp_ce) {
 
-			// Check Parts of Character e Check Aux Part of Character
+			// Check Parts of Character and Check Aux Part of Character
 			m_session.checkCharacterAllItemEquiped(el.second);
 
 		}
 
-		// Check All Item Equiped
+		// Check All Item Equipped
 		m_session.checkAllItemEquiped(m_session.m_pi.ue);
 
 		GET_GS(m_gs, gs, "sendCompleteData");
 
-		// Envia todos pacotes aqui, alguns envia antes, por que agora estou usando o jeito o pangya original
+		// Sends all packets here, some are sent before, because now I am using the original pangya way
 		packet_func::pacote044(p, &m_session, gs->getInfo(), 0, pi);
 		packet_func::session_send(p, &m_session, 0);
 
@@ -147,7 +147,7 @@ void LoginTask::sendCompleteData() {
 		packet_func::session_send(p, &m_session, 0);
 
 		packet_func::pacote102(p, &m_session, pi);
-		packet_func::session_send(p, &m_session, 0);		// Pacote novo do JP, passa os coupons do Gacha JP
+		packet_func::session_send(p, &m_session, 0);		// New JP packet, passes the Gacha JP coupons
 
 		pi->mgr_achievement.sendCounterItemToPlayer(m_session);
 		pi->mgr_achievement.sendAchievementToPlayer(m_session);
@@ -156,7 +156,7 @@ void LoginTask::sendCompleteData() {
 		packet_func::session_send(p, &m_session, 0);
 
 		packet_func::pacote144(p, &m_session);
-		packet_func::session_send(p, &m_session, 0);		// Pacote novo do JP
+		packet_func::session_send(p, &m_session, 0);		// New JP packet
 
 		packet_func::pacote135(p, &m_session);
 		packet_func::session_send(p, &m_session, 0);
@@ -179,20 +179,20 @@ void LoginTask::sendCompleteData() {
 		packet_func::pacote096(p, &m_session, pi);
 		packet_func::session_send(p, &m_session, 0);
 
-		packet_func::pacote169(p, &m_session, pi->ti_current_season, 5/*season atual*/);
+		packet_func::pacote169(p, &m_session, pi->ti_current_season, 5/*current season*/);
 		packet_func::session_send(p, &m_session, 0);
 		packet_func::pacote169(p, &m_session, pi->ti_rest_season);
 		packet_func::session_send(p, &m_session, 0);
 
-		packet_func::pacote0B4(p, &m_session, pi->v_tsi_current_season, 5/*season atual*/);
+		packet_func::pacote0B4(p, &m_session, pi->v_tsi_current_season, 5/*current season*/);
 		packet_func::session_send(p, &m_session, 0);
 		packet_func::pacote0B4(p, &m_session, pi->v_tsi_rest_season);
 		packet_func::session_send(p, &m_session, 0);
 
 		packet_func::pacote158(p, &m_session, pi->uid, pi->ui, 0);
-		packet_func::session_send(p, &m_session, 0);	// Total de season, 5 atual season
+		packet_func::session_send(p, &m_session, 0);	// Total seasons, 5 current season
 
-		if (packet_func::pacote25D(p, &m_session, pi->v_tgp_current_season, 5/*season atual*/))
+		if (packet_func::pacote25D(p, &m_session, pi->v_tgp_current_season, 5/*current season*/))
 			packet_func::session_send(p, &m_session, 0);
 		if (packet_func::pacote25D(p, &m_session, pi->v_tgp_rest_season, 0))
 			packet_func::session_send(p, &m_session, 0);
@@ -206,7 +206,7 @@ void LoginTask::sendCompleteData() {
 
 		packet_func::session_send(p, &m_session, 1);
 
-		// Login Reward System - verifica se o player ganhou algum item por logar
+		// Login Reward System - checks whether the player won any item for logging in
 		if (sgs::gs::getInstance().getInfo().rate.login_reward_event)
 			sLoginRewardSystem::getInstance().checkRewardLoginAndSend(m_session);
 	
@@ -215,7 +215,7 @@ void LoginTask::sendCompleteData() {
 		_smp::message_pool::getInstance().push(new message("[LoginTask::sendCompleteData][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 	}
 
-	// Terminou a Tarefa, muda o estádo do task para finish
+	// Finished the Task, changes the task state to finish
 	m_finish = true;
 }
 

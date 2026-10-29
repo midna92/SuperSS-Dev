@@ -1,9 +1,9 @@
-// O bloco ifdef a seguir é a forma padrão de criar macros que tornam a exportação
-// de uma DLL mais simples. Todos os arquivos nessa DLL são compilados com GGAUTH701_EXPORTS
-// símbolo definido na linha de comando. Esse símbolo não deve ser definido em nenhum projeto
-// que usa esta DLL. Desse modo, qualquer projeto cujos arquivos de origem incluem este arquivo veem
-// Funções GGAUTH701_API como importadas de uma DLL, enquanto esta DLL vê símbolos
-// definidos com esta macro conforme são exportados.
+// The following ifdef block is the standard way of creating macros that make exporting
+// from a DLL simpler. All files in this DLL are compiled with GGAUTH701_EXPORTS
+// symbol defined on the command line. This symbol should not be defined in any project
+// that uses this DLL. This way, any project whose source files include this file sees
+// GGAUTH701_API functions as imported from a DLL, while this DLL sees symbols
+// defined with this macro as being exported.
 #if defined(_WIN32)
     #ifdef GGAUTH701_EXPORTS
         #define GGAUTH701_API __declspec(dllexport)

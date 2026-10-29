@@ -1,6 +1,6 @@
-// Arquivo pangya_db.cpp
-// Criado em 25/12/2017 por Acrisio
-// Implementação da classe pangya_db
+// File pangya_db.cpp
+// Created on 25/12/2017 by Acrisio
+// Implementation of class pangya_db
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,13 +21,13 @@
 
 using namespace stdA;
 
-// Teste call db cmd log
+// Test call db cmd log
 #ifdef _DEBUG
 #define _TESTCMD_LOG 0
 #endif
 
 #if defined(_WIN32) && (_TESTCMD_LOG == 1)
-// !@ Teste
+// !@ Test
 #include <fstream>
 #include <map>
 
@@ -120,7 +120,7 @@ private:
 	const char url_log[30] = "H:/Server Lib/call_db_cmd.log";
 };
 
-// !@ Teste
+// !@ Test
 bool logExecuteCmds(std::string _name) {
 
 	static call_db_cmd_st cdcs;
@@ -149,7 +149,7 @@ bool logExecuteCmds(std::string _name) {
 
 	return false;
 }
-// !@ Teste
+// !@ Test
 #endif
 
 list_fifo_asyc< exec_query > pangya_db::m_query_pool;
@@ -211,7 +211,7 @@ inline void pangya_db::exec(database& _db) {
 					for (auto _result = r->getResultSetAt(num_result)->getFirstLine(); _result != nullptr; _result = _result->next) {
 						lineResult(_result, num_result);
 					}
-				}// só faz esse else se for mandar uma exception
+				}// only goes into this else if an exception is to be thrown
 
 				clear_result(r->getResultSetAt(num_result));
 			}
@@ -230,7 +230,7 @@ inline void pangya_db::exec(database& _db) {
     }
 
 #if defined(_WIN32) && (_TESTCMD_LOG == 1)
-	// !@ Teste
+	// !@ Test
 	if (logExecuteCmds(_getName()))
 		_smp::message_pool::getInstance().push(new message("[pangya_db::" + _getName() + "::exec][Log] Executado. ------------------->>", CL_FILE_LOG_AND_CONSOLE));
 #endif
@@ -356,7 +356,7 @@ inline void pangya_db::postAndWaitResponseQuery(exec_query& _query) {
         }catch (exception& e) {
             if (STDA_SOURCE_ERROR_DECODE(e.getCodeError()) == STDA_ERROR_TYPE::EXEC_QUERY) {
                 if (STDA_ERROR_DECODE(e.getCodeError()) == 7 && wait == INFINITE) {
-                    wait = 1000;    // Espera um segundo se não for da próxima dá error
+                    wait = 1000;    // Wait one second, if not, next time it'll give an error
                     continue;
                 }
 

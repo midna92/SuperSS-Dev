@@ -1,6 +1,6 @@
-// Arquivo cmd_tutorial_info.hpp
-// Criado em 18/03/2018 as 22:18 por Acrisio
-// Defini��o da classe CmdTutorialInfo
+// File cmd_tutorial_info.hpp
+// Created on 18/03/2018 at 22:18 by Acrisio
+// Definition of the class CmdTutorialInfo
 
 #pragma once
 #ifndef _STDA_CMD_TUTORIAL_INFO_HPP

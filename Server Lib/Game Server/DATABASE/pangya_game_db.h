@@ -1,6 +1,6 @@
-// Arquivo pangya_game_db.h
-// Criado em 13/08/2017 por Acrisio
-// Definição da classe pangya_db para o Game Server
+// File pangya_game_db.h
+// Created on 13/08/2017 by Acrisio
+// Definition of the pangya_db class for the Game Server
 
 #pragma once
 #ifndef _STDA_PANGYA_GAME_DB_H
@@ -21,9 +21,9 @@ namespace stdA {
 
 			static player_info getPlayerInfo(int32_t uid);
 			static std::string getAuthKey(int32_t uid);
-			// Esse auth Key Login, depois tem que mexer no DB para precisar do UID do server que vai entrar
-			// porque o pangya sempre passa o uid do server quando pede ele, "esse deve ser o authkey championship que estava
-			// no dump do server 4.9 original"
+			// This auth Key Login, later the DB must be changed to need the UID of the server being entered
+			// because pangya always passes the server uid when it asks for it, "this should be the authkey championship that was
+			// in the dump of the original 4.9 server"
 			static std::string getAuthKeyLogin(int32_t uid);
 			static MemberInfoEx getMemberInfo(int32_t uid);
 			static UserInfo getUserInfo(int32_t uid);

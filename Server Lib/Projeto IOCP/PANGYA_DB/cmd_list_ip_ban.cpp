@@ -1,6 +1,6 @@
-// Arquivo cmd_list_ip_ban.cpp
-// Criado em 30/03/2018 as 10:39 por Acrisio
-// Implementa��o da classe CmdListIPBan
+// File cmd_list_ip_ban.cpp
+// Created on 30/03/2018 at 10:39 by Acrisio
+// Implementation of class CmdListIPBan
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -38,12 +38,12 @@ void CmdListIPBan::lineResult(result_set::ctx_res* _result, uint32_t /*_index_re
 	if (is_valid_c_string(_result->data[1]))
 		mask = _result->data[1];
 
-	// Verifica se � um IP RANGE
+	// Check whether it is an IP RANGE
 	if ((offset = ip.find('/')) == std::string::npos && ip.size() > 15)
 		return;
 	else {
 
-		// Range IP
+		// IP Range
 		if (offset != std::string::npos) {
 			
 			pb.type = IPBan::_TYPE::IP_BLOCK_RANGE;
@@ -57,14 +57,14 @@ void CmdListIPBan::lineResult(result_set::ctx_res* _result, uint32_t /*_index_re
 		
 		}else {
 
-			// IP Normal
+			// Normal IP
 			error = inet_pton(AF_INET, ip.c_str(), &pb.ip);
 
 			error = inet_pton(AF_INET, mask.c_str(), &pb.mask);
 		}
 	}
 
-	// Error 1 Success tem um ip e mask v�lida
+	// Error 1 Success has a valid ip and mask
 	if (error == 1) {
 
 		pb.ip = ntohl(pb.ip);

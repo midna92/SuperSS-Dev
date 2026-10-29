@@ -1,6 +1,6 @@
-// Arquivo memorial_type.hpp
-// Criado em 21/07/2018 as 18:54 por Acrisio
-// Definição dos tipos utilizados pela classe MemorialSystem
+// File memorial_type.hpp
+// Created on 21/07/2018 at 18:54 by Acrisio
+// Definition of the types used by class MemorialSystem
 
 #pragma once
 #ifndef _STDA_MEMORIAL_TYPE_HPP
@@ -73,7 +73,7 @@ namespace stdA {
 	struct ctx_memorial_level {
 		void clear() { memset(this, 0, sizeof(ctx_memorial_level)); };
 		uint32_t level;		// Level
-		uint32_t gacha_number;	// número máximo do gacha
+		uint32_t gacha_number;	// maximum number of the gacha
 	};
 
 	struct ctx_coin_set_item {
@@ -94,7 +94,7 @@ namespace stdA {
 		};
 		int32_t flag;
 		uint32_t _typeid;
-		unsigned char tipo : 1, : 0;		// Tipo 0 e 1, 1 Premium e 0 todos os outros
+		unsigned char tipo : 1, : 0;		// Type 0 and 1, 1 Premium and 0 all the others
 		std::vector< ctx_coin_item_ex > item;
 	};
 

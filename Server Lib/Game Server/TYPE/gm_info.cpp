@@ -1,6 +1,6 @@
-// Arquivo gm_info.cpp
-// Criado em 28/07/2018 as 16:41 por Acrisio
-// Implementa��o da classe GMInfo
+// File gm_info.cpp
+// Created on 28/07/2018 at 16:41 by Acrisio
+// Implementation of class GMInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -13,7 +13,7 @@
 
 using namespace stdA;
 
-GMInfo::GMInfo() : m_uid(0u), visible(0u), /*Deixa o GM invis�vel, depois ele fica vis�vel se ele quiser com o comando*/ whisper(1u), channel(0u) {
+GMInfo::GMInfo() : m_uid(0u), visible(0u), /*Makes the GM invisible, later he becomes visible if he wants with the command*/ whisper(1u), channel(0u) {
 	
 #if defined(_WIN32)
 	InitializeCriticalSection(&m_cs);
@@ -38,7 +38,7 @@ void GMInfo::clear() {
 
 	m_uid = 0u;
 
-	visible = 0u;	/*Deixa o GM invis�vel, depois ele fica vis�vel se ele quiser com o comando*/
+	visible = 0u;	/*Makes the GM invisible, later he becomes visible if he wants with the command*/
 	whisper = 1u;
 	channel = 0u;
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_pcl.hpp
-// Criado em 16/06/2018 as 19:22 por Acrisio
-// Defini��o da classe CmdUpdateCharacterPCL
+// File cmd_update_character_pcl.hpp
+// Created on 16/06/2018 at 19:22 by Acrisio
+// Definition of class CmdUpdateCharacterPCL
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHARACTER_PCL_HPP

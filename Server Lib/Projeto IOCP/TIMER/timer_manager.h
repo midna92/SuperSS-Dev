@@ -1,6 +1,6 @@
-// Arquivo timer_manager.h
-// Criado em 01/01/2018 por Acrisio
-// Definição da classe timer_manager
+// File timer_manager.h
+// Created on 01/01/2018 by Acrisio
+// Definition of class timer_manager
 
 #pragma once
 #ifndef _STD_TIMER_MANAGER_H
@@ -32,7 +32,7 @@ namespace stdA {
 
 		protected:
 #if defined(_WIN32)
-			HANDLE m_hTimerQueue;			// Fila de Timer
+			HANDLE m_hTimerQueue;			// Timer Queue
 			HANDLE m_event;					// check event end
 #elif defined(__linux__)
 			QueueTimer* m_hTimerQueue;

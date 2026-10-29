@@ -1,6 +1,6 @@
-// Arquivo packet_func_ms.hpp
-// Criado em 29/07/2018 as 14:29 por Acrisio
-// Defini��o da classe packet_func para o Message Server
+// File packet_func_ms.hpp
+// Created on 29/07/2018 at 14:29 by Acrisio
+// Definition of class packet_func for the Message Server
 
 #pragma once
 #ifndef _STDA_PACKET_FUNC_MS_HPP
@@ -41,8 +41,8 @@ namespace stdA {
 		public:
 			// Cliente
 			static int packet012(void* _arg1, void* _arg2);	// Request Login
-			static int packet013(void* _arg1, void* _arg2);	// N�o sei o que � ainda
-			static int packet014(void* _arg1, void* _arg2);	// Request List de Amigos e Membros da Guild se tiver em uma guild
+			static int packet013(void* _arg1, void* _arg2);	// Don't know what this is yet
+			static int packet014(void* _arg1, void* _arg2);	// Request list of Friends and Guild Members if in a guild
 			static int packet016(void* _arg1, void* _arg2);	// Request Update Player Logout
 			static int packet017(void* _arg1, void* _arg2);	// Request Verify Nickname
 			static int packet018(void* _arg1, void* _arg2);	// Request Add Friend
@@ -57,7 +57,7 @@ namespace stdA {
 			static int packet024(void* _arg1, void* _arg2);	// Request Invite player to room
 			static int packet025(void* _arg1, void* _arg2);	// Request Chat Guild
 			static int packet028(void* _arg1, void* _arg2);	// Request Invite player to Room Guild Battle
-			static int packet029(void* _arg1, void* _arg2);	// N�o sei o que � ainda
+			static int packet029(void* _arg1, void* _arg2);	// Don't know what this is yet
 			static int packet02A(void* _arg1, void* _arg2);	// Request send to all members of guild that player is accepted on guild
 			static int packet02B(void* _arg1, void* _arg2);	// Request send to all members of guild that player is kicked from guild
 			static int packet02C(void* _arg1, void* _arg2); // Request Change image guild (guild_mark)

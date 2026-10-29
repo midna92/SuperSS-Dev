@@ -1,6 +1,6 @@
-// Arquivo wsa.h
-// Criado em 01/05/2017 por Acrisio
-// Definição da classe wsa
+// File wsa.h
+// Created on 01/05/2017 by Acrisio
+// Definition of class wsa
 
 #pragma once
 #ifndef _STDA_WSA_H_

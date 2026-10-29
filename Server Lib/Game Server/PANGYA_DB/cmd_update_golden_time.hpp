@@ -1,6 +1,6 @@
-// Arquivo cmd_update_golden_time.hpp
-// Criado em 24/10/2020 as 03:25 por Acrisio
-// Deifini��o da classe CmdUpdateGoldenTime
+// File cmd_update_golden_time.hpp
+// Created on 24/10/2020 at 03:25 by Acrisio
+// Definition of class CmdUpdateGoldenTime
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_GOLDEN_TIME_HPP

@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_ticker.hpp
-// Criado em 04/12/2018 as 01:38 por Acrisio
-// Defini��o da classe CmdInsertTicker
+// File cmd_insert_ticker.hpp
+// Created on 04/12/2018 at 01:38 by Acrisio
+// Definition of the class CmdInsertTicker
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_TICKER_HPP

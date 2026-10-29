@@ -1,6 +1,6 @@
-// Arquivo cmd_update_ucc.hpp
-// Criado em 14/07/2018 as 20:009 por Acrisio
-// Defini��o da classe CmdUpdateUCC
+// File cmd_update_ucc.hpp
+// Created on 14/07/2018 at 20:009 by Acrisio
+// Definition of class CmdUpdateUCC
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_UCC_HPP

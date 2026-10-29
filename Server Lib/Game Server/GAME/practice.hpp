@@ -1,6 +1,6 @@
-// Arquivo pratice.hpp
-// Criado em 18/08/2018 as 15:23 por Acrisio
-// Defini��o da classe Practice
+// File pratice.hpp
+// Created on 18/08/2018 at 15:23 by Acrisio
+// Definition of the Practice class
 
 #pragma once
 #ifndef _STDA_PRACTICE_HPP
@@ -14,7 +14,7 @@ namespace stdA {
 			Practice(std::vector< player* >& _players, RoomInfoEx& _ri, RateValue _rv, unsigned char _channel_rookie);
 			virtual ~Practice();
 
-			// Met�dos do Game->Course->Hole
+			// Methods of Game->Course->Hole
 			virtual void changeHole(player& _session) override;
 			virtual void finishHole(player& _session) override;
 
@@ -26,7 +26,7 @@ namespace stdA {
 
 			virtual void requestChangeWindNextHoleRepeat(player& _session, packet *_packet) override;
 
-			// Tempo
+			// Time
 			/*virtual void startTime();
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -34,7 +34,7 @@ namespace stdA {
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initializes Game and Finishes Game
 			virtual bool init_game() override;
 
 			virtual void requestReplySyncShotData(player& _session) override;
@@ -47,13 +47,13 @@ namespace stdA {
 
 			virtual void requestFinishData(player& _session);
 
-			// Verifica se � a ultima tacada do hole, para passar para o proximo hole
+			// Checks whether it is the last shot of the hole, to move on to the next hole
 			virtual int checkEndShotOfHole(player& _session);
 
-			// request calcule shot spinning cube - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot spinning cube - It is implemented in the classes that will use it
 			virtual void requestCalculeShotSpinningCube(player& _session, ShotSyncData& _ssd) override;
 
-			// request calcule shot coin - Ele � implementado nas classes que v�o usar ele
+			// request calculate shot coin - It is implemented in the classes that will use it
 			virtual void requestCalculeShotCoin(player& _session, ShotSyncData& _ssd) override;
 
 		public:

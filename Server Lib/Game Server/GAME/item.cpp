@@ -1,6 +1,6 @@
-// Arquivo item.cpp
-// Criado em 24/02/2018 as 19:12 por Acrisio
-// Implementação da classe item
+// File item.cpp
+// Created on 24/02/2018 at 19:12 by Acrisio
+// Implementation of class item
 
 #if defined(_WIN32)
 #pragma pack(1)

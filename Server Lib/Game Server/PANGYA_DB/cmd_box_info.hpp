@@ -1,6 +1,6 @@
-// Arquivo cmd_box_info.hpp
-// Criado em 15/07/2018 as 21:57 por Acrisio
-// Defini��o da classe CmdBoxInfo
+// File cmd_box_info.hpp
+// Created on 15/07/2018 at 21:57 by Acrisio
+// Definition of the class CmdBoxInfo
 
 #pragma once
 #ifndef _STDA_BOX_INFO_HPP

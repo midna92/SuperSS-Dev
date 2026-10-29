@@ -1,6 +1,6 @@
-// Arquivo player_manager.cpp
-// Criado em 11/03/2018 as 14:21 por Acrisio
-// Implementação da classe player_manager
+// File player_manager.cpp
+// Created on 11/03/2018 at 14:21 by Acrisio
+// Implementation of the player_manager class
 
 #if defined(_WIN32)
 #pragma pack(1)

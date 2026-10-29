@@ -1,6 +1,6 @@
-// Arquivo gg_srv_lib_type.hpp
-// Criado em 29/03/2022 as 13:16 por Acrisio
-// Definição dos tipos usados no GameGuard Server Auth Lib
+// File gg_srv_lib_type.hpp
+// Created on 29/03/2022 at 13:16 by Acrisio
+// Definition of the types used in the GameGuard Server Auth Lib
 
 #pragma once
 #ifndef _GG_SRV_LIB_TYPE_HPP
@@ -39,7 +39,7 @@ constexpr char gSTATE_STANDBY[] = "STANDBY";
 constexpr char gSTATE_DISUSE[] = "DISUSE";
 
 #if defined(_WIN32)
-// Pack padr�o
+// Default pack
 #pragma pack(push, ggsrv)
 #pragma pack( )
 #endif
@@ -92,7 +92,7 @@ struct _GG_VERSION_UPDATE {
 };
 
 struct _GG_VERSION_UPDATE_CTX {
-	bool m_bCountStart;	// true j� foi inicializado
+	bool m_bCountStart;	// true if already initialized
 	DWORD m_CountStart;
 	_GG_VERSION_UPDATE m_Table[5];
 };
@@ -129,7 +129,7 @@ struct _GG_AUTH_CTX {
 static _GG_AUTH_CTX gGGAuthCtx;
 
 #if defined(_WIN32)
-// Pop Pack padr�o
+// Pop default pack
 #pragma pack(pop, ggsrv)
 #endif
 

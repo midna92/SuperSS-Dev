@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_ticket_report.cpp
-// Criado em 22/09/2018 as 16:52 por Acrisio
-// Implementa��o da classe CmdInsertTicketReport
+// File cmd_insert_ticket_report.cpp
+// Created on 22/09/2018 at 16:52 by Acrisio
+// Implementation of the class CmdInsertTicketReport
 
 #if defined(_WIN32)
 #pragma pack(1)

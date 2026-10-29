@@ -1,6 +1,6 @@
-// Arquivo cmd_save_nick.cpp
-// Criado em 01/04/2018 as 14:02 por Acrisio
-// Implementa��o da classe CmdSaveNick
+// File cmd_save_nick.cpp
+// Created on 01/04/2018 at 14:02 by Acrisio
+// Implementation of class CmdSaveNick
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -27,7 +27,7 @@ CmdSaveNick::~CmdSaveNick() {
 
 void CmdSaveNick::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it's an UPDATE
 	return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_find_card.hpp
-// Criado em 22/05/2018 as 23:06 por Acrisio
-// Defini��o da classe CmdFindCard
+// File cmd_find_card.hpp
+// Created on 22/05/2018 at 23:06 by Acrisio
+// Definition of the class CmdFindCard
 
 #pragma once
 #ifndef _STDA_CMD_FIND_CARD_HPP

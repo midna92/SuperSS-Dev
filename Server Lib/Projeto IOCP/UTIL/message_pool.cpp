@@ -1,6 +1,6 @@
-// Arquivo message_pool.cpp
-// Criado em 21/05/2017 por Acrisio
-// Implementação da classe message_pool
+// File message_pool.cpp
+// Created on 21/05/2017 by Acrisio
+// Implementation of the class message_pool
 
 #if defined(_WIN32)
 #pragma pack(1)

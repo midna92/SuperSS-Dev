@@ -1,6 +1,6 @@
-// Arquivo coin_cube_type.hpp
-// Criado em 16/10/2020 as 21:00 por Acrisio
-// Defini��o dos tipos usados no coin cube system
+// File coin_cube_type.hpp
+// Created on 16/10/2020 at 21:00 by Acrisio
+// Definition of the types used in the coin cube system
 
 #pragma once
 #ifndef _STDA_COIN_CUBE_TYPE_HPP

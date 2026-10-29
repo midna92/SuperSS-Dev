@@ -1,6 +1,6 @@
-// Arquivo cmd_update_character_mastery.hpp
-// Criado em 17/06/2018 as 11:10 por Acrisio
-// Defini��o da classe CmdUpdateCharacterMastery
+// File cmd_update_character_mastery.hpp
+// Created on 17/06/2018 at 11:10 by Acrisio
+// Definition of class CmdUpdateCharacterMastery
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_CHARACTER_MASTERY_HPP

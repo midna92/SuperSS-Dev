@@ -1,6 +1,6 @@
-// Arquivo stdAType.h
-// Criado em 04/06/2017 por Acrisio
-// Definição dos tipos utilizado no projeto
+// File stdAType.h
+// Created on 04/06/2017 by Acrisio
+// Definition of the types used in the project
 
 #pragma once
 #ifndef STDA_STDATYPE_H

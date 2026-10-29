@@ -1,6 +1,6 @@
-// Arquivo room_bot_gm_event.cpp
-// Criado em 02/11/2020 as 01:37 por Acrisio
-// Implementa��o da classe RoomBotGMEvent
+// File room_bot_gm_event.cpp
+// Created on 02/11/2020 at 01:37 by Acrisio
+// Implementation of the RoomBotGMEvent class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -49,13 +49,13 @@ RoomBotGMEvent::RoomBotGMEvent(unsigned char _channel_owner, RoomInfoEx _ri, std
 #endif
 	m_timer_count_down(nullptr) {
 
-	// Coloca a inst�ncia da classe que acabou de criar no vector statico
+	// Puts the instance of the class that was just created in the static vector
 	push_instancia(this);
 
-	// Data que a sala foi criada
+	// Date the room was created
 	GetLocalTime(&m_create_room);
 
-	// Cria evento que vai para a thread wait time start
+	// Creates event that goes to the wait time start thread
 #if defined(_WIN32)
 	if ((m_hEvent_wait_start = CreateEvent(NULL, TRUE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[RoomBotGMEvent::RoomBotGMEvent][Error] ao criar evento wait time start.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_BOT_GM_EVENT, 1050, GetLastError()));
@@ -73,7 +73,7 @@ RoomBotGMEvent::RoomBotGMEvent(unsigned char _channel_owner, RoomInfoEx _ri, std
 	}
 #endif
 
-	// Cria evento que vai pulsar a thread wait time start para ir mais r�pido quando um player entrar o sair da sala
+	// Creates event that will pulse the wait time start thread to go faster when a player enters or leaves the room
 #if defined(_WIN32)
 	if ((m_hEvent_wait_start_pulse = CreateEvent(NULL, FALSE, FALSE, NULL)) == INVALID_HANDLE_VALUE)
 		throw exception("[RoomBotGMEvent::RoomBotGMEvent][Error] ao criar evento wait time start pulse.", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_BOT_GM_EVENT, 1050, GetLastError()));
@@ -91,10 +91,10 @@ RoomBotGMEvent::RoomBotGMEvent(unsigned char _channel_owner, RoomInfoEx _ri, std
 	}
 #endif
 
-	// Cria a thread que vai sincronizar o tempo de come�a o Bot GM Event
+	// Creates the thread that will synchronize the time to start the Bot GM Event
 	m_wait_time_start = new thread(1063/*Wait Time Start*/, RoomBotGMEvent::_waitTimeStart, (LPVOID)this);
 
-	// Coloca o trofeu
+	// Puts the trophy
 	m_ri.flag_gm = 1;
 
 	m_ri.state_flag = 0x100;
@@ -114,7 +114,7 @@ RoomBotGMEvent::~RoomBotGMEvent() {
 	// Finish Thread Sync wait time start
 	finish_thread_sync_wait_time_start();
 
-	// Tira a inst�ncia da classe do vector statico, por que a sala vai ser destruida
+	// Removes the class instance from the static vector, because the room will be destroyed
 	pop_instancia(this);
 }
 
@@ -124,9 +124,9 @@ eROOM_CLASS_TYPE RoomBotGMEvent::getClassType() {
 
 bool RoomBotGMEvent::isAllReady() {
 	
-	// é sempre true porque quem começa o jogo nessa sala é sempre o server
-	// O cliente da erro na hora de começar se tiver convidado na sala
-	// então verifica se não tem nenhum convidado na sala
+	// is always true because whoever starts the game in this room is always the server
+	// The client errors out when starting if there is a guest in the room
+	// so check that there is no guest in the room
 	return !_haveInvited();
 }
 
@@ -138,13 +138,13 @@ bool RoomBotGMEvent::startGame() {
 
 	try {
 
-		// Verifica se j� tem um jogo inicializado e lan�a error se tiver, para o cliente receber uma resposta
+		// Checks if a game is already initialized and throws an error if so, so the client receives a response
 		if (m_pGame != nullptr)
 			throw exception("[RoomBotGMEvent::startGame][Error] Server tentou comecar o jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + "], mas ja tem um jogo inicializado. Hacker ou Bug", 
 					STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_BOT_GM_EVENT, 8, 0x5900202));
 
-		// Verifica se todos est�o prontos se n�o da erro
+		// Checks if everyone is ready, otherwise errors
 		if (!isAllReady())
 			throw exception("[RoomBotGMEvent::startGame][Error] Server tentou comecar o jogo na sala[NUMERO=" 
 					+ std::to_string(m_ri.numero) + ", MASTER=" + std::to_string(m_ri.master) 
@@ -157,7 +157,7 @@ bool RoomBotGMEvent::startGame() {
 
 				m_ri.course = RoomInfo::eCOURSE(0x80 | RoomInfo::eCOURSE::CHRONICLE_1_CHAOS/*SPECIAL SHUFFLE COURSE*/);
 
-			}else {	// Random normal
+			}else {	// Normal random
 
 				Lottery lottery((uint64_t)this);
 
@@ -188,7 +188,7 @@ bool RoomBotGMEvent::startGame() {
 		rv.rain = sgs::gs::getInstance().getInfo().rate.chuva;
 		rv.treasure = sgs::gs::getInstance().getInfo().rate.treasure;
 
-		rv.persist_rain = 0u;	// Persist rain flag isso � feito na classe game
+		rv.persist_rain = 0u;	// Persist rain flag, this is done in the game class
 
 		switch (m_ri.tipo) {
 		case RoomInfo::TIPO::TOURNEY:
@@ -200,7 +200,7 @@ bool RoomBotGMEvent::startGame() {
 					+ "], mas o tipo da sala nao eh Tourney. Hacker ou Bug", STDA_MAKE_ERROR(STDA_ERROR_TYPE::ROOM_BOT_GM_EVENT, 9, 0x5900202));
 		}
 
-		// Verifica se tem s� 1 player na sala, se tiver cria um Bot para o player poder jogar
+		// Checks if there is only 1 player in the room, if so creates a Bot so the player can play
 		if (v_sessions.size() == 1u)
 			addBotVisual(*v_sessions.front());
 
@@ -223,14 +223,14 @@ bool RoomBotGMEvent::startGame() {
 
 		packet_func::room_broadcast(*this, p, 1);
 
-		// Coloca para o thread que cria o tempo sspera o jogo acabar
+		// Makes the thread that creates the timer wait for the game to end
 		m_state_rbge.setStateWithLock(eSTATE_ROOM_BOT_GM_EVENT_SYNC::WAIT_END_GAME);
 
 	}catch (exception& e) {
 
 		_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::startGame][Error] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 
-		ret = false;	// Error ao inicializar o Jogo
+		ret = false;	// Error initializing the Game
 	}
 
 	return ret;
@@ -272,11 +272,11 @@ void* RoomBotGMEvent::waitTimeStart() {
 #if defined(_WIN32)
 		HANDLE wait_events[2] = { m_hEvent_wait_start, m_hEvent_wait_start_pulse };
 
-		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = WaitForMultipleObjects((sizeof(wait_events) / sizeof(wait_events[0])), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #elif defined(__linux__)
 		std::vector< Event* > wait_events = { m_hEvent_wait_start, m_hEvent_wait_start_pulse };
 
-		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 segundo*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
+		while ((retWait = Event::waitMultipleEvent(wait_events.size(), wait_events, false, 1000/*1 second*/)) == WAIT_TIMEOUT || retWait == (WAIT_OBJECT_0 + 1)) {
 #endif
 
 			try {
@@ -289,29 +289,29 @@ void* RoomBotGMEvent::waitTimeStart() {
 
 						if (m_timer_count_down == nullptr) {
 
-							// Ele tenta começar se não tiver ninguém na sala ele destroi ela
+							// It tries to start, if there is nobody in the room it destroys it
 							if ((getLocalTimeDiff(m_create_room) / STDA_10_MICRO_PER_MIN) >= 2 /*&& v_sessions.size() > 0*/) {
 
-								count_down(10); // 10 segundos
+								count_down(10); // 10 seconds
 
 								m_state_rbge.setState(eSTATE_ROOM_BOT_GM_EVENT_SYNC::WAIT_10_SECONDS_START);
 
 							}else if (_getRealNumPlayersWithoutInvited() == m_ri.max_player) {
 
-								// A sala atingiu o n�mero m�ximo de player
-								// Come�a o Bot GM Event em 10 segundos
+								// The room reached the maximum number of players
+								// Starts the Bot GM Event in 10 seconds
 								packet p((unsigned short)0x40);
 
-								p.addUint8(12);	// Msg de o m�ximo de players na sala
+								p.addUint8(12);	// Msg that the room reached the maximum players
 
 								p.addUint16(0u);	// Nickname empty
 								p.addUint16(0u);	// Msg Empty
 
-								p.addUint32(10u);	// 10 segundos para come�ar o Bot GM Event
+								p.addUint32(10u);	// 10 seconds to start the Bot GM Event
 
 								packet_func::room_broadcast(*this, p, 1);
 
-								count_down(10); // 10 segundos
+								count_down(10); // 10 seconds
 
 								m_state_rbge.setState(eSTATE_ROOM_BOT_GM_EVENT_SYNC::WAIT_10_SECONDS_START);
 							}
@@ -321,23 +321,23 @@ void* RoomBotGMEvent::waitTimeStart() {
 					}
 					case eSTATE_ROOM_BOT_GM_EVENT_SYNC::WAIT_10_SECONDS_START:
 					{
-						// Aqui deixa acabar o tempo e fecha a sala se não tiver ninguém nela
-						// Faz nada
+						// Here it lets the time run out and closes the room if nobody is in it
+						// Does nothing
 						break;
 					}
 					case eSTATE_ROOM_BOT_GM_EVENT_SYNC::WAIT_END_GAME:
 					{
-						// Faz nada
+						// Does nothing
 						break;
 					}
 				}
 
-				// Libera
+				// Release
 				m_state_rbge.unlock();
 
 			}catch (exception& e) {
 
-				// Libera
+				// Release
 				m_state_rbge.unlock();
 
 				_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::waitTimeStart][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -374,7 +374,7 @@ int RoomBotGMEvent::_count_down_time(void* _arg1, void* _arg2) {
 
 		if (rbge != nullptr && instancia_valid(rbge))
 			if (rbge->count_down(sec_to_start))
-				sgs::gs::getInstance().destroyRoom(rbge->m_channel_owner, rbge->m_ri.numero); // Destroi a sala, se não tem players, ou não conseguiu inicializar
+				sgs::gs::getInstance().destroyRoom(rbge->m_channel_owner, rbge->m_ri.numero); // Destroys the room, if there are no players, or it could not initialize
 
 	}catch (exception& e) {
 
@@ -390,23 +390,23 @@ int RoomBotGMEvent::count_down(int64_t _sec_to_start) {
 
 	try {
 
-		// Bloquea a sala para não dá erro de conflito
+		// Locks the room to avoid a conflict error
 		lock();
 
-		if (_sec_to_start <= 0) {	// Começa o jogo
+		if (_sec_to_start <= 0) {	// Starts the game
 			
-			// excluí o timer se ele ainda existir
+			// deletes the timer if it still exists
 			clear_timer_count_down();
 
-			// Começa o jogo se tem pelo menos 1 jogador na sala
+			// Starts the game if there is at least 1 player in the room
 			if (v_sessions.size() >= 1 && startGame())
 				sgs::gs::getInstance().sendUpdateRoomInfo(this, 3); // Update Room Info
 			else if (v_sessions.size() >= 1)
-				// Coloca para começar espera o tempo de começar o jogo de novo, por que não conseguiu criar a sala
-				// Pode ter convidado na sala, aí não pode iniciar o jogo por que o cliente trava
+				// Sets it to wait for the game start time again, because it could not create the room
+				// There may be a guest in the room, then the game cannot start because the client freezes
 				count_down(10);
 			else
-				ret = 1; // Destroi a sala
+				ret = 1; // Destroys the room
 
 		}else {
 
@@ -418,56 +418,56 @@ int RoomBotGMEvent::count_down(int64_t _sec_to_start) {
 			DWORD interval = 0u;
 			float diff = 0.f;
 
-			int32_t elapsed_sec = (m_timer_count_down != nullptr) ? (int)std::round(m_timer_count_down->getElapsed() / 1000.f)/*Mili para segundos*/ : 0;
+			int32_t elapsed_sec = (m_timer_count_down != nullptr) ? (int)std::round(m_timer_count_down->getElapsed() / 1000.f)/*Milli to seconds*/ : 0;
 
 			_sec_to_start -= elapsed_sec;
 
-			if ((diff = ((_sec_to_start - 10/*10 segundos*/) / 30.f/* 30 segundos*/)) >= 1.f) {	// Intervalo de 30 segundos
+			if ((diff = ((_sec_to_start - 10/*10 seconds*/) / 30.f/* 30 seconds*/)) >= 1.f) {	// Interval of 30 seconds
 
 				if ((_sec_to_start % 30) == 0) {
 					
-					// Intervalo
-					interval = 30 * 1000;	// 30 segundos
+					// Interval
+					interval = 30 * 1000;	// 30 seconds
 
-					wait = interval * (int)diff;	// 30 * diff minutos em milisegundos
+					wait = interval * (int)diff;	// 30 * diff minutes in milliseconds
 				
 				}else {
 
-					// Corrige o tempo para ficar no intervalo certo
+					// Corrects the time to stay in the right interval
 					wait = interval = (_sec_to_start % 30) * 1000;
 				
 				}
 
-			}else if ((diff = ((_sec_to_start - 1/*1 segundo*/) / 10.f/*10 segundos*/)) >= 1.f) {			// Intervalo de 10 segundos
+			}else if ((diff = ((_sec_to_start - 1/*1 second*/) / 10.f/*10 seconds*/)) >= 1.f) {			// Interval of 10 seconds
 			
 				if ((_sec_to_start % 10) == 0) {
 					
-					// Intervalo
-					interval = 10 * 1000;	// 10 segundos
+					// Interval
+					interval = 10 * 1000;	// 10 seconds
 
-					wait = interval * (int)diff;	// 10 * diff segundos em milisegundos
+					wait = interval * (int)diff;	// 10 * diff seconds in milliseconds
 				
 				}else {
 
-					// Corrige o tempo para ficar no intervalo certo
+					// Corrects the time to stay in the right interval
 					wait = interval = (_sec_to_start % 10) * 1000;
 				}
 
-			}else {		// Intervalo de 1 segundo
+			}else {		// Interval of 1 second
 
 				diff = std::round(_sec_to_start / 1.f);
 
-				// Intervalo
-				interval = 1000;	// 1 segundo
+				// Interval
+				interval = 1000;	// 1 second
 			
-				wait = interval * (int)diff;	// 1 * diff segundos em milesegundos
+				wait = interval * (int)diff;	// 1 * diff seconds in milliseconds
 
 			}
 
 			// UPDATE ON GAME
 			packet p((unsigned short)0x40);
 
-			p.addUint8(11);	// Temporizador Grand Prix e Grand Zodiac
+			p.addUint8(11);	// Grand Prix and Grand Zodiac Timer
 
 			p.addUint16(0u);	// Nick
 			p.addUint16(0u);	// Msg
@@ -483,7 +483,7 @@ int RoomBotGMEvent::count_down(int64_t _sec_to_start) {
 				// Make Time
 				job _job(RoomBotGMEvent::_count_down_time, this, (void*)_sec_to_start);
 
-				// Se o Shutdown Timer estiver criado descria e cria um novo
+				// If the Shutdown Timer is created, delete it and create a new one
 				if (m_timer_count_down != nullptr)
 					clear_timer_count_down();
 
@@ -491,12 +491,12 @@ int RoomBotGMEvent::count_down(int64_t _sec_to_start) {
 			}
 		}
 
-		// Libera
+		// Release
 		unlock();
 
 	}catch (exception& e) {
 
-		// Libera
+		// Release
 		unlock();
 
 		_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::count_down][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
@@ -578,7 +578,7 @@ void RoomBotGMEvent::finish_game() {
 
 	if (m_pGame != nullptr) {
 
-		// Envia presentes aqui, mas tem que ter jogadores no vector do game
+		// Sends gifts here, but there must be players in the game vector
 		if (m_pGame->getSessions().empty() || m_rewards.empty()) {
 
 			room::finish_game();
@@ -586,7 +586,7 @@ void RoomBotGMEvent::finish_game() {
 			return;
 		}
 
-		// Envia os presentes aqui
+		// Sends the gifts here
 
 		// Lambda[getItemName]
 		auto getItemName = [](uint32_t _typeid) -> std::string {
@@ -625,12 +625,12 @@ void RoomBotGMEvent::finish_game() {
 
 			for (auto& el_p : v_sessions) {
 
-				// Limpa, por que � por jogador
+				// Clear, because it is per player
 				v_item.clear();
 
 				if (el_p == nullptr || (p = sgs::gs::getInstance().findPlayer(el_p->m_pi.uid)) == nullptr) {
 
-					// Log, Player que ganhou n�o est� mais online, vai ficar sem o item
+					// Log, Player who won is no longer online, will be left without the item
 					_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::finish_game][WARNING] Player[UID=" + (el_p == nullptr ? "UNKNOWN" : std::to_string(el_p->m_pi.uid))
 							+ "] ganhou o item(ns)" + reward_str + ", mas saiu antes dos pr�mios ser entregues, vai ficar sem o pr�mio.", CL_FILE_LOG_AND_CONSOLE));
 
@@ -640,7 +640,7 @@ void RoomBotGMEvent::finish_game() {
 				// Initialize itens
 				for (auto& el_r : m_rewards) {
 
-					// Limpa
+					// Clear
 					bi.clear();
 					item.clear();
 
@@ -650,7 +650,7 @@ void RoomBotGMEvent::finish_game() {
 					bi.qntd = el_r.qntd;
 					bi.time = (unsigned short)el_r.qntd_time;
 
-					item_manager::initItemFromBuyItem(p->m_pi, item, bi, false, 0, 0, 1/*~nao Check Level*/);
+					item_manager::initItemFromBuyItem(p->m_pi, item, bi, false, 0, 0, 1/*~does not Check Level*/);
 
 					if (item._typeid == 0)
 						_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::finish_game][Error][WARNING] tentou enviar o reward para o player[UID="
@@ -675,10 +675,10 @@ void RoomBotGMEvent::finish_game() {
 			_smp::message_pool::getInstance().push(new message("[RoomBotGMEvent::finish_game][ErrorSystem] " + e.getFullMessageError(), CL_FILE_LOG_AND_CONSOLE));
 		}
 		
-		// Finaliza o jogo de verdade
+		// Actually finishes the game
 		room::finish_game();
 
-		// 2min para destruir a sala
+		// 2min to destroy the room
 		auto destroyRoomTimer = [](void* _arg1, void* _arg2) -> int {
 			RoomBotGMEvent *rbge = reinterpret_cast< RoomBotGMEvent* >(_arg1);
 			int64_t sec_to_start = reinterpret_cast< int64_t >(_arg2);
@@ -686,7 +686,7 @@ void RoomBotGMEvent::finish_game() {
 			try {
 
 				if (rbge != nullptr && RoomBotGMEvent::instancia_valid(rbge))
-					sgs::gs::getInstance().destroyRoom(rbge->m_channel_owner, rbge->m_ri.numero); // Destroi a sala, se n�o tem players, ou n�o conseguiu inicializar
+					sgs::gs::getInstance().destroyRoom(rbge->m_channel_owner, rbge->m_ri.numero); // Destroys the room, if there are no players, or it could not initialize
 
 			}catch (exception& e) {
 
@@ -699,7 +699,7 @@ void RoomBotGMEvent::finish_game() {
 		// Make Timer
 		job _job(destroyRoomTimer, this, (void*)0);
 
-		// Se o Shutdown Timer estiver criado descria e cria um novo
+		// If the Shutdown Timer is created, delete it and create a new one
 		if (m_timer_count_down != nullptr)
 			clear_timer_count_down();
 
@@ -709,7 +709,7 @@ void RoomBotGMEvent::finish_game() {
 }
 
 bool RoomBotGMEvent::isDropRoom() {
-	return false; // Não drop(destroy) a sala
+	return false; // Do not drop (destroy) the room
 }
 
 void RoomBotGMEvent::push_instancia(RoomBotGMEvent* _rbge) {

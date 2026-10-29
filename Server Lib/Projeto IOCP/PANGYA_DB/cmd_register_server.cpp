@@ -1,6 +1,6 @@
-// Arquivo cmd_register_server.cpp
-// Criado em 25/03/2018 as 21:27 por Acrisio
-// Implementação da classe CmdRegisterServer
+// File cmd_register_server.cpp
+// Created on 25/03/2018 at 21:27 by Acrisio
+// Implementation of class CmdRegisterServer
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -21,7 +21,7 @@ CmdRegisterServer::~CmdRegisterServer() {
 
 void CmdRegisterServer::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-    // Não usa aqui por que é um UPDATE
+    // Not used here because it's an UPDATE
     return;
 }
 

@@ -1,6 +1,6 @@
-// Arquivo cmd_put_item_mail_box.cpp
-// Criado em 26/05/2018 as 15:39 por Acrisio
-// Implementa��o da classe CmdPutItemMailBox
+// File cmd_put_item_mail_box.cpp
+// Created on 26/05/2018 at 15:39 by Acrisio
+// Implementation of the class CmdPutItemMailBox
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -32,7 +32,7 @@ CmdPutItemMailBox::~CmdPutItemMailBox() {
 
 void CmdPutItemMailBox::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um INSERT
+	// Not used here because it is an INSERT
 	return;
 }
 

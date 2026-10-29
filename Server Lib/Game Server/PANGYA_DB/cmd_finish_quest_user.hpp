@@ -1,6 +1,6 @@
-// Arquivo cmd_finish_quest_user.hpp
-// Criado em 15/04/2018 as 23:36 por Acrisio
-// Defini��o da classe CmdFinishQuestUser
+// File cmd_finish_quest_user.hpp
+// Created on 15/04/2018 at 23:36 by Acrisio
+// Definition of the class CmdFinishQuestUser
 
 #pragma once
 #ifndef _STDA_CMD_FINISH_QUEST_USER_HPP

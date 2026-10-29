@@ -1,6 +1,6 @@
-// Arquivo bot_gm_event.hpp
-// Criado em 03/11/2020 as 20:03 por Acrisio
-// Defini��o da classe BotGMEvent
+// File bot_gm_event.hpp
+// Created on 03/11/2020 at 20:03 by Acrisio
+// Definition of class BotGMEvent
 
 #pragma once
 #ifndef _STDA_BOT_GM_EVENT_HPP
@@ -30,10 +30,10 @@ namespace stdA {
 
 			bool checkTimeToMakeRoom();
 
-			// Verifica se a mensagem do intervalo de tempo atual j� foi enviada 
+			// Checks whether the message for the current time interval was already sent 
 			bool messageSended();
 
-			// Zera todas os intervalos que n�o est� na hora, e o intervalo que est� na hora seta ele
+			// Zeroes all the intervals that are not due, and sets the interval that is due
 			void setSendedMessage();
 
 			stRangeTime* getInterval();
@@ -51,7 +51,7 @@ namespace stdA {
 
 			bool m_load;
 
-			SYSTEMTIME m_st;							// Usando para n�o ficar criando direto na fun��o de check
+			SYSTEMTIME m_st;							// Used so it is not created directly in the check function every time
 
 #if defined(_WIN32)
 			CRITICAL_SECTION m_cs;

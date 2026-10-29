@@ -1,6 +1,6 @@
-// Arquivo cmd_member_info.cpp
-// Criado em 18/03/2018 as 13:17 por Acrisio
-// Implementação da classe CmdMemberInfo
+// File cmd_member_info.cpp
+// Created on 18/03/2018 at 13:17 by Acrisio
+// Implementation of the class CmdMemberInfo
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -46,14 +46,14 @@ void CmdMemberInfo::lineResult(result_set::ctx_res* _result, uint32_t /*_index_r
 	m_mi.guild_uid = IFNULL(atoi, _result->data[12]);
 	m_mi.guild_pang = IFNULL(atoll, _result->data[13]);
 	m_mi.guild_point = IFNULL(atoi, _result->data[14]);
-	m_mi.guild_mark_img_no = (uint32_t)IFNULL(atoi, _result->data[15]); // Guild Idx é o ultilizado no PangYa JP
+	m_mi.guild_mark_img_no = (uint32_t)IFNULL(atoi, _result->data[15]); // Guild Idx is the one used on PangYa JP
 	m_mi.event_1 = (unsigned char)IFNULL(atoi, _result->data[16]);
 	m_mi.event_2 = (unsigned char)IFNULL(atoi, _result->data[17]);
 
-	// 1 Player loga primeira vezes, 2 é o um player que já logou mais de 1x
+	// 1 is a Player logging in for the first time, 2 is a player who has already logged in more than once
 	m_mi.flag_login_time = 2u;
 	
-	// Sexo do player
+	// Player gender
 	m_mi.state_flag.stFlagBit.sexo = m_mi.sexo;
 	
 	m_mi.papel_shop.limit_count = (short)IFNULL(atoi, _result->data[18]);

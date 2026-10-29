@@ -1,6 +1,6 @@
-// Arquivo special_shuffle_course.hpp
-// Criado em 16/10/2018 as 22:03 por Acrisio
-// Defini��o da classe SpecialShuffleCourse
+// File special_shuffle_course.hpp
+// Created on 16/10/2018 at 22:03 by Acrisio
+// Definition of the SpecialShuffleCourse class
 
 #pragma once
 #ifndef _STDA_SPECIAL_SHUFFLE_COURSE_HPP
@@ -18,13 +18,13 @@ namespace stdA {
 
 			virtual void deleteAllPlayer();
 
-			// Met�dos do Game->Course->Hole
+			// Game->Course->Hole methods
 			virtual void changeHole(player& _session) override;
 			virtual void finishHole(player& _session) override;
 
 			void finish_SSC(player& _session, int _option);
 
-			// Tempo
+			// Time
 			/*virtual void startTime() override;
 			virtual void stopTime();
 			virtual void pauseTime();
@@ -32,7 +32,7 @@ namespace stdA {
 			virtual void timeIsOver() override;
 
 		protected:
-			// Inicializa Jogo e Finaliza Jogo
+			// Initialize Game and Finish Game
 			virtual bool init_game() override;
 
 			virtual void finish();
@@ -55,7 +55,7 @@ namespace stdA {
 		protected:
 			bool m_SSC_state;
 
-			uint32_t m_coin_SSC;		// Que o master da sala ganha se ficar at� o final
+			uint32_t m_coin_SSC;		// That the room master wins if he stays until the end
 
 	};
 }

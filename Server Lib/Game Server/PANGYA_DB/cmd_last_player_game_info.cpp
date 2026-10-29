@@ -1,6 +1,6 @@
-// Arquivo cmd_last_player_game_info.cpp
-// Criado em 24/03/2018 as 19:06 por Acrisio
-// Implementa��o da classe CmdLastPlayerGameInfo
+// File cmd_last_player_game_info.cpp
+// Created on 24/03/2018 at 19:06 by Acrisio
+// Implementation of the class CmdLastPlayerGameInfo
 
 #if defined(_WIN32)
 #pragma pack(1)

@@ -1,6 +1,6 @@
-// Arquivo cmd_add_item_base.hpp
-// Criado em 25/03/2018 as 18:40 por Acrisio
-// Defini��o da classe CmdAddItemBase
+// File cmd_add_item_base.hpp
+// Created on 25/03/2018 at 18:40 by Acrisio
+// Definition of class CmdAddItemBase
 
 #pragma once
 #ifndef _STDA_CMD_ADD_ITEM_BASE_HPP

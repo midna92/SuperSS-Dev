@@ -1,6 +1,6 @@
-// Arquivo cliente_manager.hpp
-// Criado em 01/04/2018 as 23:36 por Acrisio
-// Definição da classe ClienteManager
+// File cliente_manager.hpp
+// Created on 01/04/2018 at 23:36 by Acrisio
+// Definition of class ClienteManager
 
 #pragma once
 #ifndef _STDA_CLIENTE_MANAGER_HPP

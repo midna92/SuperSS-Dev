@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_memorial_rare_win_log.hpp
-// Criado em 22/07/2018 as 14:54 por Acrisio
-// Defini��o da classe CmdInsertMemorialRareWinLog
+// File cmd_insert_memorial_rare_win_log.hpp
+// Created on 22/07/2018 at 14:54 by Acrisio
+// Definition of the class CmdInsertMemorialRareWinLog
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_MEMORIAL_RARE_WIN_LOG_HPP

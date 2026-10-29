@@ -1,6 +1,6 @@
-// Arquivo cmd_update_chat_macro_user.cpp
-// Criado em 28/07/2018 as 20:43 por Acrisio
-// Implementa��o da classe CmdUpdateChatMacroUser
+// File cmd_update_chat_macro_user.cpp
+// Created on 28/07/2018 at 20:43 by Acrisio
+// Implementation of class CmdUpdateChatMacroUser
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -28,7 +28,7 @@ CmdUpdateChatMacroUser::~CmdUpdateChatMacroUser() {
 
 void CmdUpdateChatMacroUser::lineResult(result_set::ctx_res* /*_result*/, uint32_t /*_index_result*/) {
 
-	// N�o usa por que � um UPDATE
+	// Not used because it is an UPDATE
 	return;
 }
 

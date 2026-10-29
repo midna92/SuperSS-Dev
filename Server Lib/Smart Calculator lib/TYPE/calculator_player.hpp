@@ -1,6 +1,6 @@
-// Arquivo calculator_player.hpp
-// Criado em 23/11/2020 as 15:08 por Acrisio
-// Definição da classe CalculatorPlayer
+// File calculator_player.hpp
+// Created on 23/11/2020 at 15:08 by Acrisio
+// Definition of the class CalculatorPlayer
 
 #pragma once
 #ifndef _STDA_CALCULATOR_PLAYER_HPP

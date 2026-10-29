@@ -1,6 +1,6 @@
-// Arquivo vector3d.hpp
-// Criado em 03/10/2020 as 13:13 por Acrisio
-// Definição da classe Vector3D
+// File vector3d.hpp
+// Created on 03/10/2020 at 13:13 by Acrisio
+// Definition of the Vector3D class
 
 #pragma once
 #ifndef _STDA_VECTOR3D_HPP

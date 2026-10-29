@@ -1,6 +1,6 @@
-// Arquivo cmd_update_guild_ranking.hpp
-// Criado em 29/12/2019 as 15:43 por Acrisio
-// Defini��o da classe CmdUpdateGuildRanking
+// File cmd_update_guild_ranking.hpp
+// Created on 29/12/2019 at 15:43 by Acrisio
+// Definition of class CmdUpdateGuildRanking
 
 #pragma once
 #ifndef _STDA_CMD_UPDATE_GUILD_RANKING_HPP

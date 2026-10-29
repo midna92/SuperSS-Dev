@@ -1,6 +1,6 @@
-// Arquivo gg_auth_server.hpp
-// Criado em 02/02/2021 as 16:47 por Acrisio
-// Definição da classe gg_auth_server
+// File gg_auth_server.hpp
+// Created on 02/02/2021 at 16:47 by Acrisio
+// Definition of class gg_auth_server
 
 #pragma once
 #ifndef _STDA_GG_AUTH_SERVER_HPP
@@ -53,13 +53,13 @@ namespace stdA {
 
 			GGAuth *m_game_guard;
 
-		// Auth Server Membros protegidos
+		// Auth Server protected members
 		protected:
-			unit_auth_server_connect *m_unit_connect;		// Ponteiro Connecta com o Auth Server
+			unit_auth_server_connect *m_unit_connect;		// Pointer to the connection with the Auth Server
 
 			void destroy_unit();
 
-		// Auth Server Comandos
+		// Auth Server Commands
 		public:
 			virtual void authCmdShutdown(int32_t _time_sec);
 			virtual void authCmdBroadcastNotice(std::string _notice);
@@ -73,11 +73,11 @@ namespace stdA {
 			virtual void authCmdInfoPlayerOnline(uint32_t _req_server_uid, uint32_t _player_uid);
 			virtual void authCmdConfirmSendInfoPlayerOnline(uint32_t _req_server_uid, AuthServerPlayerInfo _aspi);
 
-			// requests Comandos e respostas dinâmicas
+			// requests Dynamic commands and replies
 			virtual void authCmdSendCommandToOtherServer(packet& _packet);
 			virtual void authCmdSendReplyToOtherServer(packet& _packet);
 
-			// Server envia comandos e resposta para outros server com o Auth Server
+			// Server sends commands and replies to other servers through the Auth Server
 			virtual void sendCommandToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type);
 			virtual void sendReplyToOtherServerWithAuthServer(packet& _packet, uint32_t _send_server_uid_or_type);
 	};

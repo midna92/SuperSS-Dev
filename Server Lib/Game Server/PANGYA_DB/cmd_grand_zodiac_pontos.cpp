@@ -1,6 +1,6 @@
-// Arquivo cmd_grand_zodiac_pontos.cpp
-// Criado em 25/06/2020 as 16:04 por Acrisio
-// Implementa��o da classe CmdGrandZodiacPontos
+// File cmd_grand_zodiac_pontos.cpp
+// Created on 25/06/2020 at 16:04 by Acrisio
+// Implementation of the class CmdGrandZodiacPontos
 
 #if defined(_WIN32)
 #pragma pack(1)

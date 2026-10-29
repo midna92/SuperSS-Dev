@@ -1,6 +1,6 @@
 // Arquivo cube_coin_system.cpp
-// Criado em 01/09/2018 as 18:00 por Acrisio
-// Implementa��o da classe CubeCoinSystem
+// Created on 01/09/2018 at 18:00 by Acrisio
+// Implementation of the CubeCoinSystem class
 
 #if defined(_WIN32)
 #pragma pack(1)
@@ -143,14 +143,14 @@ void CubeCoinSystem::initialize() {
 	//_smp::message_pool::getInstance().push(new message("[CubeCoinSystem::initialize][Log] Cube Coin System carregado com sucesso!", CL_ONLY_FILE_LOG));
 //#endif // _DEBUG
 
-	// Carregado com sucesso
+	// Loaded successfully
 	m_load = true;
 
 	LEAVE_CHECK;
 
 	CATCH_CHECK("initialize");
 
-	// Relan�a para o server tomar as provid�ncias
+	// Rethrow so the server takes action
 	throw;
 
 	END_CHECK;
@@ -328,7 +328,7 @@ void CubeCoinSystem::CourseCtx::initialize() {
 
 	std::vector< CubeEx > v_cubes;
 
-	// Carrega os Cube que tem no hole
+	// Load the Cubes in the hole
 	for (unsigned char i = 1u; i <= 18u; ++i) {
 
 		if (course_id == RoomInfo::eCOURSE::WIZ_CITY)
@@ -347,14 +347,14 @@ void CubeCoinSystem::CourseCtx::initialize() {
 			continue;
 		}
 
-		// Pega todos as coin e cube do hole do course
+		// Get all the coins and cubes of the course hole
 		v_cubes = cmd_ccli.getAllCoinCubeHole(i);
 
 		if (!v_cubes.empty())
 			m_hole.at(i).v_cube.insert(m_hole.at(i).v_cube.end(), v_cubes.begin(), v_cubes.end());
 
 #ifdef _DEBUG
-		// Log de que gera as coordenadas para inserir no banco de dados
+		// Log that generates the coordinates to insert into the database
 		/*for (auto itt = m_hole.at(i).v_cube.begin(); itt != m_hole.at(i).v_cube.end(); ++itt)
 			_smp::message_pool::getInstance().push(new message("[CubeCoinSystem::CourseCtx::initialize][Log] INSERT INTO pangya.pangya_coin_cube([COURSE], [HOLE], [TIPO], [TIPO_LOCATION], [X], [Y], [Z]) VALUES("
 					+ std::to_string(course_id) + ", " + std::to_string((unsigned short)i) + ", " + std::to_string(itt->tipo) + ", " + std::to_string(itt->flag_location) + ", "
@@ -366,7 +366,7 @@ void CubeCoinSystem::CourseCtx::initialize() {
 
 	CATCH_CHECK_CTX("initialize");
 
-	// Relan�a para o server ou o CubeCoinSystem tomar as provid�ncias
+	// Rethrow so the server or the CubeCoinSystem takes action
 	throw;
 
 	END_CHECK_CTX;

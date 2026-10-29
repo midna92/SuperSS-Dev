@@ -1,6 +1,6 @@
-// Arquivo rank_refresh_time.cpp
-// Criado em 18/06/2020 as 22:06 por Acrisio
-// Implementa��o da classe rank_refresh_time
+// File rank_refresh_time.cpp
+// Created on 18/06/2020 at 22:06 by Acrisio
+// Implementation of the class rank_refresh_time
 
 #include "rank_refresh_time.hpp"
 #include "../../Projeto IOCP/UTIL/exception.h"
@@ -40,7 +40,7 @@ rank_refresh_time::~rank_refresh_time() {
 
 void rank_refresh_time::clear() {
 
-	// Mudei o jeito que limpa a classe, por que no x64 d� erro por causa da vtable
+	// I changed the way the class is cleared, because on x64 it errors because of the vtable
 	memset(&m_interval_refresh, 0, sizeof(m_interval_refresh));
 	memset(&m_st_last_date, 0, sizeof(m_st_last_date));
 	memset(&m_ft_last_date, 0, sizeof(m_ft_last_date));
@@ -58,7 +58,7 @@ bool rank_refresh_time::isOutDated() {
 
 	FileTimeToSystemTime(&ft_tmp_chk, &st_tmp_chk);
 
-	// Verifica se j� chegou no tempo de atualizar o rank registros
+	// Check whether it is time to update the rank records
 	if ((diff = getLocalTimeDiff(st_tmp_chk)) > 0)
 		_smp::message_pool::getInstance().push(new message("[rank_refresh_time::isOutDated][Log] Passou da hora. Diff: " + std::to_string(diff / STDA_10_MICRO_PER_SEC) + " seconds.", CL_FILE_LOG_AND_CONSOLE));
 

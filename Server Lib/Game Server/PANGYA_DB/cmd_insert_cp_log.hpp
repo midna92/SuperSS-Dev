@@ -1,6 +1,6 @@
-// Arquivo cmd_insert_cp_log.hpp
-// Criado em 24/05/2019 as 04:12 por Acrisio
-// Definição da classe CmdInsertCPLog
+// File cmd_insert_cp_log.hpp
+// Created on 24/05/2019 at 04:12 by Acrisio
+// Definition of the class CmdInsertCPLog
 
 #pragma once
 #ifndef _STDA_CMD_INSERT_CP_LOG_HPP

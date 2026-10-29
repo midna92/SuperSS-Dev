@@ -1,4 +1,4 @@
-// GGSrvLib26-1.cpp : Define as funções da biblioteca estática.
+// GGSrvLib26-1.cpp : Defines the functions of the static library.
 //
 
 #if defined(_WIN32)
@@ -1819,7 +1819,7 @@ UINT32 CheckCSAuth(bool bCheck) {
 
 int DecryptHackData(char* lpszUserKey, LPVOID lpData, DWORD dwLength) {
 
-	// !@ não tem no game server, talvez tenho no .lib
+	// !@ not present in the game server, maybe it is in the .lib
 	return ERROR_SUCCESS;
 };
 
@@ -2677,7 +2677,7 @@ UINT32 CCSAuth2::SetCSAuthState(PGG_CSAUTH_STATE _CSAuthState) {
 
 UINT32 CCSAuth2::SetSecretOrder() {
 
-	// !@ Esse função não tem no game server, talvez tenho no .lib
+	// !@ This function is not present in the game server, maybe it is in the .lib
 	return ERROR_SUCCESS;
 }
 
@@ -2866,7 +2866,7 @@ UINT32 GGAuthSetState(LPGGAUTH pGGAuth, PGG_CSAUTH_STATE pAuthState) {
 
 UINT32 GGAuthSetSecureOrder(LPGGAUTH pGGAuth) {
 	
-	// !@ Esse função não tem no game server, talvez tenho no .lib
+	// !@ This function is not present in the game server, maybe it is in the .lib
 	return ERROR_SUCCESS;
 }
 
